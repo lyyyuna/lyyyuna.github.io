@@ -91,8 +91,7 @@
       
         <p>shellcode学习第一个例子。</p>
 <p>以下有一段c语言编写的命令行程序，检验用户输入的数字，并判断是否合法。这里用户的输入被放在了函数的缓冲区里，但程序没有对缓冲区长度做检查，留下了漏洞。这里可以利用该漏洞绕过数字检察，使得任意输入都会被判定为正确。<br>在 _validate<em>serial</em> 中，_do_valid<em>stuff</em> 的地址溢出到函数的返回值上，就可实现。</p>
-<p>##源程序</p>
-<pre><code><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span>
+<h2 id="源程序">源程序</h2><pre><code><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span>
 <span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span>
 <span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span>
 
@@ -151,8 +150,7 @@
 
     <span class="keyword">return</span> <span class="number">0</span>;
 }
-</code></pre><p>##反汇编main</p>
-<pre><code>(gdb) disass main
+</code></pre><h2 id="反汇编main">反汇编main</h2><pre><code>(gdb) disass main
 Dump of assembler code <span class="keyword">for</span> function main:
    <span class="number">0x0804861a</span> &lt;+<span class="number">0</span>&gt;:     push   %ebp
    <span class="number">0x0804861b</span> &lt;+<span class="number">1</span>&gt;:     mov    %esp,%ebp
@@ -167,7 +165,7 @@ Dump of assembler code <span class="keyword">for</span> function main:
    <span class="number">0x08048638</span> &lt;+<span class="number">30</span>&gt;:    ret
 End of assembler dump.
 </code></pre><p>可得到 _do_valid<em>stuff</em> 的地址为 0x08048626。_validate<em>serial</em> 的返回地址为 0x08048622。下面就通过溢出修改返回地址。</p>
-<p>##缓冲区溢出<br>源码中，缓冲区长度为24，理论上只要覆盖24+2处的数据就可以了。我们需要检验一下，在fscanf处打断点，观察堆栈内容。</p>
+<h2 id="缓冲区溢出">缓冲区溢出</h2><p>源码中，缓冲区长度为24，理论上只要覆盖24+2处的数据就可以了。我们需要检验一下，在fscanf处打断点，观察堆栈内容。</p>
 <pre><code>Breakpoint <span class="number">1</span>, valildate_serial () at serial.c:<span class="number">31</span>
 <span class="number">31</span>          <span class="built_in">fscanf</span>(<span class="built_in">stdin</span>, <span class="string">"%s"</span>, serial);
 (gdb) x/<span class="number">20</span>x $esp
@@ -197,7 +195,7 @@ the serial number is valid!
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://lyyyuna.github.io/2015/08/30/shellcode1/" data-id="cidy8wpmr0000744einnl2e3q" class="article-share-link">Share</a>
+      <a data-url="http://lyyyuna.github.io/2015/08/30/shellcode1/" data-id="cidy9bd1a0001444ei1x4t64p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shellcode/">shellcode</a></li></ul>
@@ -244,7 +242,7 @@ the serial number is valid!
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://lyyyuna.github.io/2015/08/30/hello-world/" data-id="cidy8vhkv0001sk4e7smv1r25" class="article-share-link">Share</a>
+      <a data-url="http://lyyyuna.github.io/2015/08/30/hello-world/" data-id="cidy9bd1l0004444egl52l6hq" class="article-share-link">Share</a>
       
       
     </footer>
