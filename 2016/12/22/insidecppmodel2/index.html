@@ -4,34 +4,25 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>一个简单的公司自动订餐脚本实现 | lyyyuna 的小花园</title>
+    <title>c++ 函数重载是如何实现的 | lyyyuna 的小花园</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="lyyyuna">
     
 
     
-    <meta name="description" content="前言因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。 由于经常忘了订餐，便诞生了下面这个脚本。 该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。 登陆过程分析打开 http://cdcfan/ 便可见到登陆页面，登陆时只需输入自己英文名即可。  这里点击“进入”会发送 GET 请求">
-<meta name="keywords" content="Python script">
+    <meta name="description" content="函数重载是 c++ 的编译时多态的一部分，也就是说，该行为在编译完成后即是确定的。事实上，这是编译器和链接器之间玩的小花招。链接器通过符号（symbol）定位各个函数，所谓符号可以简单理解为一个字符串。 编译器会给每个函数名一个符号，在 c 语言中，符号名只和函数名有关。 来一个 c 语言程序的例子，使用 Visual">
+<meta name="keywords" content="cpp">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一个简单的公司自动订餐脚本实现">
-<meta property="og:url" content="http://www.lyyyuna.com/2016/01/04/cdcfan-auto-order/index.html">
+<meta property="og:title" content="c++ 函数重载是如何实现的">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/12/22/insidecppmodel2/index.html">
 <meta property="og:site_name" content="lyyyuna 的小花园">
-<meta property="og:description" content="前言因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。 由于经常忘了订餐，便诞生了下面这个脚本。 该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。 登陆过程分析打开 http://cdcfan/ 便可见到登陆页面，登陆时只需输入自己英文名即可。  这里点击“进入”会发送 GET 请求，然后获得员工的各种信息，比如 ID，部门编号等。  登陆结果如下  当用户点击">
+<meta property="og:description" content="函数重载是 c++ 的编译时多态的一部分，也就是说，该行为在编译完成后即是确定的。事实上，这是编译器和链接器之间玩的小花招。链接器通过符号（symbol）定位各个函数，所谓符号可以简单理解为一个字符串。 编译器会给每个函数名一个符号，在 c 语言中，符号名只和函数名有关。 来一个 c 语言程序的例子，使用 Visual Studio 编译 1234567void add(int a, int b)">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon_get.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_ehuaile.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_order-new.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_order_result.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_chipangle.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_success.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_hack.jpg">
-<meta property="og:updated_time" content="2017-11-29T00:19:00.162Z">
+<meta property="og:updated_time" content="2017-11-29T02:08:03.768Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一个简单的公司自动订餐脚本实现">
-<meta name="twitter:description" content="前言因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。 由于经常忘了订餐，便诞生了下面这个脚本。 该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。 登陆过程分析打开 http://cdcfan/ 便可见到登陆页面，登陆时只需输入自己英文名即可。  这里点击“进入”会发送 GET 请求，然后获得员工的各种信息，比如 ID，部门编号等。  登陆结果如下  当用户点击">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon.jpg">
+<meta name="twitter:title" content="c++ 函数重载是如何实现的">
+<meta name="twitter:description" content="函数重载是 c++ 的编译时多态的一部分，也就是说，该行为在编译完成后即是确定的。事实上，这是编译器和链接器之间玩的小花招。链接器通过符号（symbol）定位各个函数，所谓符号可以简单理解为一个字符串。 编译器会给每个函数名一个符号，在 c 语言中，符号名只和函数名有关。 来一个 c 语言程序的例子，使用 Visual Studio 编译 1234567void add(int a, int b)">
 
     
     <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
@@ -92,14 +83,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/01/04/cdcfan-auto-order/" title="一个简单的公司自动订餐脚本实现" itemprop="url">一个简单的公司自动订餐脚本实现</a>
+      <a href="/2016/12/22/insidecppmodel2/" title="c++ 函数重载是如何实现的" itemprop="url">c++ 函数重载是如何实现的</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
 		
   <p class="article-time">
-    <time datetime="2016-01-04T13:20:36.000Z" itemprop="datePublished"> 发表于 2016-01-04</time>
+    <time datetime="2016-12-22T12:35:53.000Z" itemprop="datePublished"> 发表于 2016-12-22</time>
     
   </p>
 </header>
@@ -108,91 +99,36 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#登陆过程分析"><span class="toc-number">2.</span> <span class="toc-text">登陆过程分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动化订餐"><span class="toc-number">3.</span> <span class="toc-text">自动化订餐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务和发送邮件"><span class="toc-number">4.</span> <span class="toc-text">定时任务和发送邮件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题"><span class="toc-number">4.1.</span> <span class="toc-text">问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http-服务器"><span class="toc-number">5.</span> <span class="toc-text">http 服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最终结果"><span class="toc-number">6.</span> <span class="toc-text">最终结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#彩蛋"><span class="toc-number">7.</span> <span class="toc-text">彩蛋</span></a></li></ol>
+			
 		
 		</div>
 		
-		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。</p>
-<p>由于经常忘了订餐，便诞生了下面这个脚本。</p>
-<p>该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。</p>
-<h2 id="登陆过程分析"><a href="#登陆过程分析" class="headerlink" title="登陆过程分析"></a>登陆过程分析</h2><p>打开 <a href="http://cdcfan/" target="_blank" rel="noopener">http://cdcfan/</a> 便可见到登陆页面，登陆时只需输入自己英文名即可。</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon.jpg" alt="cdcfan 登陆页面"></p>
-<p>这里点击“进入”会发送 GET 请求，然后获得员工的各种信息，比如 ID，部门编号等。</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon_get.jpg" alt="cdcfan 登陆 GET"></p>
-<p>登陆结果如下</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_ehuaile.jpg" alt="cdcfan 登陆结果"></p>
-<p>当用户点击“下单”，这时候才会发送 POST 参数，请求参数主要为之前 GET 请求获得的部门号和员工 id。</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_order-new.jpg" alt="cdcfan 下单请求"></p>
-<p>请求会返回一个 json 数据。代表你是否成功订餐，还是已经订过餐。比如已经订过后，exceed_count 为 1，其余为 0.</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_order_result.jpg" alt="cdcfan 下单结果"></p>
-<p>而页面则显示</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_chipangle.jpg" alt="cdcfan 吃胖了"></p>
-<p>回过头来看登陆过程，如图 2，每一步 GET 请求，都会附上一个隐含参数 ‘_=1451880513702’，参数值会逐次递增 1。这个值有什么用我还没研究出来，用 Burp Suite 代理修改了也依然能返回正确结果。不过实际上不需要去分析这个值是由服务器还是客户端产生，因为最关键的下单 POST 请求与这个毫无关系。</p>
-<p>于是一切就变得简单了，实测这个系统其实并不依赖于会话机制，员工输入的姓名只是用来获得对应的员工 id 和部门号。那意味着，实现自动化订餐时，<strong>并不需要模拟登陆过程</strong>，只要向 /api/order-new POST 自己的 id 和 部门号，就能完成订餐。</p>
-<h2 id="自动化订餐"><a href="#自动化订餐" class="headerlink" title="自动化订餐"></a>自动化订餐</h2><p>首先定义数据库表，</p>
-<pre><code>create table cdcuser
-{
-    id integer primary key,
-    psid varchar,
-    depcode varchar,
-    email varchar    
-}
-</code></pre><p>然后只需要遍历取出的每个记录，分别发送 POST 请求即可。</p>
-<pre><code>for user in r:
-    psid = user[2]
-    depcode = user[3]
-    email = user[4]
-
-    post_data = {&apos;order&apos;:&apos;e-1&apos;, &apos;psid&apos;:psid, &apos;depcode&apos;:depcode}
-    post_data_urlencode = urllib.urlencode(post_data)
-
-    req_url = &apos;http://cdcfan/api/order-new&apos;
-    req = urllib2.Request(url = req_url, data = post_data_urlencode)
-
-    res_data = urllib2.urlopen(req)
-    res_json = res_data.read()
-    print res_json
-</code></pre><h2 id="定时任务和发送邮件"><a href="#定时任务和发送邮件" class="headerlink" title="定时任务和发送邮件"></a>定时任务和发送邮件</h2><p>得益于公司内部 MTA 的转发策咯，任意邮件域名不作检查，除恶意邮件外，其他直接被转发。这意味着可以自己搭建 MTA 发送邮件。</p>
-<p>MTA 可以直接使用 Postfix，在 Debian 8 上默认配置即可工作。Python 有非常方便的 smtplib 模块用于连接 MTA 并发送邮件</p>
-<pre><code>server = smtplib.SMTP(&apos;localhost&apos;)
-server.set_debuglevel(1)
-server.sendmail(fromaddr, toaddrs, msg)
-server.quit()
-</code></pre><p>不过我偷懒，直接解析 json 结果后，调用系统的 mail 命令</p>
-<pre><code>res = json.loads(res_json)
-if (res[&apos;succeed_count&apos;] == 0):
-    cmd = &quot;echo &apos;ding can shi bai, nin ke neng yi jing ding guo le. DO NOT REPLY&apos; | mail -s cdcfanauto &quot; + email
-    # print cmd
-    os.system(cmd)
-else:
-    cmd = &quot;echo &apos;ding can cheng gong. DO NOT REPLY&apos; | mail -s cdcfanauto &quot; + email
-    os.system(cmd)
-</code></pre><p>最后就是在每周工作日定时调用，这里直接使用 crontab 的定时任务</p>
-<pre><code>10 10 * * 1-5 python /root/cdcfan/cdc.py &gt;/dev/null 2&gt;&amp;1
-</code></pre><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>实际测试时遇到了邮件不能发送的问题，原因我没有仔细研究。</p>
-<p>（大概是 crontab 在定时时会向系统管理员发送邮件，而由于上述的 python /root/cdcfan/cdc.py &gt;/dev/null 2&gt;&amp;1 其实是 crontab 的子进程？？？，查看了 Postfix 的 maillog 之后发现，这两个进程之间的发送邮件会相互干扰。）</p>
-<p>（比如 Postfix 的默认配置下，邮件域名为 @debian.com。所以默认管理员邮箱会向这个邮件域名发送。但这个域名是不存在，作为发送方，可以伪造，因为协议并没有强制要求。但作为接收方，伪造的邮件域名必然会不可达，最终被退回。）</p>
-<p>（不过按理说不应该啊，不知道为什么管理员邮件发送失败会造成我调用 mail 失败。我又按照网上说的把 crontab 的发送邮件关闭，现象依旧，maillog 显示邮件被“自己的 MTA”退回。）</p>
-<h2 id="http-服务器"><a href="#http-服务器" class="headerlink" title="http 服务器"></a>http 服务器</h2><p>由于之前所述的我不能解释的问题，我只能另辟蹊径。让 crontab 定时发送 GET 请求到本地的一个 http 服务器，本地 http 服务器收到请求后再执行上述的订餐任务。本地 http 服务器和 crontab 完全是两个不相关的进程，不存在相互干扰的问题。</p>
-<p>crontab 修改为</p>
-<pre><code>10 10 * * 1-5 curl http://127.0.0.1:5000/cdc/ &gt;/dev/null 2&gt;&amp;1
-</code></pre><p>服务器可以用 Flask 简单搭一个</p>
-<pre><code>from flask import Flask
-import cdc
-
-app = Flask(__name__)
-
-@app.route(&apos;/cdc/&apos;)
-def submit():
-    cdc.submitcdcfan()
-    return &quot;haha&quot;
-
-if __name__ == &apos;__main__&apos;:
-    app.run()
-</code></pre><h2 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h2><p>成功收到订餐成功的提示邮件</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_success.jpg" alt="cdcfan 邮箱结果"></p>
-<h2 id="彩蛋"><a href="#彩蛋" class="headerlink" title="彩蛋"></a>彩蛋</h2><p>大概因为是安全公司的内部系统，所以在页面源码里看到了如下的注释</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_hack.jpg" alt="js 源码"></p>
+		<p>函数重载是 c++ 的编译时多态的一部分，也就是说，该行为在编译完成后即是确定的。事实上，这是编译器和链接器之间玩的小花招。链接器通过符号（symbol）定位各个函数，所谓符号可以简单理解为一个字符串。</p>
+<p>编译器会给每个函数名一个符号，在 c 语言中，符号名只和函数名有关。</p>
+<p>来一个 c 语言程序的例子，使用 Visual Studio 编译</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	add(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用 Visual Studio 自带的工具 dumpbin 查看 .obj 文件的符号表</p>
+<pre><code>017 00000000 SECT4  notype ()    External     | _add
+</code></pre><p>我们换一个函数声明</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">double</span> a, <span class="keyword">double</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	add(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再用 dumpbin 查看 .obj 文件的符号表</p>
+<pre><code>017 00000000 SECT4  notype ()    External     | _add
+</code></pre><p>还是同样的符号。所以， c 语言编译器不支持函数重载，函数名相同的话，链接器永远只能看到一个名字。</p>
+<p>那么，c++ 呢？</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">double</span> a, <span class="keyword">double</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="built_in">string</span> a, <span class="built_in">string</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	add(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">	add(<span class="number">1.0</span>, <span class="number">2.0</span>);</span><br><span class="line">	add(<span class="built_in">string</span>(<span class="string">"1"</span>), <span class="built_in">string</span>(<span class="string">"2"</span>));</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再用 dumpbin 查看 .obj 文件的符号表</p>
+<pre><code>2F3 00000000 SECT87 notype ()    External     | ?add@@YAXHH@Z (void __cdecl add(int,int))
+2F4 00000000 SECT89 notype ()    External     | ?add@@YAXNN@Z (void __cdecl add(double,double))
+2F5 00000000 SECT8B notype ()    External     | ?add@@YAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@0@Z (void __cdecl add(class std::basic_string&lt;char,struct std::char_traits&lt;char&gt;,class std::allocator&lt;char&gt; &gt;,class std::basic_string&lt;char,struct std::char_traits&lt;char&gt;,class std::allocator&lt;char&gt; &gt;))
+</code></pre><p>可以看到，每个符号都不一样啦。这时候的函数声明不仅和函数名有关，也和参数类型有关，但和返回类型无关。符号能唯一确定，编译器自然也能顺利实现重载。</p>
+<p>顺便可以发现，同一个函数声明在 c 和 c++ 中是完全不一样的。这也是为什么 c 和 c++ 之间动静态库不能直接互相调用的原因。为此 cpp 使用了 extern “C” 语法，强制使用 c++ 编译器使用 c 语言的符号命名方法。</p>
+<p>我们实验一下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">double</span> a, <span class="keyword">double</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="built_in">string</span> a, <span class="built_in">string</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	add(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">	add(<span class="number">1.0</span>, <span class="number">2.0</span>);</span><br><span class="line">	add(<span class="built_in">string</span>(<span class="string">"1"</span>), <span class="built_in">string</span>(<span class="string">"2"</span>));</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查看 .obj 文件的符号表</p>
+<pre><code>2F3 00000000 SECTD3 notype ()    External     | _add
+2F4 00000000 SECT87 notype ()    External     | ?add@@YAXNN@Z (void __cdecl add(double,double))
+2F5 00000000 SECT89 notype ()    External     | ?add@@YAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@0@Z (void __cdecl add(class std::basic_string&lt;char,struct std::char_traits&lt;char&gt;,class std::allocator&lt;char&gt; &gt;,class std::basic_string&lt;char,struct std::char_traits&lt;char&gt;,class std::allocator&lt;char&gt; &gt;))
+</code></pre><p>可以看到，第一个函数的符号和 c 语言一致了。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -200,13 +136,13 @@ if __name__ == &apos;__main__&apos;:
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/杂/">杂</a>
+  <a class="article-category-link" href="/categories/语言/">语言</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Python-script/">Python script</a>
+  <span></span> <a href="/tags/cpp/">cpp</a>
   </div>
 
 </div>
@@ -215,7 +151,7 @@ if __name__ == &apos;__main__&apos;:
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://www.lyyyuna.com/2016/01/04/cdcfan-auto-order/" data-title="一个简单的公司自动订餐脚本实现 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  <div data-url="http://www.lyyyuna.com/2016/12/22/insidecppmodel2/" data-title="c++ 函数重载是如何实现的 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -229,18 +165,18 @@ if __name__ == &apos;__main__&apos;:
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2016/01/06/exif-info-extract1/" title="Python 脚本实现读取图片属性信息">
+ <a href="/2017/04/08/supervisor01/" title="使用 Supervisor 管理进程">
   <strong>上一篇：</strong><br/>
   <span>
-  Python 脚本实现读取图片属性信息</span>
+  使用 Supervisor 管理进程</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2016/01/03/sitemap-baidu-autosubmit-1/"  title="解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎">
+<a href="/2016/12/21/insidecppmodel1/"  title="c++ 虚函数是如何实现的">
  <strong>下一篇：</strong><br/> 
- <span>解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎
+ <span>c++ 虚函数是如何实现的
 </span>
 </a>
 </div>
@@ -261,7 +197,7 @@ if __name__ == &apos;__main__&apos;:
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#登陆过程分析"><span class="toc-number">2.</span> <span class="toc-text">登陆过程分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动化订餐"><span class="toc-number">3.</span> <span class="toc-text">自动化订餐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务和发送邮件"><span class="toc-number">4.</span> <span class="toc-text">定时任务和发送邮件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题"><span class="toc-number">4.1.</span> <span class="toc-text">问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http-服务器"><span class="toc-number">5.</span> <span class="toc-text">http 服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最终结果"><span class="toc-number">6.</span> <span class="toc-text">最终结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#彩蛋"><span class="toc-number">7.</span> <span class="toc-text">彩蛋</span></a></li></ol>
+ 
  
   </div>
 
