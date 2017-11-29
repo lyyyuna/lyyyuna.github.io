@@ -1,0 +1,640 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>SCons 用户指南第一章-编译和安装 SCons | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="本章会告诉你在你系统上安装 SCons 的基本步骤，或者是在没有预编译包的情况下自己编译 SCons (有些人会倾向于自己编译的灵活性)。在此之前，本章也会涉及到一些安装 Python 的步骤，因为这是 SCons 的依赖。幸运的是，安装 SCons 和 Python 非常简单，而且有些系统已经自带 Python 环境">
+<meta name="keywords" content="scons">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SCons 用户指南第一章-编译和安装 SCons">
+<meta property="og:url" content="http://www.lyyyuna.com/2015/10/17/scons1-building-and-installing-scons/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="本章会告诉你在你系统上安装 SCons 的基本步骤，或者是在没有预编译包的情况下自己编译 SCons (有些人会倾向于自己编译的灵活性)。在此之前，本章也会涉及到一些安装 Python 的步骤，因为这是 SCons 的依赖。幸运的是，安装 SCons 和 Python 非常简单，而且有些系统已经自带 Python 环境。 1.1 安装 Python由于 SCons 是由 Python 写成的，所以">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.167Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SCons 用户指南第一章-编译和安装 SCons">
+<meta name="twitter:description" content="本章会告诉你在你系统上安装 SCons 的基本步骤，或者是在没有预编译包的情况下自己编译 SCons (有些人会倾向于自己编译的灵活性)。在此之前，本章也会涉及到一些安装 Python 的步骤，因为这是 SCons 的依赖。幸运的是，安装 SCons 和 Python 非常简单，而且有些系统已经自带 Python 环境。 1.1 安装 Python由于 SCons 是由 Python 写成的，所以">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/10/17/scons1-building-and-installing-scons/" title="SCons 用户指南第一章-编译和安装 SCons" itemprop="url">SCons 用户指南第一章-编译和安装 SCons</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2015-10-17T07:35:56.000Z" itemprop="datePublished"> 发表于 2015-10-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-安装-Python"><span class="toc-number">1.</span> <span class="toc-text">1.1 安装 Python</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-从预编译包中安装-SCons"><span class="toc-number">2.</span> <span class="toc-text">1.2 从预编译包中安装 SCons</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-1-在-Red-Hat-和基于RPM-的-Linux-系统上安装-SCons"><span class="toc-number">2.1.</span> <span class="toc-text">1.2.1 在 Red Hat (和基于RPM) 的 Linux 系统上安装 SCons</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-2-在-Debian-Linux-系统上安装-SCons"><span class="toc-number">2.2.</span> <span class="toc-text">1.2.2 在 Debian Linux 系统上安装 SCons</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-3-在-Windows-系统里安装-SCons"><span class="toc-number">2.3.</span> <span class="toc-text">1.2.3 在 Windows 系统里安装 SCons</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-在任何系统上编译和安装-SCons"><span class="toc-number">3.</span> <span class="toc-text">1.3 在任何系统上编译和安装 SCons</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-1-编译并同时安装多个版本的-SCons"><span class="toc-number">3.1.</span> <span class="toc-text">1.3.1 编译并同时安装多个版本的 SCons</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2-安装-SCons-于其他位置"><span class="toc-number">3.2.</span> <span class="toc-text">1.3.2 安装 SCons 于其他位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-3-在无管理员权限的情况下编译和安装-SCons"><span class="toc-number">3.3.</span> <span class="toc-text">1.3.3 在无管理员权限的情况下编译和安装 SCons</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>本章会告诉你在你系统上安装 SCons 的基本步骤，或者是在没有预编译包的情况下自己编译 SCons (有些人会倾向于自己编译的灵活性)。在此之前，本章也会涉及到一些安装 Python 的步骤，因为这是 SCons 的依赖。幸运的是，安装 SCons 和 Python 非常简单，而且有些系统已经自带 Python 环境。</p>
+<h2 id="1-1-安装-Python"><a href="#1-1-安装-Python" class="headerlink" title="1.1 安装 Python"></a>1.1 安装 Python</h2><p>由于 SCons 是由 Python 写成的，所以必须先安装 Python。在安装 Python 之前，首先得确定你是否已经安装过 Python 了。你只需要在你系统令行输入 python -v 或者是 python –version 。</p>
+<pre><code>$ python -V
+Python 2.5.1
+</code></pre><p>在 Windows 系统上，输出结果类似：</p>
+<pre><code>C:\&gt;python -V
+Python 2.5.1
+</code></pre><p>如果系统没有安装 Python，你就会看到类似的错误信息，比如 “command no found” (UNIX/Linux) 或者是 “‘python’ is not recognized as an internal or external command, operable program or batch file” (Windows)。在这种情况下，你就需要先安装 Python。</p>
+<p>官方的下载和安装 Python 的地址如下：<br><a href="http://www.python.org/download/" target="_blank" rel="noopener">Python 官网</a></p>
+<p>SCons 支持 2.7 以来的所有 2.x 版本的 Python，3.x 版本的还不支持。我们建议你安装最新的 2.x 版本 Python。最新的 Python 可以显著地提高 SCons 的性能。</p>
+<h2 id="1-2-从预编译包中安装-SCons"><a href="#1-2-从预编译包中安装-SCons" class="headerlink" title="1.2 从预编译包中安装 SCons"></a>1.2 从预编译包中安装 SCons</h2><p>在很多系统上，SCons 都有现成的预编译包可直接安装，包括 Windows 和 Linux。本小节你不需要完全阅读，你只需要阅读你对应的系统。</p>
+<h3 id="1-2-1-在-Red-Hat-和基于RPM-的-Linux-系统上安装-SCons"><a href="#1-2-1-在-Red-Hat-和基于RPM-的-Linux-系统上安装-SCons" class="headerlink" title="1.2.1 在 Red Hat (和基于RPM) 的 Linux 系统上安装 SCons"></a>1.2.1 在 Red Hat (和基于RPM) 的 Linux 系统上安装 SCons</h3><p>SCons 有 RPM (Red Hat Package Manager) 格式的预编译报，可以安装于 Red Hat Linux, Fedora 或者其他使用 RPM 的 Linux 发行版。你的发行版可能已经有一个预编译 SCons RPM，比如 SUSE, Mandrake 和 Fedora。你可以在你发行版下载服务器上搜索 SCons RPM，或者是一些 RPM 搜索站：<a href="http://www.rpmfind.net/" target="_blank" rel="noopener">http://www.rpmfind.net/</a>, <a href="http://rpm.pbone.net/。" target="_blank" rel="noopener">http://rpm.pbone.net/。</a></p>
+<p>如果你的发行版支持 yum 安装，你可以直接运行以下命令安装 SCons：</p>
+<pre><code># yum install scons
+</code></pre><p>如果你的Linux发行版没有包含一个特定的 SCons RPM 文件，你可以下载SCons项目提供的通用的RPM来安装。这会安装SCons脚本到 /usr/bin 目录，安装 SCons 库模块到 /usr/lib/scons。</p>
+<p>下载合适的.rpm文件，从命令行安装：</p>
+<pre><code>#rpm -Uvh scons-2.1.0-1.noarch.rpm
+</code></pre><p>或者，你可使用图形包管理器，查询你的包管理器应用文档，找到如何安装下载的 RPM 的特殊指令。</p>
+<h3 id="1-2-2-在-Debian-Linux-系统上安装-SCons"><a href="#1-2-2-在-Debian-Linux-系统上安装-SCons" class="headerlink" title="1.2.2 在 Debian Linux 系统上安装 SCons"></a>1.2.2 在 Debian Linux 系统上安装 SCons</h3><p>Debian Linux 使用另一个包管理器，而且安装 SCons 也非常方便。</p>
+<p>如果你的系统联网，则可以运行以下命令来获取最新的 Debian 包：</p>
+<pre><code># apt-get install scons
+</code></pre><h3 id="1-2-3-在-Windows-系统里安装-SCons"><a href="#1-2-3-在-Windows-系统里安装-SCons" class="headerlink" title="1.2.3 在 Windows 系统里安装 SCons"></a>1.2.3 在 Windows 系统里安装 SCons</h3><p>SCons 的 Windows 安装包使得安装极其简单。只需要在 <a href="http://www.scons.org/download.php" target="_blank" rel="noopener">下载页面</a> 下载 scons-2.4.0.win32.exe 文件，然后你需要做的就是打开后不停的下一步。</p>
+<h2 id="1-3-在任何系统上编译和安装-SCons"><a href="#1-3-在任何系统上编译和安装-SCons" class="headerlink" title="1.3 在任何系统上编译和安装 SCons"></a>1.3 在任何系统上编译和安装 SCons</h2><p>如果你的系统上没有预编译的报，那么仍然能够通过 Python 原生的 distutils 包轻易地编译和安装 SCons。</p>
+<p>首先第一步是去<a href="http://www.scons.org/download.html" target="_blank" rel="noopener">下载页面</a>下载 scons-2.4.0.tar.gz 或者 scons-2.4.0.zip。</p>
+<p>然后解压压缩包，在 Linux/UNIX 上使用 tar，在 Windows 上使用 WinZip。解压之后会在你的本地目录创建一个 scons-2.4.0 临时目录。然后切换你的工作目录到临时目录中执行下列命令：</p>
+<pre><code># cd scons-2.4.0
+# python setup.py install
+</code></pre><p>这会编译 SCons，然后将 scons 脚本安装在执行 setup.py 脚本的目录中 (/usr/local/bin 或者 c:\Python25\Scripts)，然后将 SCons 的编译构建引擎放置在 python 的库目录中 (/usr/local/lib/scons 或者 C:\Python25\scons)。因为这些都是系统目录，所以你可能需要 root (Linux/UNIX) 或者 Administrator (Windows) 权限。</p>
+<h3 id="1-3-1-编译并同时安装多个版本的-SCons"><a href="#1-3-1-编译并同时安装多个版本的-SCons" class="headerlink" title="1.3.1 编译并同时安装多个版本的 SCons"></a>1.3.1 编译并同时安装多个版本的 SCons</h3><p>SCons 的 setup.py 脚本有一些扩展选项，支持在多个地方安装多个版本的 SCons。举例来说，当你在决定使用哪个版本的 SCons 时，这能让你轻易的下载并实验不同版本的 SCons。</p>
+<p>在安装时可以通过  –version-lib 选项来制定安装版本的位置：</p>
+<pre><code># python setup.py install --version-lib
+</code></pre><p>这会将 SCons 的引擎安装在 /usr/lib/scons-2.4.0 或者是 C:\Python25\scons-2.4.0 目录下。</p>
+<p>如果你第一次安装 SCons 时指定了 –version-lib 选项，你之后每一次安装新版本时就无需指定。 SCons 的 setup.py 脚本会自动检测版本的特殊位置名，并且假设你每个版本都安装在不同的位置。当然，你也可以指定 –standalone-lib 选项来消除这个假设。</p>
+<h3 id="1-3-2-安装-SCons-于其他位置"><a href="#1-3-2-安装-SCons-于其他位置" class="headerlink" title="1.3.2 安装 SCons 于其他位置"></a>1.3.2 安装 SCons 于其他位置</h3><p>你可以指定 –prefix= 选项将 SCons 安装在非默认位置，例如：</p>
+<pre><code># python setup.py install --prefix=/opt/scons
+</code></pre><p>这会将 scons 脚本安装在 /opt/scons/bin 和将编译构建引擎安装在 /opt/scons/lib/scons 中。</p>
+<p>现在你也可以同时指定 –prefix= 和 –version-lib 选项。setup.py 脚本会根据特定 prefix 将引擎安装在特定版本的目录。这样会将编译引擎安装在 /opt/scons/lib/scons-2.4.0。</p>
+<h3 id="1-3-3-在无管理员权限的情况下编译和安装-SCons"><a href="#1-3-3-在无管理员权限的情况下编译和安装-SCons" class="headerlink" title="1.3.3 在无管理员权限的情况下编译和安装 SCons"></a>1.3.3 在无管理员权限的情况下编译和安装 SCons</h3><p>如果你没有权限将 SCons 安装到系统目录中，那你可以使用 –prefix= 选项安装到你指定的目录中。例如，你可以将 SCons 安装到相对于用户的 $HOME 中，将 scons 脚本安装在 $HOME/bin，并将引擎安装在 $HOME/lib/scons:</p>
+<pre><code>$ python setup.py install --prefix=$HOME
+</code></pre><p>你当然可以安装你选择的任何地方，并使用 –version-lib 来指定特定版本的目录。</p>
+<p>这可以在你已有 SCons 的情况下实验最新的 SCons 版本。当然，你必须在 PATH 环境变量中将最新版本的 SCons 目录放置在旧版本 SCons 目录之前。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/杂/">杂</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/scons/">scons</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2015/10/17/scons1-building-and-installing-scons/" data-title="SCons 用户指南第一章-编译和安装 SCons | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/11/02/scons2-simple-build/" title="SCons 用户指南第二章-简单编译">
+  <strong>上一篇：</strong><br/>
+  <span>
+  SCons 用户指南第二章-简单编译</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/08/30/shellcode1/"  title="shellcode学习-绕过条件判断">
+ <strong>下一篇：</strong><br/> 
+ <span>shellcode学习-绕过条件判断
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-安装-Python"><span class="toc-number">1.</span> <span class="toc-text">1.1 安装 Python</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-从预编译包中安装-SCons"><span class="toc-number">2.</span> <span class="toc-text">1.2 从预编译包中安装 SCons</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-1-在-Red-Hat-和基于RPM-的-Linux-系统上安装-SCons"><span class="toc-number">2.1.</span> <span class="toc-text">1.2.1 在 Red Hat (和基于RPM) 的 Linux 系统上安装 SCons</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-2-在-Debian-Linux-系统上安装-SCons"><span class="toc-number">2.2.</span> <span class="toc-text">1.2.2 在 Debian Linux 系统上安装 SCons</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-3-在-Windows-系统里安装-SCons"><span class="toc-number">2.3.</span> <span class="toc-text">1.2.3 在 Windows 系统里安装 SCons</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-在任何系统上编译和安装-SCons"><span class="toc-number">3.</span> <span class="toc-text">1.3 在任何系统上编译和安装 SCons</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-1-编译并同时安装多个版本的-SCons"><span class="toc-number">3.1.</span> <span class="toc-text">1.3.1 编译并同时安装多个版本的 SCons</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2-安装-SCons-于其他位置"><span class="toc-number">3.2.</span> <span class="toc-text">1.3.2 安装 SCons 于其他位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-3-在无管理员权限的情况下编译和安装-SCons"><span class="toc-number">3.3.</span> <span class="toc-text">1.3.3 在无管理员权限的情况下编译和安装 SCons</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

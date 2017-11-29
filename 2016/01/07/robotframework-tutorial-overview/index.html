@@ -1,0 +1,670 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Robot Framework 教程 - 概览（译） | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言Robot Framework 是一个通用的自动化测试框架。这是本系列的第一篇文章，将会给出一个全面的概述。 请注意，第一篇文章几乎不会包含任何”真正实现方面的东西”，而是讲述一些高级别、抽象的概念，来为以后的文章打下坚实的基础。 什么是自动化测试框架如果你已经有自动化测试的经验（例如，使用过一些自动化测试工具），">
+<meta name="keywords" content="robot framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Robot Framework 教程 - 概览（译）">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/01/07/robotframework-tutorial-overview/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言Robot Framework 是一个通用的自动化测试框架。这是本系列的第一篇文章，将会给出一个全面的概述。 请注意，第一篇文章几乎不会包含任何”真正实现方面的东西”，而是讲述一些高级别、抽象的概念，来为以后的文章打下坚实的基础。 什么是自动化测试框架如果你已经有自动化测试的经验（例如，使用过一些自动化测试工具），你可以直接跳过本小节。 现在，我想先问一个问题：什么是自动化测试？以及它为何不同">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/GenericFrameworkView.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/Keywords.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/KeywordGoogleSearch.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/Overview_3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/InstallationStacks.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/RemoteLibrary.png">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.167Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Robot Framework 教程 - 概览（译）">
+<meta name="twitter:description" content="前言Robot Framework 是一个通用的自动化测试框架。这是本系列的第一篇文章，将会给出一个全面的概述。 请注意，第一篇文章几乎不会包含任何”真正实现方面的东西”，而是讲述一些高级别、抽象的概念，来为以后的文章打下坚实的基础。 什么是自动化测试框架如果你已经有自动化测试的经验（例如，使用过一些自动化测试工具），你可以直接跳过本小节。 现在，我想先问一个问题：什么是自动化测试？以及它为何不同">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/GenericFrameworkView.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/07/robotframework-tutorial-overview/" title="Robot Framework 教程 - 概览（译）" itemprop="url">Robot Framework 教程 - 概览（译）</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-07T12:33:01.000Z" itemprop="datePublished"> 发表于 2016-01-07</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是自动化测试框架"><span class="toc-number">2.</span> <span class="toc-text">什么是自动化测试框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是关键字驱动测试"><span class="toc-number">3.</span> <span class="toc-text">什么是关键字驱动测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#说好的概览"><span class="toc-number">4.</span> <span class="toc-text">说好的概览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义测试功能该用什么语言"><span class="toc-number">5.</span> <span class="toc-text">自定义测试功能该用什么语言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Remote-Libraries"><span class="toc-number">6.</span> <span class="toc-text">Remote Libraries</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#持续集成"><span class="toc-number">7.</span> <span class="toc-text">持续集成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Robot-Framework-教程目录"><span class="toc-number">8.</span> <span class="toc-text">Robot Framework 教程目录</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="http://code.google.com/p/robotframework/" target="_blank" rel="noopener">Robot Framework</a> 是一个通用的自动化测试框架。这是本系列的第一篇文章，将会给出一个全面的概述。</p>
+<p>请注意，第一篇文章几乎不会包含任何”真正实现方面的东西”，而是讲述一些高级别、抽象的概念，来为以后的文章打下坚实的基础。</p>
+<h2 id="什么是自动化测试框架"><a href="#什么是自动化测试框架" class="headerlink" title="什么是自动化测试框架"></a>什么是自动化测试框架</h2><p>如果你已经有自动化测试的经验（例如，使用过一些自动化测试工具），你可以直接跳过本小节。</p>
+<p>现在，我想先问一个问题：什么是自动化测试？以及它为何不同于手动执行的测试？Michael Bolton 写的<a href="http://www.developsense.com/blog/2009/08/testing-vs-checking/" target="_blank" rel="noopener">这篇文章</a>对这两个问题给出了一个非常好的答案：</p>
+<blockquote>
+<p>核对是机器干的事，测试则需要智慧。</p>
+</blockquote>
+<p>然而请注意，当我们下面讨论自动化测试时，会同时使用测试和核对两个术语。</p>
+<p>让我们来看个具体的例子，比如说一个保险公司的评级引擎。这个引擎会根据输入的某些参数（数字）来计算值。对于这样一个算法已知的系统而言，显然大量（自动化）核对是非常合适的。但检验这个算法正确与否，则需要一些思考。</p>
+<p>假设我们有一个基于数据库表的接口，和一个批处理程序：从一个表中取出数据，计算后与另一个表中的数据核对结果。</p>
+<p>首先，我们需要测试脚本语言（取决于个人喜好，可以是 Shell, Perl, Java 等等）。此外我们还要准备一些基本的测试功能。然后访问数据库表，执行一个又一个脚本，测试结果最好以某种报告的形式返回。一旦脚本运行完毕，我们便可以开始核对检查工作。基本上，我们认为，一个典型的自动化测试框架应该提供上述的功能。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/GenericFrameworkView.png" alt="最简测试框架"></p>
+<p>上图描述了一个非常基本的自动化测试框架。该框架有一个可执行测试的核心系统，可以输出一些报告，并提供接口来插入特定的测试功能。这个插入接口实现会非常简单。</p>
+<p>这就带来一个基本的问题：当我用这些测试框架时，该用什么编程语言来实现我的测试功能？稍后我们会详细回答这个问题，但现在我们可以说，<strong>Robot Framework</strong> 测试框架允许使用很多不同的语言。</p>
+<p>在了解 <strong>Robot Framework</strong> 的具体体系结构之前，我们先讨论下 <strong>Robot Framework</strong> 的核心术语，即<strong>关键字驱动测试</strong>。</p>
+<h2 id="什么是关键字驱动测试"><a href="#什么是关键字驱动测试" class="headerlink" title="什么是关键字驱动测试"></a>什么是关键字驱动测试</h2><p>每当我试图解释什么是关键字的时候，我总会把它称为函数或者方法，其能够用于测试被测系统的一个方面。</p>
+<p>真正强大的是，一个关键字可以由其关键字来定义。这就是为什么通常说：</p>
+<ul>
+<li><strong>高级别关键字</strong>：这些关键字用来测试系统业务逻辑。</li>
+<li><strong>低级别关键字</strong>：为了控制高级别关键字的实现在合适的大小，会将其分割成几个低级别关键字。</li>
+<li><strong>技术性关键字</strong>：这些关键字提供技术实现细节。</li>
+</ul>
+<p>下面这张图用一个关键字例子描述了这三者的关系。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/Keywords.png" alt="嵌套的关键字定义"></p>
+<p>通常技术性关键字可以由任何编程语言来实现（好吧，不是真的）。其他的<strong>关键字</strong>则是由已存在的关键字组合而成。即使本文关注的是抽象的概念，我们还是来看一个具体的关键字定义：</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/KeywordGoogleSearch.png" alt="GoogleS earch 关键字"></p>
+<p>这个例子表明， Google Search 这个关键字可以由 <strong>Selenium Library</strong> 库中的关键字来创建。好消息是已经有大量预定义的关键字，它们的集合称为<strong>测试库</strong>。</p>
+<p>好，让我们开始。。。</p>
+<h2 id="说好的概览"><a href="#说好的概览" class="headerlink" title="说好的概览"></a>说好的概览</h2><p>最后开始我们的主题，<strong>Robot Framework</strong> 概览。安装 <strong>Robot Framework</strong> 时，一些标准测试库会随核心框架一起安装。</p>
+<p>除了<a href="http://code.google.com/p/robotframework/wiki/TestLibraries" target="_blank" rel="noopener">标准测试库</a>外，还有很多<a href="http://code.google.com/p/robotframework/wiki/TestLibraries#External_test_libraries" target="_blank" rel="noopener">额外的外部测试库</a>。它们通常是社区由不同的目的贡献的。在写特定测试用例的时候，你完全可以混用不同测试库的所有关键字。这意味着，在测试一个 web 应用时，可以用 <strong>Selenium Library</strong> 来与 web 前端交互，用 <strong>Database Library</strong> 来检测数据库中数据的正确性。理想情况下，完全不需要编程，只需组合库中的关键字来构成高级别关键字。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/Overview_3.png" alt="Robot Framework 概览"></p>
+<p>Robot Framework 除了核心功能和测试库外，还提供了一个 IDE (RIDE, Robot Integrated Development Environment)，用户可以在此编写和组织自己的测试用例和关键字。请注意，这个 RIDE 不是用来写技术性关键字的。技术性关键字取决于你的开发环境，比如 Eclipse 来开发 Java 写的关键字。</p>
+<p>上图中尚未包含<strong>资源文件</strong>。我们测试用例的集合称作<strong>测试套件</strong>，听起来很有道理。现在为<strong>测试套件</strong>添加新关键字也是可行的。但最好在外部的<strong>资源文件</strong>中定义关键字。</p>
+<p>现在，我们在使用 Robot Framwwork 框架时，有三个重要的概念：</p>
+<ul>
+<li><strong>测试套件</strong>：这是测试用例（机器的核对工作）的容器。通常每个项目至少有一个<em>测试套件</em>。在大型工程中，需要根据功能来划分不同的<em>测试套件</em>。</li>
+<li><strong>资源文件</strong>：为了让测试设计者的角度看，几乎总会定义高级别关键字。反过来说，通常会有自己的资源文件。特别是对产品开发或者一些长期项目而言，肯定能益于<strong>关键字</strong>，而且还能被其他项目组使用。</li>
+<li><strong>测试库</strong>：通常不需要编写自己的<strong>技术性关键字</strong>，除非你在使用特定技术细节，你才需要自己实现一个新的测试库，不过这并不费时。</li>
+</ul>
+<p>需要强调的是，<strong>测试库</strong>中的关键字和<strong>资源文件</strong>中组合成的关键字，在使用时没有区别。</p>
+<h2 id="自定义测试功能该用什么语言"><a href="#自定义测试功能该用什么语言" class="headerlink" title="自定义测试功能该用什么语言"></a>自定义测试功能该用什么语言</h2><p>Robot Framework 自身和其核心库都是由 <a href="http://www.python.org/" target="_blank" rel="noopener">Python</a> 实现的。因此，如果熟悉 Python （或者打算开始熟悉 :)），用其写自己的关键字是个好的选择。我一直认为 Python 是个很酷的语言，但如果 Robot Framework 局限于 Python，它不会这么成功。这就是为什么会有 <a href="http://www.jython.org/" target="_blank" rel="noopener">Jython</a>。有了 Jython 就可以在 Java 的虚拟机上运行 Python 代码。这使得我们能够用 Java 来编写测试库，甚至是任何编译成 Java Byte Code 的语言。</p>
+<blockquote>
+<p>在 .NET 系中，IronPython 和 Jython 是类似的。</p>
+</blockquote>
+<p>这引出了以下的安装堆栈：</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/InstallationStacks.png" alt="Robot Framework 安装堆栈"></p>
+<p>Robot Framework 历史上是上图最左边的安装堆栈（在没有 RIDE 的情况下）。早期 Jython 的安装和支持欠佳。然而，现在 Java 已经支持的很好了，只有很少的缺陷。</p>
+<p>现在还有 JAR 安装方式的 Robot Framework，Python 的测试库和 Jython 都被打包成一个大的 JAR 文件。这有很大的优势，你可以将 JAR 放入版本控制中，或者是放入本地的 Maven 仓库中。这样就能保证团队成员都使用相同版本的 Robot Framework，且能够实时更新。不过也有缺点，这种情况下，RIDE 无法显示 JAR 文件关键字的帮助信息，所以 RIDE 还需要单独安装。</p>
+<p>好，现在回到我们的主题：用什么语言来实现自己的测试功能。</p>
+<h2 id="Remote-Libraries"><a href="#Remote-Libraries" class="headerlink" title="Remote Libraries"></a>Remote Libraries</h2><p>目前为止，无论是本地还是服务器，Robot Framework 都是安装在同一台机器。然后我们也看到可以用 Python, Jython 和纯 Java 语言来开发测试库。</p>
+<p>用 <a href="http://code.google.com/p/robotframework/wiki/RemoteLibrary" target="_blank" rel="noopener">Remote Libraries</a>，可以在其他机器中，用支持 <a href="http://code.google.com/p/robotframework/wiki/RemoteLibrary" target="_blank" rel="noopener">XML-RPC protocol</a> 的任何语言来编写测试库。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/RemoteLibrary.png" alt="Remote Library 用法"></p>
+<p>当在测试用例和资源文件中导入 Remote Library，它们用起来和普通的库没有区别。还有一个优点是，你也可以从 Remote Library 中获取帮助文件。如果对其实现感兴趣，可以看看 Database Library 的源码。需要指出的是，Remote Library 功能本身就是某些测试库的附加功能。</p>
+<p>Remote Library 作为一个远程的服务器，而 Robot Framework 作为一个客户端。当然这两个库完全能在本地使用。</p>
+<p>这是绝对不能被低估的一个非常强大的功能。</p>
+<h2 id="持续集成"><a href="#持续集成" class="headerlink" title="持续集成"></a>持续集成</h2><p>把 Robot Framework 集成到持续集成服务器中非常直接，因为框架本身是用脚本语言写成的。Java 版本当然也可以使用 Maven 集成。</p>
+<h2 id="Robot-Framework-教程目录"><a href="#Robot-Framework-教程目录" class="headerlink" title="Robot Framework 教程目录"></a>Robot Framework 教程目录</h2><p><a href="https://blog.codecentric.de/en/2012/03/robot-framework-tutorial-overview/" target="_blank" rel="noopener">原文链接</a></p>
+<ol>
+<li><a href="http://www.lyyyuna.com/2016/01/07/robotframework-tutorial-overview/">Robot Framework 教程 - 概览（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/04/09/robotframework-tutorial-a-complete-example/">Robot Framework 教程 - 一个完整的例子（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/04/30/robotframework-ide-ride-overview/">Robot Framework 教程 - 集成开发环境 RIDE 概览 (译)</a></li>
+<li><a href="http://www.lyyyuna.com/2016/05/15/robotframework-tutorial-how-to-structure-a-scalable-and-maintainable-acceptance-test-suite/">Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/05/28/robotframework-tutorial-loops-conditional-execution-and-more/">Robot Framework 教程 - 循环，条件判断，字符串和列表（译）</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/自动化测试/">自动化测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/robot-framework/">robot framework</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2016/01/07/robotframework-tutorial-overview/" data-title="Robot Framework 教程 - 概览（译） | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/01/16/http-proxy-get1/" title="使用 Python 实现一个简单的 HTTP 代理 - GET">
+  <strong>上一篇：</strong><br/>
+  <span>
+  使用 Python 实现一个简单的 HTTP 代理 - GET</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/06/exif-info-extract1/"  title="Python 脚本实现读取图片属性信息">
+ <strong>下一篇：</strong><br/> 
+ <span>Python 脚本实现读取图片属性信息
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是自动化测试框架"><span class="toc-number">2.</span> <span class="toc-text">什么是自动化测试框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是关键字驱动测试"><span class="toc-number">3.</span> <span class="toc-text">什么是关键字驱动测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#说好的概览"><span class="toc-number">4.</span> <span class="toc-text">说好的概览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义测试功能该用什么语言"><span class="toc-number">5.</span> <span class="toc-text">自定义测试功能该用什么语言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Remote-Libraries"><span class="toc-number">6.</span> <span class="toc-text">Remote Libraries</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#持续集成"><span class="toc-number">7.</span> <span class="toc-text">持续集成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Robot-Framework-教程目录"><span class="toc-number">8.</span> <span class="toc-text">Robot Framework 教程目录</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

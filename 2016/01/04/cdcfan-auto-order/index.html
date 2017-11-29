@@ -1,0 +1,689 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>一个简单的公司自动订餐脚本实现 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。 由于经常忘了订餐，便诞生了下面这个脚本。 该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。 登陆过程分析打开 http://cdcfan/ 便可见到登陆页面，登陆时只需输入自己英文名即可。  这里点击“进入”会发送 GET 请求">
+<meta name="keywords" content="Python script">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个简单的公司自动订餐脚本实现">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/01/04/cdcfan-auto-order/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。 由于经常忘了订餐，便诞生了下面这个脚本。 该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。 登陆过程分析打开 http://cdcfan/ 便可见到登陆页面，登陆时只需输入自己英文名即可。  这里点击“进入”会发送 GET 请求，然后获得员工的各种信息，比如 ID，部门编号等。  登陆结果如下  当用户点击">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon_get.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_ehuaile.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_order-new.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_order_result.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_chipangle.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_success.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_hack.jpg">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个简单的公司自动订餐脚本实现">
+<meta name="twitter:description" content="前言因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。 由于经常忘了订餐，便诞生了下面这个脚本。 该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。 登陆过程分析打开 http://cdcfan/ 便可见到登陆页面，登陆时只需输入自己英文名即可。  这里点击“进入”会发送 GET 请求，然后获得员工的各种信息，比如 ID，部门编号等。  登陆结果如下  当用户点击">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/04/cdcfan-auto-order/" title="一个简单的公司自动订餐脚本实现" itemprop="url">一个简单的公司自动订餐脚本实现</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-04T13:20:36.000Z" itemprop="datePublished"> 发表于 2016-01-04</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#登陆过程分析"><span class="toc-number">2.</span> <span class="toc-text">登陆过程分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动化订餐"><span class="toc-number">3.</span> <span class="toc-text">自动化订餐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务和发送邮件"><span class="toc-number">4.</span> <span class="toc-text">定时任务和发送邮件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题"><span class="toc-number">4.1.</span> <span class="toc-text">问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http-服务器"><span class="toc-number">5.</span> <span class="toc-text">http 服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最终结果"><span class="toc-number">6.</span> <span class="toc-text">最终结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#彩蛋"><span class="toc-number">7.</span> <span class="toc-text">彩蛋</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。</p>
+<p>由于经常忘了订餐，便诞生了下面这个脚本。</p>
+<p>该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。</p>
+<h2 id="登陆过程分析"><a href="#登陆过程分析" class="headerlink" title="登陆过程分析"></a>登陆过程分析</h2><p>打开 <a href="http://cdcfan/" target="_blank" rel="noopener">http://cdcfan/</a> 便可见到登陆页面，登陆时只需输入自己英文名即可。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon.jpg" alt="cdcfan 登陆页面"></p>
+<p>这里点击“进入”会发送 GET 请求，然后获得员工的各种信息，比如 ID，部门编号等。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_logon_get.jpg" alt="cdcfan 登陆 GET"></p>
+<p>登陆结果如下</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_ehuaile.jpg" alt="cdcfan 登陆结果"></p>
+<p>当用户点击“下单”，这时候才会发送 POST 参数，请求参数主要为之前 GET 请求获得的部门号和员工 id。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_order-new.jpg" alt="cdcfan 下单请求"></p>
+<p>请求会返回一个 json 数据。代表你是否成功订餐，还是已经订过餐。比如已经订过后，exceed_count 为 1，其余为 0.</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_order_result.jpg" alt="cdcfan 下单结果"></p>
+<p>而页面则显示</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_chipangle.jpg" alt="cdcfan 吃胖了"></p>
+<p>回过头来看登陆过程，如图 2，每一步 GET 请求，都会附上一个隐含参数 ‘_=1451880513702’，参数值会逐次递增 1。这个值有什么用我还没研究出来，用 Burp Suite 代理修改了也依然能返回正确结果。不过实际上不需要去分析这个值是由服务器还是客户端产生，因为最关键的下单 POST 请求与这个毫无关系。</p>
+<p>于是一切就变得简单了，实测这个系统其实并不依赖于会话机制，员工输入的姓名只是用来获得对应的员工 id 和部门号。那意味着，实现自动化订餐时，<strong>并不需要模拟登陆过程</strong>，只要向 /api/order-new POST 自己的 id 和 部门号，就能完成订餐。</p>
+<h2 id="自动化订餐"><a href="#自动化订餐" class="headerlink" title="自动化订餐"></a>自动化订餐</h2><p>首先定义数据库表，</p>
+<pre><code>create table cdcuser
+{
+    id integer primary key,
+    psid varchar,
+    depcode varchar,
+    email varchar    
+}
+</code></pre><p>然后只需要遍历取出的每个记录，分别发送 POST 请求即可。</p>
+<pre><code>for user in r:
+    psid = user[2]
+    depcode = user[3]
+    email = user[4]
+
+    post_data = {&apos;order&apos;:&apos;e-1&apos;, &apos;psid&apos;:psid, &apos;depcode&apos;:depcode}
+    post_data_urlencode = urllib.urlencode(post_data)
+
+    req_url = &apos;http://cdcfan/api/order-new&apos;
+    req = urllib2.Request(url = req_url, data = post_data_urlencode)
+
+    res_data = urllib2.urlopen(req)
+    res_json = res_data.read()
+    print res_json
+</code></pre><h2 id="定时任务和发送邮件"><a href="#定时任务和发送邮件" class="headerlink" title="定时任务和发送邮件"></a>定时任务和发送邮件</h2><p>得益于公司内部 MTA 的转发策咯，任意邮件域名不作检查，除恶意邮件外，其他直接被转发。这意味着可以自己搭建 MTA 发送邮件。</p>
+<p>MTA 可以直接使用 Postfix，在 Debian 8 上默认配置即可工作。Python 有非常方便的 smtplib 模块用于连接 MTA 并发送邮件</p>
+<pre><code>server = smtplib.SMTP(&apos;localhost&apos;)
+server.set_debuglevel(1)
+server.sendmail(fromaddr, toaddrs, msg)
+server.quit()
+</code></pre><p>不过我偷懒，直接解析 json 结果后，调用系统的 mail 命令</p>
+<pre><code>res = json.loads(res_json)
+if (res[&apos;succeed_count&apos;] == 0):
+    cmd = &quot;echo &apos;ding can shi bai, nin ke neng yi jing ding guo le. DO NOT REPLY&apos; | mail -s cdcfanauto &quot; + email
+    # print cmd
+    os.system(cmd)
+else:
+    cmd = &quot;echo &apos;ding can cheng gong. DO NOT REPLY&apos; | mail -s cdcfanauto &quot; + email
+    os.system(cmd)
+</code></pre><p>最后就是在每周工作日定时调用，这里直接使用 crontab 的定时任务</p>
+<pre><code>10 10 * * 1-5 python /root/cdcfan/cdc.py &gt;/dev/null 2&gt;&amp;1
+</code></pre><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>实际测试时遇到了邮件不能发送的问题，原因我没有仔细研究。</p>
+<p>（大概是 crontab 在定时时会向系统管理员发送邮件，而由于上述的 python /root/cdcfan/cdc.py &gt;/dev/null 2&gt;&amp;1 其实是 crontab 的子进程？？？，查看了 Postfix 的 maillog 之后发现，这两个进程之间的发送邮件会相互干扰。）</p>
+<p>（比如 Postfix 的默认配置下，邮件域名为 @debian.com。所以默认管理员邮箱会向这个邮件域名发送。但这个域名是不存在，作为发送方，可以伪造，因为协议并没有强制要求。但作为接收方，伪造的邮件域名必然会不可达，最终被退回。）</p>
+<p>（不过按理说不应该啊，不知道为什么管理员邮件发送失败会造成我调用 mail 失败。我又按照网上说的把 crontab 的发送邮件关闭，现象依旧，maillog 显示邮件被“自己的 MTA”退回。）</p>
+<h2 id="http-服务器"><a href="#http-服务器" class="headerlink" title="http 服务器"></a>http 服务器</h2><p>由于之前所述的我不能解释的问题，我只能另辟蹊径。让 crontab 定时发送 GET 请求到本地的一个 http 服务器，本地 http 服务器收到请求后再执行上述的订餐任务。本地 http 服务器和 crontab 完全是两个不相关的进程，不存在相互干扰的问题。</p>
+<p>crontab 修改为</p>
+<pre><code>10 10 * * 1-5 curl http://127.0.0.1:5000/cdc/ &gt;/dev/null 2&gt;&amp;1
+</code></pre><p>服务器可以用 Flask 简单搭一个</p>
+<pre><code>from flask import Flask
+import cdc
+
+app = Flask(__name__)
+
+@app.route(&apos;/cdc/&apos;)
+def submit():
+    cdc.submitcdcfan()
+    return &quot;haha&quot;
+
+if __name__ == &apos;__main__&apos;:
+    app.run()
+</code></pre><h2 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h2><p>成功收到订餐成功的提示邮件</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_success.jpg" alt="cdcfan 邮箱结果"></p>
+<h2 id="彩蛋"><a href="#彩蛋" class="headerlink" title="彩蛋"></a>彩蛋</h2><p>大概因为是安全公司的内部系统，所以在页面源码里看到了如下的注释</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/cdcfan_hack.jpg" alt="js 源码"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/杂/">杂</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Python-script/">Python script</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2016/01/04/cdcfan-auto-order/" data-title="一个简单的公司自动订餐脚本实现 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/01/06/exif-info-extract1/" title="Python 脚本实现读取图片属性信息">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Python 脚本实现读取图片属性信息</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/03/sitemap-baidu-autosubmit-1/"  title="解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎">
+ <strong>下一篇：</strong><br/> 
+ <span>解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#登陆过程分析"><span class="toc-number">2.</span> <span class="toc-text">登陆过程分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动化订餐"><span class="toc-number">3.</span> <span class="toc-text">自动化订餐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定时任务和发送邮件"><span class="toc-number">4.</span> <span class="toc-text">定时任务和发送邮件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题"><span class="toc-number">4.1.</span> <span class="toc-text">问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http-服务器"><span class="toc-number">5.</span> <span class="toc-text">http 服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最终结果"><span class="toc-number">6.</span> <span class="toc-text">最终结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#彩蛋"><span class="toc-number">7.</span> <span class="toc-text">彩蛋</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -1,0 +1,699 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>B站直播弹幕协议详解 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言B站直播弹幕是在 flash 里做的，所以浏览器的开发工具抓不到包。去年我根据 Wireshark 抓的 TCP 包硬写了一个直播终端版，不过当时对里面很多二进制位不知所云。 上个星期我发现B站官方有专门为 UP 主准备的直播弹幕姬，且是用 C# 写的，于是就逆向了。。 这里是最新的 B 站直播弹幕姬 Python">
+<meta name="keywords" content="bilibili">
+<meta property="og:type" content="article">
+<meta property="og:title" content="B站直播弹幕协议详解">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/03/14/bilibili-danmu01/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言B站直播弹幕是在 flash 里做的，所以浏览器的开发工具抓不到包。去年我根据 Wireshark 抓的 TCP 包硬写了一个直播终端版，不过当时对里面很多二进制位不知所云。 上个星期我发现B站官方有专门为 UP 主准备的直播弹幕姬，且是用 C# 写的，于是就逆向了。。 这里是最新的 B 站直播弹幕姬 Python 版。 本篇将对直播协议做一个完整介绍。  B站协议和端口是会变的（至少改变过一">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201603/bilibili.png">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.161Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="B站直播弹幕协议详解">
+<meta name="twitter:description" content="前言B站直播弹幕是在 flash 里做的，所以浏览器的开发工具抓不到包。去年我根据 Wireshark 抓的 TCP 包硬写了一个直播终端版，不过当时对里面很多二进制位不知所云。 上个星期我发现B站官方有专门为 UP 主准备的直播弹幕姬，且是用 C# 写的，于是就逆向了。。 这里是最新的 B 站直播弹幕姬 Python 版。 本篇将对直播协议做一个完整介绍。  B站协议和端口是会变的（至少改变过一">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201603/bilibili.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/03/14/bilibili-danmu01/" title="B站直播弹幕协议详解" itemprop="url">B站直播弹幕协议详解</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2016-03-14T13:20:36.000Z" itemprop="datePublished"> 发表于 2016-03-14</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总体过程"><span class="toc-number">2.</span> <span class="toc-text">总体过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#房间连接过程"><span class="toc-number">2.1.</span> <span class="toc-text">房间连接过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息种类"><span class="toc-number">2.2.</span> <span class="toc-text">消息种类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#弹幕种类"><span class="toc-number">2.3.</span> <span class="toc-text">弹幕种类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#心跳包"><span class="toc-number">2.4.</span> <span class="toc-text">心跳包</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">3.</span> <span class="toc-text">结论</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>B站直播弹幕是在 flash 里做的，所以浏览器的开发工具抓不到包。去年我根据 Wireshark 抓的 TCP 包硬写了一个<a href="https://github.com/lyyyuna/script_collection/blob/master/bilibli_danmu/11.py" target="_blank" rel="noopener">直播终端版</a>，不过当时对里面很多二进制位不知所云。</p>
+<p>上个星期我发现B站官方有专门为 UP 主准备的直播弹幕姬，且是用 C# 写的，于是就逆向了。。</p>
+<p>这里是最新的 <a href="https://github.com/lyyyuna/bilibili_danmu" target="_blank" rel="noopener">B 站直播弹幕姬 Python 版</a>。</p>
+<p>本篇将对直播协议做一个完整介绍。</p>
+<ul>
+<li>B站协议和端口是会变的（至少改变过一次），故不能保证本篇所述有向后兼容性。</li>
+<li>有兴趣去逆向B站直播弹幕姬的朋友，不要使用 ILSpy debug 版本，因为有 C# 5, async/await，debug 版本看起来会非常凌乱。</li>
+</ul>
+<h2 id="总体过程"><a href="#总体过程" class="headerlink" title="总体过程"></a>总体过程</h2><p>直播协议首先需要获取 RoomId，获取服务器地址，然后与 B 站服务器建立 TCP 链接并保持，之后就处于监听状态，B 站会连续地将弹幕消息推送过来。</p>
+<pre><code>Get RoomId (HTTP) --&gt; Get server address (HTTP) --&gt; Open TCP &amp; wait --&gt; parse json
+                                                           |                |
+                                                           \ -------------- /
+</code></pre><p>其中获取 RoomId 有些费解，一般我们认为一个 UP 主的房间 url 若为 <a href="http://live.bilibili.com/44515，则其" target="_blank" rel="noopener">http://live.bilibili.com/44515，则其</a> RoomId 就应该为 44515，但其实部分 UP 主的 url 和其 RoomId 并不对应。比如神奇陆夫人，其 url 显示为 115，但实际上 RoomId 为 1016。真正的 RoomId 需要去 <a href="http://live.bilibili.com/115" target="_blank" rel="noopener">http://live.bilibili.com/115</a> 的 html 中寻找。</p>
+<pre><code>&lt;script&gt;
+    var ROOMID = 1016;
+    var DANMU_RND = 1457957537;
+    var NEED_VIDEO = 1;
+    var ROOMURL = 115;
+&lt;/script&gt;
+</code></pre><p>这些特别的 UP 主经测试 url 都在 100 左右，猜测他们可能是 B 站老用户，或者他们向 B 站申请过特殊 url。</p>
+<h3 id="房间连接过程"><a href="#房间连接过程" class="headerlink" title="房间连接过程"></a>房间连接过程</h3><p>获取 RoomId 之后，紧接一个 HTTP 请求 ‘<a href="http://live.bilibili.com/api/player?id=cid:RoomId&#39;，获取" target="_blank" rel="noopener">http://live.bilibili.com/api/player?id=cid:RoomId&#39;，获取</a> xml 数据,</p>
+<pre><code>&lt;uid&gt;0&lt;/uid&gt;
+&lt;uname&gt;&lt;/uname&gt;
+&lt;login&gt;false&lt;/login&gt;
+&lt;isadmin&gt;false&lt;/isadmin&gt;
+&lt;time&gt;1457954601&lt;/time&gt;
+&lt;rank&gt;&lt;/rank&gt;
+&lt;level&gt;&lt;/level&gt;
+&lt;chatid&gt;1016&lt;/chatid&gt;
+&lt;server&gt;livecmt-1.bilibili.com&lt;/server&gt;
+&lt;user_sheid_keyword&gt;&lt;/user_sheid_keyword&gt;
+&lt;sheid_user&gt;&lt;/sheid_user&gt;
+&lt;block_time&gt;0&lt;/block_time&gt;
+&lt;block_type&gt;0&lt;/block_type&gt;
+&lt;state&gt;LIVE&lt;/state&gt;
+</code></pre><p>其中 livecmt-1.bilibili.com 为直播弹幕地址。</p>
+<p>然后向 livecmt-1.bilibili.com:788 开一个 TCP 链接，之后所有的弹幕和心跳包都会发生在此链接上。</p>
+<p>进入直播间需要发送如下的数据包：</p>
+<pre><code>00000000  00 00 00 35 00 10 00 01  00 00 00 07 00 00 00 01 ...5.... ........
+00000010  7b 22 72 6f 6f 6d 69 64  22 3a 31 30 31 36 2c 22 {&quot;roomid &quot;:1016,&quot;
+00000020  75 69 64 22 3a 31 35 35  39 37 33 36 38 35 37 32 uid&quot;:155 97368572
+00000030  38 31 36 30 7d                                   8160}
+</code></pre><p>0x35 是一次数据包的长度，0x00100001 不详，0x07 代表请求进入直播间，0x00000001 不详。<br>后面跟了一串 json 数据，uid 为客户端随机生成，算法如下：</p>
+<pre><code>(int)(100000000000000.0 + 200000000000000.0*random.random())
+</code></pre><p>如果进入房间成功，则会返回</p>
+<pre><code>00 00 00 10 00 10 00 01  00 00 00 08 00 00 00 01
+</code></pre><p>目前看来并没有其他特殊含义。</p>
+<h3 id="消息种类"><a href="#消息种类" class="headerlink" title="消息种类"></a>消息种类</h3><p>如果接收到的数据包为</p>
+<pre><code>00000010  00 00 00 14 00 10 00 01  00 00 00 03 00 00 00 01 ........ ........
+00000020  00 00 3c 49                                      ..&lt;I
+</code></pre><p>其中 0x14 为一次数据包的长度，0x0010001 不详，0x03 代表这是一个在线人数数据包，0x00000001 不详，0x3c49 = 15433 为在线人数。根据逆向的源码显示，0x03,0x02,0x01 都代表在线人数数据包，不过我只抓到了 0x03 这一种。</p>
+<p>如果接收到的数据包为</p>
+<pre><code>00000825  00 00 00 d4 00 10 00 00  00 00 00 05 00 00 00 00 ........ ........
+00000835  7b 22 69 6e 66 6f 22 3a  5b 5b 30 2c 31 2c 32 35 {&quot;info&quot;: [[0,1,25
+00000845  2c 31 36 37 37 37 32 31  35 2c 31 34 35 37 39 35 ,1677721 5,145795
+00000855  38 33 37 34 2c 22 31 34  35 37 39 35 35 36 35 35 8374,&quot;14 57955655
+00000865  22 2c 30 2c 22 61 66 61  39 66 37 32 64 22 2c 30 &quot;,0,&quot;afa 9f72d&quot;,0
+00000875  5d 2c 22 e7 81 ab e6 8a  8a e8 80 90 e4 b9 85 ef ],&quot;..... ........
+00000885  bc 88 30 32 ef bc 89 22  2c 5b 36 31 34 39 34 33 ..02...&quot; ,[614943
+00000895  2c 22 e8 8d 92 e5 b7 9d  e5 90 b9 e6 b0 b4 22 2c ,&quot;...... ......&quot;,
+000008A5  30 2c 30 2c 30 5d 2c 5b  39 2c 22 e7 b2 be e8 8b 0,0,0],[ 9,&quot;.....
+000008B5  b1 22 2c 22 e7 a5 9e e5  a5 87 e9 99 86 e5 a4 ab .&quot;,&quot;.... ........
+000008C5  e4 ba ba 22 2c 31 31 35  2c 31 32 32 32 35 32 35 ...&quot;,115 ,1222525
+000008D5  35 5d 2c 5b 32 31 2c 32  35 38 32 37 5d 2c 5b 5d 5],[21,2 5827],[]
+000008E5  5d 2c 22 63 6d 64 22 3a  22 44 41 4e 4d 55 5f 4d ],&quot;cmd&quot;: &quot;DANMU_M
+000008F5  53 47 22 7d                                      SG&quot;}
+</code></pre><p>这是一个弹幕数据包，0xd4 为数据包的长度，0x00100000 不详，0x05 代表这是弹幕，0x00000000 不详。之后就是 json 格式的弹幕消息。</p>
+<h3 id="弹幕种类"><a href="#弹幕种类" class="headerlink" title="弹幕种类"></a>弹幕种类</h3><p>跟据 json[‘cmd’] 的值，可分为：</p>
+<ul>
+<li>LIVE 直播中</li>
+<li>PREPARING 准备中</li>
+<li>DANMU_MSG 弹幕消息</li>
+<li>SEND_GIFT 赠送礼物消息</li>
+<li>WELCOME 欢迎某人进入直播间 </li>
+</ul>
+<p>对于 DANMU_MSG，</p>
+<ul>
+<li>json[‘info’][1] 为弹幕消息主体，为 utf-8 编码</li>
+<li>json[‘info’][2][1] 为发送者昵称，为 utf-8 编码</li>
+<li>json[‘info’][2][2] == ‘1’ 是否是管理员</li>
+<li>json[‘info’][2][3] == ‘1’ 是否是 VIP</li>
+</ul>
+<p>对于 SEND_GIFT，</p>
+<ul>
+<li>json[‘data’][‘giftName’] 为礼物名称</li>
+<li>json[‘data’][‘uname’] 为发送者昵称</li>
+<li>json[‘data’][‘rcost’] 不详</li>
+<li>json[‘data’][‘num’] 为礼物数目</li>
+</ul>
+<p>对于 WELCOME，</p>
+<ul>
+<li>json[‘data’][‘uname’] 为新进入直播间的用户昵称</li>
+</ul>
+<h3 id="心跳包"><a href="#心跳包" class="headerlink" title="心跳包"></a>心跳包</h3><p>心跳包和进入直播间所发送的包仅有些许不同</p>
+<pre><code>00 00 00 10 00 10 00 01  00 00 00 02 00 00 00 01
+</code></pre><p>把 0x07 变为 0x02 即可。心跳间隔为 30s。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>以下是我登陆 C菌 直播间抓取的弹幕消息。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201603/bilibili.png" alt="效果图"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/网络/">网络</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/bilibili/">bilibili</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2016/03/14/bilibili-danmu01/" data-title="B站直播弹幕协议详解 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/03/19/bilibili-danmu02/" title="B站全站直播弹幕收集系统的简单设计">
+  <strong>上一篇：</strong><br/>
+  <span>
+  B站全站直播弹幕收集系统的简单设计</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/02/28/zhihu-lundaiguang/"  title="知乎轮带逛 - 定向爬取轮子哥赞过的妹子图">
+ <strong>下一篇：</strong><br/> 
+ <span>知乎轮带逛 - 定向爬取轮子哥赞过的妹子图
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总体过程"><span class="toc-number">2.</span> <span class="toc-text">总体过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#房间连接过程"><span class="toc-number">2.1.</span> <span class="toc-text">房间连接过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息种类"><span class="toc-number">2.2.</span> <span class="toc-text">消息种类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#弹幕种类"><span class="toc-number">2.3.</span> <span class="toc-text">弹幕种类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#心跳包"><span class="toc-number">2.4.</span> <span class="toc-text">心跳包</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">3.</span> <span class="toc-text">结论</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

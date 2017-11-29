@@ -1,0 +1,650 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>使用 Python 实现一个简单的 HTTP 代理 - GET | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言HTTP 代理是位于服务器与客户端之间的中间实体，在各个端点之间来回传送 HTTP 报文。 按照用途分类，HTTP proxy 可以分为  内容过滤。 科学上网。 Web 缓存。维护服务器常用文档的一个副本，增加客户端的访问速度。 反向代理。反向代理可以接收发给服务器的真实请求，然后按需交给真实的服务器。类似于路由">
+<meta name="keywords" content="Python script,http proxy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Python 实现一个简单的 HTTP 代理 - GET">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/01/16/http-proxy-get1/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言HTTP 代理是位于服务器与客户端之间的中间实体，在各个端点之间来回传送 HTTP 报文。 按照用途分类，HTTP proxy 可以分为  内容过滤。 科学上网。 Web 缓存。维护服务器常用文档的一个副本，增加客户端的访问速度。 反向代理。反向代理可以接收发给服务器的真实请求，然后按需交给真实的服务器。类似于路由的功能。 …  按照代理对客户端的可见性又可以分为  透明代理 非透明代理  本">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.164Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Python 实现一个简单的 HTTP 代理 - GET">
+<meta name="twitter:description" content="前言HTTP 代理是位于服务器与客户端之间的中间实体，在各个端点之间来回传送 HTTP 报文。 按照用途分类，HTTP proxy 可以分为  内容过滤。 科学上网。 Web 缓存。维护服务器常用文档的一个副本，增加客户端的访问速度。 反向代理。反向代理可以接收发给服务器的真实请求，然后按需交给真实的服务器。类似于路由的功能。 …  按照代理对客户端的可见性又可以分为  透明代理 非透明代理  本">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/16/http-proxy-get1/" title="使用 Python 实现一个简单的 HTTP 代理 - GET" itemprop="url">使用 Python 实现一个简单的 HTTP 代理 - GET</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-16T11:44:50.000Z" itemprop="datePublished"> 发表于 2016-01-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-非透明代理下-GET-请求的不同"><span class="toc-number">2.</span> <span class="toc-text">HTTP 非透明代理下 GET 请求的不同</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#为何要用绝对路径"><span class="toc-number">2.1.</span> <span class="toc-text">为何要用绝对路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么要用-Proxy-Connection-头部"><span class="toc-number">2.2.</span> <span class="toc-text">为什么要用 Proxy-Connection 头部</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-number">3.</span> <span class="toc-text">实现</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>HTTP 代理是位于服务器与客户端之间的中间实体，在各个端点之间来回传送 HTTP 报文。</p>
+<p>按照用途分类，HTTP proxy 可以分为</p>
+<ul>
+<li>内容过滤。</li>
+<li>科学上网。</li>
+<li>Web 缓存。维护服务器常用文档的一个副本，增加客户端的访问速度。</li>
+<li>反向代理。反向代理可以接收发给服务器的真实请求，然后按需交给真实的服务器。类似于路由的功能。</li>
+<li>…</li>
+</ul>
+<p>按照代理对客户端的可见性又可以分为</p>
+<ul>
+<li>透明代理</li>
+<li>非透明代理</li>
+</ul>
+<p>本文要实现一个简单的 HTTP 非透明代理，暂时只支持 GET 请求的转发，且不追求性能和错误处理。</p>
+<h2 id="HTTP-非透明代理下-GET-请求的不同"><a href="#HTTP-非透明代理下-GET-请求的不同" class="headerlink" title="HTTP 非透明代理下 GET 请求的不同"></a>HTTP 非透明代理下 GET 请求的不同</h2><p>除了部分请求头和 URL 之外，在非透明代理下，浏览器发给服务器和发给代理的报文是完全一样的。</p>
+<ol>
+<li>首先浏览器会向非透明代理发送完整的绝对路径 URL。而在普通情况下只会发送相对路径，不需要主机名。</li>
+<li>浏览器会用 Proxy-Connection 头部代替 Connection 头部。</li>
+</ol>
+<h3 id="为何要用绝对路径"><a href="#为何要用绝对路径" class="headerlink" title="为何要用绝对路径"></a>为何要用绝对路径</h3><p>早期的 HTTP 设计中，客户端只会与单个服务器进行通信，所以一旦 TCP 连接建立起来以后，只需要相对路径。</p>
+<p>但代理就有问题，客户端首先和代理建立 TCP 连接，但由于传递的请求头中使用相对路径，代理就不知道使用什么 IP 和 端口来向远端的服务器建立 TCP 连接。所以，对于早期的 HTTP 1.0，强制客户端发给代理时使用完整路径，如</p>
+<pre><code>GET http://www.douban.com/ HTTP /1.0
+</code></pre><p>较新的 HTTP 1.1 则规定了必须包含 Host 头部。所以对于 HTTP 1.1 的代理来说，完整 URL 不是必须的。但由于网络上还有大量旧版代理，Host 头部代理或许根本不识别，所以现在浏览器在使用代理时，还是会使用完整 URL。</p>
+<p>以下是用 nc 监听 8888 端口，火狐配置 nc 8888 为代理时，所发送 GET 请求</p>
+<pre><code>root@yan:~# nc -lvp 8888
+listening on [any] 8888 ...
+Warning: forward host lookup failed for promote.cache-dns.local: Unknown host
+connect to [192.168.27.128] from promote.cache-dns.local [192.168.27.1] 29798
+GET http://www.douban.com/ HTTP/1.1
+Host: www.douban.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate
+Cookie: bid=&quot;UwoBYPAPsOE&quot;; ll=&quot;118159&quot;; __utma=30149280.478845192.1452777657.1452777657.1452777657.1; __utmz=30149280.1452777657.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _pk_id.100001.8cb4=d15426da1038582e.1452777681.1.1452777681.1452777681.
+Connection: keep-alive
+Cache-Control: max-age=0
+</code></pre><p>可以看出使用的是完整路径。</p>
+<h3 id="为什么要用-Proxy-Connection-头部"><a href="#为什么要用-Proxy-Connection-头部" class="headerlink" title="为什么要用 Proxy-Connection 头部"></a>为什么要用 Proxy-Connection 头部</h3><p>Connection 头部是为了减少建立 TCP 连接的次数，复用连接产生的。默认 HTTP 1.1 是 Keepalive，但 1.0 的代理则不识别此头部。对于不认识的头部，代理会直接转发，以保持向后兼容性。</p>
+<p>假如 Connection: Keep-alive 发给了代理，代理不识别转发给了服务器，而恰巧服务器识别此头部，便会出现严重问题。服务器和浏览器都保持连接，而代理则中断了连接。</p>
+<p>为解决这个问题，出现了一个新的头部 Proxy-Connection。如果 1.1 的代理，代理会改写为 Connection 头部。如果 1.0 的代理，那么会直接转发此头部，服务器发现 Proxy-Connection 后，就会采用非长连接的方式。</p>
+<p>Proxy-Connection 头部我实际实验的时候，并不是每个浏览器都会发送。同样是火狐，家里电脑直接发送了 Connection，而单位电脑则是 Proxy-Connection。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>我们要做的有</p>
+<ul>
+<li>替换完整路径为相对路径</li>
+<li>去掉 Proxy-Connection</li>
+<li>将 Connection 头部改为 close （为了简单起见）</li>
+</ul>
+<p>我采用 BaseHTTPServer 和 BaseHTTPRequestHandler 来处理浏览器发送的 GET 请求，原始套接字 socket 来转发请求给远端服务器，既没有多线程也没有 IO 复用。采用 urllib 库来解析完整路径 URL，并取出相对路径。</p>
+<p>代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> BaseHTTPServer <span class="keyword">import</span> BaseHTTPRequestHandler, HTTPServer</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span><span class="params">(BaseHTTPRequestHandler)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">do_GET</span><span class="params">(self)</span>:</span></span><br><span class="line">        uri = self.path</span><br><span class="line">        <span class="comment"># print uri</span></span><br><span class="line">        proto, rest = urllib.splittype(uri)</span><br><span class="line">        host, rest = urllib.splithost(rest)</span><br><span class="line">        <span class="comment"># print host</span></span><br><span class="line">        path = rest        </span><br><span class="line">        host, port = urllib.splitnport(host)</span><br><span class="line">        <span class="keyword">if</span> port &lt; <span class="number">0</span>:</span><br><span class="line">            port = <span class="number">80</span></span><br><span class="line">        <span class="comment"># print host</span></span><br><span class="line">        host_ip = socket.gethostbyname(host)</span><br><span class="line">        <span class="comment"># print port</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">del</span> self.headers[<span class="string">'Proxy-Connection'</span>]</span><br><span class="line">        self.headers[<span class="string">'Connection'</span>] = <span class="string">'close'</span></span><br><span class="line"></span><br><span class="line">        send_data = <span class="string">'GET '</span> + path + <span class="string">' '</span> + self.protocol_version + <span class="string">'\r\n'</span></span><br><span class="line">        head = <span class="string">''</span></span><br><span class="line">        <span class="keyword">for</span> key, val <span class="keyword">in</span> self.headers.items():</span><br><span class="line">            head = head + <span class="string">"%s: %s\r\n"</span> % (key, val)</span><br><span class="line">        send_data = send_data + head + <span class="string">'\r\n'</span></span><br><span class="line">        <span class="comment"># print send_data</span></span><br><span class="line">        so = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">        so.connect((host_ip, port))</span><br><span class="line">        so.sendall(send_data)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 因为采用非长连接，所以会关闭连接， recv 会退出</span></span><br><span class="line">        data = <span class="string">''</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            tmp = so.recv(<span class="number">4096</span>)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> tmp:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            data = data + tmp</span><br><span class="line"></span><br><span class="line">        <span class="comment"># socprint data</span></span><br><span class="line">        so.close()</span><br><span class="line"></span><br><span class="line">        self.wfile.write(data)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment"># do_CONNECT = do_GET</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        server = HTTPServer((<span class="string">''</span>, <span class="number">8888</span>), MyHandler)</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'Welcome to the machine...'</span></span><br><span class="line">        server.serve_forever()</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'^C received, shutting down server'</span></span><br><span class="line">        server.socket.close()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/网络/">网络</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Python-script/">Python script</a><a href="/tags/http-proxy/">http proxy</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2016/01/16/http-proxy-get1/" data-title="使用 Python 实现一个简单的 HTTP 代理 - GET | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/01/31/scons6-dependencies/" title="SCons 用户指南第六章 - 依赖">
+  <strong>上一篇：</strong><br/>
+  <span>
+  SCons 用户指南第六章 - 依赖</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/07/robotframework-tutorial-overview/"  title="Robot Framework 教程 - 概览（译）">
+ <strong>下一篇：</strong><br/> 
+ <span>Robot Framework 教程 - 概览（译）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-非透明代理下-GET-请求的不同"><span class="toc-number">2.</span> <span class="toc-text">HTTP 非透明代理下 GET 请求的不同</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#为何要用绝对路径"><span class="toc-number">2.1.</span> <span class="toc-text">为何要用绝对路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么要用-Proxy-Connection-头部"><span class="toc-number">2.2.</span> <span class="toc-text">为什么要用 Proxy-Connection 头部</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-number">3.</span> <span class="toc-text">实现</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

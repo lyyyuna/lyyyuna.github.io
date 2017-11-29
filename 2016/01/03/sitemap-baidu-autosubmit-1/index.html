@@ -1,0 +1,687 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="本篇包含两个内容。 DNSPod 双解析用百度站长工具测试时，才发现 GitHub 禁了百度爬虫，解决方法也比较简单。 首先更换你的 DNS 解析服务器，推荐使用免费的 DNSPod 解析。它支持多路解析，可以专为百度搜索，解析到另一个服务器。 国内的 GitCafe 并不屏蔽百度，在 GitCafe 建立 Page ">
+<meta name="keywords" content="Python script">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/01/03/sitemap-baidu-autosubmit-1/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="本篇包含两个内容。 DNSPod 双解析用百度站长工具测试时，才发现 GitHub 禁了百度爬虫，解决方法也比较简单。 首先更换你的 DNS 解析服务器，推荐使用免费的 DNSPod 解析。它支持多路解析，可以专为百度搜索，解析到另一个服务器。 国内的 GitCafe 并不屏蔽百度，在 GitCafe 建立 Page 的过程是类似的。然后只需要在 hexo 的 _config.yml 上配置两个">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/dnspod.jpg">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.169Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎">
+<meta name="twitter:description" content="本篇包含两个内容。 DNSPod 双解析用百度站长工具测试时，才发现 GitHub 禁了百度爬虫，解决方法也比较简单。 首先更换你的 DNS 解析服务器，推荐使用免费的 DNSPod 解析。它支持多路解析，可以专为百度搜索，解析到另一个服务器。 国内的 GitCafe 并不屏蔽百度，在 GitCafe 建立 Page 的过程是类似的。然后只需要在 hexo 的 _config.yml 上配置两个">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/dnspod.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/03/sitemap-baidu-autosubmit-1/" title="解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎" itemprop="url">解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-03T14:21:36.000Z" itemprop="datePublished"> 发表于 2016-01-03</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DNSPod-双解析"><span class="toc-number">1.</span> <span class="toc-text">DNSPod 双解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动-ping-搜素引擎"><span class="toc-number">2.</span> <span class="toc-text">自动 ping 搜素引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ping-必应"><span class="toc-number">2.1.</span> <span class="toc-text">ping 必应</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ping-百度"><span class="toc-number">2.2.</span> <span class="toc-text">ping 百度</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>本篇包含两个内容。</p>
+<h2 id="DNSPod-双解析"><a href="#DNSPod-双解析" class="headerlink" title="DNSPod 双解析"></a>DNSPod 双解析</h2><p>用百度站长工具测试时，才发现 GitHub 禁了百度爬虫，解决方法也比较简单。</p>
+<p>首先更换你的 DNS 解析服务器，推荐使用免费的 DNSPod 解析。它支持多路解析，可以专为百度搜索，解析到另一个服务器。</p>
+<p>国内的 GitCafe 并不屏蔽百度，在 GitCafe 建立 Page 的过程是类似的。然后只需要在 hexo 的 _config.yml 上配置两个 repo 即可，如下：</p>
+<pre><code>deploy:
+- type: git
+repository: git@github.com:lyyyuna/lyyyuna.github.io.git
+branch: master
+- type: git
+repository: git@gitcafe.com:lyyyuna/lyyyuna.git
+branch: gitcafe-pages
+</code></pre><p>你需要在你的域名提供商那修改 DNS 服务器为：</p>
+<pre><code>f1g1ns1.dnspod.net
+f1g1ns2.dnspod.net
+</code></pre><p>在 DNSPod 配置面板上：</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/dnspod.jpg" alt="DNSPod"></p>
+<p>大概需要等待 1-2 天，全球的解析才会恢复正常。而这时候，百度也应该能够正常抓取网页了。</p>
+<h2 id="自动-ping-搜素引擎"><a href="#自动-ping-搜素引擎" class="headerlink" title="自动 ping 搜素引擎"></a>自动 ping 搜素引擎</h2><p>大部分搜索引擎都提供了 ping 服务，当你有新的文章发布时，可以 ping 一下搜索引擎让其来抓取。</p>
+<p>这里，在上一篇自动提交 sitemap.xml 功能的基础上，再添加自动 ping 百度和必应的功能。</p>
+<h3 id="ping-必应"><a href="#ping-必应" class="headerlink" title="ping 必应"></a>ping 必应</h3><p>必应的接口比较简单，只需要 POST 自己的 sitemap.xml 即可。</p>
+<pre><code>sitemap_url = &apos;http://www.lyyyuna.com/sitemap.xml&apos;
+bing_ping = &apos;http://www.bing.com/webmaster/ping.aspx?siteMap=&apos; + sitemap_url
+
+get = urllib2.urlopen(bing_ping)
+result = get.read()
+print result
+</code></pre><h3 id="ping-百度"><a href="#ping-百度" class="headerlink" title="ping 百度"></a>ping 百度</h3><p>百度的接口稍显复杂，需要 POST XML 结构的数据。</p>
+<pre><code>RPC端点： http://ping.baidu.com/ping/RPC2
+调用方法名： weblogUpdates.extendedPing
+参数： (应按照如下所列的相同顺序传送)
+博客名称
+博客首页地址
+新发文章地址
+博客rss地址 
+</code></pre><p>提交的 XML 格式为</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;methodCall&gt;
+    &lt;methodName&gt;weblogUpdates.extendedPing&lt;/methodName&gt;
+    &lt;params&gt;
+        &lt;param&gt;
+            &lt;value&gt;&lt;string&gt;百度的空间&lt;/string&gt;&lt;/value&gt;
+        &lt;/param&gt;
+        &lt;param&gt;
+            &lt;value&gt;&lt;string&gt;http://hi.baidu.com/baidu/&lt;/string&gt;&lt;/value&gt;
+        &lt;/param&gt;
+        &lt;param&gt;
+            &lt;value&gt;&lt;string&gt;http://baidu.com/blog/example.html&lt;/string&gt;&lt;/value&gt;
+        &lt;/param&gt;
+        &lt;param&gt;
+            &lt;value&gt;&lt;string&gt;http://hi.baidu.com/baidu/rss&lt;/string&gt;&lt;/value&gt;
+        &lt;/param&gt;
+    &lt;/params&gt;
+&lt;/methodCall&gt;
+</code></pre><p>好在 Python 处理 XML 方便，将新发文章地址作为参数，如下</p>
+<pre><code>root = ET.Element(&quot;methodCall&quot;)
+methodname = ET.SubElement(root, &quot;methodName&quot;).text = &apos;weblogUpdates.extendedPing&apos;
+params = ET.SubElement(root, &quot;params&quot;)
+
+param = ET.SubElement(params, &quot;param&quot;)
+value = ET.SubElement(param, &apos;value&apos;)
+string = ET.SubElement(value, &apos;string&apos;).text = u&apos;lyyyuna 的小花园&apos;
+
+param = ET.SubElement(params, &quot;param&quot;)
+value = ET.SubElement(param, &apos;value&apos;)
+string = ET.SubElement(value, &apos;string&apos;).text = u&apos;http://www.lyyyuna.com/&apos;
+
+param = ET.SubElement(params, &quot;param&quot;)
+value = ET.SubElement(param, &apos;value&apos;)
+string = ET.SubElement(value, &apos;string&apos;).text = url
+
+param = ET.SubElement(params, &quot;param&quot;)
+value = ET.SubElement(param, &apos;value&apos;)
+string = ET.SubElement(value, &apos;string&apos;).text = u&apos;http://www.lyyyuna.com/atom.xml&apos;
+
+# tree = ET.ElementTree(root)
+xmlstr = ET.tostring(root, encoding=&apos;utf8&apos;, method=&apos;xml&apos;)
+# print xmlstr
+# print
+
+baidu_pingRPC = &apos;http://ping.baidu.com/ping/RPC2&apos;
+req = urllib2.Request(baidu_pingRPC, xmlstr)
+response = urllib2.urlopen(req)
+the_page = response.read()
+
+print the_page
+</code></pre><p>对代码进行了整合，可以同时提交 sitemap.xml 并 ping。代码见 <a href="https://github.com/lyyyuna/script_collection/blob/master/baidu_url_auto_submit/1.py" target="_blank" rel="noopener">我的GitHub</a>。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/杂/">杂</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Python-script/">Python script</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2016/01/03/sitemap-baidu-autosubmit-1/" data-title="解决 GitHub 禁百度爬虫，并自动 ping 搜索引擎 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/01/04/cdcfan-auto-order/" title="一个简单的公司自动订餐脚本实现">
+  <strong>上一篇：</strong><br/>
+  <span>
+  一个简单的公司自动订餐脚本实现</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/03/scons5-node-objects/"  title="SCons 用户指南第五章 - 节点对象">
+ <strong>下一篇：</strong><br/> 
+ <span>SCons 用户指南第五章 - 节点对象
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DNSPod-双解析"><span class="toc-number">1.</span> <span class="toc-text">DNSPod 双解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动-ping-搜素引擎"><span class="toc-number">2.</span> <span class="toc-text">自动 ping 搜素引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ping-必应"><span class="toc-number">2.1.</span> <span class="toc-text">ping 必应</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ping-百度"><span class="toc-number">2.2.</span> <span class="toc-text">ping 百度</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

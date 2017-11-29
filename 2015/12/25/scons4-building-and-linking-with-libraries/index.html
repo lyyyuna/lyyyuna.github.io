@@ -1,0 +1,690 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>SCons 用户指南第四章 - 编译和链接库 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &am">
+<meta name="keywords" content="scons">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SCons 用户指南第四章 - 编译和链接库">
+<meta property="og:url" content="http://www.lyyyuna.com/2015/12/25/scons4-building-and-linking-with-libraries/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &amp;apos;f2.c&amp;apos;, &amp;apos;f3.c&amp;apos;]) SCons 会自动根据你的系统使用合适的库文">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.168Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SCons 用户指南第四章 - 编译和链接库">
+<meta name="twitter:description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &amp;apos;f2.c&amp;apos;, &amp;apos;f3.c&amp;apos;]) SCons 会自动根据你的系统使用合适的库文">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/12/25/scons4-building-and-linking-with-libraries/" title="SCons 用户指南第四章 - 编译和链接库" itemprop="url">SCons 用户指南第四章 - 编译和链接库</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2015-12-25T12:11:03.000Z" itemprop="datePublished"> 发表于 2015-12-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-编译库"><span class="toc-number">1.</span> <span class="toc-text">4.1 编译库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-从源码或二进制文件编译库"><span class="toc-number">1.1.</span> <span class="toc-text">4.1.1 从源码或二进制文件编译库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-编译静态库：使用-StaticLibrary-方法"><span class="toc-number">1.2.</span> <span class="toc-text">4.1.2 编译静态库：使用 StaticLibrary 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><span class="toc-number">1.3.</span> <span class="toc-text">4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-链接库"><span class="toc-number">2.</span> <span class="toc-text">4.2 链接库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-寻找库：-LIBPATH-构造变量"><span class="toc-number">3.</span> <span class="toc-text">4.3 寻找库：$LIBPATH 构造变量</span></a></li></ol>
+		
+		</div>
+		
+		<p>在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。</p>
+<h2 id="4-1-编译库"><a href="#4-1-编译库" class="headerlink" title="4.1 编译库"></a>4.1 编译库</h2><p>你可以代替 Program 使用 Library 来生成你自己的库文件：</p>
+<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
+</code></pre><p>SCons 会自动根据你的系统使用合适的库文件前缀和后缀。所以在 POSIX 或 Linux 系统上，上面的例子编译过程如下：</p>
+<pre><code>% scons -Q
+cc -o f1.o -c f1.c
+cc -o f2.o -c f2.c
+cc -o f3.o -c f3.c
+ar rc libfoo.a f1.o f2.o f3.o
+ranlib libfoo.a
+</code></pre><p>在 Windows 系统上，上述例子的编译过程如下：</p>
+<pre><code>C:\&gt;scons -Q
+cl /Fof1.obj /c f1.c /nologo
+cl /Fof2.obj /c f2.c /nologo
+cl /Fof3.obj /c f3.c /nologo
+lib /nologo /OUT:foo.lib f1.obj f2.obj f3.obj
+</code></pre><p>目标库文件的命名规则类似于直接生成程序：如果你没有显示指定目标库文件名称，SCons 会从第一个指定的源文件名字中推导出，并且 SCons 会加上合适的文件前缀和后缀。</p>
+<h3 id="4-1-1-从源码或二进制文件编译库"><a href="#4-1-1-从源码或二进制文件编译库" class="headerlink" title="4.1.1 从源码或二进制文件编译库"></a>4.1.1 从源码或二进制文件编译库</h3><p>上一个例子战士了如何从一系列源码中编译出库文件，然而你也可以在 Library 调用中放置二进制文件，它会自动分析出这些是二进制文件。事实上，你也可以在源队列中混合使用源代码文件和二进制文件：</p>
+<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.o&apos;, &apos;f3.c&apos;, &apos;f4.o&apos;])
+</code></pre><p>SCons 能够意识到在生成最终库文件前需要编译哪些源文件：</p>
+<pre><code>% scons -Q
+cc -o f1.o -c f1.c
+cc -o f3.o -c f3.c
+ar rc libfoo.a f1.o f2.o f3.o f4.o
+ranlib libfoo.a
+</code></pre><p>当然，在这个例子中，必须先编译出这些二进制文件。请查看第五章，如何显示编译自己的二进制文件并包含在自己的库文件中。</p>
+<h3 id="4-1-2-编译静态库：使用-StaticLibrary-方法"><a href="#4-1-2-编译静态库：使用-StaticLibrary-方法" class="headerlink" title="4.1.2 编译静态库：使用 StaticLibrary 方法"></a>4.1.2 编译静态库：使用 StaticLibrary 方法</h3><p>Library 方法能够编译一个传统的静态库文件。如果你想明确地控制库文件的类型，你可以使用 StaticLibrary 方法来代替 Library：</p>
+<pre><code>StaticLibrary(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
+</code></pre><p>在功能上它们之间没有区别。</p>
+<h3 id="4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><a href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法" class="headerlink" title="4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法"></a>4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</h3><p>如果你像编译在 POSIX 系统或者 Windows 系统上编译动态库文件，你应该使用 SharedLibrary 方法：</p>
+<pre><code>SharedLibrary(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
+</code></pre><p>在 POSIX 系统上输出为：</p>
+<pre><code>% scons -Q
+cc -o f1.os -c f1.c
+cc -o f2.os -c f2.c
+cc -o f3.os -c f3.c
+cc -o libfoo.so -shared f1.os f2.os f3.os
+</code></pre><p>在 Windows 系统上输出为：</p>
+<pre><code>C:\&gt;scons -Q
+cl /Fof1.obj /c f1.c /nologo
+cl /Fof2.obj /c f2.c /nologo
+cl /Fof3.obj /c f3.c /nologo
+link /nologo /dll /out:foo.dll /implib:foo.lib f1.obj f2.obj f3.obj
+RegServerFunc(target, source, env)
+embedManifestDllCheck(target, source, env)
+</code></pre><p>你可以注意到 SCons 能够正确处理输出文件的过程，在 POSIX 系统上假设 -shared 选项，在 Windows 系统上加上 /dll 选项。</p>
+<h2 id="4-2-链接库"><a href="#4-2-链接库" class="headerlink" title="4.2 链接库"></a>4.2 链接库</h2><p>通常，你之所以编译库文件是为了在多个程序中链接它。为了链接库，你只需要在 $LIBS 构造变量中指定库，在 $LIBPATH 构造变量中指定库文件所在的目录：</p>
+<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
+Program(&apos;prog.c&apos;, LIBS=[&apos;foo&apos;, &apos;bar&apos;], LIBPATH=&apos;.&apos;)
+</code></pre><p>很显然可以注意到，你不需要指定库的前缀（比如 lib）或者后缀（比如 .a 或 .lib）。SCons 能够为当前的系统使用正确的前缀和后缀。</p>
+<p>在类 POSIX 系统中，以上例子的编译过程为：</p>
+<pre><code>% scons -Q
+cc -o f1.o -c f1.c
+cc -o f2.o -c f2.c
+cc -o f3.o -c f3.c
+ar rc libfoo.a f1.o f2.o f3.o
+ranlib libfoo.a
+cc -o prog.o -c prog.c
+cc -o prog prog.o -L. -lfoo -lbar
+</code></pre><p>在 Windows 系统上，以上例子的编译过程为：</p>
+<pre><code>C:\&gt;scons -Q
+cl /Fof1.obj /c f1.c /nologo
+cl /Fof2.obj /c f2.c /nologo
+cl /Fof3.obj /c f3.c /nologo
+lib /nologo /OUT:foo.lib f1.obj f2.obj f3.obj
+cl /Foprog.obj /c prog.c /nologo
+link /nologo /OUT:prog.exe /LIBPATH:. foo.lib bar.lib prog.obj
+embedManifestExeCheck(target, source, env)
+</code></pre><p>像之前一样，可以注意到 SCons 能够正确地构造命令行，以确保在各个系统上能够链接正确的库。</p>
+<p>并且，如果你只有一个库需要链接，你可以用单个字符串，来代替 Python 的列表，即：</p>
+<pre><code>Program(&apos;prog.c&apos;, LIBS=&apos;foo&apos;, LIBPATH=&apos;.&apos;)
+</code></pre><p>这和以下是等价的：</p>
+<pre><code>Program(&apos;prog.c&apos;, LIBS=[&apos;foo&apos;], LIBPATH=&apos;.&apos;)
+</code></pre><p>这和 SCons 在处理单个源文件中既可以使用字符串或者列表，是类似的。</p>
+<h2 id="4-3-寻找库：-LIBPATH-构造变量"><a href="#4-3-寻找库：-LIBPATH-构造变量" class="headerlink" title="4.3 寻找库：$LIBPATH 构造变量"></a>4.3 寻找库：$LIBPATH 构造变量</h2><p>链接器默认只在系统指定的路径中寻找库文件。当你指定了 $LIBPATH 构造变量，SCons 知道如何寻找库文件。$LIBPATH 由一系列目录路径构成，如下：</p>
+<pre><code>Program(&apos;prog.c&apos;, LIBS = &apos;m&apos;, LIBPATH = [&apos;/usr/lib&apos;, &apos;/usr/local/lib&apos;])
+</code></pre><p>推荐使用 Python 列表，因为这具有可移植性。你也可以将所有目录名字放在一个字符串中。在 POSIX 系统中，使用冒号来分割目录路径：</p>
+<pre><code>LIBPATH = &apos;/usr/lib:/usr/local/lib&apos;
+</code></pre><p>或者在 Windows 系统上使用分号来分割：</p>
+<pre><code>LIBPATH = &apos;C:\\lib;D:\\lib&apos;
+</code></pre><p>（注意到，在 Windows 系统上必须对反斜杠进行转义。）</p>
+<p>当链接器执行时，SCons 会生成合适的标志位，这样链接器就将去寻找 SCons 指定的路径。所以在 POSIX 系统上，上述例子的编译过程如下：</p>
+<pre><code>% scons -Q
+cc -o prog.o -c prog.c
+cc -o prog prog.o -L/usr/lib -L/usr/local/lib -lm
+</code></pre><p>或者在 Windows 系统上，上述例子的编译过程如下：</p>
+<pre><code>C:\&gt;scons -Q
+cl /Foprog.obj /c prog.c /nologo
+link /nologo /OUT:prog.exe /LIBPATH:\usr\lib /LIBPATH:\usr\local\lib m.lib prog.obj
+embedManifestExeCheck(target, source, env)
+</code></pre><p>注意到 SCons 能够正确地根据系统生成合适的命令行参数。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/杂/">杂</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/scons/">scons</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2015/12/25/scons4-building-and-linking-with-libraries/" data-title="SCons 用户指南第四章 - 编译和链接库 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/12/28/robotframework-quickstartguide/" title="Robot Framework 快速入门指南">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Robot Framework 快速入门指南</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/12/19/xiaomiluyou01/"  title="小米路由器 mini 刷机记录">
+ <strong>下一篇：</strong><br/> 
+ <span>小米路由器 mini 刷机记录
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-编译库"><span class="toc-number">1.</span> <span class="toc-text">4.1 编译库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-从源码或二进制文件编译库"><span class="toc-number">1.1.</span> <span class="toc-text">4.1.1 从源码或二进制文件编译库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-编译静态库：使用-StaticLibrary-方法"><span class="toc-number">1.2.</span> <span class="toc-text">4.1.2 编译静态库：使用 StaticLibrary 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><span class="toc-number">1.3.</span> <span class="toc-text">4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-链接库"><span class="toc-number">2.</span> <span class="toc-text">4.2 链接库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-寻找库：-LIBPATH-构造变量"><span class="toc-number">3.</span> <span class="toc-text">4.3 寻找库：$LIBPATH 构造变量</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

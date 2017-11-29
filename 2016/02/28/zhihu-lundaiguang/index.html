@@ -1,0 +1,652 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>知乎轮带逛 - 定向爬取轮子哥赞过的妹子图 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言轮带逛，是指跟着轮子哥的知乎动态很容易找到高质量妹子图。然而知乎动态管理和搜索都不友好，如果手工翻阅动态工作量很大，所以写了一个脚本，用于找出那些妹子图片。 这是脚本的源码链接 GitHub 上已经有一些知乎的第三方 API，如 zhihu-py3 和 zhihu-python 。 但我想用异步写，且定制性高，所以">
+<meta name="keywords" content="爬虫,Python script">
+<meta property="og:type" content="article">
+<meta property="og:title" content="知乎轮带逛 - 定向爬取轮子哥赞过的妹子图">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/02/28/zhihu-lundaiguang/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言轮带逛，是指跟着轮子哥的知乎动态很容易找到高质量妹子图。然而知乎动态管理和搜索都不友好，如果手工翻阅动态工作量很大，所以写了一个脚本，用于找出那些妹子图片。 这是脚本的源码链接 GitHub 上已经有一些知乎的第三方 API，如 zhihu-py3 和 zhihu-python 。 但我想用异步写，且定制性高，所以还是从头造个轮子。 页面分析知乎登陆过程分析上述 GitHub 知乎的 API">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/login1.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/login_post.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/login_xsrf.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/cookies1.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/cookies2.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/comments.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/meizi.jpg">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.170Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="知乎轮带逛 - 定向爬取轮子哥赞过的妹子图">
+<meta name="twitter:description" content="前言轮带逛，是指跟着轮子哥的知乎动态很容易找到高质量妹子图。然而知乎动态管理和搜索都不友好，如果手工翻阅动态工作量很大，所以写了一个脚本，用于找出那些妹子图片。 这是脚本的源码链接 GitHub 上已经有一些知乎的第三方 API，如 zhihu-py3 和 zhihu-python 。 但我想用异步写，且定制性高，所以还是从头造个轮子。 页面分析知乎登陆过程分析上述 GitHub 知乎的 API">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/login1.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/02/28/zhihu-lundaiguang/" title="知乎轮带逛 - 定向爬取轮子哥赞过的妹子图" itemprop="url">知乎轮带逛 - 定向爬取轮子哥赞过的妹子图</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2016-02-28T09:25:45.000Z" itemprop="datePublished"> 发表于 2016-02-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#页面分析"><span class="toc-number">2.</span> <span class="toc-text">页面分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#知乎登陆过程分析"><span class="toc-number">2.1.</span> <span class="toc-text">知乎登陆过程分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#知乎用户新动态分析"><span class="toc-number">2.2.</span> <span class="toc-text">知乎用户新动态分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取知乎回答的评论"><span class="toc-number">2.3.</span> <span class="toc-text">获取知乎回答的评论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模拟点击“更多”，获取更多动态"><span class="toc-number">2.4.</span> <span class="toc-text">模拟点击“更多”，获取更多动态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#程序及算法"><span class="toc-number">3.</span> <span class="toc-text">程序及算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">4.</span> <span class="toc-text">结论</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>轮带逛，是指跟着轮子哥的知乎动态很容易找到高质量妹子图。然而知乎动态管理和搜索都不友好，如果手工翻阅动态工作量很大，所以写了一个脚本，用于找出那些妹子图片。</p>
+<p>这是脚本的<a href="https://github.com/lyyyuna/zhihu_lundaiguang" target="_blank" rel="noopener">源码链接</a></p>
+<p>GitHub 上已经有一些知乎的第三方 API，如 <a href="https://github.com/7sDream/zhihu-py3" target="_blank" rel="noopener">zhihu-py3</a> 和 <a href="https://github.com/egrcc/zhihu-python" target="_blank" rel="noopener">zhihu-python</a> 。</p>
+<p>但我想用异步写，且定制性高，所以还是从头造个轮子。</p>
+<h2 id="页面分析"><a href="#页面分析" class="headerlink" title="页面分析"></a>页面分析</h2><h3 id="知乎登陆过程分析"><a href="#知乎登陆过程分析" class="headerlink" title="知乎登陆过程分析"></a>知乎登陆过程分析</h3><p>上述 GitHub 知乎的 API 都是使用邮箱、密码、验证码来登陆的，现在知乎支持只使用邮箱/手机号、密码来登陆。虽然老接口仍然可用，但新方法更便捷。</p>
+<p>因为登陆过程会有 Redirects，所以建议打开 Firebug 的 Persist，或者是使用 Burpsuite 之类的代理来捕获 https 数据流量。</p>
+<p>以下是使用邮箱登陆时关键的两个请求。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/login1.jpg" alt="登陆请求"></p>
+<p>以下为提交密码的请求，可以看到 POST 四个参数。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/login_post.jpg" alt="提交账号"></p>
+<p>remember_me 为记住我，而 _xsrf 是在登陆页面 html 代码的隐藏参数。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/login_xsrf.jpg" alt="隐藏参数"></p>
+<p>在获取用户更多动态时需要将 _xsrf 作为参数之一提交。但是这里有个小坑，这里获取的 _xsrf 值并不等于获取动态时提交的 _xsrf。实际上经过测试，在登陆时也根本不需要提交这个 _xsrf 参数。个人猜测这是旧接口的遗留代码。</p>
+<p>那么之后获取更多动态时的 _xsrf 来自哪呢？它藏在 cookies 中。然而知乎的 cookies 并不是一次性获取完毕，如下图所示，登陆完毕只拿到了五个项。（事先把知乎的 cookies 清空）</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/cookies1.jpg" alt="第一次 cookies"></p>
+<p>而紧接着的第二个 GET 请求，才会拿到这个关键的 _xsrf cookies。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/cookies2.jpg" alt="第二次 cookies"></p>
+<p>至此，登陆完毕。</p>
+<h3 id="知乎用户新动态分析"><a href="#知乎用户新动态分析" class="headerlink" title="知乎用户新动态分析"></a>知乎用户新动态分析</h3><p>分析可借助浏览器调试工具查看，这里总结如下。</p>
+<ul>
+<li>每个用户动态位于 (‘div’, class_=’zm-profile-section-item zm-item clearfix’)；</li>
+<li>上述 div 标签中，若 ‘data-type-detail’ == ‘member_voteup_answer’，则为该用户送出的赞；</li>
+<li>上述 div 标签中，data-time 属性的值需作为获取更多状态时作为 start 提交；</li>
+<li>每个回答在点击之前”显示全部”之前是隐藏的，位于 (‘textarea’, class_=’content hidden’)，隐藏内容被转义过；</li>
+<li>每个回答的评论链接位于 (‘div’, class_=’zm-item-answer’)。</li>
+</ul>
+<h3 id="获取知乎回答的评论"><a href="#获取知乎回答的评论" class="headerlink" title="获取知乎回答的评论"></a>获取知乎回答的评论</h3><p>GET 上述的评论链接，会返回一个 json 数据。json[‘paging’] 中为评论总数、每页评论数、当前页。json[‘data’] 为评论数据。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/comments.jpg" alt="评论 json 数据"></p>
+<h3 id="模拟点击“更多”，获取更多动态"><a href="#模拟点击“更多”，获取更多动态" class="headerlink" title="模拟点击“更多”，获取更多动态"></a>模拟点击“更多”，获取更多动态</h3><p>以 cookies 中的 _xsrf 和当前最后一个 data-time 为参数 POST，即可获得更多状态。返会的是 html 代码，然后重复上述步骤直到没有更多状态为止。</p>
+<h2 id="程序及算法"><a href="#程序及算法" class="headerlink" title="程序及算法"></a>程序及算法</h2><p>其实算法很简单。所有轮带逛的回答评论中都有类似“轮带逛、文明观球、营养快线”等关键字，只要符合这个规律，就可以判断出这条动态是我们的目标。</p>
+<p>我采用 Python3.5 原生的 asyncio 来实现异步，用 aiohttp 编写了所有的底层 GET/POST 请求。一共分为三个任务：crawl_voteup_answer、download_image、monitor，任务之间通过队列通信。</p>
+<pre><code>        ------------------------------------------------------------\
+        |                                      |                     |
+crawl_voteup_answer --&gt; 登陆 --&gt; 找到赞 --&gt; 分析评论 --&gt; 获取图片链接 -/
+                                                            |
+                                                       queue.put(url)
+
+                                    download_image &lt;-- queue.get(url)
+</code></pre><p>monitor 任务中主要是打印队列中等待的链接个数。另外，大约每隔 200s 会让整个爬虫停止 20s，以避免知乎可能的反爬虫措施。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>我用以下的参数，花了两个小时爬完了轮子哥的所有动态。</p>
+<pre><code>more_interval = 1 # 点击更多的时间间隔
+comment_interval = 0.2 # 获取评论的时间间隔
+img_interval = 0.2 # 下载图片的时间间隔 
+</code></pre><p>一共找到 3669 个妹子图片，其中有效的估计为 85%。而且根据终端的打印过程粗略分析，轮子个在 2015.6 之前还是很正经的，专注于技术问题，而在 2015.6 之后大约有 3000 个妹子图。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201602/meizi.jpg" alt="妹子图"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/网络/">网络</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/爬虫/">爬虫</a><a href="/tags/Python-script/">Python script</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2016/02/28/zhihu-lundaiguang/" data-title="知乎轮带逛 - 定向爬取轮子哥赞过的妹子图 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/03/14/bilibili-danmu01/" title="B站直播弹幕协议详解">
+  <strong>上一篇：</strong><br/>
+  <span>
+  B站直播弹幕协议详解</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/31/scons6-dependencies/"  title="SCons 用户指南第六章 - 依赖">
+ <strong>下一篇：</strong><br/> 
+ <span>SCons 用户指南第六章 - 依赖
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#页面分析"><span class="toc-number">2.</span> <span class="toc-text">页面分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#知乎登陆过程分析"><span class="toc-number">2.1.</span> <span class="toc-text">知乎登陆过程分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#知乎用户新动态分析"><span class="toc-number">2.2.</span> <span class="toc-text">知乎用户新动态分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取知乎回答的评论"><span class="toc-number">2.3.</span> <span class="toc-text">获取知乎回答的评论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模拟点击“更多”，获取更多动态"><span class="toc-number">2.4.</span> <span class="toc-text">模拟点击“更多”，获取更多动态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#程序及算法"><span class="toc-number">3.</span> <span class="toc-text">程序及算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-number">4.</span> <span class="toc-text">结论</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

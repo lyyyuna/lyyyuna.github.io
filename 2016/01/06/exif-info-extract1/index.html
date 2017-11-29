@@ -1,0 +1,886 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Python 脚本实现读取图片属性信息 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。 这里改用 Python 脚本读取图片信息。有几个说明  没有实现错误处理 没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等 简单修改后应该能实现暴力修改图片的 GPS 信息 但对于本">
+<meta name="keywords" content="Python script,Exif">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 脚本实现读取图片属性信息">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/01/06/exif-info-extract1/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。 这里改用 Python 脚本读取图片信息。有几个说明  没有实现错误处理 没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等 简单修改后应该能实现暴力修改图片的 GPS 信息 但对于本身没有 GPS 信息的图片，实现则非常复杂，需要仔细计算每个描述符的偏移量  脚">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info3.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info1.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info2.jpg">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.163Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 脚本实现读取图片属性信息">
+<meta name="twitter:description" content="我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。 这里改用 Python 脚本读取图片信息。有几个说明  没有实现错误处理 没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等 简单修改后应该能实现暴力修改图片的 GPS 信息 但对于本身没有 GPS 信息的图片，实现则非常复杂，需要仔细计算每个描述符的偏移量  脚">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info3.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/01/06/exif-info-extract1/" title="Python 脚本实现读取图片属性信息" itemprop="url">Python 脚本实现读取图片属性信息</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2016-01-06T14:05:15.000Z" itemprop="datePublished"> 发表于 2016-01-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>我之前的这篇文章《<a href="http://www.lyyyuna.com/2015/11/14/exif-hack/">暴力修改图片的 GPS 信息</a>》中，讲述了如何从图片的二进制文件中读取 GPS 信息。</p>
+<p>这里改用 Python 脚本读取图片信息。有几个说明</p>
+<ul>
+<li>没有实现错误处理</li>
+<li>没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等</li>
+<li>简单修改后应该能实现<a href="http://www.lyyyuna.com/2015/11/14/exif-hack/">暴力修改图片的 GPS 信息</a></li>
+<li>但对于本身没有 GPS 信息的图片，实现则非常复杂，需要仔细计算每个描述符的偏移量</li>
+</ul>
+<p>脚本运行后，读取结果如下</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info3.jpg" alt="脚本读取的信息"></p>
+<p>这里和 Windows 属性查看器读到的内容完全一致</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info1.jpg" alt="图片信息1"></p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info2.jpg" alt="图片信息2"></p>
+<p>源码如下</p>
+<pre><code># -*- coding:utf-8 -*-
+import binascii
+
+class ParseMethod(object):
+    @staticmethod
+    def parse_default(f, count, offset):
+        pass
+
+    @staticmethod
+    def parse_latitude(f, count, offset):
+        old_pos = f.tell()
+        f.seek(12 + offset)
+
+        latitude = [0,0,0]
+        for i in xrange(count):
+            byte = f.read(4)
+            numerator = byte.encode(&apos;hex&apos;)
+
+            byte = f.read(4)
+            denominator = byte.encode(&apos;hex&apos;)
+
+            latitude[i] =  float(int(numerator, 16)) / int(denominator, 16)
+
+
+        print &apos;Latitude:\t%.2f %.2f\&apos; %.2f\&quot;&apos; % (latitude[0], latitude[1], latitude[2])
+        f.seek(old_pos)    
+
+
+    @staticmethod
+    def parse_longtitude(f, count, offset):
+        old_pos = f.tell()
+        f.seek(12 + offset)
+
+        longtitude = [0,0,0]
+        for i in xrange(count):
+            byte = f.read(4)
+            numerator = byte.encode(&apos;hex&apos;)
+
+            byte = f.read(4)
+            denominator = byte.encode(&apos;hex&apos;)
+
+            longtitude[i] =  float(int(numerator, 16)) / int(denominator, 16)
+
+
+        print &apos;Longtitude:\t%.2f %.2f\&apos; %.2f\&quot;&apos; % (longtitude[0], longtitude[1], longtitude[2])
+        f.seek(old_pos) 
+
+    @staticmethod
+    def parse_make(f, count, offset):
+        old_pos = f.tell()
+        f.seek(12 + offset)
+        byte = f.read(count)
+        a = byte.encode(&apos;hex&apos;)
+        print &apos;Make:\t\t&apos; + binascii.a2b_hex(a)
+        f.seek(old_pos) 
+
+    @staticmethod
+    def parse_model(f, count, offset):
+        old_pos = f.tell()
+        f.seek(12 + offset)
+        byte = f.read(count)
+        a = byte.encode(&apos;hex&apos;)
+        print &apos;Model:\t\t&apos; + binascii.a2b_hex(a)
+        f.seek(old_pos)         
+
+    @staticmethod
+    def parse_datetime(f, count, offset):
+        old_pos = f.tell()
+        f.seek(12 + offset)
+        byte = f.read(count)
+        a = byte.encode(&apos;hex&apos;)
+        print &apos;DateTime:\t&apos; + binascii.a2b_hex(a)
+        f.seek(old_pos)
+
+    # rational data type, 05
+    @staticmethod
+    def parse_xresolution(f, count, offset):
+        old_pos = f.tell()
+        f.seek(12 + offset)
+
+        byte = f.read(4)
+        numerator = byte.encode(&apos;hex&apos;)
+        byte = f.read(4)
+        denominator = byte.encode(&apos;hex&apos;)
+        xre = int(numerator, 16) / int(denominator, 16)
+
+        print &apos;XResolution:\t&apos; + str(xre) + &apos; dpi&apos;
+        f.seek(old_pos)
+
+    @staticmethod
+    def parse_yresolution(f, count, offset):
+        old_pos = f.tell()
+        f.seek(12 + offset)
+
+        byte = f.read(4)
+        numerator = byte.encode(&apos;hex&apos;)
+        byte = f.read(4)
+        denominator = byte.encode(&apos;hex&apos;)
+        xre = int(numerator, 16) / int(denominator, 16)
+
+        print &apos;YResolution:\t&apos; + str(xre) + &apos; dpi&apos;
+        f.seek(old_pos)
+
+    @staticmethod
+    def parse_exif_ifd(f, count, offset):
+        old_pos = f.tell()
+        f.seek(12 + offset)
+
+        byte = f.read(2)
+        a = byte.encode(&apos;hex&apos;)        
+        exif_ifd_number = int(a, 16)
+
+        for i in xrange(exif_ifd_number):
+            byte = f.read(2)
+            tag_id = byte.encode(&apos;hex&apos;)
+            #print tag_id,
+
+            byte = f.read(2)
+            type_n = byte.encode(&apos;hex&apos;)
+            #print type_n,
+
+            byte = f.read(4)
+            count = byte.encode(&apos;hex&apos;)
+            #print count,
+
+            byte = f.read(4)
+            value_offset = byte.encode(&apos;hex&apos;)
+            #print value_offset
+
+            value_offset = int(value_offset, 16)
+            EXIF_IFD_DICT.get(tag_id, ParseMethod.parse_default)(f, count, value_offset)
+
+        f.seek(old_pos)    
+
+    @staticmethod
+    def parse_x_pixel(f, count, value):
+        print &apos;X Pixels:\t&apos; + str(value)
+
+    @staticmethod
+    def parse_y_pixel(f, count, value):
+        print &apos;y Pixels:\t&apos; + str(value)
+
+    @staticmethod
+    def parse_gps_ifd(f, count, offset):
+        old_pos = f.tell()        
+        f.seek(12 + offset)
+        byte = f.read(2)
+        a = byte.encode(&apos;hex&apos;)   
+        gps_ifd_number = int(a, 16)
+
+        for i in xrange(gps_ifd_number):
+            byte = f.read(2)
+            tag_id = byte.encode(&apos;hex&apos;)
+            #print tag_id,
+
+            byte = f.read(2)
+            type_n = byte.encode(&apos;hex&apos;)
+            #print type_n,
+
+            byte = f.read(4)
+            count = byte.encode(&apos;hex&apos;)
+            #print count,
+
+            byte = f.read(4)
+            value_offset = byte.encode(&apos;hex&apos;)
+            #print value_offset
+
+            count = int(count, 16)
+            value_offset = int(value_offset, 16)
+            GPS_IFD_DICT.get(tag_id, ParseMethod.parse_default)(f, count, value_offset)
+
+        f.seek(old_pos)  
+
+IFD_dict = {
+    &apos;010f&apos; : ParseMethod.parse_make ,
+    &apos;0110&apos; : ParseMethod.parse_model ,
+    &apos;0132&apos; : ParseMethod.parse_datetime ,
+    &apos;011a&apos; : ParseMethod.parse_xresolution ,
+    &apos;011b&apos; : ParseMethod.parse_yresolution ,
+    &apos;8769&apos; : ParseMethod.parse_exif_ifd ,
+    &apos;8825&apos; : ParseMethod.parse_gps_ifd
+}
+
+EXIF_IFD_DICT = {
+    &apos;a002&apos; : ParseMethod.parse_x_pixel ,
+    &apos;a003&apos; : ParseMethod.parse_y_pixel
+}
+
+GPS_IFD_DICT = {
+    &apos;0002&apos; : ParseMethod.parse_latitude ,
+    &apos;0004&apos; : ParseMethod.parse_longtitude
+}
+
+
+with open(&apos;image.jpg&apos;, &apos;rb&apos;) as f:
+    byte = f.read(2)
+    a = byte.encode(&apos;hex&apos;)
+    print &apos;SOI Marker:\t&apos; + a
+
+    byte = f.read(2)
+    a = byte.encode(&apos;hex&apos;)
+    print &apos;APP1 Marker:\t&apos; + a
+
+    byte = f.read(2)
+    a = byte.encode(&apos;hex&apos;)
+    print &apos;APP1 Length:\t&apos; + str(int(a, 16)) + &apos; .Dec&apos;
+
+    byte = f.read(4)
+    a = byte.encode(&apos;hex&apos;)
+    print &apos;Identifier:\t&apos; + binascii.a2b_hex(a)
+
+    byte = f.read(2)
+    a = byte.encode(&apos;hex&apos;)
+    print &apos;Pad:\t\t&apos; + a 
+
+    print 
+
+    print &apos;Begin to print Header.... &apos;
+    print &apos;APP1 Body: &apos;
+
+    byte = f.read(2)
+    a = byte.encode(&apos;hex&apos;)
+    print &apos;Byte Order:\t&apos; + a    
+
+    byte = f.read(2)
+    a = byte.encode(&apos;hex&apos;)
+    print &apos;42:\t\t&apos; + a  
+
+    byte = f.read(4)
+    a = byte.encode(&apos;hex&apos;)
+    print &apos;0th IFD Offset:\t&apos; + a  
+
+    print &apos;Finish print Header&apos;
+
+    print &apos;Begin to print 0th IFD....&apos;
+    print
+    #print &apos;Total: &apos;,
+    byte = f.read(2)
+    a = byte.encode(&apos;hex&apos;)
+    interoperability_number = int(a, 16)
+    #print interoperability_number
+
+
+    for i in xrange(interoperability_number):
+        byte = f.read(2)
+        tag_id = byte.encode(&apos;hex&apos;)
+        #print tag_id,
+
+        byte = f.read(2)
+        type_n = byte.encode(&apos;hex&apos;)
+        #print type_n,
+
+        byte = f.read(4)
+        count = byte.encode(&apos;hex&apos;)
+        #print count,
+
+        byte = f.read(4)
+        value_offset = byte.encode(&apos;hex&apos;)
+        #print value_offset
+
+        count = int(count, 16)
+        value_offset = int(value_offset, 16)
+
+        # simulate switch
+        IFD_dict.get(tag_id, ParseMethod.parse_default)(f, count, value_offset)
+
+
+    print
+    print &apos;Finish print 0th IFD....&apos;
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/杂/">杂</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Python-script/">Python script</a><a href="/tags/Exif/">Exif</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2016/01/06/exif-info-extract1/" data-title="Python 脚本实现读取图片属性信息 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/01/07/robotframework-tutorial-overview/" title="Robot Framework 教程 - 概览（译）">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Robot Framework 教程 - 概览（译）</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/01/04/cdcfan-auto-order/"  title="一个简单的公司自动订餐脚本实现">
+ <strong>下一篇：</strong><br/> 
+ <span>一个简单的公司自动订餐脚本实现
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

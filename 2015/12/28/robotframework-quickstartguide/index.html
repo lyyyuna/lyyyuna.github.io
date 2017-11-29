@@ -1,0 +1,798 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Robot Framework 快速入门指南 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言关于本指南《Robot Framework 快速入门指南》介绍了 Robot Framework 的一些最重要的特性。你不仅可以打开并浏览这些例子，而且你也可以把本指南当成一个 可执行的演示程序。所有这些特性在《Robot Framework 用户指南》中有详细的介绍。 Robot Framework 概览Robo">
+<meta name="keywords" content="robot framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Robot Framework 快速入门指南">
+<meta property="og:url" content="http://www.lyyyuna.com/2015/12/28/robotframework-quickstartguide/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言关于本指南《Robot Framework 快速入门指南》介绍了 Robot Framework 的一些最重要的特性。你不仅可以打开并浏览这些例子，而且你也可以把本指南当成一个 可执行的演示程序。所有这些特性在《Robot Framework 用户指南》中有详细的介绍。 Robot Framework 概览Robot Framework 是一个通用的开源自动化测试框架，常被用作验收测试 (ac">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Robot Framework 快速入门指南">
+<meta name="twitter:description" content="前言关于本指南《Robot Framework 快速入门指南》介绍了 Robot Framework 的一些最重要的特性。你不仅可以打开并浏览这些例子，而且你也可以把本指南当成一个 可执行的演示程序。所有这些特性在《Robot Framework 用户指南》中有详细的介绍。 Robot Framework 概览Robot Framework 是一个通用的开源自动化测试框架，常被用作验收测试 (ac">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/12/28/robotframework-quickstartguide/" title="Robot Framework 快速入门指南" itemprop="url">Robot Framework 快速入门指南</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2015-12-28T12:20:34.000Z" itemprop="datePublished"> 发表于 2015-12-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关于本指南"><span class="toc-number">1.1.</span> <span class="toc-text">关于本指南</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Robot-Framework-概览"><span class="toc-number">1.2.</span> <span class="toc-text">Robot Framework 概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#演示程序"><span class="toc-number">1.3.</span> <span class="toc-text">演示程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#执行演示程序"><span class="toc-number">2.</span> <span class="toc-text">执行演示程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装"><span class="toc-number">2.1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行"><span class="toc-number">2.2.</span> <span class="toc-text">执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看结果"><span class="toc-number">2.3.</span> <span class="toc-text">查看结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试用例"><span class="toc-number">3.</span> <span class="toc-text">测试用例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#工作流测试"><span class="toc-number">3.1.</span> <span class="toc-text">工作流测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#高级别测试"><span class="toc-number">3.2.</span> <span class="toc-text">高级别测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据驱动测试"><span class="toc-number">3.3.</span> <span class="toc-text">数据驱动测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字"><span class="toc-number">4.</span> <span class="toc-text">关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#库关键字"><span class="toc-number">4.1.</span> <span class="toc-text">库关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用户关键字"><span class="toc-number">4.2.</span> <span class="toc-text">用户关键字</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#变量"><span class="toc-number">5.</span> <span class="toc-text">变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#定义变量"><span class="toc-number">5.1.</span> <span class="toc-text">定义变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用变量"><span class="toc-number">5.2.</span> <span class="toc-text">使用变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#组织测试用例"><span class="toc-number">6.</span> <span class="toc-text">组织测试用例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#测试套件"><span class="toc-number">6.1.</span> <span class="toc-text">测试套件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装和卸载"><span class="toc-number">6.2.</span> <span class="toc-text">安装和卸载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用标签"><span class="toc-number">6.3.</span> <span class="toc-text">使用标签</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建测试库"><span class="toc-number">7.</span> <span class="toc-text">创建测试库</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><h3 id="关于本指南"><a href="#关于本指南" class="headerlink" title="关于本指南"></a>关于本指南</h3><p>《Robot Framework 快速入门指南》介绍了 <a href="http://robotframework.org/" target="_blank" rel="noopener">Robot Framework</a> 的一些最重要的特性。你不仅可以打开并浏览这些例子，而且你也可以把本指南当成一个 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#executing-this-guide" target="_blank" rel="noopener">可执行的演示程序</a>。所有这些特性在《<a href="http://robotframework.org/robotframework/#user-guide" target="_blank" rel="noopener">Robot Framework 用户指南</a>》中有详细的介绍。</p>
+<h3 id="Robot-Framework-概览"><a href="#Robot-Framework-概览" class="headerlink" title="Robot Framework 概览"></a>Robot Framework 概览</h3><p><a href="http://robotframework.org/" target="_blank" rel="noopener">Robot Framework</a> 是一个通用的开源自动化测试框架，常被用作验收测试 (acceptance testing) 和验收测试驱动开发 (acceptance test-driven development, ATDD)。它有着易用的表格测试数据语法，并且采用了关键字驱动的测试方法。你可以使用 Python 或者 Java 编写的测试库莱扩展框架的测试能力，而且用户可以使用和测试用例相同的语法，来创建新的高级关键字。</p>
+<p>Robot Framework 独立于操作系统和应用。核心框架采用 Python 编写，同样能够在 Jython (JVM) 和 IronPython (.NET) 上运行。该框架有着丰富的生态系统，包含多种多样独立开发的通用测试库和工具。</p>
+<p>有关 Robot Framework 极其生态系统更多的信息，你可以浏览 <a href="http://robotframework.org/" target="_blank" rel="noopener">http://robotframework.org/</a>。在那，你可以看到更多丰富的文档，演示程序，测试库和其他的工具列表，等等。</p>
+<h3 id="演示程序"><a href="#演示程序" class="headerlink" title="演示程序"></a>演示程序</h3><p>在本指南中的示例应用程序是一个经典的登录示例的变体：这是用 Python 编写的基于命令行的身份验证服务器。该应用程序允许用户做三件事：</p>
+<ul>
+<li>用有效的密码创建一个新账户；</li>
+<li>使用有效的账户和密码登陆；</li>
+<li>用已有的账户改变密码。</li>
+</ul>
+<p>应用程序本身是文件 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/sut/login.py" target="_blank" rel="noopener">sut/login.py</a> 中，可以直接执行命令 python sut/login.py。如果试图用一个不存在的用户帐户，或者无效的密码登陆，都会显示如下的错误消息：</p>
+<pre><code>&gt; python sut/login.py login nobody P4ssw0rd
+Access Denied
+</code></pre><p>当创建一个有效帐户和密码，并登录成功后： </p>
+<pre><code>&gt; python sut/login.py create fred P4ssw0rd
+SUCCESS
+
+&gt; python sut/login.py login fred P4ssw0rd
+Logged In
+</code></pre><p>当使用无效凭据更改密码，显示的错误消息和之前相同。新密码会进行有效性验证，如果无效，则给出如下错误消息：   </p>
+<pre><code>&gt; python sut/login.py change-password fred wrong NewP4ss
+Changing password failed: Access Denied
+
+&gt; python sut/login.py change-password fred P4ssw0rd short
+Changing password failed: Password must be 7-12 characters long
+
+&gt; python sut/login.py change-password fred P4ssw0rd NewP4ss
+SUCCESS 
+</code></pre><p>该应用程序使用一个简单的数据库文件来追踪用户状态。该文件位于操作系统相关的临时目录。</p>
+<h2 id="执行演示程序"><a href="#执行演示程序" class="headerlink" title="执行演示程序"></a>执行演示程序</h2><p>这些说明会解释如何自己运行本指南的演示程序，如果你不感兴趣，你仍然可以查看 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#viewing-results" target="_blank" rel="noopener">在线结果</a>。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>推荐使用 <a href="http://python.org/" target="_blank" rel="noopener">Python</a> 的 <a href="http://pip-installer.org/" target="_blank" rel="noopener">pip</a> 工具来安装 Robot Framework。你可以直接运行：</p>
+<pre><code>pip install robotframework
+</code></pre><p>你可以查看 <a href="https://github.com/robotframework/robotframework/blob/master/INSTALL.rst" target="_blank" rel="noopener">Robot Framework 安装指南</a>，了解更多的安装方法，和有关安装的更多一般信息。</p>
+<p>这个示例是使用 <a href="http://docutils.sourceforge.net/rst.html" target="_blank" rel="noopener">reStructuredText</a> 标记语言书写，采用框架的代码块中的测试数据。想要用这种格式执行本测试需要安装 <a href="Robot Framework test data in code blocks">docutils</a> 模块：</p>
+<pre><code>pip install docutils
+</code></pre><p>请注意，目前官方还不支持 Python3。请查阅 <a href="https://github.com/robotframework/robotframework/blob/master/INSTALL.rst" target="_blank" rel="noopener">安装指南</a> 了解非官方的 Python3 移植，极其最近的支持程度。</p>
+<h3 id="执行"><a href="#执行" class="headerlink" title="执行"></a>执行</h3><p>安装完以后，你还需要获取演示实例。最方便的方法就是下载一个 <a href="https://github.com/robotframework/QuickStartGuide/releases" target="_blank" rel="noopener">发布版本</a> 或者获取 <a href="https://github.com/robotframework/QuickStartGuide/archive/master.zip" target="_blank" rel="noopener">最新版本</a> 后在任意位置解压，你也可以直接克隆这个 <a href="https://github.com/robotframework/QuickStartGuide" target="_blank" rel="noopener">仓库</a>。</p>
+<p>当你安装完，并获取一切必要条件之后，你可以用 pybot 命令运行本演示：</p>
+<pre><code>pybot QuickStart.rst
+</code></pre><p>你还可以配置各种命令行选项来执行：</p>
+<pre><code>pybot --log custom_log.html --name Custom_Name QuickStart.rst
+</code></pre><p>运行 pybot –help 来获取可用的选项列表。</p>
+<h3 id="查看结果"><a href="#查看结果" class="headerlink" title="查看结果"></a>查看结果</h3><p>运行演示程序将会生成以下三个结果文件。这些文件被在线链接到可用的预执行文件，但运行演示程序时会在本地创建它们。</p>
+<ul>
+<li><a href="http://robotframework.org/QuickStartGuide/report.html" target="_blank" rel="noopener">report.html</a> 测试报告</li>
+<li><a href="http://robotframework.org/QuickStartGuide/log.html" target="_blank" rel="noopener">log.html</a> 详细的测试执行 log</li>
+<li><a href="http://robotframework.org/QuickStartGuide/output.xml" target="_blank" rel="noopener">output.xml</a> XML 格式的机读报告</li>
+</ul>
+<h2 id="测试用例"><a href="#测试用例" class="headerlink" title="测试用例"></a>测试用例</h2><h3 id="工作流测试"><a href="#工作流测试" class="headerlink" title="工作流测试"></a>工作流测试</h3><p>Robot Framework 测试用例是使用简单的表格语法创建。例如，下面的表有两个测试：</p>
+<ul>
+<li>用户能够创建账户并登录</li>
+<li>用户不能使用错误的密码登录</li>
+</ul>
+<pre><code>*** Test Cases ***
+User can create an account and log in
+    Create Valid User    fred    P4ssw0rd
+    Attempt to Login with Credentials    fred    P4ssw0rd
+    Status Should Be    Logged In
+
+User cannot log in with bad password
+    Create Valid User    betty    P4ssw0rd
+    Attempt to Login with Credentials    betty    wrong
+    Status Should Be    Access Denied
+</code></pre><p>请注意，这些测试读起来就像是用英语书写的手动测试步骤，而并不像是自动化测试。这是因为 Robot Framework 采用关键字驱动的测试方法，使得编写测试时能够使用自然语言，来描述过程的步骤和预期结果。测试用例是由关键字和其可能的参数构成。</p>
+<h3 id="高级别测试"><a href="#高级别测试" class="headerlink" title="高级别测试"></a>高级别测试</h3><p>测试用例也可以使用更抽象的关键字创建，这些例子没有任何位置参数。这允许使用更自由的文字，甚至方便那些不懂技术的客户或其他项目利益相关者互相交流。在 <a href="http://en.wikipedia.org/wiki/Acceptance_test-driven_development" target="_blank" rel="noopener">验证测试驱动开发</a> 或其他变体中这种方法尤其重要。</p>
+<p>Robot Framework 并不强制要求测试用例的格式。一个常见的风格是使用 given-when-then 风格，即 <a href="http://en.wikipedia.org/wiki/Behavior_driven_development" target="_blank" rel="noopener">行为驱动开发</a> (behavior-driven development, BDD)。</p>
+<pre><code>*** Test Cases ***
+User can change password
+    Given a user has a valid account
+    When she changes her password
+    Then she can log in with the new password
+    And she cannot use the old password anymore
+</code></pre><h3 id="数据驱动测试"><a href="#数据驱动测试" class="headerlink" title="数据驱动测试"></a>数据驱动测试</h3><p>我们经常会碰到这种情况，测试用例相似仅仅是输入或输出数据不同。在这种情况下<em>数据驱动测试</em>允许不同的测试数据，而无需重复工作流。在 Robot Framework 中使用 [Template] 设置，可以将用例转换为数据驱动的测试，而用例中定义的数据作为模板关键字运行：</p>
+<pre><code>*** Test Cases ***
+Invalid password
+    [Template]    Creating user with invalid password should fail
+    abCD5            ${PWD INVALID LENGTH}
+    abCD567890123    ${PWD INVALID LENGTH}
+    123DEFG          ${PWD INVALID CONTENT}
+    abcd56789        ${PWD INVALID CONTENT}
+    AbCdEfGh         ${PWD INVALID CONTENT}
+    abCD56+          ${PWD INVALID CONTENT}
+</code></pre><p>除了在单独的测试中使用 [Template] 设置，也可以在之后介绍的 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#setups-and-teardowns" target="_blank" rel="noopener">启动和卸载</a> 的设置表格中使用 Test Template 选项。在本例中，模板能够避免为了过长或过短密码，再去创建其他无效的用例。如果不使用模板，你就不得不为每一个输入输出创建一个用例，而使用模板只要一个用例。</p>
+<p>请注意，上述例子的错误消息是使用 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#variables" target="_blank" rel="noopener">变量</a> 来指定。</p>
+<h2 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h2><p>测试用例的关键字有两种来源。<a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#library-keywords" target="_blank" rel="noopener">库关键字</a> 来自导入的测试库，所谓的 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#user-keywords" target="_blank" rel="noopener">用户关键字</a> 可由和创建测试用例相同的表格语法来书写。</p>
+<h3 id="库关键字"><a href="#库关键字" class="headerlink" title="库关键字"></a>库关键字</h3><p>所有在测试库中定义的低级关键字都是由标准编程语言实现的，通常是 Python 或者 Java。Robot Framework 有着丰富的 <a href="http://robotframework.org/#test-libraries" target="_blank" rel="noopener">测试库</a>，它们被分成<em>标准库</em>，<em>外部库</em>和<em>自定义库</em>。标准库分布于核心框架和一些通用库中，比如 OperatingSystem, Screenshot 和 BuiltIn 中。 这些库比较特别，当安装完框架后便是可用的。而如用于网络测试的 <a href="https://github.com/rtomac/robotframework-selenium2library/#readme" target="_blank" rel="noopener">Selenium2Library</a>，必须单独安装。如果这些库还不够用， <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#creating-test-libraries" target="_blank" rel="noopener">创建自定义库</a> 是非常简单的。</p>
+<p>为了使用一个测试库提供的关键字，必须先导入该库。本指南中的测试需要 OperatingSystem 库 (如 Remove File) 和自定义库 LoginLibrary 库 (如 Attempt to login with credentials)。它们都在如下的设置表格中导入：</p>
+<pre><code>*** Settings ***
+Library           OperatingSystem
+Library           lib/LoginLibrary.py
+</code></pre><h3 id="用户关键字"><a href="#用户关键字" class="headerlink" title="用户关键字"></a>用户关键字</h3><p>Robot Framework 最强大的特性是允许用户使用已有关键字来创建新的高级关键字。这种语法被称作<em>用户自定义关键字</em>，或者简称为<em>用户关键字</em>。关键字语法和创建测试用例是类似的。上述例子中所有的高级关键字都在如下的关键字表格中创建：</p>
+<pre><code>*** Keywords ***
+Clear login database
+    Remove file    ${DATABASE FILE}
+
+Create valid user
+    [Arguments]    ${username}    ${password}
+    Create user    ${username}    ${password}
+    Status should be    SUCCESS
+
+Creating user with invalid password should fail
+    [Arguments]    ${password}    ${error}
+    Create user    example    ${password}
+    Status should be    Creating user failed: ${error}
+
+Login
+    [Arguments]    ${username}    ${password}
+    Attempt to login with credentials    ${username}    ${password}
+    Status should be    Logged In
+
+# Keywords below used by higher level tests. Notice how given/when/then/and
+# prefixes can be dropped. And this is a commend.
+
+A user has a valid account
+    Create valid user    ${USERNAME}    ${PASSWORD}
+
+She changes her password
+    Change password    ${USERNAME}    ${PASSWORD}    ${NEW PASSWORD}
+    Status should be    SUCCESS
+
+She can log in with the new password
+    Login    ${USERNAME}    ${NEW PASSWORD}
+
+She cannot use the old password anymore
+    Attempt to login with credentials    ${USERNAME}    ${PASSWORD}
+    Status should be    Access Denied
+</code></pre><p>用户自定义关键字可以包含其他用户关键字，或者是库关键字。正如你在本例中看到的那样，用户自定义关键字可以包含参数。它们还可以返回值，甚至是包括 FOR 循环。现在，重要的是，用户自定义关键字使得测试作者能过复用之前相同的步骤序列。用户自定义关键字也使得测试作者保持测试用例具有高可读性，并在不同场景下使用合适的抽象级别。</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><h3 id="定义变量"><a href="#定义变量" class="headerlink" title="定义变量"></a>定义变量</h3><p>变量是 Robot Framework 的一个组成部分。通常在测试中使用的任何数据，如有更改，最好定义为变量。变量的定义语法非常简单，如下变量表所示：</p>
+<pre><code>*** Variables ***
+${USERNAME}               janedoe
+${PASSWORD}               J4n3D0e
+${NEW PASSWORD}           e0D3n4J
+${DATABASE FILE}          ${TEMPDIR}${/}robotframework-quickstart-db.txt
+${PWD INVALID LENGTH}     Password must be 7-12 characters long
+${PWD INVALID CONTENT}    Password must be a combination of lowercase and uppercase letters and numbers
+</code></pre><p>变量还可以由命令行给出，这对不同环境中执行测试用例是非常有用的。例如，可以如下执行演示程序：</p>
+<pre><code>pybot --variable USERNAME:johndoe --variable PASSWORD:J0hnD0e QuickStart.rst
+</code></pre><p>除用户定义的变量外，有一些是始终可用的内置变量。这些变量包括 ${TEMPDIR} 和 ${/}，这在上述示例中被使用。</p>
+<h3 id="使用变量"><a href="#使用变量" class="headerlink" title="使用变量"></a>使用变量</h3><p>变量可以在测试数据的大多数地方使用。他们最常被用作关键字的参数，像下面的测试用例演示的那样。返回值分配给变量和以后使用。例如，如下的 Database Should Contain <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#user-keywords" target="_blank" rel="noopener">用户关键字</a>，将数据库内容设置在 ${database} 变量中，然后使用 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#user-keywords" target="_blank" rel="noopener">BuiltIn</a> 关键字 Should Contain 来验证内容的正确性。库和用户关键字都能返回值。</p>
+<pre><code>*** Test Cases ***
+User status is stored in database
+    [Tags]    variables    database
+    Create Valid User    ${USERNAME}    ${PASSWORD}
+    Database Should Contain    ${USERNAME}    ${PASSWORD}    Inactive
+    Login    ${USERNAME}    ${PASSWORD}
+    Database Should Contain    ${USERNAME}    ${PASSWORD}    Active
+
+*** Keywords ***
+Database Should Contain
+    [Arguments]    ${username}    ${password}    ${status}
+    ${database} =     Get File    ${DATABASE FILE}
+    Should Contain    ${database}    ${username}\t${password}\t${status}\n
+</code></pre><h2 id="组织测试用例"><a href="#组织测试用例" class="headerlink" title="组织测试用例"></a>组织测试用例</h2><h3 id="测试套件"><a href="#测试套件" class="headerlink" title="测试套件"></a>测试套件</h3><p>测试用例的集合被称为 Robot Framework 中的测试套件。每个输入文件，该文件包含测试用例构成一个测试套件。当 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#executing-this-guide" target="_blank" rel="noopener">执行本指南</a>，你可以看到控制台输出的 QuickStart。这个名字就是从文件名中生成的，在报告和日志中也可以看到。</p>
+<p>也可以通过层次结构来组织测试用例，将测试用例文件放入目录，再将这些目录放置到其他目录中。所有这些目录会自动创建高级测试套件，目录名即为测试套件的名字。由于测试套件只是文件和目录，它们可以很方便地放置在任何版本控制系统中。</p>
+<h3 id="安装和卸载"><a href="#安装和卸载" class="headerlink" title="安装和卸载"></a>安装和卸载</h3><p>如果要在每个测试用例想在之前或之后要执行的某些关键字，可以在 Test Setup 和 Test Teardown 中设置。同样的，如果要在测试套件之前或之后执行某些关键字，你只需要在 Suite Setup 和 Suite Teardown 中设置。 单个测试也可以通过测试用例表格的 [Setup] 和 [Teardown] 使用自定义安装或卸载。这和之前 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#data-driven-tests" target="_blank" rel="noopener">数据驱动测试</a> 使用 [Template] 的方法是相同的。</p>
+<p>在本演示中我们要确保在开始执行之前，每个测试之后，数据库被清除：</p>
+<pre><code>*** Settings ***
+Suite Setup       Clear Login Database
+Test Teardown     Clear Login Database
+</code></pre><h3 id="使用标签"><a href="#使用标签" class="headerlink" title="使用标签"></a>使用标签</h3><p>Robot Framework 允许设置测试用例标签，赋予其元数据。标签可以 Force Tags  和  Default Tags 为文件中所有测试用例强制设置，如下表中的所有测试用例。还可以通过 [Tags] 为单个测试用例设置，比如 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#using-variables" target="_blank" rel="noopener">之前</a> 的 User status is stored in database 测试。</p>
+<pre><code>*** Settings ***
+Force Tags        quickstart
+Default Tags      example    smoke
+</code></pre><p>当你在执行完后查看报告，你可以看到每个测试用例有指定的标签，也可以看到针对每个标签生成的统计信息。标签也可以用于许多其他用途，其中最重要的是有选择地执行测试。你可以试试，比如下列命令：</p>
+<pre><code>pybot --include smoke QuickStart.rst
+pybot --exclude database QuickStart.rst
+</code></pre><h2 id="创建测试库"><a href="#创建测试库" class="headerlink" title="创建测试库"></a>创建测试库</h2><p>Robot Framework 提供了一个简单的 API 来使用 Python 或 Java 创建测试库，一些远程库接口还允许使用其他编程语言。《<a href="http://robotframework.org/robotframework/#user-guide" target="_blank" rel="noopener">Robot Framework 用户指南</a>》包含有关库 API 的详细说明。</p>
+<p>举例来说，我们来看一下本例中的 LoginLibrary 测试库。库位于 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/lib/LoginLibrary.py" target="_blank" rel="noopener">lib/LoginLibrary.py</a>，源代码如下。通过源代码可以看到，关键字 Create User 如何映射到实际的执行方法 create_user。</p>
+<pre><code>import os.path
+import subprocess
+import sys
+
+
+class LoginLibrary(object):
+
+    def __init__(self):
+        self._sut_path = os.path.join(os.path.dirname(__file__),
+                                    &apos;..&apos;, &apos;sut&apos;, &apos;login.py&apos;)
+        self._status = &apos;&apos;
+
+    def create_user(self, username, password):
+        self._run_command(&apos;create&apos;, username, password)
+
+    def change_password(self, username, old_pwd, new_pwd):
+        self._run_command(&apos;change-password&apos;, username, old_pwd, new_pwd)
+
+    def attempt_to_login_with_credentials(self, username, password):
+        self._run_command(&apos;login&apos;, username, password)
+
+    def status_should_be(self, expected_status):
+        if expected_status != self._status:
+            raise AssertionError(&quot;Expected status to be &apos;%s&apos; but was &apos;%s&apos;.&quot;
+                                % (expected_status, self._status))
+
+    def _run_command(self, command, *args):
+        command = [sys.executable, self._sut_path, command] + list(args)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT)
+        self._status = process.communicate()[0].strip()
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/自动化测试/">自动化测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/robot-framework/">robot framework</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2015/12/28/robotframework-quickstartguide/" data-title="Robot Framework 快速入门指南 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/12/29/sitemap-baidu-autosubmit/" title="向百度收录自动推送链接">
+  <strong>上一篇：</strong><br/>
+  <span>
+  向百度收录自动推送链接</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/12/25/scons4-building-and-linking-with-libraries/"  title="SCons 用户指南第四章 - 编译和链接库">
+ <strong>下一篇：</strong><br/> 
+ <span>SCons 用户指南第四章 - 编译和链接库
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关于本指南"><span class="toc-number">1.1.</span> <span class="toc-text">关于本指南</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Robot-Framework-概览"><span class="toc-number">1.2.</span> <span class="toc-text">Robot Framework 概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#演示程序"><span class="toc-number">1.3.</span> <span class="toc-text">演示程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#执行演示程序"><span class="toc-number">2.</span> <span class="toc-text">执行演示程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装"><span class="toc-number">2.1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#执行"><span class="toc-number">2.2.</span> <span class="toc-text">执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看结果"><span class="toc-number">2.3.</span> <span class="toc-text">查看结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试用例"><span class="toc-number">3.</span> <span class="toc-text">测试用例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#工作流测试"><span class="toc-number">3.1.</span> <span class="toc-text">工作流测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#高级别测试"><span class="toc-number">3.2.</span> <span class="toc-text">高级别测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据驱动测试"><span class="toc-number">3.3.</span> <span class="toc-text">数据驱动测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键字"><span class="toc-number">4.</span> <span class="toc-text">关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#库关键字"><span class="toc-number">4.1.</span> <span class="toc-text">库关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用户关键字"><span class="toc-number">4.2.</span> <span class="toc-text">用户关键字</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#变量"><span class="toc-number">5.</span> <span class="toc-text">变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#定义变量"><span class="toc-number">5.1.</span> <span class="toc-text">定义变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用变量"><span class="toc-number">5.2.</span> <span class="toc-text">使用变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#组织测试用例"><span class="toc-number">6.</span> <span class="toc-text">组织测试用例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#测试套件"><span class="toc-number">6.1.</span> <span class="toc-text">测试套件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装和卸载"><span class="toc-number">6.2.</span> <span class="toc-text">安装和卸载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用标签"><span class="toc-number">6.3.</span> <span class="toc-text">使用标签</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建测试库"><span class="toc-number">7.</span> <span class="toc-text">创建测试库</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

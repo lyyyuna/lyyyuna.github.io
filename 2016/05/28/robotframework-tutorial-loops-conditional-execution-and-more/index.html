@@ -1,0 +1,742 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Robot Framework 教程 - 循环，条件判断，字符串和列表（译） | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="目前为止，Robot Framework教程一直关注于高阶抽象的概念，所以这次有必要介绍一下框架本身的基础概念。所有这些特性都直接来自于标准库，而本文的例子再安装额外的库。 有关循环的关键字让我们从循环开始。Robot Framework为循环提供了多种方案。  在一系列元素中循环 根据数字的范围来循环 重复执行某一个">
+<meta name="keywords" content="robot framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Robot Framework 教程 - 循环，条件判断，字符串和列表（译）">
+<meta property="og:url" content="http://www.lyyyuna.com/2016/05/28/robotframework-tutorial-loops-conditional-execution-and-more/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="目前为止，Robot Framework教程一直关注于高阶抽象的概念，所以这次有必要介绍一下框架本身的基础概念。所有这些特性都直接来自于标准库，而本文的例子再安装额外的库。 有关循环的关键字让我们从循环开始。Robot Framework为循环提供了多种方案。  在一系列元素中循环 根据数字的范围来循环 重复执行某一个关键字多次  最后一个和真正的循环是有差别的，意味着你得将所有操作封装到一个关键">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.167Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Robot Framework 教程 - 循环，条件判断，字符串和列表（译）">
+<meta name="twitter:description" content="目前为止，Robot Framework教程一直关注于高阶抽象的概念，所以这次有必要介绍一下框架本身的基础概念。所有这些特性都直接来自于标准库，而本文的例子再安装额外的库。 有关循环的关键字让我们从循环开始。Robot Framework为循环提供了多种方案。  在一系列元素中循环 根据数字的范围来循环 重复执行某一个关键字多次  最后一个和真正的循环是有差别的，意味着你得将所有操作封装到一个关键">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/05/28/robotframework-tutorial-loops-conditional-execution-and-more/" title="Robot Framework 教程 - 循环，条件判断，字符串和列表（译）" itemprop="url">Robot Framework 教程 - 循环，条件判断，字符串和列表（译）</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2016-05-28T01:05:09.000Z" itemprop="datePublished"> 发表于 2016-05-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#有关循环的关键字"><span class="toc-number">1.</span> <span class="toc-text">有关循环的关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有关条件判断的关键字"><span class="toc-number">2.</span> <span class="toc-text">有关条件判断的关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串和列表"><span class="toc-number">3.</span> <span class="toc-text">字符串和列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Robot-Framework-教程目录"><span class="toc-number">4.</span> <span class="toc-text">Robot Framework 教程目录</span></a></li></ol>
+		
+		</div>
+		
+		<p>目前为止，<a href="http://robotframework.org/" target="_blank" rel="noopener">Robot Framework</a>教程一直关注于高阶抽象的概念，所以这次有必要介绍一下框架本身的基础概念。所有这些特性都直接来自于标准库，而本文的例子再安装额外的库。</p>
+<h2 id="有关循环的关键字"><a href="#有关循环的关键字" class="headerlink" title="有关循环的关键字"></a>有关循环的关键字</h2><p>让我们从循环开始。<a href="http://robotframework.org/" target="_blank" rel="noopener">Robot Framework</a>为循环提供了多种方案。</p>
+<ul>
+<li>在一系列元素中循环</li>
+<li>根据数字的范围来循环</li>
+<li>重复执行某一个关键字多次</li>
+</ul>
+<p>最后一个和真正的循环是有差别的，意味着你得将所有操作封装到一个关键字中。并且，在执行结束之前无法退出循环。</p>
+<p>让我们来看一些例子：</p>
+<p><strong>测试</strong>：</p>
+<pre><code>*** Settings ***
+Library           String
+
+*** Test Cases ***
+For-Loop-In-Range
+    : FOR    ${INDEX}    IN RANGE    1    3
+    \    Log    ${INDEX}
+    \    ${RANDOM_STRING}=    Generate Random String    ${INDEX}
+    \    Log    ${RANDOM_STRING}
+
+For-Loop-Elements
+    @{ITEMS}    Create List    Star Trek    Star Wars    Perry Rhodan
+    :FOR    ${ELEMENT}    IN    @{ITEMS}
+    \    Log    ${ELEMENT}
+    \    ${ELEMENT}    Replace String    ${ELEMENT}    ${SPACE}    ${EMPTY}
+    \    Log    ${ELEMENT}
+
+For-Loop-Exiting
+    @{ITEMS}    Create List    Good Element 1    Break On Me    Good Element 2
+    :FOR    ${ELEMENT}    IN    @{ITEMS}
+    \    Log    ${ELEMENT}
+    \    Run Keyword If    &apos;${ELEMENT}&apos; == &apos;Break On Me&apos;    Exit For Loop
+    \    Log    Do more actions here ...
+
+Repeat-Action
+    Repeat Keyword    2    Log    Repeating this ...
+</code></pre><p> <strong>输出</strong>：</p>
+<pre><code>Starting test: StandardLoopDemo.For-Loop-In-Range
+20130426 11:24:14.389 :  INFO : 1
+20130426 11:24:14.390 :  INFO : ${RANDOM_STRING} = B
+20130426 11:24:14.390 :  INFO : B
+20130426 11:24:14.391 :  INFO : 2
+20130426 11:24:14.392 :  INFO : ${RANDOM_STRING} = ih
+20130426 11:24:14.392 :  INFO : ih
+Ending test:   StandardLoopDemo.For-Loop-In-Range
+
+Starting test: StandardLoopDemo.For-Loop-Elements
+20130426 11:24:14.394 :  INFO : @{ITEMS} = [ Star Trek | Star Wars | Perry Rhodan ]
+20130426 11:24:14.395 :  INFO : Star Trek
+20130426 11:24:14.396 :  INFO : ${ELEMENT} = StarTrek
+20130426 11:24:14.396 :  INFO : StarTrek
+20130426 11:24:14.397 :  INFO : Star Wars
+20130426 11:24:14.398 :  INFO : ${ELEMENT} = StarWars
+20130426 11:24:14.398 :  INFO : StarWars
+20130426 11:24:14.399 :  INFO : Perry Rhodan
+20130426 11:24:14.400 :  INFO : ${ELEMENT} = PerryRhodan
+20130426 11:24:14.400 :  INFO : PerryRhodan
+Ending test:   StandardLoopDemo.For-Loop-Elements
+
+Starting test: StandardLoopDemo.For-Loop-Exiting
+20130426 11:24:14.402 :  INFO : @{ITEMS} = [ Good Element 1 | Break On Me | Good Element 2 ]
+20130426 11:24:14.402 :  INFO : Good Element 1
+20130426 11:24:14.403 :  INFO : Do more actions here ...
+20130426 11:24:14.404 :  INFO : Break On Me
+Ending test:   StandardLoopDemo.For-Loop-Exiting
+
+Starting test: StandardLoopDemo.Repeat-Action
+20130426 11:24:14.408 :  INFO : Repeating keyword, round 1/2
+20130426 11:24:14.408 :  INFO : Repeating this ...
+20130426 11:24:14.408 :  INFO : Repeating keyword, round 2/2
+20130426 11:24:14.409 :  INFO : Repeating this ...
+Ending test:   StandardLoopDemo.Repeat-Action   
+</code></pre><p>语法非常直接，不需要过多解释。唯一需要注意的是，循环体内的关键字必须用 ‘\’ 来进行转义。</p>
+<h2 id="有关条件判断的关键字"><a href="#有关条件判断的关键字" class="headerlink" title="有关条件判断的关键字"></a>有关条件判断的关键字</h2><p>在测试代码中使用条件判断会带来不少争议。不用担心，唯一应该记住的是，测试实现应该尽可能简单明了，不要混杂过多条件逻辑。</p>
+<p>在下面的例子中将使用以下相关的关键字。</p>
+<ul>
+<li><strong>Run Keyword</strong> - 这个关键字将其他关键字作为一个变量传入。这意味着，测试能够动态地改变执行时所使用的关键字，比如执行其他函数返回的关键字。</li>
+<li><strong>Run Keyword If</strong> - 在测试复杂结构时非常有用，比如被测的 web 页面在输入不同时会有不同的选项。但是在测试中混有过多的程序结构会使 troubleshooting 变得困难。</li>
+<li><strong>Run Keyword And Ignore Error</strong> - 哈，我还没有找到对应的实际例子。</li>
+<li><strong>Run Keyword If Test Failed</strong> - 如果测试失败了可以用这个打一些 log，或者打一个快照。在 troubleshooting 时有用。</li>
+</ul>
+<p><strong>测试</strong>：</p>
+<pre><code>*** Test Cases ***
+Run-Keyword
+    ${MY_KEYWORD}=    Set Variable    Log
+    Run Keyword    ${MY_KEYWORD}    Test
+
+Run-Keyword-If
+    ${TYPE}=    Set Variable    V1
+    Run Keyword If    &apos;${TYPE}&apos; == &apos;V1&apos;    Log     Testing Variant 1
+    Run Keyword If    &apos;${TYPE}&apos; == &apos;V2&apos;    Log    Testing Variant 2
+    Run Keyword If    &apos;${TYPE}&apos; == &apos;V3&apos;    Log    Testing Variant 3
+
+Run-Keyword-Ignore-Error
+    @{CAPTAINS}    Create List    Picard    Kirk    Archer
+    Run Keyword And Ignore Error    Should Be Empty    ${CAPTAINS}
+    Log    Reached this point despite of error
+</code></pre><p><strong>输出</strong>：</p>
+<pre><code>Starting test: Robot Blog.StandardConditionDemo.Run-Keyword
+20130426 13:34:50.840 :  INFO : ${MY_KEYWORD} = Log
+20130426 13:34:50.841 :  INFO : Test
+Ending test:   Robot Blog.StandardConditionDemo.Run-Keyword
+
+Starting test: Robot Blog.StandardConditionDemo.Run-Keyword-If
+20130426 13:34:50.843 :  INFO : ${TYPE} = V1
+20130426 13:34:50.844 :  INFO : Testing Variant 1
+Ending test:   Robot Blog.StandardConditionDemo.Run-Keyword-If
+
+Starting test: Robot Blog.StandardConditionDemo.Run-Keyword-Ignore-Error
+20130426 13:34:50.847 :  INFO : @{CAPTAINS} = [ Picard | Kirk | Archer ]
+20130426 13:34:50.848 :  INFO : Length is 3
+20130426 13:34:50.849 :  FAIL : &apos;[u&apos;Picard&apos;, u&apos;Kirk&apos;, u&apos;Archer&apos;]&apos; should be empty
+20130426 13:34:50.850 :  INFO : Reached this point despite of error
+Ending test:   Robot Blog.StandardConditionDemo.Run-Keyword-Ignore-Error
+</code></pre><h2 id="字符串和列表"><a href="#字符串和列表" class="headerlink" title="字符串和列表"></a>字符串和列表</h2><p>可以看到，<a href="http://robotframework.org/" target="_blank" rel="noopener">Robot Framework</a>框架包含了完整的可编程结构。而一些高级语言特有的字符串和列表也能通过 Collection Library 和 String Library 来实现。</p>
+<p><strong>测试</strong>：</p>
+<pre><code>*** Settings ***
+Library           String
+Library           Collections
+
+*** Test Cases ***
+StringsAndLists
+    ${SOME_VALUE}=    Set Variable    &quot;Test Value&quot;
+    Log    ${SOME_VALUE}
+    @{WORDS}=    Split String    ${SOME_VALUE}    ${SPACE}
+    ${FIRST}=    Get From List    ${WORDS}    0
+    Log    ${FIRST}
+</code></pre><p><strong>输出</strong>：</p>
+<pre><code>Starting test: Robot Blog.StandardStringsAndListsDemo.StringsAndLists
+20130506 21:21:05.880 :  INFO : ${SOME_VALUE} = &quot;Test Value&quot;
+20130506 21:21:05.881 :  INFO : &quot;Test Value&quot;
+20130506 21:21:05.882 :  INFO : @{WORDS} = [ &quot;Test | Value&quot; ]
+20130506 21:21:05.882 :  INFO : ${FIRST} = &quot;Test
+20130506 21:21:05.883 :  INFO : &quot;Test
+Ending test:   Robot Blog.StandardStringsAndListsDemo.StringsAndLists
+</code></pre><h2 id="Robot-Framework-教程目录"><a href="#Robot-Framework-教程目录" class="headerlink" title="Robot Framework 教程目录"></a>Robot Framework 教程目录</h2><p><a href="https://blog.codecentric.de/en/2013/05/robot-framework-tutorial-loops-conditional-execution-and-more/" target="_blank" rel="noopener">原文链接</a></p>
+<ol>
+<li><a href="http://www.lyyyuna.com/2016/01/07/robotframework-tutorial-overview/">Robot Framework 教程 - 概览（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/04/09/robotframework-tutorial-a-complete-example/">Robot Framework 教程 - 一个完整的例子（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/04/30/robotframework-ide-ride-overview/">Robot Framework 教程 - 集成开发环境 RIDE 概览 (译)</a></li>
+<li><a href="http://www.lyyyuna.com/2016/05/15/robotframework-tutorial-how-to-structure-a-scalable-and-maintainable-acceptance-test-suite/">Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/05/28/robotframework-tutorial-loops-conditional-execution-and-more/">Robot Framework 教程 - 循环，条件判断，字符串和列表（译）</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/自动化测试/">自动化测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/robot-framework/">robot framework</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2016/05/28/robotframework-tutorial-loops-conditional-execution-and-more/" data-title="Robot Framework 教程 - 循环，条件判断，字符串和列表（译） | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/05/29/handwritten-neural-net/" title="基于 BP 神经网络的识别手写体数字 - 神经网络基础">
+  <strong>上一篇：</strong><br/>
+  <span>
+  基于 BP 神经网络的识别手写体数字 - 神经网络基础</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/05/15/robotframework-tutorial-how-to-structure-a-scalable-and-maintainable-acceptance-test-suite/"  title="Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）">
+ <strong>下一篇：</strong><br/> 
+ <span>Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#有关循环的关键字"><span class="toc-number">1.</span> <span class="toc-text">有关循环的关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有关条件判断的关键字"><span class="toc-number">2.</span> <span class="toc-text">有关条件判断的关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串和列表"><span class="toc-number">3.</span> <span class="toc-text">字符串和列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Robot-Framework-教程目录"><span class="toc-number">4.</span> <span class="toc-text">Robot Framework 教程目录</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

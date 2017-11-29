@@ -1,0 +1,712 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>修改图片的 GPS 信息 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="序在一些应用中上传图片可以显示拍摄地信息，这是因为使用带 GPS 功能的照相机或者是智能手机拍照后，会在图片中含有拍摄地的 GPS 信息。查看图片的详细信息之后，你会发现如下图所示记录了经度、纬度和海拔。  在 Windows 上，详细信息中的时间等可以直接修改，但唯独 GPS 信息是不可修改。本着研究探索的精神，我打">
+<meta name="keywords" content="Exif">
+<meta property="og:type" content="article">
+<meta property="og:title" content="修改图片的 GPS 信息">
+<meta property="og:url" content="http://www.lyyyuna.com/2015/11/14/exif-hack/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="序在一些应用中上传图片可以显示拍摄地信息，这是因为使用带 GPS 功能的照相机或者是智能手机拍照后，会在图片中含有拍摄地的 GPS 信息。查看图片的详细信息之后，你会发现如下图所示记录了经度、纬度和海拔。  在 Windows 上，详细信息中的时间等可以直接修改，但唯独 GPS 信息是不可修改。本着研究探索的精神，我打算试试能不能直接修改二进制文件的方法来修改 GPS，将任意一幅图片修改为在北京拍">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/6.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/7.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/8.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/9.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/10.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/11.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/12.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/13.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/14.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/15.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/IMG_0596.JPG">
+<meta property="og:updated_time" content="2017-11-29T00:19:00.163Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="修改图片的 GPS 信息">
+<meta name="twitter:description" content="序在一些应用中上传图片可以显示拍摄地信息，这是因为使用带 GPS 功能的照相机或者是智能手机拍照后，会在图片中含有拍摄地的 GPS 信息。查看图片的详细信息之后，你会发现如下图所示记录了经度、纬度和海拔。  在 Windows 上，详细信息中的时间等可以直接修改，但唯独 GPS 信息是不可修改。本着研究探索的精神，我打算试试能不能直接修改二进制文件的方法来修改 GPS，将任意一幅图片修改为在北京拍">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/1.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/11/14/exif-hack/" title="修改图片的 GPS 信息" itemprop="url">修改图片的 GPS 信息</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2015-11-14T01:03:39.000Z" itemprop="datePublished"> 发表于 2015-11-14</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#序"><span class="toc-number">1.</span> <span class="toc-text">序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Exif-规范的图片"><span class="toc-number">1.1.</span> <span class="toc-text">Exif 规范的图片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IFD-结构"><span class="toc-number">1.2.</span> <span class="toc-text">IFD 结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exif-IFD-结构"><span class="toc-number">1.3.</span> <span class="toc-text">Exif IFD 结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GPS-属性信息"><span class="toc-number">1.4.</span> <span class="toc-text">GPS 属性信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实战"><span class="toc-number">2.</span> <span class="toc-text">实战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#寻找头部"><span class="toc-number">2.1.</span> <span class="toc-text">寻找头部</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改-GPS"><span class="toc-number">2.2.</span> <span class="toc-text">修改 GPS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#第一个-IFD"><span class="toc-number">2.2.1.</span> <span class="toc-text">第一个 IFD</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#第二个-IFD"><span class="toc-number">2.2.2.</span> <span class="toc-text">第二个 IFD</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#第三-四个-IFD"><span class="toc-number">2.2.3.</span> <span class="toc-text">第三/四个 IFD</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Conclusion"><span class="toc-number">3.</span> <span class="toc-text">Conclusion</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="序"><a href="#序" class="headerlink" title="序"></a>序</h2><p>在一些应用中上传图片可以显示拍摄地信息，这是因为使用带 GPS 功能的照相机或者是智能手机拍照后，会在图片中含有拍摄地的 GPS 信息。查看图片的详细信息之后，你会发现如下图所示记录了经度、纬度和海拔。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/1.png" alt="属性查看"></p>
+<p>在 Windows 上，详细信息中的时间等可以直接修改，但唯独 GPS 信息是不可修改。本着研究探索的精神，我打算试试能不能直接修改二进制文件的方法来修改 GPS，将任意一幅图片修改为在北京拍摄。通过谷歌，了解到图片信息是由一种 Exchangeable image file format (Exif) 的格式来描述。网上我能查到的最新 specification 版本为 2012 年的 Exif v2.3 版本。<a href="http://www.cipa.jp/std/documents/e/DC-008-2012_E.pdf" target="_blank" rel="noopener">Exif 规格书链接</a></p>
+<h3 id="Exif-规范的图片"><a href="#Exif-规范的图片" class="headerlink" title="Exif 规范的图片"></a>Exif 规范的图片</h3><p>Exif 规范其实包含了图片和音频两部分内容，这里我们只关心图片。整个图片的结构如下：</p>
+<ul>
+<li>File Header </li>
+<li>0th IFD</li>
+<li>0th IFD Value</li>
+<li>1st IFD</li>
+<li>1st IFD Value</li>
+<li>1st (Thumbnail) Image Data</li>
+<li>0th (Primary) Image Data</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/2.png" alt="图片文件结构"></p>
+<p>可以看到，IFD 记录了如图片长宽的信息，EXIF IFD 记录图片的拍摄信息，GPS IFD 则记录了 GPS。</p>
+<h3 id="IFD-结构"><a href="#IFD-结构" class="headerlink" title="IFD 结构"></a>IFD 结构</h3><p>一个 IFD 由四部分组成，每一个 IFD 都是固定的 12 个字节，分别是</p>
+<ul>
+<li>Bytes 0-1   Tag</li>
+<li>Bytes 2-3   Type</li>
+<li>Bytes 4-7   Count</li>
+<li>Bytes 8-11  Value Offset</li>
+</ul>
+<p><em>Tag</em> 是标记这个 IFD 的类别。</p>
+<p><em>Type</em> 是指数据的类型，有 BYTE(1, 8-bit), ASCII(2, 8-bit), SHORT(3, 2-byte), LONG(4, 4-byte), RATIONAL(5, 2-long) 等。其中 RATIONAL 的第一个 long 是分子，第二个 long 是分母。</p>
+<p><em>Count</em> 是指数据的数量，比如纬度就用度、分、秒三个数来描述。</p>
+<p><em>Value Offset</em> 是指真实数据所在的偏移地址（相对于 File header），而且需要注意的是，这里记录的值小于 4 个字节，则数据左对齐。</p>
+<h3 id="Exif-IFD-结构"><a href="#Exif-IFD-结构" class="headerlink" title="Exif IFD 结构"></a>Exif IFD 结构</h3><p>EXif IFD Pointer</p>
+<pre><code>Tag     = 34665(8769.H)
+Type    = LONG 
+Count   = 1
+Default = None
+</code></pre><p>GPS IFD Pointer </p>
+<pre><code>Tag     = 34853(8825.H)
+Type    = LONG 
+Count   = 1 
+Default = None
+</code></pre><h3 id="GPS-属性信息"><a href="#GPS-属性信息" class="headerlink" title="GPS 属性信息"></a>GPS 属性信息</h3><p>我们这边只关心 GPS 的经纬度，与之相关的一些 Tag 信息如下。</p>
+<p>GPSLatitudeRef</p>
+<pre><code>Tag     = 1
+Type    = ASCII  
+Count   = 2
+Default = None 
+&apos;N&apos;     = North latitude
+&apos;S&apos;     = South latitude 
+Other   = reserved
+</code></pre><p>GPSLatitude </p>
+<pre><code>Tag     = 2
+Type    = RATIONAL
+Count   = 3 
+Default = None
+</code></pre><p>GPSLongtitudeRef</p>
+<pre><code>Tag     = 3
+Type    = ASCII  
+Count   = 2
+Default = None 
+&apos;E&apos;     = East longtitude
+&apos;W&apos;     = West longtitude
+Other   = reserved
+</code></pre><p>GPSLongtitude</p>
+<pre><code>Tag     = 4
+Type    = RATIONAL
+Count   = 3 
+Default = None
+</code></pre><h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><h3 id="寻找头部"><a href="#寻找头部" class="headerlink" title="寻找头部"></a>寻找头部</h3><p>用二进制编辑器打开手机拍摄的图片。阅读了 Specification 之后，我们了解到图片文件开始处所包含的信息为 SOI Marker(FFD8.H), APP1 Marker(FFE1.H), APP1 Length(xxxx.H), Identifier(‘Exif’), Pad(00.H), APP1 Body(File Header, 0th IFD, 0th IFD Value, …)。</p>
+<p>查看一下二进制，</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/3.png" alt="图片起始"></p>
+<p>可以看到真的有 FFD8.H, FFE1.H, 后面的 45.H, 78.H, 69.H, 66.H，则正好是 ‘Exif’ 的 ASCII 值。</p>
+<p>接下来 8 个字节，分别是 Byte Order(4D4D.H), 42(002A.H), 0th IFD Offset(00000008.H) 和 Number of Interoperability(000B.H)。让我们检察一下二进制文件。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/4.png" alt="APP1 Body"></p>
+<p>接下来就是各种 IFD 的信息，我们需要先找到我们关心的 GPS IFD Pointer, 其 Tag = 8825.H。搜索一下，找到啦，在地址 0000008e.H 处。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/5.png" alt="GPS IFD Pointer"></p>
+<h3 id="修改-GPS"><a href="#修改-GPS" class="headerlink" title="修改 GPS"></a>修改 GPS</h3><p>按照之前描述的 IFD 结构，我们将接下来的 10 个字节如图分割，可以看到其指出真正的 GPS 信息位于地址 03EC.H 处。由于这里的地址是相对于 File Header (也就是地址 000C.H)，所以真实的地址为 03EC.H + 000C.H = 03F8.H。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/6.png" alt="偏移地址"></p>
+<h4 id="第一个-IFD"><a href="#第一个-IFD" class="headerlink" title="第一个 IFD"></a>第一个 IFD</h4><p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/7.png" alt="GPSLatitudeRef"></p>
+<p>开始两个字节为 GPS IFD Number，忽略。接下来的 4 个 IFD 就是我们需要修改的 GPS 信息。我们可以看出这是一个 GPSLatitudeRef，其中 4E000000.H 是 ‘N’ 的 ASCII 码值，而且之前说过数据必须左对齐。这个我们不需要修改。</p>
+<h4 id="第二个-IFD"><a href="#第二个-IFD" class="headerlink" title="第二个 IFD"></a>第二个 IFD</h4><p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/8.png" alt="N"></p>
+<p>我们可以看出这是一个 GPSLatitude, 其指出真正 GPS 纬度信息存放在地址 049A.H + 000C.H = 04A6.H 处。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/9.png" alt="纬度"></p>
+<p>1F.H / 01.H = 31, 1D.H / 01.H = 29, 0C71.H / 64.H = 31。计算结果与 Windows 右键属性查看的完全一致。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/10.png" alt="原纬度值"></p>
+<p>谷歌搜索得知北京天安门位于北纬 39(27.H) 度 54(36.H) 分，那我们只需要修改对应位就行。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/11.png" alt="修改后纬度值"></p>
+<h4 id="第三-四个-IFD"><a href="#第三-四个-IFD" class="headerlink" title="第三/四个 IFD"></a>第三/四个 IFD</h4><p>我们可以找到并修改经度信息。04B2.H + 0C.H = 04BE.H</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/12.png" alt="原经度值"></p>
+<p>北京天安门位于东经 116 度 23 分。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/13.png" alt="现经度值"></p>
+<p>再用 Windows 右键属性查看一下。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/14.png" alt="属性查看"></p>
+<p>已经在北京了。</p>
+<p>我们可以用 QQ 上传照片的功能验证一下。</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/15.png" alt="QQ"></p>
+<p>确实在北京天安门附近。</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>对于不带 GPS 信息的图片怎么办呢，那就比较麻烦了，因为其本身不含 GPS IFD，要手动插入 IFD，计算各个偏移量，再将后面的 jpeg 数据整体后移。</p>
+<p>该研究起初源于我想恶作剧在空间传照片时显示任意地点，结果等我弄完后发现其实 QQ 支持在上传添加地点时候乱填 -_-</p>
+<p>最后是我用来实验的图片，摄于江南大学，2015.2.11，iphone 5c.</p>
+<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201511/IMG_0596.JPG" alt="flower"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/杂/">杂</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Exif/">Exif</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2015/11/14/exif-hack/" data-title="修改图片的 GPS 信息 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/12/03/scons3-less-simple-things-to-do-with-builds/" title="SCons 用户指南第三章-让 SCons 编译更简单">
+  <strong>上一篇：</strong><br/>
+  <span>
+  SCons 用户指南第三章-让 SCons 编译更简单</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/11/02/scons2-simple-build/"  title="SCons 用户指南第二章-简单编译">
+ <strong>下一篇：</strong><br/> 
+ <span>SCons 用户指南第二章-简单编译
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#序"><span class="toc-number">1.</span> <span class="toc-text">序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Exif-规范的图片"><span class="toc-number">1.1.</span> <span class="toc-text">Exif 规范的图片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IFD-结构"><span class="toc-number">1.2.</span> <span class="toc-text">IFD 结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exif-IFD-结构"><span class="toc-number">1.3.</span> <span class="toc-text">Exif IFD 结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GPS-属性信息"><span class="toc-number">1.4.</span> <span class="toc-text">GPS 属性信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实战"><span class="toc-number">2.</span> <span class="toc-text">实战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#寻找头部"><span class="toc-number">2.1.</span> <span class="toc-text">寻找头部</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改-GPS"><span class="toc-number">2.2.</span> <span class="toc-text">修改 GPS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#第一个-IFD"><span class="toc-number">2.2.1.</span> <span class="toc-text">第一个 IFD</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#第二个-IFD"><span class="toc-number">2.2.2.</span> <span class="toc-text">第二个 IFD</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#第三-四个-IFD"><span class="toc-number">2.2.3.</span> <span class="toc-text">第三/四个 IFD</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Conclusion"><span class="toc-number">3.</span> <span class="toc-text">Conclusion</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

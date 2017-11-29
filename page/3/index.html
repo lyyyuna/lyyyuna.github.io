@@ -1,0 +1,660 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="lyyyuna 的小花园">
+<meta property="og:type" content="website">
+<meta property="og:title" content="lyyyuna 的小花园">
+<meta property="og:url" content="http://www.lyyyuna.com/page/3/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="lyyyuna 的小花园">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="lyyyuna 的小花园">
+<meta name="twitter:description" content="lyyyuna 的小花园">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main">
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/03/26/dht01/" title="DHT 协议 - 译" itemprop="url">
+  
+    <h1 itemprop="name">DHT 协议 - 译</h1>
+    
+     
+           <p itemprop="description" >BitTorrent 使用“分布式哈希表” (DHT) 来存储种子的 peer 信息，且不需要专门的服务器。这样，每一个 peer 都变成一个 tracker。DHT 协议基于 Kademila，且用 UDP 实现。
+请注意文档中的术语以免产生误解。peer 实现了 BitTor</p>
+        
+    
+    <time datetime="2016-03-26T12:02:00.000Z" itemprop="datePublished">2016-03-26</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/03/20/python-asyncio01/" title="asyncio 的 coroutine 与 Future" itemprop="url">
+  
+    <h1 itemprop="name">asyncio 的 coroutine 与 Future</h1>
+    
+     
+           <p itemprop="description" >coroutine 与 Future 的关系看起来两者是一样的，因为都可以用以下的语法来异步获取结果，
+result = await future
+result = await coroutine
+实际上，coroutine 是生成器函数，它既可以从外部接受参数，也可以产生结果。</p>
+        
+    
+    <time datetime="2016-03-20T08:20:02.000Z" itemprop="datePublished">2016-03-20</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/03/19/bilibili-danmu02/" title="B站全站直播弹幕收集系统的简单设计" itemprop="url">
+  
+    <h1 itemprop="name">B站全站直播弹幕收集系统的简单设计</h1>
+    
+     
+           <p itemprop="description" >前言虽然标题是全站，但目前只做了等级 top 100 直播间的全天弹幕收集。
+弹幕收集系统基于之前的Python版B站直播弹幕姬修改而来。具体协议分析可以看上一篇文章。
+直播弹幕协议是直接基于 TCP 协议，所以如果 B 站对类似我这种行为做反制措施，比较困难。应该有我不知道的技</p>
+        
+    
+    <time datetime="2016-03-19T03:20:36.000Z" itemprop="datePublished">2016-03-19</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/03/14/bilibili-danmu01/" title="B站直播弹幕协议详解" itemprop="url">
+  
+    <h1 itemprop="name">B站直播弹幕协议详解</h1>
+    
+     
+           <p itemprop="description" >前言B站直播弹幕是在 flash 里做的，所以浏览器的开发工具抓不到包。去年我根据 Wireshark 抓的 TCP 包硬写了一个直播终端版，不过当时对里面很多二进制位不知所云。
+上个星期我发现B站官方有专门为 UP 主准备的直播弹幕姬，且是用 C# 写的，于是就逆向了。。
+这里</p>
+        
+    
+    <time datetime="2016-03-14T13:20:36.000Z" itemprop="datePublished">2016-03-14</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/02/28/zhihu-lundaiguang/" title="知乎轮带逛 - 定向爬取轮子哥赞过的妹子图" itemprop="url">
+  
+    <h1 itemprop="name">知乎轮带逛 - 定向爬取轮子哥赞过的妹子图</h1>
+    
+     
+           <p itemprop="description" >前言轮带逛，是指跟着轮子哥的知乎动态很容易找到高质量妹子图。然而知乎动态管理和搜索都不友好，如果手工翻阅动态工作量很大，所以写了一个脚本，用于找出那些妹子图片。
+这是脚本的源码链接
+GitHub 上已经有一些知乎的第三方 API，如 zhihu-py3 和 zhihu-pytho</p>
+        
+    
+    <time datetime="2016-02-28T09:25:45.000Z" itemprop="datePublished">2016-02-28</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/01/31/scons6-dependencies/" title="SCons 用户指南第六章 - 依赖" itemprop="url">
+  
+    <h1 itemprop="name">SCons 用户指南第六章 - 依赖</h1>
+    
+     
+           <p itemprop="description" >目前为止，我们看到的都是 SCons 一次性编译的例子。但编译工具一个最主要的功能是只重新编译源码改变的部分，换句话说，SCons 不应该浪费时间重新编译不该编译的内容。比如之前的 hello 例子，你可以调用 SCons 两次看结果的不同：
+% scons -Q
+cc -o h</p>
+        
+    
+    <time datetime="2016-01-31T07:08:54.000Z" itemprop="datePublished">2016-01-31</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/01/16/http-proxy-get1/" title="使用 Python 实现一个简单的 HTTP 代理 - GET" itemprop="url">
+  
+    <h1 itemprop="name">使用 Python 实现一个简单的 HTTP 代理 - GET</h1>
+    
+     
+           <p itemprop="description" >前言HTTP 代理是位于服务器与客户端之间的中间实体，在各个端点之间来回传送 HTTP 报文。
+按照用途分类，HTTP proxy 可以分为
+
+内容过滤。
+科学上网。
+Web 缓存。维护服务器常用文档的一个副本，增加客户端的访问速度。
+反向代理。反向代理可以接收发给服务器的真实请</p>
+        
+    
+    <time datetime="2016-01-16T11:44:50.000Z" itemprop="datePublished">2016-01-16</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/01/07/robotframework-tutorial-overview/" title="Robot Framework 教程 - 概览（译）" itemprop="url">
+  
+    <h1 itemprop="name">Robot Framework 教程 - 概览（译）</h1>
+    
+     
+           <p itemprop="description" >前言Robot Framework 是一个通用的自动化测试框架。这是本系列的第一篇文章，将会给出一个全面的概述。
+请注意，第一篇文章几乎不会包含任何”真正实现方面的东西”，而是讲述一些高级别、抽象的概念，来为以后的文章打下坚实的基础。
+什么是自动化测试框架如果你已经有自动化测试的</p>
+        
+    
+    <time datetime="2016-01-07T12:33:01.000Z" itemprop="datePublished">2016-01-07</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/01/06/exif-info-extract1/" title="Python 脚本实现读取图片属性信息" itemprop="url">
+  
+    <h1 itemprop="name">Python 脚本实现读取图片属性信息</h1>
+    
+     
+           <p itemprop="description" >我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。
+这里改用 Python 脚本读取图片信息。有几个说明
+
+没有实现错误处理
+没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等
+简单修改后应该能实</p>
+        
+    
+    <time datetime="2016-01-06T14:05:15.000Z" itemprop="datePublished">2016-01-06</time>
+  </a>
+</section>
+
+
+
+
+
+
+  
+<section class="post" itemscope itemprop="blogitem">
+  
+    <a href="/2016/01/04/cdcfan-auto-order/" title="一个简单的公司自动订餐脚本实现" itemprop="url">
+  
+    <h1 itemprop="name">一个简单的公司自动订餐脚本实现</h1>
+    
+     
+           <p itemprop="description" >前言因为食堂难吃，公司推出了集体外卖订餐服务，员工需要每天去指定网页提交订餐。
+由于经常忘了订餐，便诞生了下面这个脚本。
+该系统功能是工作日每天定时订餐，并发送邮件告知用户订餐结果。
+登陆过程分析打开 http://cdcfan/ 便可见到登陆页面，登陆时只需输入自己英文名即可。</p>
+        
+    
+    <time datetime="2016-01-04T13:20:36.000Z" itemprop="datePublished">2016-01-04</time>
+  </a>
+</section>
+
+
+
+
+
+
+
+  <nav id="page-nav" class="clearfix unexpand">
+    <a class="extend prev" rel="prev" href="/page/2/"><span></span>Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/">Next<span></span></a>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.mjyplusone.com" target="_blank" title="加一的城堡">加一的城堡</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+<div class="doubanshow">
+<p class="asidetitle">豆瓣秀</p>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/44114278/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book|movie" ></script>
+</div>
+</div>
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>
