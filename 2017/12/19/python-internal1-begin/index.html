@@ -4,25 +4,25 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>SCons 用户指南第四章 - 编译和链接库 | lyyyuna 的小花园</title>
+    <title>Python 2.7 源码 - 开始 | lyyyuna 的小花园</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="lyyyuna">
     
 
     
-    <meta name="description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &am">
-<meta name="keywords" content="scons">
+    <meta name="description" content="源码编译Python 官网可以下载到源码。 Linux 上编译需要先安装额外模块，例如 Ubuntu 12sudo apt-get build-dep pythonsudo apt-get install libreadline-dev libsqlite3-dev libbz2-dev libssl-dev libr">
+<meta name="keywords" content="Python2.7源码">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SCons 用户指南第四章 - 编译和链接库">
-<meta property="og:url" content="http://www.lyyyuna.com/2015/12/25/scons4-building-and-linking-with-libraries/index.html">
+<meta property="og:title" content="Python 2.7 源码 - 开始">
+<meta property="og:url" content="http://www.lyyyuna.com/2017/12/19/python-internal1-begin/index.html">
 <meta property="og:site_name" content="lyyyuna 的小花园">
-<meta property="og:description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &amp;apos;f2.c&amp;apos;, &amp;apos;f3.c&amp;apos;]) SCons 会自动根据你的系统使用合适的库文">
+<meta property="og:description" content="源码编译Python 官网可以下载到源码。 Linux 上编译需要先安装额外模块，例如 Ubuntu 12sudo apt-get build-dep pythonsudo apt-get install libreadline-dev libsqlite3-dev libbz2-dev libssl-dev libreadline6-dev libsqlite3-dev liblzma-dev">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-11-29T00:19:00.168Z">
+<meta property="og:updated_time" content="2017-12-19T09:03:27.929Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SCons 用户指南第四章 - 编译和链接库">
-<meta name="twitter:description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &amp;apos;f2.c&amp;apos;, &amp;apos;f3.c&amp;apos;]) SCons 会自动根据你的系统使用合适的库文">
+<meta name="twitter:title" content="Python 2.7 源码 - 开始">
+<meta name="twitter:description" content="源码编译Python 官网可以下载到源码。 Linux 上编译需要先安装额外模块，例如 Ubuntu 12sudo apt-get build-dep pythonsudo apt-get install libreadline-dev libsqlite3-dev libbz2-dev libssl-dev libreadline6-dev libsqlite3-dev liblzma-dev">
 
     
     <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
@@ -83,14 +83,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/12/25/scons4-building-and-linking-with-libraries/" title="SCons 用户指南第四章 - 编译和链接库" itemprop="url">SCons 用户指南第四章 - 编译和链接库</a>
+      <a href="/2017/12/19/python-internal1-begin/" title="Python 2.7 源码 - 开始" itemprop="url">Python 2.7 源码 - 开始</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
 		
   <p class="article-time">
-    <time datetime="2015-12-25T12:11:03.000Z" itemprop="datePublished"> 发表于 2015-12-25</time>
+    <time datetime="2017-12-19T08:20:02.000Z" itemprop="datePublished"> 发表于 2017-12-19</time>
     
   </p>
 </header>
@@ -99,101 +99,24 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-编译库"><span class="toc-number">1.</span> <span class="toc-text">4.1 编译库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-从源码或二进制文件编译库"><span class="toc-number">1.1.</span> <span class="toc-text">4.1.1 从源码或二进制文件编译库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-编译静态库：使用-StaticLibrary-方法"><span class="toc-number">1.2.</span> <span class="toc-text">4.1.2 编译静态库：使用 StaticLibrary 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><span class="toc-number">1.3.</span> <span class="toc-text">4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-链接库"><span class="toc-number">2.</span> <span class="toc-text">4.2 链接库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-寻找库：-LIBPATH-构造变量"><span class="toc-number">3.</span> <span class="toc-text">4.3 寻找库：$LIBPATH 构造变量</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#源码编译"><span class="toc-number">1.</span> <span class="toc-text">源码编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一个实验"><span class="toc-number">2.</span> <span class="toc-text">第一个实验</span></a></li></ol>
 		
 		</div>
 		
-		<p>在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。</p>
-<h2 id="4-1-编译库"><a href="#4-1-编译库" class="headerlink" title="4.1 编译库"></a>4.1 编译库</h2><p>你可以代替 Program 使用 Library 来生成你自己的库文件：</p>
-<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
-</code></pre><p>SCons 会自动根据你的系统使用合适的库文件前缀和后缀。所以在 POSIX 或 Linux 系统上，上面的例子编译过程如下：</p>
-<pre><code>% scons -Q
-cc -o f1.o -c f1.c
-cc -o f2.o -c f2.c
-cc -o f3.o -c f3.c
-ar rc libfoo.a f1.o f2.o f3.o
-ranlib libfoo.a
-</code></pre><p>在 Windows 系统上，上述例子的编译过程如下：</p>
-<pre><code>C:\&gt;scons -Q
-cl /Fof1.obj /c f1.c /nologo
-cl /Fof2.obj /c f2.c /nologo
-cl /Fof3.obj /c f3.c /nologo
-lib /nologo /OUT:foo.lib f1.obj f2.obj f3.obj
-</code></pre><p>目标库文件的命名规则类似于直接生成程序：如果你没有显示指定目标库文件名称，SCons 会从第一个指定的源文件名字中推导出，并且 SCons 会加上合适的文件前缀和后缀。</p>
-<h3 id="4-1-1-从源码或二进制文件编译库"><a href="#4-1-1-从源码或二进制文件编译库" class="headerlink" title="4.1.1 从源码或二进制文件编译库"></a>4.1.1 从源码或二进制文件编译库</h3><p>上一个例子战士了如何从一系列源码中编译出库文件，然而你也可以在 Library 调用中放置二进制文件，它会自动分析出这些是二进制文件。事实上，你也可以在源队列中混合使用源代码文件和二进制文件：</p>
-<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.o&apos;, &apos;f3.c&apos;, &apos;f4.o&apos;])
-</code></pre><p>SCons 能够意识到在生成最终库文件前需要编译哪些源文件：</p>
-<pre><code>% scons -Q
-cc -o f1.o -c f1.c
-cc -o f3.o -c f3.c
-ar rc libfoo.a f1.o f2.o f3.o f4.o
-ranlib libfoo.a
-</code></pre><p>当然，在这个例子中，必须先编译出这些二进制文件。请查看第五章，如何显示编译自己的二进制文件并包含在自己的库文件中。</p>
-<h3 id="4-1-2-编译静态库：使用-StaticLibrary-方法"><a href="#4-1-2-编译静态库：使用-StaticLibrary-方法" class="headerlink" title="4.1.2 编译静态库：使用 StaticLibrary 方法"></a>4.1.2 编译静态库：使用 StaticLibrary 方法</h3><p>Library 方法能够编译一个传统的静态库文件。如果你想明确地控制库文件的类型，你可以使用 StaticLibrary 方法来代替 Library：</p>
-<pre><code>StaticLibrary(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
-</code></pre><p>在功能上它们之间没有区别。</p>
-<h3 id="4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><a href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法" class="headerlink" title="4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法"></a>4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</h3><p>如果你像编译在 POSIX 系统或者 Windows 系统上编译动态库文件，你应该使用 SharedLibrary 方法：</p>
-<pre><code>SharedLibrary(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
-</code></pre><p>在 POSIX 系统上输出为：</p>
-<pre><code>% scons -Q
-cc -o f1.os -c f1.c
-cc -o f2.os -c f2.c
-cc -o f3.os -c f3.c
-cc -o libfoo.so -shared f1.os f2.os f3.os
-</code></pre><p>在 Windows 系统上输出为：</p>
-<pre><code>C:\&gt;scons -Q
-cl /Fof1.obj /c f1.c /nologo
-cl /Fof2.obj /c f2.c /nologo
-cl /Fof3.obj /c f3.c /nologo
-link /nologo /dll /out:foo.dll /implib:foo.lib f1.obj f2.obj f3.obj
-RegServerFunc(target, source, env)
-embedManifestDllCheck(target, source, env)
-</code></pre><p>你可以注意到 SCons 能够正确处理输出文件的过程，在 POSIX 系统上假设 -shared 选项，在 Windows 系统上加上 /dll 选项。</p>
-<h2 id="4-2-链接库"><a href="#4-2-链接库" class="headerlink" title="4.2 链接库"></a>4.2 链接库</h2><p>通常，你之所以编译库文件是为了在多个程序中链接它。为了链接库，你只需要在 $LIBS 构造变量中指定库，在 $LIBPATH 构造变量中指定库文件所在的目录：</p>
-<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
-Program(&apos;prog.c&apos;, LIBS=[&apos;foo&apos;, &apos;bar&apos;], LIBPATH=&apos;.&apos;)
-</code></pre><p>很显然可以注意到，你不需要指定库的前缀（比如 lib）或者后缀（比如 .a 或 .lib）。SCons 能够为当前的系统使用正确的前缀和后缀。</p>
-<p>在类 POSIX 系统中，以上例子的编译过程为：</p>
-<pre><code>% scons -Q
-cc -o f1.o -c f1.c
-cc -o f2.o -c f2.c
-cc -o f3.o -c f3.c
-ar rc libfoo.a f1.o f2.o f3.o
-ranlib libfoo.a
-cc -o prog.o -c prog.c
-cc -o prog prog.o -L. -lfoo -lbar
-</code></pre><p>在 Windows 系统上，以上例子的编译过程为：</p>
-<pre><code>C:\&gt;scons -Q
-cl /Fof1.obj /c f1.c /nologo
-cl /Fof2.obj /c f2.c /nologo
-cl /Fof3.obj /c f3.c /nologo
-lib /nologo /OUT:foo.lib f1.obj f2.obj f3.obj
-cl /Foprog.obj /c prog.c /nologo
-link /nologo /OUT:prog.exe /LIBPATH:. foo.lib bar.lib prog.obj
-embedManifestExeCheck(target, source, env)
-</code></pre><p>像之前一样，可以注意到 SCons 能够正确地构造命令行，以确保在各个系统上能够链接正确的库。</p>
-<p>并且，如果你只有一个库需要链接，你可以用单个字符串，来代替 Python 的列表，即：</p>
-<pre><code>Program(&apos;prog.c&apos;, LIBS=&apos;foo&apos;, LIBPATH=&apos;.&apos;)
-</code></pre><p>这和以下是等价的：</p>
-<pre><code>Program(&apos;prog.c&apos;, LIBS=[&apos;foo&apos;], LIBPATH=&apos;.&apos;)
-</code></pre><p>这和 SCons 在处理单个源文件中既可以使用字符串或者列表，是类似的。</p>
-<h2 id="4-3-寻找库：-LIBPATH-构造变量"><a href="#4-3-寻找库：-LIBPATH-构造变量" class="headerlink" title="4.3 寻找库：$LIBPATH 构造变量"></a>4.3 寻找库：$LIBPATH 构造变量</h2><p>链接器默认只在系统指定的路径中寻找库文件。当你指定了 $LIBPATH 构造变量，SCons 知道如何寻找库文件。$LIBPATH 由一系列目录路径构成，如下：</p>
-<pre><code>Program(&apos;prog.c&apos;, LIBS = &apos;m&apos;, LIBPATH = [&apos;/usr/lib&apos;, &apos;/usr/local/lib&apos;])
-</code></pre><p>推荐使用 Python 列表，因为这具有可移植性。你也可以将所有目录名字放在一个字符串中。在 POSIX 系统中，使用冒号来分割目录路径：</p>
-<pre><code>LIBPATH = &apos;/usr/lib:/usr/local/lib&apos;
-</code></pre><p>或者在 Windows 系统上使用分号来分割：</p>
-<pre><code>LIBPATH = &apos;C:\\lib;D:\\lib&apos;
-</code></pre><p>（注意到，在 Windows 系统上必须对反斜杠进行转义。）</p>
-<p>当链接器执行时，SCons 会生成合适的标志位，这样链接器就将去寻找 SCons 指定的路径。所以在 POSIX 系统上，上述例子的编译过程如下：</p>
-<pre><code>% scons -Q
-cc -o prog.o -c prog.c
-cc -o prog prog.o -L/usr/lib -L/usr/local/lib -lm
-</code></pre><p>或者在 Windows 系统上，上述例子的编译过程如下：</p>
-<pre><code>C:\&gt;scons -Q
-cl /Foprog.obj /c prog.c /nologo
-link /nologo /OUT:prog.exe /LIBPATH:\usr\lib /LIBPATH:\usr\local\lib m.lib prog.obj
-embedManifestExeCheck(target, source, env)
-</code></pre><p>注意到 SCons 能够正确地根据系统生成合适的命令行参数。</p>
+		<h2 id="源码编译"><a href="#源码编译" class="headerlink" title="源码编译"></a>源码编译</h2><p>Python 官网可以下载到<a href="https://www.python.org/downloads/source/" target="_blank" rel="noopener">源码</a>。</p>
+<p>Linux 上编译需要先安装额外模块，例如 Ubuntu</p>
+<figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="built_in">get</span> build-dep python</span><br><span class="line">sudo apt-<span class="built_in">get</span> install libreadline-<span class="built_in">dev</span> libsqlite3-<span class="built_in">dev</span> libbz2-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libreadline6-<span class="built_in">dev</span> libsqlite3-<span class="built_in">dev</span> liblzma-<span class="built_in">dev</span> libbz2-<span class="built_in">dev</span> tk8<span class="number">.5</span>-<span class="built_in">dev</span> blt-<span class="built_in">dev</span> libgdbm-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libncurses5-<span class="built_in">dev</span> zlib1g-<span class="built_in">dev</span> libncurses5-<span class="built_in">dev</span></span><br></pre></td></tr></table></figure>
+<p>Windows 上只需打开 PC/VS9.0/pcbuild.sln，选择最少的模块 python, pythoncore 编译，如果这两个模块编译时报错，只需按照错误提示，钩上所需模块即可。</p>
+<p>Mac 上只需要</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line"><span class="built_in">make</span></span><br></pre></td></tr></table></figure>
+<p>本系列文章在 Mac 上完成，但环境本身只影响编译，并不影响分析过程，读者选择方便阅读源码的环境即可。</p>
+<h2 id="第一个实验"><a href="#第一个实验" class="headerlink" title="第一个实验"></a>第一个实验</h2><p>Mac 上编译完会生成一个 <code>python.exe</code> 的可执行文件。</p>
+<p>让我们尝试在 Python 源码中修改整数输出的部分，在每一个 int 打印时，输出 <code>hello, world</code>。</p>
+<p>修改 /Objects/intobject.c，添加 <code>fprintf(fp, &quot;hello, world\n&quot;);</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span></span><br><span class="line">int_print(PyIntObject *v, FILE *fp, <span class="keyword">int</span> flags)</span><br><span class="line">     <span class="comment">/* flags -- not used but required by interface */</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">long</span> int_val = v-&gt;ob_ival;</span><br><span class="line">    Py_BEGIN_ALLOW_THREADS</span><br><span class="line">    <span class="comment">// </span></span><br><span class="line">    <span class="built_in">fprintf</span>(fp, <span class="string">"hello, world\n"</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(fp, <span class="string">"%ld"</span>, int_val);</span><br><span class="line">    Py_END_ALLOW_THREADS</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下是实验结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt; a=1</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt; a</span></span><br><span class="line">hello, world</span><br><span class="line">1</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt; <span class="built_in">print</span>(1)</span></span><br><span class="line">hello, world</span><br><span class="line">1</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt; <span class="built_in">print</span>(<span class="string">'eee'</span>)</span></span><br><span class="line">eee</span><br></pre></td></tr></table></figure>
+<p>改动只影响了整数打印的部分。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -201,13 +124,13 @@ embedManifestExeCheck(target, source, env)
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/杂/">杂</a>
+  <a class="article-category-link" href="/categories/语言/">语言</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/scons/">scons</a>
+  <span></span> <a href="/tags/Python2-7源码/">Python2.7源码</a>
   </div>
 
 </div>
@@ -216,7 +139,7 @@ embedManifestExeCheck(target, source, env)
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://www.lyyyuna.com/2015/12/25/scons4-building-and-linking-with-libraries/" data-title="SCons 用户指南第四章 - 编译和链接库 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  <div data-url="http://www.lyyyuna.com/2017/12/19/python-internal1-begin/" data-title="Python 2.7 源码 - 开始 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -229,19 +152,11 @@ embedManifestExeCheck(target, source, env)
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/12/28/robotframework-quickstartguide/" title="Robot Framework 快速入门指南">
-  <strong>上一篇：</strong><br/>
-  <span>
-  Robot Framework 快速入门指南</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/12/19/xiaomiluyou01/"  title="小米路由器 mini 刷机记录">
+<a href="/2017/09/14/python-descriptor/"  title="Python 中的 descriptor">
  <strong>下一篇：</strong><br/> 
- <span>小米路由器 mini 刷机记录
+ <span>Python 中的 descriptor
 </span>
 </a>
 </div>
@@ -262,7 +177,7 @@ embedManifestExeCheck(target, source, env)
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-编译库"><span class="toc-number">1.</span> <span class="toc-text">4.1 编译库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-从源码或二进制文件编译库"><span class="toc-number">1.1.</span> <span class="toc-text">4.1.1 从源码或二进制文件编译库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-编译静态库：使用-StaticLibrary-方法"><span class="toc-number">1.2.</span> <span class="toc-text">4.1.2 编译静态库：使用 StaticLibrary 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><span class="toc-number">1.3.</span> <span class="toc-text">4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-链接库"><span class="toc-number">2.</span> <span class="toc-text">4.2 链接库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-寻找库：-LIBPATH-构造变量"><span class="toc-number">3.</span> <span class="toc-text">4.3 寻找库：$LIBPATH 构造变量</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#源码编译"><span class="toc-number">1.</span> <span class="toc-text">源码编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一个实验"><span class="toc-number">2.</span> <span class="toc-text">第一个实验</span></a></li></ol>
  
   </div>
 
