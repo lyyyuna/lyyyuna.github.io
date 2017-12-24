@@ -1,0 +1,635 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Python 2.7 源码 - 整数对象 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="Python 的面向对象面向对象编程中，对象是数据以及基于这些数据的操作的集合，实际上在计算机中这只是一堆内存逻辑上的集合，无论这段内存是连续的还是分开的。 Python 是由 C 语言写成，描述一段逻辑上结合的内存，直接用结构体 struct 就可以了。但是 struct 并不是面向对象中类型的概念，对象还需要成员函">
+<meta name="keywords" content="Python2.7源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 2.7 源码 - 整数对象">
+<meta property="og:url" content="http://www.lyyyuna.com/2017/12/24/python-internal2-integer-object/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="Python 的面向对象面向对象编程中，对象是数据以及基于这些数据的操作的集合，实际上在计算机中这只是一堆内存逻辑上的集合，无论这段内存是连续的还是分开的。 Python 是由 C 语言写成，描述一段逻辑上结合的内存，直接用结构体 struct 就可以了。但是 struct 并不是面向对象中类型的概念，对象还需要成员函数。所以还需要另外一个结构体 struct 来描述成员函数的集合。 上述特点就导">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-12-24T13:23:21.326Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 2.7 源码 - 整数对象">
+<meta name="twitter:description" content="Python 的面向对象面向对象编程中，对象是数据以及基于这些数据的操作的集合，实际上在计算机中这只是一堆内存逻辑上的集合，无论这段内存是连续的还是分开的。 Python 是由 C 语言写成，描述一段逻辑上结合的内存，直接用结构体 struct 就可以了。但是 struct 并不是面向对象中类型的概念，对象还需要成员函数。所以还需要另外一个结构体 struct 来描述成员函数的集合。 上述特点就导">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/24/python-internal2-integer-object/" title="Python 2.7 源码 - 整数对象" itemprop="url">Python 2.7 源码 - 整数对象</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2017-12-24T08:20:02.000Z" itemprop="datePublished"> 发表于 2017-12-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Python-的面向对象"><span class="toc-number">1.</span> <span class="toc-text">Python 的面向对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Python-的整数类型"><span class="toc-number">2.</span> <span class="toc-text">Python 的整数类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#整数对象的内存"><span class="toc-number">3.</span> <span class="toc-text">整数对象的内存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#大整数创建"><span class="toc-number">3.1.</span> <span class="toc-text">大整数创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#大整数销毁"><span class="toc-number">3.2.</span> <span class="toc-text">大整数销毁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小整数"><span class="toc-number">3.3.</span> <span class="toc-text">小整数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实验"><span class="toc-number">4.</span> <span class="toc-text">实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#大整数实验"><span class="toc-number">4.1.</span> <span class="toc-text">大整数实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小整数实验"><span class="toc-number">4.2.</span> <span class="toc-text">小整数实验</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h2 id="Python-的面向对象"><a href="#Python-的面向对象" class="headerlink" title="Python 的面向对象"></a>Python 的面向对象</h2><p>面向对象编程中，对象是数据以及基于这些数据的操作的集合，实际上在计算机中这只是一堆内存逻辑上的集合，无论这段内存是连续的还是分开的。</p>
+<p>Python 是由 C 语言写成，描述一段逻辑上结合的内存，直接用结构体 <code>struct</code> 就可以了。但是 <code>struct</code> 并不是面向对象中类型的概念，对象还需要成员函数。所以还需要另外一个结构体 <code>struct</code> 来描述成员函数的集合。</p>
+<p>上述特点就导致了在 Python 中，实际的类型也是一个对象，这个类型对象的结构体如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">typeobject</span> &#123;</span></span><br><span class="line">    PyObject_VAR_HEAD</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *tp_name; <span class="comment">/* For printing, in format "&lt;module&gt;.&lt;name&gt;" */</span></span><br><span class="line">    Py_ssize_t tp_basicsize, tp_itemsize; <span class="comment">/* For allocation */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Methods to implement standard operations */</span></span><br><span class="line"></span><br><span class="line">    destructor tp_dealloc;</span><br><span class="line">    printfunc tp_print;</span><br><span class="line">    getattrfunc tp_getattr;</span><br><span class="line">    setattrfunc tp_setattr;</span><br><span class="line">    cmpfunc tp_compare;</span><br><span class="line">    reprfunc tp_repr;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Method suites for standard classes */</span></span><br><span class="line"></span><br><span class="line">    PyNumberMethods *tp_as_number;</span><br><span class="line">    PySequenceMethods *tp_as_sequence;</span><br><span class="line">    PyMappingMethods *tp_as_mapping;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* More standard operations (here for binary compatibility) */</span></span><br><span class="line"></span><br><span class="line">    hashfunc tp_hash;</span><br><span class="line">    ternaryfunc tp_call;</span><br><span class="line">    reprfunc tp_str;</span><br><span class="line">    getattrofunc tp_getattro;</span><br><span class="line">    setattrofunc tp_setattro;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Functions to access object as input/output buffer */</span></span><br><span class="line">    PyBufferProcs *tp_as_buffer;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Flags to define presence of optional/expanded features */</span></span><br><span class="line">    <span class="keyword">long</span> tp_flags;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *tp_doc; <span class="comment">/* Documentation string */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Assigned meaning in release 2.0 */</span></span><br><span class="line">    <span class="comment">/* call function for all accessible objects */</span></span><br><span class="line">    traverseproc tp_traverse;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* delete references to contained objects */</span></span><br><span class="line">    inquiry tp_clear;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Assigned meaning in release 2.1 */</span></span><br><span class="line">    <span class="comment">/* rich comparisons */</span></span><br><span class="line">    richcmpfunc tp_richcompare;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* weak reference enabler */</span></span><br><span class="line">    Py_ssize_t tp_weaklistoffset;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Added in release 2.2 */</span></span><br><span class="line">    <span class="comment">/* Iterators */</span></span><br><span class="line">    getiterfunc tp_iter;</span><br><span class="line">    iternextfunc tp_iternext;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Attribute descriptor and subclassing stuff */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">PyMethodDef</span> *<span class="title">tp_methods</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">PyMemberDef</span> *<span class="title">tp_members</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">PyGetSetDef</span> *<span class="title">tp_getset</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">typeobject</span> *<span class="title">tp_base</span>;</span></span><br><span class="line">    PyObject *tp_dict;</span><br><span class="line">    descrgetfunc tp_descr_get;</span><br><span class="line">    descrsetfunc tp_descr_set;</span><br><span class="line">    Py_ssize_t tp_dictoffset;</span><br><span class="line">    initproc tp_init;</span><br><span class="line">    allocfunc tp_alloc;</span><br><span class="line">    newfunc tp_new;</span><br><span class="line">    freefunc tp_free; <span class="comment">/* Low-level free-memory routine */</span></span><br><span class="line">    inquiry tp_is_gc; <span class="comment">/* For PyObject_IS_GC */</span></span><br><span class="line">    PyObject *tp_bases;</span><br><span class="line">    PyObject *tp_mro; <span class="comment">/* method resolution order */</span></span><br><span class="line">    PyObject *tp_cache;</span><br><span class="line">    PyObject *tp_subclasses;</span><br><span class="line">    PyObject *tp_weaklist;</span><br><span class="line">    destructor tp_del;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Type attribute cache version tag. Added in version 2.6 */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> tp_version_tag;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> COUNT_ALLOCS</span></span><br><span class="line">    <span class="comment">/* these must be last and never explicitly initialized */</span></span><br><span class="line">    Py_ssize_t tp_allocs;</span><br><span class="line">    Py_ssize_t tp_frees;</span><br><span class="line">    Py_ssize_t tp_maxalloc;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">typeobject</span> *<span class="title">tp_prev</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">typeobject</span> *<span class="title">tp_next</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125; PyTypeObject;</span><br></pre></td></tr></table></figure>
+<p>所以在源码中，Python 最基础的对象表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">object</span> </span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    Py_ssize_t ob_refcnt;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">typeobject</span> *<span class="title">ob_type</span>;</span></span><br><span class="line">&#125; PyObject;</span><br></pre></td></tr></table></figure>
+<p>每一个对象都有一个指针指向自己所属的类型对象，而类型对象则有关于这个对象支持的所有操作的信息。</p>
+<p>仔细看 <code>PyTypeObject</code> 的头部，<code>PyObject_VAR_HEAD</code> 即含有 <code>ob_type</code>，难道还有类型的类型这个概念？是的，这个终极的类型就是元类，即 <code>metaclass</code>。做个简单的实验。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line"><span class="meta">... </span>    <span class="keyword">pass</span></span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>A.__class__</span><br><span class="line">&lt;type <span class="string">'type'</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>A.__class__.__class__</span><br><span class="line">&lt;type <span class="string">'type'</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>type.__class__</span><br><span class="line">&lt;type <span class="string">'type'</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>在 Python 中类型是对象，所以类型对象也有类型，而元类的类型就是自己。</p>
+<h2 id="Python-的整数类型"><a href="#Python-的整数类型" class="headerlink" title="Python 的整数类型"></a>Python 的整数类型</h2><p>整数类型没啥可说的，按照 <code>PyTypeObject</code> 结构去填充信息即可：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">PyTypeObject PyInt_Type = &#123;</span><br><span class="line">    PyVarObject_HEAD_INIT(&amp;PyType_Type, <span class="number">0</span>)</span><br><span class="line">    <span class="string">"int"</span>,</span><br><span class="line">    <span class="keyword">sizeof</span>(PyIntObject),</span><br><span class="line">    <span class="number">0</span>,</span><br><span class="line">    (destructor)int_dealloc,                    <span class="comment">/* tp_dealloc */</span></span><br><span class="line">    (printfunc)int_print,                       <span class="comment">/* tp_print */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_getattr */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_setattr */</span></span><br><span class="line">    (cmpfunc)int_compare,                       <span class="comment">/* tp_compare */</span></span><br><span class="line">    (reprfunc)int_to_decimal_string,            <span class="comment">/* tp_repr */</span></span><br><span class="line">    &amp;int_as_number,                             <span class="comment">/* tp_as_number */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_as_sequence */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_as_mapping */</span></span><br><span class="line">    (hashfunc)int_hash,                         <span class="comment">/* tp_hash */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_call */</span></span><br><span class="line">    (reprfunc)int_to_decimal_string,            <span class="comment">/* tp_str */</span></span><br><span class="line">    PyObject_GenericGetAttr,                    <span class="comment">/* tp_getattro */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_setattro */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_as_buffer */</span></span><br><span class="line">    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_CHECKTYPES |</span><br><span class="line">        Py_TPFLAGS_BASETYPE | Py_TPFLAGS_INT_SUBCLASS,          <span class="comment">/* tp_flags */</span></span><br><span class="line">    int_doc,                                    <span class="comment">/* tp_doc */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_traverse */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_clear */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_richcompare */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_weaklistoffset */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_iter */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_iternext */</span></span><br><span class="line">    int_methods,                                <span class="comment">/* tp_methods */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_members */</span></span><br><span class="line">    int_getset,                                 <span class="comment">/* tp_getset */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_base */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_dict */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_descr_get */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_descr_set */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_dictoffset */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_init */</span></span><br><span class="line">    <span class="number">0</span>,                                          <span class="comment">/* tp_alloc */</span></span><br><span class="line">    int_new,                                    <span class="comment">/* tp_new */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="整数对象的内存"><a href="#整数对象的内存" class="headerlink" title="整数对象的内存"></a>整数对象的内存</h2><p>再看一眼 PyObject 对象，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">object</span> </span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    Py_ssize_t ob_refcnt;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">typeobject</span> *<span class="title">ob_type</span>;</span></span><br><span class="line">&#125; PyObject;</span><br></pre></td></tr></table></figure>
+<p>我们看到了 <code>ob_refcnt</code> 引用计数对象，可以很容易地联想到 Python 虚拟机是以引用计数为基础构建垃圾回收机制。既然如此，那还有没有必要专门讨论整数对象的内存使用,而直接抽象成引用计数归零后释放内存？</p>
+<p>事实上，为了提高虚拟机的性能，整数对象使用了多种技术。</p>
+<h3 id="大整数创建"><a href="#大整数创建" class="headerlink" title="大整数创建"></a>大整数创建</h3><p>在 intobject.c 中定义有</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N_INTOBJECTS    ((BLOCK_SIZE - BHEAD_SIZE) / sizeof(PyIntObject))</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">intblock</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> _<span class="title">intblock</span> *<span class="title">next</span>;</span></span><br><span class="line">    PyIntObject objects[N_INTOBJECTS];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">intblock</span> <span class="title">PyIntBlock</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> PyIntBlock *block_list = <span class="literal">NULL</span>;</span><br><span class="line"><span class="keyword">static</span> PyIntObject *free_list = <span class="literal">NULL</span>;</span><br></pre></td></tr></table></figure>
+<p><code>block_list</code> 是由一个个 <code>PyIntBlock</code> 串起来的链表，每一个 <code>PyIntBlock</code> 是一个整数数组。<code>free_list</code> 是由空闲的 <code>PyIntObject</code> 组成的链表，空闲是指这块内存虽然被划分为一个 <code>PyIntObject</code>，但并没有被用于表示一个真正的整数，即其所存储的信息是无用的。</p>
+<p>整数创建时，<code>PyObject * PyInt_FromLong(long ival)</code> 会被调用，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyInt_FromLong(<span class="keyword">long</span> ival)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">register</span> PyIntObject *v;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (free_list == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((free_list = fill_free_list()) == <span class="literal">NULL</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* Inline PyObject_New */</span></span><br><span class="line">    v = free_list;</span><br><span class="line">    free_list = (PyIntObject *)Py_TYPE(v);</span><br><span class="line">    (<span class="keyword">void</span>)PyObject_INIT(v, &amp;PyInt_Type);</span><br><span class="line">    v-&gt;ob_ival = ival;</span><br><span class="line">    <span class="keyword">return</span> (PyObject *) v;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> PyIntObject *</span><br><span class="line">fill_free_list(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">    PyIntObject *p, *q;</span><br><span class="line">    <span class="comment">/* Python's object allocator isn't appropriate for large blocks. */</span></span><br><span class="line">    p = (PyIntObject *) PyMem_MALLOC(<span class="keyword">sizeof</span>(PyIntBlock));</span><br><span class="line">    <span class="keyword">if</span> (p == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> (PyIntObject *) PyErr_NoMemory();</span><br><span class="line">    ((PyIntBlock *)p)-&gt;next = block_list;</span><br><span class="line">    block_list = (PyIntBlock *)p;</span><br><span class="line">    <span class="comment">/* Link the int objects together, from rear to front, then return</span></span><br><span class="line"><span class="comment">       the address of the last int object in the block. */</span></span><br><span class="line">    p = &amp;((PyIntBlock *)p)-&gt;objects[<span class="number">0</span>];</span><br><span class="line">    q = p + N_INTOBJECTS;</span><br><span class="line">    <span class="keyword">while</span> (--q &gt; p)</span><br><span class="line">        Py_TYPE(q) = (struct _typeobject *)(q<span class="number">-1</span>);</span><br><span class="line">    Py_TYPE(q) = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> p + N_INTOBJECTS - <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当创建整数的时候，会先尝试从 <code>free_list</code> 中取，如果没有空闲的，就会尝试 <code>fill_free_list</code>。这个新的 <code>PyIntBlock</code> 中，每一个 <code>PyIntObject</code> 都借用 <code>ob_type</code> 来连接成链表。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> Py_TYPE(ob) (((PyObject*)(ob))-&gt;ob_type)</span></span><br></pre></td></tr></table></figure>
+<p>这里只是借用，初看源码的朋友不要被这里搞混了。因为此时这块内存并没有存放整数，它的成员自然可以借来他用。<code>free_list</code> 指向数组的末尾，从后往前链接到数组首部。</p>
+<h3 id="大整数销毁"><a href="#大整数销毁" class="headerlink" title="大整数销毁"></a>大整数销毁</h3><p>当一个整数销毁时，便会进入 <code>int_dealloc</code> 函数内。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span></span><br><span class="line">int_dealloc(PyIntObject *v)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (PyInt_CheckExact(v)) &#123;</span><br><span class="line">        Py_TYPE(v) = (struct _typeobject *)free_list;</span><br><span class="line">        free_list = v;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        Py_TYPE(v)-&gt;tp_free((PyObject *)v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数在正常情况下不会走到 <code>else</code> 分支，意味着所谓的销毁，只是把这个整数的 <code>PyIntObject</code> 重新放回 <code>free_list</code> 链表中，并不会释放这块内存。这岂不会造成内存泄漏？只能说，理论上会。整数对象所占用的内存空间，只和这个程序同时拥有的最多的整数数量有关。</p>
+<p>上述做法也是为了优化性能，虚拟机不再需要频繁的 <code>malloc</code> 和 <code>free</code>。</p>
+<h3 id="小整数"><a href="#小整数" class="headerlink" title="小整数"></a>小整数</h3><p>除了普通的整数外，Python 中还存在着一种小整数对象。在之前的 <code>PyInt_FromLong</code> 函数中，我们略了一部分，现在我们从另一个角度看。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PyObject *</span><br><span class="line">PyInt_FromLong(<span class="keyword">long</span> ival)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">register</span> PyIntObject *v;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (-NSMALLNEGINTS &lt;= ival &amp;&amp; ival &lt; NSMALLPOSINTS) &#123;</span><br><span class="line">        v = small_ints[ival + NSMALLNEGINTS];</span><br><span class="line">        Py_INCREF(v);</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当想创建的整数在 <code>-NSMALLNEGINTS ~ NSMALLPOSINTS</code> 之间时，就会从 <code>small_ints</code> 数组中直接取出。这范围内的整数即为小整数。小整数使用广泛，循环的初始值，终结值，步进值等等，都是数值很小的整数。小整数从 Python 虚拟机运行之初就存在，使用它们既不需要 <code>malloc</code> 和 <code>free</code>，甚至连指针操作 <code>free_list</code> 也不要。效率比大整数更高。</p>
+<p>而小整数的范围可在编译 Python 时指定，默认为 <code>-5 ~ 257</code>。</p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>改造一下整数打印函数，反映出内存的变化。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> values[<span class="number">10</span>];</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> refcounts[<span class="number">10</span>];</span><br><span class="line"><span class="comment">/* ARGSUSED */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span></span><br><span class="line">int_print(PyIntObject *v, FILE *fp, <span class="keyword">int</span> flags)</span><br><span class="line">     <span class="comment">/* flags -- not used but required by interface */</span></span><br><span class="line">&#123;</span><br><span class="line">    PyIntObject * intObjectPtr;</span><br><span class="line">    PyIntBlock * p = block_list;</span><br><span class="line">    PyIntBlock * last = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">long</span> int_val = v-&gt;ob_ival;</span><br><span class="line">    Py_BEGIN_ALLOW_THREADS</span><br><span class="line">    <span class="built_in">fprintf</span>(fp, <span class="string">"%ld"</span>, int_val);</span><br><span class="line">    Py_END_ALLOW_THREADS</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (p!=<span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        ++count;</span><br><span class="line">        last = p;</span><br><span class="line">        p = p-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line">    intObjectPtr = last-&gt;objects;</span><br><span class="line">    intObjectPtr += N_INTOBJECTS<span class="number">-1</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\nvalue's address is @%p\n"</span>, v);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++, --intObjectPtr)</span><br><span class="line">    &#123;</span><br><span class="line">        values[i] = intObjectPtr-&gt;ob_ival;</span><br><span class="line">        refcounts[i] = intObjectPtr-&gt;ob_refcnt;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"  value : "</span>);</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">8</span>; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\t"</span>, values[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"  refcnt : "</span>);</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">8</span>; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\t"</span>, refcounts[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">" block_list count : %d\n"</span>, count);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">" free_list address : %p\n"</span>, free_list);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行重新编译后的 python 虚拟机。</p>
+<h3 id="大整数实验"><a href="#大整数实验" class="headerlink" title="大整数实验"></a>大整数实验</h3><p>首先是连续创建两个大整数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a=<span class="number">1111</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a</span><br><span class="line"><span class="number">1111</span></span><br><span class="line">value<span class="string">'s address is @0x100303888</span></span><br><span class="line"><span class="string">  value : -5    -4      -3      -2      -1      0       1       2</span></span><br><span class="line"><span class="string">  refcnt : 1    1       1       1       54      389     587     84</span></span><br><span class="line"><span class="string"> block_list count : 9</span></span><br><span class="line"><span class="string"> free_list address : 0x1003038a0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&gt;&gt;&gt; b=2222</span></span><br><span class="line"><span class="string">&gt;&gt;&gt; b</span></span><br><span class="line"><span class="string">2222</span></span><br><span class="line"><span class="string">value'</span>s address <span class="keyword">is</span> @<span class="number">0x1003038a0</span></span><br><span class="line">  value : <span class="number">-5</span>    <span class="number">-4</span>      <span class="number">-3</span>      <span class="number">-2</span>      <span class="number">-1</span>      <span class="number">0</span>       <span class="number">1</span>       <span class="number">2</span></span><br><span class="line">  refcnt : <span class="number">1</span>    <span class="number">1</span>       <span class="number">1</span>       <span class="number">1</span>       <span class="number">54</span>      <span class="number">389</span>     <span class="number">587</span>     <span class="number">84</span></span><br><span class="line"> block_list count : <span class="number">9</span></span><br><span class="line"> free_list address : <span class="number">0x1003038b8</span></span><br></pre></td></tr></table></figure>
+<p>第一次的 <code>free_list</code>，正好是第二次整数的地址。可以看到小整数都至少有一个引用，有些多于一次是因为 python 虚拟机内部使用的缘故。</p>
+<p>当尝试创建一个相同的大整数时。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>c=<span class="number">2222</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c</span><br><span class="line"><span class="number">2222</span></span><br><span class="line">value<span class="string">'s address is @0x1003038b8</span></span><br><span class="line"><span class="string">  value : -5    -4      -3      -2      -1      0       1       2</span></span><br><span class="line"><span class="string">  refcnt : 1    1       1       1       54      389     587     84</span></span><br><span class="line"><span class="string"> block_list count : 9</span></span><br><span class="line"><span class="string"> free_list address : 0x1003038d0</span></span><br></pre></td></tr></table></figure>
+<p>可以看出，虽然值相同，但并不是同一个内存块。</p>
+<h3 id="小整数实验"><a href="#小整数实验" class="headerlink" title="小整数实验"></a>小整数实验</h3><p>创建两个相同的小整数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>d=<span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d</span><br><span class="line"><span class="number">1</span></span><br><span class="line">value<span class="string">'s address is @0x100604ce8</span></span><br><span class="line"><span class="string">  value : -5    -4      -3      -2      -1      0       1       2</span></span><br><span class="line"><span class="string">  refcnt : 1    1       1       1       54      389     591     84</span></span><br><span class="line"><span class="string"> block_list count : 9</span></span><br><span class="line"><span class="string"> free_list address : 0x1003038d0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&gt;&gt;&gt; c=1</span></span><br><span class="line"><span class="string">&gt;&gt;&gt; c</span></span><br><span class="line"><span class="string">1</span></span><br><span class="line"><span class="string">value'</span>s address <span class="keyword">is</span> @<span class="number">0x100604ce8</span></span><br><span class="line">  value : <span class="number">-5</span>    <span class="number">-4</span>      <span class="number">-3</span>      <span class="number">-2</span>      <span class="number">-1</span>      <span class="number">0</span>       <span class="number">1</span>       <span class="number">2</span></span><br><span class="line">  refcnt : <span class="number">1</span>    <span class="number">1</span>       <span class="number">1</span>       <span class="number">1</span>       <span class="number">54</span>      <span class="number">389</span>     <span class="number">592</span>     <span class="number">84</span></span><br><span class="line"> block_list count : <span class="number">9</span></span><br><span class="line"> free_list address : <span class="number">0x100303828</span></span><br></pre></td></tr></table></figure>
+<p>可以看出，整数 1 只是增加了引用计数，内存块是同一个。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/语言/">语言</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Python2-7源码/">Python2.7源码</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2017/12/24/python-internal2-integer-object/" data-title="Python 2.7 源码 - 整数对象 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2017/12/19/python-internal1-begin/"  title="Python 2.7 源码 - 开始">
+ <strong>下一篇：</strong><br/> 
+ <span>Python 2.7 源码 - 开始
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Python-的面向对象"><span class="toc-number">1.</span> <span class="toc-text">Python 的面向对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Python-的整数类型"><span class="toc-number">2.</span> <span class="toc-text">Python 的整数类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#整数对象的内存"><span class="toc-number">3.</span> <span class="toc-text">整数对象的内存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#大整数创建"><span class="toc-number">3.1.</span> <span class="toc-text">大整数创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#大整数销毁"><span class="toc-number">3.2.</span> <span class="toc-text">大整数销毁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小整数"><span class="toc-number">3.3.</span> <span class="toc-text">小整数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实验"><span class="toc-number">4.</span> <span class="toc-text">实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#大整数实验"><span class="toc-number">4.1.</span> <span class="toc-text">大整数实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小整数实验"><span class="toc-number">4.2.</span> <span class="toc-text">小整数实验</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>7</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.lihulab.net" target="_blank" title="自动化测试">自动化测试</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://oj.lihulab.net" target="_blank" title="蠡湖实验室 OJ">蠡湖实验室 OJ</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2017 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
