@@ -105,17 +105,17 @@
 		
 		<h2 id="源码编译"><a href="#源码编译" class="headerlink" title="源码编译"></a>源码编译</h2><p>Python 官网可以下载到<a href="https://www.python.org/downloads/source/" target="_blank" rel="noopener">源码</a>。</p>
 <p>Linux 上编译需要先安装额外模块，例如 Ubuntu</p>
-<figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="built_in">get</span> build-dep python</span><br><span class="line">sudo apt-<span class="built_in">get</span> install libreadline-<span class="built_in">dev</span> libsqlite3-<span class="built_in">dev</span> libbz2-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libreadline6-<span class="built_in">dev</span> libsqlite3-<span class="built_in">dev</span> liblzma-<span class="built_in">dev</span> libbz2-<span class="built_in">dev</span> tk8<span class="number">.5</span>-<span class="built_in">dev</span> blt-<span class="built_in">dev</span> libgdbm-<span class="built_in">dev</span> libssl-<span class="built_in">dev</span> libncurses5-<span class="built_in">dev</span> zlib1g-<span class="built_in">dev</span> libncurses5-<span class="built_in">dev</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get build-dep python</span><br><span class="line">sudo apt-get install libreadline-dev libsqlite3-dev libbz2-dev libssl-dev libreadline6-dev libsqlite3-dev liblzma-dev libbz2-dev tk8.5-dev blt-dev libgdbm-dev libssl-dev libncurses5-dev zlib1g-dev libncurses5-dev</span><br></pre></td></tr></table></figure>
 <p>Windows 上只需打开 PC/VS9.0/pcbuild.sln，选择最少的模块 python, pythoncore 编译，如果这两个模块编译时报错，只需按照错误提示，钩上所需模块即可。</p>
 <p>Mac 上只需要</p>
-<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line"><span class="built_in">make</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
 <p>本系列文章在 Mac 上完成，但环境本身只影响编译，并不影响分析过程，读者选择方便阅读源码的环境即可。</p>
 <h2 id="第一个实验"><a href="#第一个实验" class="headerlink" title="第一个实验"></a>第一个实验</h2><p>Mac 上编译完会生成一个 <code>python.exe</code> 的可执行文件。</p>
 <p>让我们尝试在 Python 源码中修改整数输出的部分，在每一个 int 打印时，输出 <code>hello, world</code>。</p>
 <p>修改 /Objects/intobject.c，添加 <code>fprintf(fp, &quot;hello, world\n&quot;);</code></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span></span><br><span class="line">int_print(PyIntObject *v, FILE *fp, <span class="keyword">int</span> flags)</span><br><span class="line">     <span class="comment">/* flags -- not used but required by interface */</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">long</span> int_val = v-&gt;ob_ival;</span><br><span class="line">    Py_BEGIN_ALLOW_THREADS</span><br><span class="line">    <span class="comment">// </span></span><br><span class="line">    <span class="built_in">fprintf</span>(fp, <span class="string">"hello, world\n"</span>);</span><br><span class="line">    <span class="built_in">fprintf</span>(fp, <span class="string">"%ld"</span>, int_val);</span><br><span class="line">    Py_END_ALLOW_THREADS</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>以下是实验结果：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt; a=1</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt; a</span></span><br><span class="line">hello, world</span><br><span class="line">1</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt; <span class="built_in">print</span>(1)</span></span><br><span class="line">hello, world</span><br><span class="line">1</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;&gt; <span class="built_in">print</span>(<span class="string">'eee'</span>)</span></span><br><span class="line">eee</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a=1</span><br><span class="line">&gt;&gt;&gt; a</span><br><span class="line">hello, world</span><br><span class="line">1</span><br><span class="line">&gt;&gt;&gt; print(1)</span><br><span class="line">hello, world</span><br><span class="line">1</span><br><span class="line">&gt;&gt;&gt; print(&apos;eee&apos;)</span><br><span class="line">eee</span><br></pre></td></tr></table></figure>
 <p>改动只影响了整数打印的部分。</p>
   
 	</div>
@@ -229,7 +229,7 @@
 		  
 		
 		  
-			<li><a href="/categories/语言/" title="语言">语言<sup>9</sup></a></li>
+			<li><a href="/categories/语言/" title="语言">语言<sup>10</sup></a></li>
 		  
 		
 		</ul>
@@ -250,11 +250,15 @@
 			
 		
 			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>4</sup></a></li>
 			
 		
 			
@@ -270,19 +274,7 @@
 			
 		
 			
-				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
 			
 		
 			
@@ -290,11 +282,23 @@
 			
 		
 			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
 			
 		
 			
@@ -306,15 +310,11 @@
 			
 		
 			
-				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
 			
 		
 		</ul>

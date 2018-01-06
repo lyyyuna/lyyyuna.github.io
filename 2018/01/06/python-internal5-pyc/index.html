@@ -1,0 +1,620 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Python 2.7 源码 - pyc 的结构 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言Python 是一门解释性语言，源码执行需要经过：编译-字节码-虚拟机的步骤。本文就介绍一下 .py 文件编译后的 .pyc 文件结构。直接运行的代码不会生成 .pyc，而 Python 的 import 机制会触发 .pyc 文件的生成。 magic number 和修改时间我们在导入模块的源码中，能找到 .py">
+<meta name="keywords" content="Python2.7源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 2.7 源码 - pyc 的结构">
+<meta property="og:url" content="http://www.lyyyuna.com/2018/01/06/python-internal5-pyc/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言Python 是一门解释性语言，源码执行需要经过：编译-字节码-虚拟机的步骤。本文就介绍一下 .py 文件编译后的 .pyc 文件结构。直接运行的代码不会生成 .pyc，而 Python 的 import 机制会触发 .pyc 文件的生成。 magic number 和修改时间我们在导入模块的源码中，能找到 .pyc 文件的蛛丝马迹： 1234567891011// Python/import">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-01-06T13:10:46.390Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 2.7 源码 - pyc 的结构">
+<meta name="twitter:description" content="前言Python 是一门解释性语言，源码执行需要经过：编译-字节码-虚拟机的步骤。本文就介绍一下 .py 文件编译后的 .pyc 文件结构。直接运行的代码不会生成 .pyc，而 Python 的 import 机制会触发 .pyc 文件的生成。 magic number 和修改时间我们在导入模块的源码中，能找到 .pyc 文件的蛛丝马迹： 1234567891011// Python/import">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/01/06/python-internal5-pyc/" title="Python 2.7 源码 - pyc 的结构" itemprop="url">Python 2.7 源码 - pyc 的结构</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2018-01-06T08:20:02.000Z" itemprop="datePublished"> 发表于 2018-01-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#magic-number-和修改时间"><span class="toc-number">2.</span> <span class="toc-text">magic number 和修改时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PyCodeObject-对象"><span class="toc-number">3.</span> <span class="toc-text">PyCodeObject 对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#查看字节码"><span class="toc-number">4.</span> <span class="toc-text">查看字节码</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Python 是一门解释性语言，源码执行需要经过：编译-字节码-虚拟机的步骤。本文就介绍一下 <code>.py</code> 文件编译后的 <code>.pyc</code> 文件结构。直接运行的代码不会生成 <code>.pyc</code>，而 Python 的 import 机制会触发 <code>.pyc</code> 文件的生成。</p>
+<h2 id="magic-number-和修改时间"><a href="#magic-number-和修改时间" class="headerlink" title="magic number 和修改时间"></a>magic number 和修改时间</h2><p>我们在导入模块的源码中，能找到 <code>.pyc</code> 文件的蛛丝马迹：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Python/import.c</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span></span><br><span class="line">write_compiled_module(PyCodeObject *co, <span class="keyword">char</span> *cpathname, struct stat *srcstat, <span class="keyword">time_t</span> mtime)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    PyMarshal_WriteLongToFile(pyc_magic, fp, Py_MARSHAL_VERSION);</span><br><span class="line">    <span class="comment">/* First write a 0 for mtime */</span></span><br><span class="line">    PyMarshal_WriteLongToFile(<span class="number">0L</span>, fp, Py_MARSHAL_VERSION);</span><br><span class="line">    PyMarshal_WriteObjectToFile((PyObject *)co, fp, Py_MARSHAL_VERSION);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，<code>.pyc</code> 文件包含三个主要内容：magic number，修改时间，和一个 <code>PyCodeObject</code> 对象。</p>
+<p>magic number 和 Python 版本有关，magic number 不同能够防止低版本误执行高版本编译后的字节码。修改时间能让编译器决定是否重新编译源文件。</p>
+<p>我们来读取 <code>.pyc</code> 的前八字节来验证一下我们的分析，<code>func0.py</code> 是测试脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## func0.py</span></span><br><span class="line">    f = open(fname, <span class="string">'rb'</span>)</span><br><span class="line">    magic = f.read(<span class="number">4</span>)</span><br><span class="line">    moddate = f.read(<span class="number">4</span>)</span><br><span class="line">    modtime = time.asctime(time.localtime(struct.unpack(<span class="string">'I'</span>, moddate)[<span class="number">0</span>]))</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'magic number: %s'</span> % (magic.encode(<span class="string">'hex'</span>))</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'moddate %s (%s)'</span> % (moddate.encode(<span class="string">'hex'</span>), modtime)</span><br></pre></td></tr></table></figure>
+<p>被测试源文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># test.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(a)</span>:</span></span><br><span class="line">    a=<span class="number">1</span></span><br><span class="line">    <span class="keyword">print</span> a</span><br></pre></td></tr></table></figure>
+<p>使用以下强制编译成 <code>.pyc</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m py_compile test.py</span><br></pre></td></tr></table></figure>
+<p>测试结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ python func0.py test.pyc</span><br><span class="line">magic number: 03f30d0a</span><br><span class="line">moddate 5e9a4b5a (Tue Jan  2 22:42:38 2018)</span><br></pre></td></tr></table></figure>
+<h2 id="PyCodeObject-对象"><a href="#PyCodeObject-对象" class="headerlink" title="PyCodeObject 对象"></a>PyCodeObject 对象</h2><p><code>PyCodeObject</code> 是一段代码块编译的直接结果。换句话说，一个作用域，对应一个代码，最终对应一个编译后的 <code>PyCodeObject</code>。<br>首先看一下 <code>PyCodeObject</code> 的结构：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    PyObject_HEAD</span><br><span class="line">    <span class="keyword">int</span> co_argcount;		<span class="comment">/* #arguments, except *args */</span></span><br><span class="line">    <span class="keyword">int</span> co_nlocals;		<span class="comment">/* #local variables */</span></span><br><span class="line">    <span class="keyword">int</span> co_stacksize;		<span class="comment">/* #entries needed for evaluation stack */</span></span><br><span class="line">    <span class="keyword">int</span> co_flags;		<span class="comment">/* CO_..., see below */</span></span><br><span class="line">    PyObject *co_code;		<span class="comment">/* instruction opcodes */</span></span><br><span class="line">    PyObject *co_consts;	<span class="comment">/* list (constants used) */</span></span><br><span class="line">    PyObject *co_names;		<span class="comment">/* list of strings (names used) */</span></span><br><span class="line">    PyObject *co_varnames;	<span class="comment">/* tuple of strings (local variable names) */</span></span><br><span class="line">    PyObject *co_freevars;	<span class="comment">/* tuple of strings (free variable names) */</span></span><br><span class="line">    PyObject *co_cellvars;      <span class="comment">/* tuple of strings (cell variable names) */</span></span><br><span class="line">    <span class="comment">/* The rest doesn't count for hash/cmp */</span></span><br><span class="line">    PyObject *co_filename;	<span class="comment">/* string (where it was loaded from) */</span></span><br><span class="line">    PyObject *co_name;		<span class="comment">/* string (name, for reference) */</span></span><br><span class="line">    <span class="keyword">int</span> co_firstlineno;		<span class="comment">/* first source line number */</span></span><br><span class="line">    PyObject *co_lnotab;	<span class="comment">/* string (encoding addr&lt;-&gt;lineno mapping) See</span></span><br><span class="line"><span class="comment">				   Objects/lnotab_notes.txt for details. */</span></span><br><span class="line">    <span class="keyword">void</span> *co_zombieframe;     <span class="comment">/* for optimization only (see frameobject.c) */</span></span><br><span class="line">    PyObject *co_weakreflist;   <span class="comment">/* to support weakrefs to code objects */</span></span><br><span class="line">&#125; PyCodeObject;</span><br></pre></td></tr></table></figure>
+<p>一段程序不可能只有一个作用域，嵌套的子作用域存在于 <code>co_consts</code> 之中。</p>
+<p>我们写个简单的脚本，展现这种嵌套的结构：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># func0.py</span></span><br><span class="line">...</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_code</span><span class="params">(code, indent=<span class="string">''</span>)</span>:</span></span><br><span class="line">    old_indent = indent  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">"%s&lt;code&gt;"</span> % indent  </span><br><span class="line">    indent += <span class="string">'   '</span>  </span><br><span class="line">    show_hex(<span class="string">"bytecode"</span>, code.co_code, indent=indent)  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">"%s&lt;filename&gt; %r&lt;/filename&gt;"</span> % (indent, code.co_filename)  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">"%s&lt;consts&gt;"</span> % indent  </span><br><span class="line">    <span class="keyword">for</span> const <span class="keyword">in</span> code.co_consts:  </span><br><span class="line">        <span class="keyword">if</span> type(const) == types.CodeType:  </span><br><span class="line">            show_code(const, indent+<span class="string">'   '</span>)  </span><br><span class="line">        <span class="keyword">else</span>:  </span><br><span class="line">            <span class="keyword">print</span> <span class="string">"   %s%r"</span> % (indent, const)  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">"%s&lt;/consts&gt;"</span> % indent  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">"%s&lt;/code&gt;"</span> % old_indent</span><br></pre></td></tr></table></figure>
+<p>被测试的源文件：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># test.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(a)</span>:</span></span><br><span class="line">    a=<span class="number">1</span></span><br><span class="line">    <span class="keyword">print</span> a</span><br></pre></td></tr></table></figure></p>
+<p>测试步骤：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">exs $ python func0.py test.pyc</span><br><span class="line"><span class="tag">&lt;<span class="name">code</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">bytecode</span>&gt;</span> 6400008400005a000064010053<span class="tag">&lt;/<span class="name">bytecode</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">filename</span>&gt;</span> 'test.py'<span class="tag">&lt;/<span class="name">filename</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">consts</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">code</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">bytecode</span>&gt;</span> 6401007d00007c0000474864000053<span class="tag">&lt;/<span class="name">bytecode</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">filename</span>&gt;</span> 'test.py'<span class="tag">&lt;/<span class="name">filename</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">consts</span>&gt;</span></span><br><span class="line">            None</span><br><span class="line">         <span class="tag">&lt;/<span class="name">consts</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">code</span>&gt;</span></span><br><span class="line">      None</span><br><span class="line">   <span class="tag">&lt;/<span class="name">consts</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">code</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，函数 <code>add</code> 作为全局作用域的中一个子作用域，在编译结果中，是以常量形式存在于全局作用域的 <code>PyCodeObject</code> 中。</p>
+<h2 id="查看字节码"><a href="#查看字节码" class="headerlink" title="查看字节码"></a>查看字节码</h2><p>Python 提供了 <code>dis</code> 模块，其中的 <code>disassemble()</code> 函数可以反编译 <code>PyCodeObject</code> 对象，以可读的形式展现出来。<br>我们修改 <code>func0.py</code>，将字节码对应的指令打印出来，增加下述代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">show_hex(<span class="string">"bytecode"</span>, code.co_code, indent=indent)  </span><br><span class="line"><span class="keyword">print</span> <span class="string">"%s&lt;dis&gt;"</span> % indent  </span><br><span class="line">dis.disassemble(code)  </span><br><span class="line"><span class="keyword">print</span> <span class="string">"%s&lt;/dis&gt;"</span> % indent  </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>测试结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">$ python func0.py test.pyc</span><br><span class="line">&lt;code&gt;</span><br><span class="line">   &lt;bytecode&gt; 6400008400005a000064010053&lt;/bytecode&gt;</span><br><span class="line">   &lt;dis&gt;</span><br><span class="line">  3           0 LOAD_CONST               0 (&lt;code object add at 0x109aa1c30, file &quot;test.py&quot;, line 3&gt;)</span><br><span class="line">              3 MAKE_FUNCTION            0</span><br><span class="line">              6 STORE_NAME               0 (add)</span><br><span class="line">              9 LOAD_CONST               1 (None)</span><br><span class="line">             12 RETURN_VALUE</span><br><span class="line">   &lt;/dis&gt;</span><br><span class="line">   &lt;filename&gt; &apos;test.py&apos;&lt;/filename&gt;</span><br><span class="line">   &lt;consts&gt;</span><br><span class="line">      &lt;code&gt;</span><br><span class="line">         &lt;bytecode&gt; 6401007d00007c0000474864000053&lt;/bytecode&gt;</span><br><span class="line">         &lt;dis&gt;</span><br><span class="line">  4           0 LOAD_CONST               1 (1)</span><br><span class="line">              3 STORE_FAST               0 (a)</span><br><span class="line"></span><br><span class="line">  5           6 LOAD_FAST                0 (a)</span><br><span class="line">              9 PRINT_ITEM</span><br><span class="line">             10 PRINT_NEWLINE</span><br><span class="line">             11 LOAD_CONST               0 (None)</span><br><span class="line">             14 RETURN_VALUE</span><br><span class="line">         &lt;/dis&gt;</span><br><span class="line">         &lt;filename&gt; &apos;test.py&apos;&lt;/filename&gt;</span><br><span class="line">         &lt;consts&gt;</span><br><span class="line">            None</span><br><span class="line">            1</span><br><span class="line">         &lt;/consts&gt;</span><br><span class="line">      &lt;/code&gt;</span><br><span class="line">      None</span><br><span class="line">   &lt;/consts&gt;</span><br><span class="line">&lt;/code&gt;</span><br></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/语言/">语言</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Python2-7源码/">Python2.7源码</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2018/01/06/python-internal5-pyc/" data-title="Python 2.7 源码 - pyc 的结构 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2018/01/01/python-internal4-lldb/"  title="Python 3.x 源码 - 编译调试之旅">
+ <strong>下一篇：</strong><br/> 
+ <span>Python 3.x 源码 - 编译调试之旅
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#magic-number-和修改时间"><span class="toc-number">2.</span> <span class="toc-text">magic number 和修改时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PyCodeObject-对象"><span class="toc-number">3.</span> <span class="toc-text">PyCodeObject 对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#查看字节码"><span class="toc-number">4.</span> <span class="toc-text">查看字节码</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>10</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.lihulab.net" target="_blank" title="自动化测试">自动化测试</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://oj.lihulab.net" target="_blank" title="蠡湖实验室 OJ">蠡湖实验室 OJ</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
