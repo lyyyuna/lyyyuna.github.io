@@ -1,0 +1,654 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>用 Python 实现一个 ORM | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言本文实现一个非常简单的 ORM 初稿：  完成 Python 类（模型）与数据库表的映射 完成类实例与表每行记录的映射 完成实例操作与增删改查的 SQL 语句的映射  这个初稿不涉及数据库的真正操作，只是在 user.save() 的时候打印类似 insert into user ... 的 SQL 语句。本文所有">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 Python 实现一个 ORM">
+<meta property="og:url" content="http://www.lyyyuna.com/2018/04/28/python-orm1/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言本文实现一个非常简单的 ORM 初稿：  完成 Python 类（模型）与数据库表的映射 完成类实例与表每行记录的映射 完成实例操作与增删改查的 SQL 语句的映射  这个初稿不涉及数据库的真正操作，只是在 user.save() 的时候打印类似 insert into user ... 的 SQL 语句。本文所有代码基于 Python2。 ORM 为什么需要元类假设有如下的类： 123cla">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-04-28T03:12:50.935Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用 Python 实现一个 ORM">
+<meta name="twitter:description" content="前言本文实现一个非常简单的 ORM 初稿：  完成 Python 类（模型）与数据库表的映射 完成类实例与表每行记录的映射 完成实例操作与增删改查的 SQL 语句的映射  这个初稿不涉及数据库的真正操作，只是在 user.save() 的时候打印类似 insert into user ... 的 SQL 语句。本文所有代码基于 Python2。 ORM 为什么需要元类假设有如下的类： 123cla">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/04/28/python-orm1/" title="用 Python 实现一个 ORM" itemprop="url">用 Python 实现一个 ORM</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2018-04-28T03:33:31.000Z" itemprop="datePublished"> 发表于 2018-04-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ORM-为什么需要元类"><span class="toc-number">2.</span> <span class="toc-text">ORM 为什么需要元类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扫描表名"><span class="toc-number">3.</span> <span class="toc-text">扫描表名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扫描字段"><span class="toc-number">4.</span> <span class="toc-text">扫描字段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实例属性"><span class="toc-number">5.</span> <span class="toc-text">实例属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#与-SQL-语句的映射"><span class="toc-number">6.</span> <span class="toc-text">与 SQL 语句的映射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小结"><span class="toc-number">7.</span> <span class="toc-text">小结</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文实现一个非常简单的 ORM 初稿：</p>
+<ol>
+<li>完成 Python 类（模型）与数据库表的映射</li>
+<li>完成类实例与表每行记录的映射</li>
+<li>完成实例操作与增删改查的 SQL 语句的映射</li>
+</ol>
+<p>这个初稿不涉及数据库的真正操作，只是在 <code>user.save()</code> 的时候打印类似 <code>insert into user ...</code> 的 SQL 语句。本文所有代码基于 Python2。</p>
+<h2 id="ORM-为什么需要元类"><a href="#ORM-为什么需要元类" class="headerlink" title="ORM 为什么需要元类"></a>ORM 为什么需要元类</h2><p>假设有如下的类：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span><span class="params">()</span>:</span></span><br><span class="line">    __table__ = <span class="string">'User_table'</span></span><br><span class="line">    student_id = IntegerField(<span class="string">'studentid'</span>, primaryKey=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<p>回想 Django 的 ORM，每个模型都继承了一个 <code>Model</code> 类，我们也如法炮制。而所谓类与表的映射，就是在 Python 虚拟机启动后，自动寻找类属性，并将 <code>__table__</code> 转化为表名， <code>student_id</code> 转化为列名。这种需求类似于运行时自省，而普通类的 <code>__new__</code> <code>__init__</code> 都是实例化类时被调用，在这两个方法上做文章没有用处。</p>
+<p>这时候就该用元类 <code>metaclass</code> 了。</p>
+<p>在 <a href="http://www.lyyyuna.com/2017/12/24/python-internal2-integer-object/">Python2.7 源码 - 整数对象</a> 中已经有过介绍，元类 <code>metaclass</code> 是类的类。除了整数这种内置类型，用户自定义类型也有元类的概念。</p>
+<ul>
+<li>内置类定义在 C 源码中，故虚拟机运行后，就立即存在。</li>
+<li>而用 <code>class</code> 语法定义的类，则需要根据元类 <code>metaclass</code> 来创建。</li>
+<li>内置类也有元类，最终两者在虚拟机中拥有相同的结构。</li>
+</ul>
+<p>元类 <code>metaclass</code> 实例化的结果就是我们的普通类，由虚拟机启动时自动执行。在元类实例化的过程中，便可以扫描类定义属性，实现类与表的映射。自定义类默认继承自 <code>object</code>，获得的元类为 <code>type</code>。</p>
+<p>Python2.x 中，用以下语法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span><span class="params">()</span>:</span></span><br><span class="line">    __metaclass__ = Meta</span><br></pre></td></tr></table></figure>
+<p>可以将类 <code>C</code> 对应的元类替换为 <code>Meta</code>。这么一看，只要设计自己的元类，并在模型中添加进去就可以了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span><span class="params">()</span>:</span></span><br><span class="line">    __metaclass__ = Meta</span><br><span class="line">    __table__ = <span class="string">'User_table'</span></span><br><span class="line">    student_id = IntegerField(<span class="string">'studentid'</span>, primaryKey=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<p>但这么做，会在产品业务代码中暴露太多复杂的概念。我们可以设计一个公共的父类，并修改此父类的元类，这样所有继承的子类都能获得新的元类：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ModelType</span><span class="params">(type)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__new__</span><span class="params">(cls, name, bases, attrs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> type.__new__(cls, name, bases, attrs)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span><span class="params">()</span>:</span></span><br><span class="line">    __metaclass__ = ModelType</span><br><span class="line"></span><br><span class="line"><span class="comment"># Application</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span><span class="params">(Model)</span>:</span></span><br><span class="line">    __table__ = <span class="string">'User_table'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Teacher</span><span class="params">(Model)</span>:</span></span><br><span class="line">    __table__ = <span class="string">'Teacher_table'</span></span><br></pre></td></tr></table></figure>
+<p>现在当 <code>User</code> <code>Teacher</code> 类在虚拟机中创建时，其行为就由 <code>ModelType</code> 控制。</p>
+<p><code>ModelType</code> 需实现 <code>__new__</code> 函数，接受 <code>name, bases, attrs</code> 三个参数，<code>attrs</code> 是类属性构成的字典。该 <code>__new__</code> 函数最终需返回 <code>type.__new__(cls, name, bases, attrs)</code> 的结果，即类在虚拟机中的表示。</p>
+<p>其中，<code>attrs</code> 字典由 Python 虚拟机创建类时填入。</p>
+<h2 id="扫描表名"><a href="#扫描表名" class="headerlink" title="扫描表名"></a>扫描表名</h2><p>由上可知，可在元类的 <code>__new__</code> 函数中获取 <code>__table__</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ModelType</span><span class="params">(type)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__new__</span><span class="params">(cls, name, bases, attrs)</span>:</span></span><br><span class="line">        tablename = attrs.get(<span class="string">'__table__'</span>, <span class="keyword">None</span>) <span class="keyword">or</span> name</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'Get table name'</span>, tablename</span><br><span class="line">        <span class="keyword">return</span> type.__new__(cls, name, bases, attrs)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span><span class="params">()</span>:</span></span><br><span class="line">    __metaclass__ = ModelType</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span><span class="params">(Model)</span>:</span></span><br><span class="line">    __table__ = <span class="string">'User_table'</span></span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Get table name Model</span><br><span class="line">Get table name User_table</span><br></pre></td></tr></table></figure>
+<p>为什么会输出两行？因为父类 <code>Model</code> 也会被元类 <code>ModelType</code> 扫描，所以应将父类自身排除出扫描：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ModelMeta</span><span class="params">(type)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__new__</span><span class="params">(cls, name, bases, attrs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> name==<span class="string">'Model'</span>:</span><br><span class="line">            <span class="keyword">return</span> type.__new__(cls, name, bases, attrs)</span><br><span class="line"></span><br><span class="line">        tablename = attrs.get(<span class="string">'__table__'</span>, <span class="keyword">None</span>) <span class="keyword">or</span> name</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'Get table name'</span>, tablename</span><br></pre></td></tr></table></figure>
+<p>这次输出没有 <code>Model</code> ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Get table name User_table</span><br></pre></td></tr></table></figure>
+<h2 id="扫描字段"><a href="#扫描字段" class="headerlink" title="扫描字段"></a>扫描字段</h2><p>字段的扫描是类似的，我们先完成字段类型的定义，让所有字段继承自 <code>Field</code> 类。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Field</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, sqlType, primaryKey, default)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">        self.sqlType = sqlType</span><br><span class="line">        self.primaryKey = primaryKey</span><br><span class="line">        self.default = default</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'&lt;%s, %s:%s&gt;'</span> % (self.__class__, self.sqlType, self.name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StringField</span><span class="params">(Field)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name=None, sqlType=<span class="string">'character varying(100)'</span>, primaryKey=False, default=<span class="string">''</span>)</span>:</span></span><br><span class="line">        super(StringField, self).__init__(name, sqlType, primaryKey, default)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IntegerField</span><span class="params">(Field)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name=None, sqlType=<span class="string">'integer'</span>, primaryKey=False, default=<span class="number">0</span>)</span>:</span></span><br><span class="line">        super(IntegerField, self).__init__(name, sqlType, primaryKey, default)</span><br></pre></td></tr></table></figure>
+<p>由于所有表字段类有一个相同的父类，所以可以通过 <code>isinstance(v, Field)</code> 识别一个类属性是否属于表字段。以下代码在类属性 <code>attrs</code> 中遍历，找出字段并存储在 <code>mappings</code> 字典和 <code>fields</code> 列表中。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mappings = &#123;&#125;</span><br><span class="line">fields = []</span><br><span class="line">primary = <span class="keyword">None</span></span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> attrs.iteritems():</span><br><span class="line">    <span class="keyword">if</span> isinstance(v, Field):</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'Found one field'</span>, k</span><br><span class="line">        mappings[k] = v</span><br><span class="line">        <span class="keyword">if</span> v.primaryKey == <span class="keyword">True</span>:</span><br><span class="line">            <span class="keyword">if</span> primary == <span class="keyword">None</span>:</span><br><span class="line">                primary = k</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">raise</span> RuntimeError(<span class="string">"Duplicate primary key: %s"</span>, k)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            fields.append(k)</span><br><span class="line"><span class="keyword">if</span> primary == <span class="keyword">None</span>:</span><br><span class="line">    <span class="keyword">raise</span> RuntimeError(<span class="string">"No primary key given."</span>)</span><br></pre></td></tr></table></figure>
+<p>将上述代码应用于 <code>User</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span><span class="params">(Model)</span>:</span></span><br><span class="line">    __table__ = <span class="string">'User_table'</span></span><br><span class="line">    student_id = IntegerField(<span class="string">'studentid'</span>, primaryKey=<span class="keyword">True</span>)</span><br><span class="line">    name = StringField(<span class="string">'username'</span>)</span><br><span class="line">    age = IntegerField(<span class="string">'age'</span>)</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Get table name User_table</span><br><span class="line">Found one field age</span><br><span class="line">Found one field name</span><br><span class="line">Found one field student_id</span><br></pre></td></tr></table></figure>
+<h2 id="实例属性"><a href="#实例属性" class="headerlink" title="实例属性"></a>实例属性</h2><p>在类中需要移除所有的字段属性 <code>attrs.pop(k)</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> k <span class="keyword">in</span> mappings.keys():</span><br><span class="line">    attrs.pop(k)</span><br></pre></td></tr></table></figure>
+<p>因为业务代码不需要类属性，每个实例需要访问的是实例属性。比如</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">u2 = User(student_id=<span class="number">3</span>, name=<span class="string">'blue'</span>, age=<span class="number">123</span>)</span><br><span class="line">print(u2.name)</span><br></pre></td></tr></table></figure>
+<p>这里，让父类 <code>Model</code> 继承 <code>dict</code> 类，并添加 <code>__getattr__</code> 和 <code>__setattr__</code> 方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span><span class="params">(dict)</span>:</span></span><br><span class="line">    __metaclass__ = ModelMeta</span><br><span class="line">    __table__ = <span class="string">'Should not show'</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, **kw)</span>:</span></span><br><span class="line">        super(Model, self).__init__(**kw)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, key)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">return</span> self[key]</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">raise</span> AttributeError(<span class="string">r"'Dict' object has no attribute '%s'"</span> % key)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__setattr__</span><span class="params">(self, key, value)</span>:</span></span><br><span class="line">        self[key] = value</span><br></pre></td></tr></table></figure>
+<p>访问 <code>u2.name</code> 便等价于 <code>u2[name]</code>，而 <code>User</code> 间接继承自字典，<code>User(student_id=3, name=&#39;blue&#39;, age=123)</code>初始化后，便能访问字典元素<code>u2[name]</code>。</p>
+<h2 id="与-SQL-语句的映射"><a href="#与-SQL-语句的映射" class="headerlink" title="与 SQL 语句的映射"></a>与 SQL 语句的映射</h2><p>我们可以在元类 <code>ModelMeta</code> 中预先定义一些 SQL 语句的模板，并存储在类属性 <code>attrs</code> 中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">attrs[<span class="string">'__select__'</span>] = <span class="string">"select '%s', %s from '%s'"</span> % (primary, <span class="string">','</span>.join(escaped_fields), tablename)</span><br><span class="line">attrs[<span class="string">'__insert__'</span>] = <span class="string">"insert into '%s' (%s, '%s') values (%s)"</span> % (tablename, <span class="string">','</span>.join(escaped_fields), primary, create_args_string(len(escaped_fields)+<span class="number">1</span>))</span><br><span class="line">attrs[<span class="string">'__update__'</span>] = <span class="string">"update '%s' set %s where '%s' =?"</span> % (tablename, <span class="string">','</span>.join(map(<span class="keyword">lambda</span> x: <span class="string">"'%s'=?"</span> % (mappings.get(x).name), fields)), primary)</span><br><span class="line">attrs[<span class="string">'__delete__'</span>] = <span class="string">"delete from '%s' where '%s' = ?"</span> % (tablename, primary)</span><br></pre></td></tr></table></figure>
+<p>接着在 <code>Model</code> 中添加 <code>select</code> 和 <code>save</code> 方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@classmethod</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select</span><span class="params">(cls, id)</span>:</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">"%s where '%s' = %s;"</span> % (cls.__select__, cls.__primarykey__, id)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getValue</span><span class="params">(self, k)</span>:</span></span><br><span class="line">    value = getattr(self, k, <span class="keyword">None</span>)</span><br><span class="line">    <span class="keyword">if</span> value <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        field = self.__mappings__[k]</span><br><span class="line">        <span class="keyword">if</span> field.default <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">            value = field.default</span><br><span class="line">            setattr(self, k, value)</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">save</span><span class="params">(self)</span>:</span></span><br><span class="line">    args = map(self.getValue, self.__fields__)</span><br><span class="line">    args.append(self.getValue(self.__primarykey__))</span><br><span class="line">    <span class="keyword">print</span> self.__insert__, args</span><br></pre></td></tr></table></figure>
+<p>这两个方法对应于 SQL 中的 <code>SELECT</code> 和 <code>INSERT</code> 语句。逻辑也比较简单，从之前存储在 <code>mappings</code> 和 <code>fields</code> 的字段名，再结合实例属性，拼接出 SQL 语句。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> <span class="string">'Test select sql command:'</span></span><br><span class="line">User.select(id=<span class="number">1</span>)</span><br><span class="line"><span class="keyword">print</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">'Test insert sql command:'</span></span><br><span class="line">u2 = User(student_id=<span class="number">3</span>, name=<span class="string">'blue'</span>, age=<span class="number">123</span>)</span><br><span class="line">u2.save()</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Test <span class="keyword">select</span> <span class="keyword">sql</span> command:</span><br><span class="line"><span class="keyword">select</span> <span class="string">'student_id'</span>, <span class="string">'age'</span>,<span class="string">'name'</span> <span class="keyword">from</span> <span class="string">'User_table'</span> <span class="keyword">where</span> <span class="string">'student_id'</span> = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">Test <span class="keyword">insert</span> <span class="keyword">sql</span> command:</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="string">'User_table'</span> (<span class="string">'age'</span>,<span class="string">'name'</span>, <span class="string">'student_id'</span>) <span class="keyword">values</span> (?, ?, ?) [<span class="number">123</span>, <span class="string">'blue'</span>, <span class="number">3</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>至此，一个简单的 ORM 原型就完成了。详细代码可见：<a href="https://github.com/lyyyuna/script_collection/tree/master/orm_draft" target="_blank" rel="noopener">https://github.com/lyyyuna/script_collection/tree/master/orm_draft</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/语言/">语言</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Python/">Python</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2018/04/28/python-orm1/" data-title="用 Python 实现一个 ORM | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2018/03/16/http-proxy-https/"  title="实现基于 HTTPS 代理的中间人攻击">
+ <strong>下一篇：</strong><br/> 
+ <span>实现基于 HTTPS 代理的中间人攻击
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ORM-为什么需要元类"><span class="toc-number">2.</span> <span class="toc-text">ORM 为什么需要元类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扫描表名"><span class="toc-number">3.</span> <span class="toc-text">扫描表名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扫描字段"><span class="toc-number">4.</span> <span class="toc-text">扫描字段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实例属性"><span class="toc-number">5.</span> <span class="toc-text">实例属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#与-SQL-语句的映射"><span class="toc-number">6.</span> <span class="toc-text">与 SQL 语句的映射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小结"><span class="toc-number">7.</span> <span class="toc-text">小结</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>12</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Python/" title="Python">Python<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>5</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://www.lihulab.net" target="_blank" title="自动化测试">自动化测试</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://oj.lihulab.net" target="_blank" title="蠡湖实验室 OJ">蠡湖实验室 OJ</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
