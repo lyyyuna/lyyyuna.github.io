@@ -4,25 +4,24 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>SCons 用户指南第四章 - 编译和链接库 | lyyyuna 的小花园</title>
+    <title>atop 简单使用 | lyyyuna 的小花园</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="lyyyuna">
     
 
     
-    <meta name="description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &am">
-<meta name="keywords" content="scons">
+    <meta name="description" content="atop 是一个系统性能监控工具，可以在系统级别监控 CPU、内存、硬盘和网络的使用情况。 atop 不仅可以以交互式的方式运行，还可以一一定的频率，将性能数据写入日志中。所以当服务器出现问题之后，便可分析 atop 日志文件来判断是否有进程异常退出、内存和 CPU 方面的异常。 字段含义PRC - Process l">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SCons 用户指南第四章 - 编译和链接库">
-<meta property="og:url" content="http://www.lyyyuna.com/2015/12/25/scons4-building-and-linking-with-libraries/index.html">
+<meta property="og:title" content="atop 简单使用">
+<meta property="og:url" content="http://www.lyyyuna.com/2018/07/04/perftest-atop/index.html">
 <meta property="og:site_name" content="lyyyuna 的小花园">
-<meta property="og:description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &amp;apos;f2.c&amp;apos;, &amp;apos;f3.c&amp;apos;]) SCons 会自动根据你的系统使用合适的库文">
+<meta property="og:description" content="atop 是一个系统性能监控工具，可以在系统级别监控 CPU、内存、硬盘和网络的使用情况。 atop 不仅可以以交互式的方式运行，还可以一一定的频率，将性能数据写入日志中。所以当服务器出现问题之后，便可分析 atop 日志文件来判断是否有进程异常退出、内存和 CPU 方面的异常。 字段含义PRC - Process level totals sys, 内核态下运行时间 user, 用户态下运行时间">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-11-29T00:19:00.168Z">
+<meta property="og:updated_time" content="2018-07-04T09:40:31.710Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SCons 用户指南第四章 - 编译和链接库">
-<meta name="twitter:description" content="在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。 4.1 编译库你可以代替 Program 使用 Library 来生成你自己的库文件： Library(&amp;apos;foo&amp;apos;, [&amp;apos;f1.c&amp;apos;, &amp;apos;f2.c&amp;apos;, &amp;apos;f3.c&amp;apos;]) SCons 会自动根据你的系统使用合适的库文">
+<meta name="twitter:title" content="atop 简单使用">
+<meta name="twitter:description" content="atop 是一个系统性能监控工具，可以在系统级别监控 CPU、内存、硬盘和网络的使用情况。 atop 不仅可以以交互式的方式运行，还可以一一定的频率，将性能数据写入日志中。所以当服务器出现问题之后，便可分析 atop 日志文件来判断是否有进程异常退出、内存和 CPU 方面的异常。 字段含义PRC - Process level totals sys, 内核态下运行时间 user, 用户态下运行时间">
 
     
     <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
@@ -83,14 +82,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/12/25/scons4-building-and-linking-with-libraries/" title="SCons 用户指南第四章 - 编译和链接库" itemprop="url">SCons 用户指南第四章 - 编译和链接库</a>
+      <a href="/2018/07/04/perftest-atop/" title="atop 简单使用" itemprop="url">atop 简单使用</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
 		
   <p class="article-time">
-    <time datetime="2015-12-25T12:11:03.000Z" itemprop="datePublished"> 发表于 2015-12-25</time>
+    <time datetime="2018-07-04T08:36:38.000Z" itemprop="datePublished"> 发表于 2018-07-04</time>
     
   </p>
 </header>
@@ -99,101 +98,75 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-编译库"><span class="toc-number">1.</span> <span class="toc-text">4.1 编译库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-从源码或二进制文件编译库"><span class="toc-number">1.1.</span> <span class="toc-text">4.1.1 从源码或二进制文件编译库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-编译静态库：使用-StaticLibrary-方法"><span class="toc-number">1.2.</span> <span class="toc-text">4.1.2 编译静态库：使用 StaticLibrary 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><span class="toc-number">1.3.</span> <span class="toc-text">4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-链接库"><span class="toc-number">2.</span> <span class="toc-text">4.2 链接库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-寻找库：-LIBPATH-构造变量"><span class="toc-number">3.</span> <span class="toc-text">4.3 寻找库：$LIBPATH 构造变量</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#字段含义"><span class="toc-number">1.</span> <span class="toc-text">字段含义</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PRC-Process-level-totals"><span class="toc-number">1.0.1.</span> <span class="toc-text">PRC - Process level totals</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPU-CPU-utilization"><span class="toc-number">1.0.2.</span> <span class="toc-text">CPU - CPU utilization</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPL-CPU-load-information"><span class="toc-number">1.0.3.</span> <span class="toc-text">CPL - CPU load information</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MEM-Memory-occupation"><span class="toc-number">1.0.4.</span> <span class="toc-text">MEM - Memory occupation</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SWP-Swap-occupation-and-overcommit-info"><span class="toc-number">1.0.5.</span> <span class="toc-text">SWP - Swap occupation and overcommit info</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PAG-Paging-frequency"><span class="toc-number">1.0.6.</span> <span class="toc-text">PAG - Paging frequency</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DSK-LVM-Disk-utilization-Logical-volumn"><span class="toc-number">1.0.7.</span> <span class="toc-text">DSK/LVM - Disk utilization/Logical volumn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NET-Network-utilization-TCP-IP"><span class="toc-number">1.0.8.</span> <span class="toc-text">NET - Network utilization (TCP/IP)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用快捷键"><span class="toc-number">2.</span> <span class="toc-text">常用快捷键</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#atop日志"><span class="toc-number">3.</span> <span class="toc-text">atop日志</span></a></li></ol>
 		
 		</div>
 		
-		<p>在大型软件工程中，经常将部分软件合并成一个或多个库文件。SCons 在创建和使用库文件方面非常简单易用。</p>
-<h2 id="4-1-编译库"><a href="#4-1-编译库" class="headerlink" title="4.1 编译库"></a>4.1 编译库</h2><p>你可以代替 Program 使用 Library 来生成你自己的库文件：</p>
-<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
-</code></pre><p>SCons 会自动根据你的系统使用合适的库文件前缀和后缀。所以在 POSIX 或 Linux 系统上，上面的例子编译过程如下：</p>
-<pre><code>% scons -Q
-cc -o f1.o -c f1.c
-cc -o f2.o -c f2.c
-cc -o f3.o -c f3.c
-ar rc libfoo.a f1.o f2.o f3.o
-ranlib libfoo.a
-</code></pre><p>在 Windows 系统上，上述例子的编译过程如下：</p>
-<pre><code>C:\&gt;scons -Q
-cl /Fof1.obj /c f1.c /nologo
-cl /Fof2.obj /c f2.c /nologo
-cl /Fof3.obj /c f3.c /nologo
-lib /nologo /OUT:foo.lib f1.obj f2.obj f3.obj
-</code></pre><p>目标库文件的命名规则类似于直接生成程序：如果你没有显示指定目标库文件名称，SCons 会从第一个指定的源文件名字中推导出，并且 SCons 会加上合适的文件前缀和后缀。</p>
-<h3 id="4-1-1-从源码或二进制文件编译库"><a href="#4-1-1-从源码或二进制文件编译库" class="headerlink" title="4.1.1 从源码或二进制文件编译库"></a>4.1.1 从源码或二进制文件编译库</h3><p>上一个例子战士了如何从一系列源码中编译出库文件，然而你也可以在 Library 调用中放置二进制文件，它会自动分析出这些是二进制文件。事实上，你也可以在源队列中混合使用源代码文件和二进制文件：</p>
-<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.o&apos;, &apos;f3.c&apos;, &apos;f4.o&apos;])
-</code></pre><p>SCons 能够意识到在生成最终库文件前需要编译哪些源文件：</p>
-<pre><code>% scons -Q
-cc -o f1.o -c f1.c
-cc -o f3.o -c f3.c
-ar rc libfoo.a f1.o f2.o f3.o f4.o
-ranlib libfoo.a
-</code></pre><p>当然，在这个例子中，必须先编译出这些二进制文件。请查看第五章，如何显示编译自己的二进制文件并包含在自己的库文件中。</p>
-<h3 id="4-1-2-编译静态库：使用-StaticLibrary-方法"><a href="#4-1-2-编译静态库：使用-StaticLibrary-方法" class="headerlink" title="4.1.2 编译静态库：使用 StaticLibrary 方法"></a>4.1.2 编译静态库：使用 StaticLibrary 方法</h3><p>Library 方法能够编译一个传统的静态库文件。如果你想明确地控制库文件的类型，你可以使用 StaticLibrary 方法来代替 Library：</p>
-<pre><code>StaticLibrary(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
-</code></pre><p>在功能上它们之间没有区别。</p>
-<h3 id="4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><a href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法" class="headerlink" title="4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法"></a>4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</h3><p>如果你像编译在 POSIX 系统或者 Windows 系统上编译动态库文件，你应该使用 SharedLibrary 方法：</p>
-<pre><code>SharedLibrary(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
-</code></pre><p>在 POSIX 系统上输出为：</p>
-<pre><code>% scons -Q
-cc -o f1.os -c f1.c
-cc -o f2.os -c f2.c
-cc -o f3.os -c f3.c
-cc -o libfoo.so -shared f1.os f2.os f3.os
-</code></pre><p>在 Windows 系统上输出为：</p>
-<pre><code>C:\&gt;scons -Q
-cl /Fof1.obj /c f1.c /nologo
-cl /Fof2.obj /c f2.c /nologo
-cl /Fof3.obj /c f3.c /nologo
-link /nologo /dll /out:foo.dll /implib:foo.lib f1.obj f2.obj f3.obj
-RegServerFunc(target, source, env)
-embedManifestDllCheck(target, source, env)
-</code></pre><p>你可以注意到 SCons 能够正确处理输出文件的过程，在 POSIX 系统上假设 -shared 选项，在 Windows 系统上加上 /dll 选项。</p>
-<h2 id="4-2-链接库"><a href="#4-2-链接库" class="headerlink" title="4.2 链接库"></a>4.2 链接库</h2><p>通常，你之所以编译库文件是为了在多个程序中链接它。为了链接库，你只需要在 $LIBS 构造变量中指定库，在 $LIBPATH 构造变量中指定库文件所在的目录：</p>
-<pre><code>Library(&apos;foo&apos;, [&apos;f1.c&apos;, &apos;f2.c&apos;, &apos;f3.c&apos;])
-Program(&apos;prog.c&apos;, LIBS=[&apos;foo&apos;, &apos;bar&apos;], LIBPATH=&apos;.&apos;)
-</code></pre><p>很显然可以注意到，你不需要指定库的前缀（比如 lib）或者后缀（比如 .a 或 .lib）。SCons 能够为当前的系统使用正确的前缀和后缀。</p>
-<p>在类 POSIX 系统中，以上例子的编译过程为：</p>
-<pre><code>% scons -Q
-cc -o f1.o -c f1.c
-cc -o f2.o -c f2.c
-cc -o f3.o -c f3.c
-ar rc libfoo.a f1.o f2.o f3.o
-ranlib libfoo.a
-cc -o prog.o -c prog.c
-cc -o prog prog.o -L. -lfoo -lbar
-</code></pre><p>在 Windows 系统上，以上例子的编译过程为：</p>
-<pre><code>C:\&gt;scons -Q
-cl /Fof1.obj /c f1.c /nologo
-cl /Fof2.obj /c f2.c /nologo
-cl /Fof3.obj /c f3.c /nologo
-lib /nologo /OUT:foo.lib f1.obj f2.obj f3.obj
-cl /Foprog.obj /c prog.c /nologo
-link /nologo /OUT:prog.exe /LIBPATH:. foo.lib bar.lib prog.obj
-embedManifestExeCheck(target, source, env)
-</code></pre><p>像之前一样，可以注意到 SCons 能够正确地构造命令行，以确保在各个系统上能够链接正确的库。</p>
-<p>并且，如果你只有一个库需要链接，你可以用单个字符串，来代替 Python 的列表，即：</p>
-<pre><code>Program(&apos;prog.c&apos;, LIBS=&apos;foo&apos;, LIBPATH=&apos;.&apos;)
-</code></pre><p>这和以下是等价的：</p>
-<pre><code>Program(&apos;prog.c&apos;, LIBS=[&apos;foo&apos;], LIBPATH=&apos;.&apos;)
-</code></pre><p>这和 SCons 在处理单个源文件中既可以使用字符串或者列表，是类似的。</p>
-<h2 id="4-3-寻找库：-LIBPATH-构造变量"><a href="#4-3-寻找库：-LIBPATH-构造变量" class="headerlink" title="4.3 寻找库：$LIBPATH 构造变量"></a>4.3 寻找库：$LIBPATH 构造变量</h2><p>链接器默认只在系统指定的路径中寻找库文件。当你指定了 $LIBPATH 构造变量，SCons 知道如何寻找库文件。$LIBPATH 由一系列目录路径构成，如下：</p>
-<pre><code>Program(&apos;prog.c&apos;, LIBS = &apos;m&apos;, LIBPATH = [&apos;/usr/lib&apos;, &apos;/usr/local/lib&apos;])
-</code></pre><p>推荐使用 Python 列表，因为这具有可移植性。你也可以将所有目录名字放在一个字符串中。在 POSIX 系统中，使用冒号来分割目录路径：</p>
-<pre><code>LIBPATH = &apos;/usr/lib:/usr/local/lib&apos;
-</code></pre><p>或者在 Windows 系统上使用分号来分割：</p>
-<pre><code>LIBPATH = &apos;C:\\lib;D:\\lib&apos;
-</code></pre><p>（注意到，在 Windows 系统上必须对反斜杠进行转义。）</p>
-<p>当链接器执行时，SCons 会生成合适的标志位，这样链接器就将去寻找 SCons 指定的路径。所以在 POSIX 系统上，上述例子的编译过程如下：</p>
-<pre><code>% scons -Q
-cc -o prog.o -c prog.c
-cc -o prog prog.o -L/usr/lib -L/usr/local/lib -lm
-</code></pre><p>或者在 Windows 系统上，上述例子的编译过程如下：</p>
-<pre><code>C:\&gt;scons -Q
-cl /Foprog.obj /c prog.c /nologo
-link /nologo /OUT:prog.exe /LIBPATH:\usr\lib /LIBPATH:\usr\local\lib m.lib prog.obj
-embedManifestExeCheck(target, source, env)
-</code></pre><p>注意到 SCons 能够正确地根据系统生成合适的命令行参数。</p>
+		<p>atop 是一个系统性能监控工具，可以在系统级别监控 CPU、内存、硬盘和网络的使用情况。</p>
+<p>atop 不仅可以以交互式的方式运行，还可以一一定的频率，将性能数据写入日志中。所以当服务器出现问题之后，便可分析 atop 日志文件来判断是否有进程异常退出、内存和 CPU 方面的异常。</p>
+<h2 id="字段含义"><a href="#字段含义" class="headerlink" title="字段含义"></a>字段含义</h2><h4 id="PRC-Process-level-totals"><a href="#PRC-Process-level-totals" class="headerlink" title="PRC - Process level totals"></a>PRC - Process level totals</h4><ol>
+<li>sys, 内核态下运行时间</li>
+<li>user, 用户态下运行时间</li>
+<li>#proc, 当前所有的进程数量</li>
+<li>#trun, 处于 running 状态下线程数量</li>
+<li>#zombie，僵尸进程的数量</li>
+<li>#exit，采样周期内退出的进程数量</li>
+</ol>
+<h4 id="CPU-CPU-utilization"><a href="#CPU-CPU-utilization" class="headerlink" title="CPU - CPU utilization"></a>CPU - CPU utilization</h4><p>展示所有 CPU 的使用情况。在多处理器的系统中，会展示每一个独立内核的使用情况。</p>
+<ol>
+<li>sys、usr, CPU 被用于处理进程时，进程在内核态、用户态所占CPU的时间比例</li>
+<li>irq, CPU 被用于处理中断的时间比例</li>
+<li>idle, CPU 处在完全空闲状态的时间比例</li>
+<li>wait, CPU 处在“进程等待磁盘IO 导致 CPU 空闲”状态的时间比例</li>
+</ol>
+<h4 id="CPL-CPU-load-information"><a href="#CPL-CPU-load-information" class="headerlink" title="CPL - CPU load information"></a>CPL - CPU load information</h4><p>展示 CPU 的负载情况。</p>
+<ol>
+<li>avg1、avg5和avg15：过去1分钟、5分钟和15分钟内运行队列中的平均进程数量</li>
+<li>csw，指示上下文交换次数</li>
+<li>intr，指示中断发生次数</li>
+</ol>
+<h4 id="MEM-Memory-occupation"><a href="#MEM-Memory-occupation" class="headerlink" title="MEM - Memory occupation"></a>MEM - Memory occupation</h4><ol>
+<li>tot，物理内存总量</li>
+<li>free，空闲内存大小</li>
+<li>cache，页缓存的内存大小</li>
+<li>buff，文件系统缓存的内存大小</li>
+<li>slab，系统内核分配的内存大小</li>
+<li>dirty，页缓存中脏内存的大小</li>
+</ol>
+<h4 id="SWP-Swap-occupation-and-overcommit-info"><a href="#SWP-Swap-occupation-and-overcommit-info" class="headerlink" title="SWP - Swap occupation and overcommit info"></a>SWP - Swap occupation and overcommit info</h4><ol>
+<li>tot，交换区总量</li>
+<li>free，示空闲交换空间大小</li>
+</ol>
+<h4 id="PAG-Paging-frequency"><a href="#PAG-Paging-frequency" class="headerlink" title="PAG - Paging frequency"></a>PAG - Paging frequency</h4><ol>
+<li>swin，换入的页内存数目</li>
+<li>swout， 换出的页内存数目</li>
+</ol>
+<h4 id="DSK-LVM-Disk-utilization-Logical-volumn"><a href="#DSK-LVM-Disk-utilization-Logical-volumn" class="headerlink" title="DSK/LVM - Disk utilization/Logical volumn"></a>DSK/LVM - Disk utilization/Logical volumn</h4><ol>
+<li>busy，磁盘忙时比例</li>
+<li>read，读请求数量</li>
+<li>write，写请求数量</li>
+<li>KiB/r，每次读的千字节数</li>
+<li>Kib/w，每次写的千字节数</li>
+<li>MBr/s，每秒读入兆字节带宽</li>
+<li>MBw/s，每秒写入兆字节带宽</li>
+<li>avio，每次传输所需要的毫秒</li>
+</ol>
+<h4 id="NET-Network-utilization-TCP-IP"><a href="#NET-Network-utilization-TCP-IP" class="headerlink" title="NET - Network utilization (TCP/IP)"></a>NET - Network utilization (TCP/IP)</h4><p>第一行是传输层信息，第二行是 IP 层信息，后面几行是各网卡的信息。</p>
+<h2 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h2><ol>
+<li>g, 通用输出</li>
+<li>m, 展示与内存有关的输出</li>
+<li>d, 展示与硬盘使用有关的输出</li>
+<li>c, 展示每个进程是由哪个命令行启动的</li>
+<li>p, 展示进程相关的活动信息</li>
+<li>C, 按照 CPU 使用排序</li>
+<li>M, 按照内存使用排序</li>
+<li>P, 按下后，即可输入正则表达式来搜索对应进程</li>
+<li>t, 向前一个采样间隔，在分析 atop 日志时使用</li>
+<li>T, 向后一个采样间隔，在分析 atop 日志时使用</li>
+<li>v, 输出更详细的进程信息，包括进程的启动时间，进程号，用户和所在组，当前状态。</li>
+</ol>
+<h2 id="atop日志"><a href="#atop日志" class="headerlink" title="atop日志"></a>atop日志</h2><p>每个时间点采样页面组合起来就形成了一个atop日志文件，我们可以使用”atop -r XXX”命令对日志文件进行查看。</p>
+<p>通常日志文件位于 <code>/var/log/</code>，采样间隔为 10min。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -201,14 +174,9 @@ embedManifestExeCheck(target, source, env)
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/杂/">杂</a>
+  <a class="article-category-link" href="/categories/系统/">系统</a>
 </div>
 
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/scons/">scons</a>
-  </div>
 
 </div>
 
@@ -216,7 +184,7 @@ embedManifestExeCheck(target, source, env)
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://www.lyyyuna.com/2015/12/25/scons4-building-and-linking-with-libraries/" data-title="SCons 用户指南第四章 - 编译和链接库 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  <div data-url="http://www.lyyyuna.com/2018/07/04/perftest-atop/" data-title="atop 简单使用 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -229,19 +197,11 @@ embedManifestExeCheck(target, source, env)
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/12/28/robotframework-quickstartguide/" title="Robot Framework 快速入门指南">
-  <strong>上一篇：</strong><br/>
-  <span>
-  Robot Framework 快速入门指南</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/12/19/xiaomiluyou01/"  title="小米路由器 mini 刷机记录">
+<a href="/2018/04/28/python-orm1/"  title="用 Python 实现一个 ORM">
  <strong>下一篇：</strong><br/> 
- <span>小米路由器 mini 刷机记录
+ <span>用 Python 实现一个 ORM
 </span>
 </a>
 </div>
@@ -262,7 +222,7 @@ embedManifestExeCheck(target, source, env)
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-编译库"><span class="toc-number">1.</span> <span class="toc-text">4.1 编译库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-从源码或二进制文件编译库"><span class="toc-number">1.1.</span> <span class="toc-text">4.1.1 从源码或二进制文件编译库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-编译静态库：使用-StaticLibrary-方法"><span class="toc-number">1.2.</span> <span class="toc-text">4.1.2 编译静态库：使用 StaticLibrary 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-3-编译动态库（DLL）：使用-SharedLibrary-方法"><span class="toc-number">1.3.</span> <span class="toc-text">4.1.3 编译动态库（DLL）：使用 SharedLibrary 方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-链接库"><span class="toc-number">2.</span> <span class="toc-text">4.2 链接库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-寻找库：-LIBPATH-构造变量"><span class="toc-number">3.</span> <span class="toc-text">4.3 寻找库：$LIBPATH 构造变量</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#字段含义"><span class="toc-number">1.</span> <span class="toc-text">字段含义</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PRC-Process-level-totals"><span class="toc-number">1.0.1.</span> <span class="toc-text">PRC - Process level totals</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPU-CPU-utilization"><span class="toc-number">1.0.2.</span> <span class="toc-text">CPU - CPU utilization</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPL-CPU-load-information"><span class="toc-number">1.0.3.</span> <span class="toc-text">CPL - CPU load information</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MEM-Memory-occupation"><span class="toc-number">1.0.4.</span> <span class="toc-text">MEM - Memory occupation</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SWP-Swap-occupation-and-overcommit-info"><span class="toc-number">1.0.5.</span> <span class="toc-text">SWP - Swap occupation and overcommit info</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PAG-Paging-frequency"><span class="toc-number">1.0.6.</span> <span class="toc-text">PAG - Paging frequency</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DSK-LVM-Disk-utilization-Logical-volumn"><span class="toc-number">1.0.7.</span> <span class="toc-text">DSK/LVM - Disk utilization/Logical volumn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NET-Network-utilization-TCP-IP"><span class="toc-number">1.0.8.</span> <span class="toc-text">NET - Network utilization (TCP/IP)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用快捷键"><span class="toc-number">2.</span> <span class="toc-text">常用快捷键</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#atop日志"><span class="toc-number">3.</span> <span class="toc-text">atop日志</span></a></li></ol>
  
   </div>
 
