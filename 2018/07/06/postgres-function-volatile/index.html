@@ -4,29 +4,25 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Python 脚本实现读取图片属性信息 | lyyyuna 的小花园</title>
+    <title>PostgreSQL 中的函数稳定性 | lyyyuna 的小花园</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="lyyyuna">
     
 
     
-    <meta name="description" content="我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。 这里改用 Python 脚本读取图片信息。有几个说明  没有实现错误处理 没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等 简单修改后应该能实现暴力修改图片的 GPS 信息 但对于本">
-<meta name="keywords" content="Python script,Exif">
+    <meta name="description" content="定义PostgreSQL 中函数有三个稳定性状态可选：  immutable，函数不可以修改数据库的数据,并且在任何情况下调用，只要输入参数一致，返回结果都一致。 stable，函数不可以修改数据库的数据，同一个QUERY中，如果需要返回该函数的结果，那么将合并多次运算为一次这个函数。 volatile，函数可以修改数">
+<meta name="keywords" content="PostgreSQL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Python 脚本实现读取图片属性信息">
-<meta property="og:url" content="http://www.lyyyuna.com/2016/01/06/exif-info-extract1/index.html">
+<meta property="og:title" content="PostgreSQL 中的函数稳定性">
+<meta property="og:url" content="http://www.lyyyuna.com/2018/07/06/postgres-function-volatile/index.html">
 <meta property="og:site_name" content="lyyyuna 的小花园">
-<meta property="og:description" content="我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。 这里改用 Python 脚本读取图片信息。有几个说明  没有实现错误处理 没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等 简单修改后应该能实现暴力修改图片的 GPS 信息 但对于本身没有 GPS 信息的图片，实现则非常复杂，需要仔细计算每个描述符的偏移量  脚">
+<meta property="og:description" content="定义PostgreSQL 中函数有三个稳定性状态可选：  immutable，函数不可以修改数据库的数据,并且在任何情况下调用，只要输入参数一致，返回结果都一致。 stable，函数不可以修改数据库的数据，同一个QUERY中，如果需要返回该函数的结果，那么将合并多次运算为一次这个函数。 volatile，函数可以修改数据库的数据，输入同样的参数可以返回不同的结果，同一个QUERY中，如果需要返回该">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info3.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info1.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info2.jpg">
-<meta property="og:updated_time" content="2017-11-29T00:19:00.163Z">
+<meta property="og:updated_time" content="2018-07-06T06:43:12.044Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Python 脚本实现读取图片属性信息">
-<meta name="twitter:description" content="我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。 这里改用 Python 脚本读取图片信息。有几个说明  没有实现错误处理 没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等 简单修改后应该能实现暴力修改图片的 GPS 信息 但对于本身没有 GPS 信息的图片，实现则非常复杂，需要仔细计算每个描述符的偏移量  脚">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info3.jpg">
+<meta name="twitter:title" content="PostgreSQL 中的函数稳定性">
+<meta name="twitter:description" content="定义PostgreSQL 中函数有三个稳定性状态可选：  immutable，函数不可以修改数据库的数据,并且在任何情况下调用，只要输入参数一致，返回结果都一致。 stable，函数不可以修改数据库的数据，同一个QUERY中，如果需要返回该函数的结果，那么将合并多次运算为一次这个函数。 volatile，函数可以修改数据库的数据，输入同样的参数可以返回不同的结果，同一个QUERY中，如果需要返回该">
 
     
     <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
@@ -87,14 +83,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/01/06/exif-info-extract1/" title="Python 脚本实现读取图片属性信息" itemprop="url">Python 脚本实现读取图片属性信息</a>
+      <a href="/2018/07/06/postgres-function-volatile/" title="PostgreSQL 中的函数稳定性" itemprop="url">PostgreSQL 中的函数稳定性</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
 		
   <p class="article-time">
-    <time datetime="2016-01-06T14:05:15.000Z" itemprop="datePublished"> 发表于 2016-01-06</time>
+    <time datetime="2018-07-06T08:36:38.000Z" itemprop="datePublished"> 发表于 2018-07-06</time>
     
   </p>
 </header>
@@ -103,307 +99,45 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-number">1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例子"><span class="toc-number">2.</span> <span class="toc-text">例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看函数的稳定性"><span class="toc-number">2.1.</span> <span class="toc-text">查看函数的稳定性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试插入语句"><span class="toc-number">2.2.</span> <span class="toc-text">测试插入语句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试对索引的影响"><span class="toc-number">2.3.</span> <span class="toc-text">测试对索引的影响</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改函数稳定性"><span class="toc-number">3.</span> <span class="toc-text">修改函数稳定性</span></a></li></ol>
 		
 		</div>
 		
-		<p>我之前的这篇文章《<a href="http://www.lyyyuna.com/2015/11/14/exif-hack/">暴力修改图片的 GPS 信息</a>》中，讲述了如何从图片的二进制文件中读取 GPS 信息。</p>
-<p>这里改用 Python 脚本读取图片信息。有几个说明</p>
-<ul>
-<li>没有实现错误处理</li>
-<li>没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等</li>
-<li>简单修改后应该能实现<a href="http://www.lyyyuna.com/2015/11/14/exif-hack/">暴力修改图片的 GPS 信息</a></li>
-<li>但对于本身没有 GPS 信息的图片，实现则非常复杂，需要仔细计算每个描述符的偏移量</li>
-</ul>
-<p>脚本运行后，读取结果如下</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info3.jpg" alt="脚本读取的信息"></p>
-<p>这里和 Windows 属性查看器读到的内容完全一致</p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info1.jpg" alt="图片信息1"></p>
-<p><img src="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201601/exif_info2.jpg" alt="图片信息2"></p>
-<p>源码如下</p>
-<pre><code># -*- coding:utf-8 -*-
-import binascii
-
-class ParseMethod(object):
-    @staticmethod
-    def parse_default(f, count, offset):
-        pass
-
-    @staticmethod
-    def parse_latitude(f, count, offset):
-        old_pos = f.tell()
-        f.seek(12 + offset)
-
-        latitude = [0,0,0]
-        for i in xrange(count):
-            byte = f.read(4)
-            numerator = byte.encode(&apos;hex&apos;)
-
-            byte = f.read(4)
-            denominator = byte.encode(&apos;hex&apos;)
-
-            latitude[i] =  float(int(numerator, 16)) / int(denominator, 16)
-
-
-        print &apos;Latitude:\t%.2f %.2f\&apos; %.2f\&quot;&apos; % (latitude[0], latitude[1], latitude[2])
-        f.seek(old_pos)    
-
-
-    @staticmethod
-    def parse_longtitude(f, count, offset):
-        old_pos = f.tell()
-        f.seek(12 + offset)
-
-        longtitude = [0,0,0]
-        for i in xrange(count):
-            byte = f.read(4)
-            numerator = byte.encode(&apos;hex&apos;)
-
-            byte = f.read(4)
-            denominator = byte.encode(&apos;hex&apos;)
-
-            longtitude[i] =  float(int(numerator, 16)) / int(denominator, 16)
-
-
-        print &apos;Longtitude:\t%.2f %.2f\&apos; %.2f\&quot;&apos; % (longtitude[0], longtitude[1], longtitude[2])
-        f.seek(old_pos) 
-
-    @staticmethod
-    def parse_make(f, count, offset):
-        old_pos = f.tell()
-        f.seek(12 + offset)
-        byte = f.read(count)
-        a = byte.encode(&apos;hex&apos;)
-        print &apos;Make:\t\t&apos; + binascii.a2b_hex(a)
-        f.seek(old_pos) 
-
-    @staticmethod
-    def parse_model(f, count, offset):
-        old_pos = f.tell()
-        f.seek(12 + offset)
-        byte = f.read(count)
-        a = byte.encode(&apos;hex&apos;)
-        print &apos;Model:\t\t&apos; + binascii.a2b_hex(a)
-        f.seek(old_pos)         
-
-    @staticmethod
-    def parse_datetime(f, count, offset):
-        old_pos = f.tell()
-        f.seek(12 + offset)
-        byte = f.read(count)
-        a = byte.encode(&apos;hex&apos;)
-        print &apos;DateTime:\t&apos; + binascii.a2b_hex(a)
-        f.seek(old_pos)
-
-    # rational data type, 05
-    @staticmethod
-    def parse_xresolution(f, count, offset):
-        old_pos = f.tell()
-        f.seek(12 + offset)
-
-        byte = f.read(4)
-        numerator = byte.encode(&apos;hex&apos;)
-        byte = f.read(4)
-        denominator = byte.encode(&apos;hex&apos;)
-        xre = int(numerator, 16) / int(denominator, 16)
-
-        print &apos;XResolution:\t&apos; + str(xre) + &apos; dpi&apos;
-        f.seek(old_pos)
-
-    @staticmethod
-    def parse_yresolution(f, count, offset):
-        old_pos = f.tell()
-        f.seek(12 + offset)
-
-        byte = f.read(4)
-        numerator = byte.encode(&apos;hex&apos;)
-        byte = f.read(4)
-        denominator = byte.encode(&apos;hex&apos;)
-        xre = int(numerator, 16) / int(denominator, 16)
-
-        print &apos;YResolution:\t&apos; + str(xre) + &apos; dpi&apos;
-        f.seek(old_pos)
-
-    @staticmethod
-    def parse_exif_ifd(f, count, offset):
-        old_pos = f.tell()
-        f.seek(12 + offset)
-
-        byte = f.read(2)
-        a = byte.encode(&apos;hex&apos;)        
-        exif_ifd_number = int(a, 16)
-
-        for i in xrange(exif_ifd_number):
-            byte = f.read(2)
-            tag_id = byte.encode(&apos;hex&apos;)
-            #print tag_id,
-
-            byte = f.read(2)
-            type_n = byte.encode(&apos;hex&apos;)
-            #print type_n,
-
-            byte = f.read(4)
-            count = byte.encode(&apos;hex&apos;)
-            #print count,
-
-            byte = f.read(4)
-            value_offset = byte.encode(&apos;hex&apos;)
-            #print value_offset
-
-            value_offset = int(value_offset, 16)
-            EXIF_IFD_DICT.get(tag_id, ParseMethod.parse_default)(f, count, value_offset)
-
-        f.seek(old_pos)    
-
-    @staticmethod
-    def parse_x_pixel(f, count, value):
-        print &apos;X Pixels:\t&apos; + str(value)
-
-    @staticmethod
-    def parse_y_pixel(f, count, value):
-        print &apos;y Pixels:\t&apos; + str(value)
-
-    @staticmethod
-    def parse_gps_ifd(f, count, offset):
-        old_pos = f.tell()        
-        f.seek(12 + offset)
-        byte = f.read(2)
-        a = byte.encode(&apos;hex&apos;)   
-        gps_ifd_number = int(a, 16)
-
-        for i in xrange(gps_ifd_number):
-            byte = f.read(2)
-            tag_id = byte.encode(&apos;hex&apos;)
-            #print tag_id,
-
-            byte = f.read(2)
-            type_n = byte.encode(&apos;hex&apos;)
-            #print type_n,
-
-            byte = f.read(4)
-            count = byte.encode(&apos;hex&apos;)
-            #print count,
-
-            byte = f.read(4)
-            value_offset = byte.encode(&apos;hex&apos;)
-            #print value_offset
-
-            count = int(count, 16)
-            value_offset = int(value_offset, 16)
-            GPS_IFD_DICT.get(tag_id, ParseMethod.parse_default)(f, count, value_offset)
-
-        f.seek(old_pos)  
-
-IFD_dict = {
-    &apos;010f&apos; : ParseMethod.parse_make ,
-    &apos;0110&apos; : ParseMethod.parse_model ,
-    &apos;0132&apos; : ParseMethod.parse_datetime ,
-    &apos;011a&apos; : ParseMethod.parse_xresolution ,
-    &apos;011b&apos; : ParseMethod.parse_yresolution ,
-    &apos;8769&apos; : ParseMethod.parse_exif_ifd ,
-    &apos;8825&apos; : ParseMethod.parse_gps_ifd
-}
-
-EXIF_IFD_DICT = {
-    &apos;a002&apos; : ParseMethod.parse_x_pixel ,
-    &apos;a003&apos; : ParseMethod.parse_y_pixel
-}
-
-GPS_IFD_DICT = {
-    &apos;0002&apos; : ParseMethod.parse_latitude ,
-    &apos;0004&apos; : ParseMethod.parse_longtitude
-}
-
-
-with open(&apos;image.jpg&apos;, &apos;rb&apos;) as f:
-    byte = f.read(2)
-    a = byte.encode(&apos;hex&apos;)
-    print &apos;SOI Marker:\t&apos; + a
-
-    byte = f.read(2)
-    a = byte.encode(&apos;hex&apos;)
-    print &apos;APP1 Marker:\t&apos; + a
-
-    byte = f.read(2)
-    a = byte.encode(&apos;hex&apos;)
-    print &apos;APP1 Length:\t&apos; + str(int(a, 16)) + &apos; .Dec&apos;
-
-    byte = f.read(4)
-    a = byte.encode(&apos;hex&apos;)
-    print &apos;Identifier:\t&apos; + binascii.a2b_hex(a)
-
-    byte = f.read(2)
-    a = byte.encode(&apos;hex&apos;)
-    print &apos;Pad:\t\t&apos; + a 
-
-    print 
-
-    print &apos;Begin to print Header.... &apos;
-    print &apos;APP1 Body: &apos;
-
-    byte = f.read(2)
-    a = byte.encode(&apos;hex&apos;)
-    print &apos;Byte Order:\t&apos; + a    
-
-    byte = f.read(2)
-    a = byte.encode(&apos;hex&apos;)
-    print &apos;42:\t\t&apos; + a  
-
-    byte = f.read(4)
-    a = byte.encode(&apos;hex&apos;)
-    print &apos;0th IFD Offset:\t&apos; + a  
-
-    print &apos;Finish print Header&apos;
-
-    print &apos;Begin to print 0th IFD....&apos;
-    print
-    #print &apos;Total: &apos;,
-    byte = f.read(2)
-    a = byte.encode(&apos;hex&apos;)
-    interoperability_number = int(a, 16)
-    #print interoperability_number
-
-
-    for i in xrange(interoperability_number):
-        byte = f.read(2)
-        tag_id = byte.encode(&apos;hex&apos;)
-        #print tag_id,
-
-        byte = f.read(2)
-        type_n = byte.encode(&apos;hex&apos;)
-        #print type_n,
-
-        byte = f.read(4)
-        count = byte.encode(&apos;hex&apos;)
-        #print count,
-
-        byte = f.read(4)
-        value_offset = byte.encode(&apos;hex&apos;)
-        #print value_offset
-
-        count = int(count, 16)
-        value_offset = int(value_offset, 16)
-
-        # simulate switch
-        IFD_dict.get(tag_id, ParseMethod.parse_default)(f, count, value_offset)
-
-
-    print
-    print &apos;Finish print 0th IFD....&apos;
-</code></pre>  
+		<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>PostgreSQL 中函数有三个稳定性状态可选：</p>
+<ol>
+<li>immutable，函数不可以修改数据库的数据,并且在任何情况下调用，只要输入参数一致，返回结果都一致。</li>
+<li>stable，函数不可以修改数据库的数据，同一个QUERY中，如果需要返回该函数的结果，那么将合并多次运算为一次这个函数。</li>
+<li>volatile，函数可以修改数据库的数据，输入同样的参数可以返回不同的结果，同一个QUERY中，如果需要返回该函数的结果，那么每一行都会运算一遍这个函数。</li>
+</ol>
+<p>函数的稳定性会影响执行计划。在索引比较的时候，被比较的值只会运算一次，所以 volatile 不能被执行计划选择作为索引的比较条件。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="查看函数的稳定性"><a href="#查看函数的稳定性" class="headerlink" title="查看函数的稳定性"></a>查看函数的稳定性</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ddei=# select proname, provolatile from pg_proc where proname in (&apos;now&apos;, &apos;clock_timestamp&apos;);</span><br><span class="line">     proname     | provolatile </span><br><span class="line">-----------------+-------------</span><br><span class="line"> now             | s</span><br><span class="line"> clock_timestamp | v</span><br><span class="line">(2 rows)</span><br></pre></td></tr></table></figure>
+<p>其中 clock_timestamp 是 voatile, now 是 stable。</p>
+<h3 id="测试插入语句"><a href="#测试插入语句" class="headerlink" title="测试插入语句"></a>测试插入语句</h3><p>创建一个测试表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ddei=# create table test(id int, time1 timestamp, time2 timestamp);</span><br><span class="line">CREATE TABLE</span><br><span class="line">ddei=# insert into test select generate_series(1,1000),clock_timestamp(), now();</span><br><span class="line">INSERT 0 1000</span><br></pre></td></tr></table></figure>
+<p>插入语句，对于 stable 函数 <code>now()</code> 应该只执行一次：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ddei=# select count(*),count(distinct time1),count(distinct time2) from test;</span><br><span class="line"> count | count | count </span><br><span class="line">-------+-------+-------</span><br><span class="line">  1000 |  1000 |     1</span><br><span class="line">(1 row)</span><br></pre></td></tr></table></figure>
+<h3 id="测试对索引的影响"><a href="#测试对索引的影响" class="headerlink" title="测试对索引的影响"></a>测试对索引的影响</h3><p>在测试表上创建索引，并查看执行计划：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">ddei=# create index test_idx on test(time1);</span><br><span class="line">CREATE INDEX</span><br><span class="line">ddei=# </span><br><span class="line">ddei=# explain select * from test where time1&gt;now();</span><br><span class="line">                              QUERY PLAN                              </span><br><span class="line">----------------------------------------------------------------------</span><br><span class="line"> Index Scan using test_idx on test  (cost=0.00..4.27 rows=1 width=20)</span><br><span class="line">   Index Cond: (time1 &gt; now())</span><br><span class="line">(2 rows)</span><br><span class="line"></span><br><span class="line">ddei=# explain select * from test where time1&gt;clock_timestamp();</span><br><span class="line">                       QUERY PLAN                       </span><br><span class="line">--------------------------------------------------------</span><br><span class="line"> Seq Scan on test  (cost=0.00..22.00 rows=333 width=20)</span><br><span class="line">   Filter: (time1 &gt; clock_timestamp())</span><br><span class="line">(2 rows)</span><br></pre></td></tr></table></figure>
+<p>对于 volatile 的函数 clock_timestamp 在 where 条件中，不走索引。而 stable 函数 now 在 where 条件中，会走索引。</p>
+<h2 id="修改函数稳定性"><a href="#修改函数稳定性" class="headerlink" title="修改函数稳定性"></a>修改函数稳定性</h2><p>使用以下语句可修改函数稳定性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ddei=# alter function clock_timestamp() strict stable;</span><br><span class="line">ALTER FUNCTION</span><br></pre></td></tr></table></figure>
+<p>再次测试 clock_timestamp 的索引情况：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ddei=# explain select * from test where time1&gt;clock_timestamp();</span><br><span class="line">                              QUERY PLAN                              </span><br><span class="line">----------------------------------------------------------------------</span><br><span class="line"> Index Scan using test_idx on test  (cost=0.00..4.27 rows=1 width=20)</span><br><span class="line">   Index Cond: (time1 &gt; clock_timestamp())</span><br><span class="line">(2 rows)</span><br></pre></td></tr></table></figure></p>
+<p>这次 clock_timestamp 在 where 条件中走了索引。</p>
+<p>不过不要随意修改系统自带函数的稳定性。</p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/杂/">杂</a>
+  <a class="article-category-link" href="/categories/数据库/">数据库</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Python-script/">Python script</a><a href="/tags/Exif/">Exif</a>
+  <span></span> <a href="/tags/PostgreSQL/">PostgreSQL</a>
   </div>
 
 </div>
@@ -412,7 +146,7 @@ with open(&apos;image.jpg&apos;, &apos;rb&apos;) as f:
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://www.lyyyuna.com/2016/01/06/exif-info-extract1/" data-title="Python 脚本实现读取图片属性信息 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  <div data-url="http://www.lyyyuna.com/2018/07/06/postgres-function-volatile/" data-title="PostgreSQL 中的函数稳定性 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -425,19 +159,11 @@ with open(&apos;image.jpg&apos;, &apos;rb&apos;) as f:
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2016/01/07/robotframework-tutorial-overview/" title="Robot Framework 教程 - 概览（译）">
-  <strong>上一篇：</strong><br/>
-  <span>
-  Robot Framework 教程 - 概览（译）</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2016/01/04/cdcfan-auto-order/"  title="一个简单的公司自动订餐脚本实现">
+<a href="/2018/07/04/perftest-atop/"  title="atop 简单使用">
  <strong>下一篇：</strong><br/> 
- <span>一个简单的公司自动订餐脚本实现
+ <span>atop 简单使用
 </span>
 </a>
 </div>
@@ -458,7 +184,7 @@ with open(&apos;image.jpg&apos;, &apos;rb&apos;) as f:
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-number">1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例子"><span class="toc-number">2.</span> <span class="toc-text">例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看函数的稳定性"><span class="toc-number">2.1.</span> <span class="toc-text">查看函数的稳定性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试插入语句"><span class="toc-number">2.2.</span> <span class="toc-text">测试插入语句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试对索引的影响"><span class="toc-number">2.3.</span> <span class="toc-text">测试对索引的影响</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改函数稳定性"><span class="toc-number">3.</span> <span class="toc-text">修改函数稳定性</span></a></li></ol>
  
   </div>
 

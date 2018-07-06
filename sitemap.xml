@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.lyyyuna.com/2018/07/06/postgres-function-volatile/</loc>
+    
+    <lastmod>2018-07-06T06:43:12.044Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.lyyyuna.com/2018/07/04/perftest-atop/</loc>
     
     <lastmod>2018-07-04T09:40:31.710Z</lastmod>
@@ -100,7 +107,7 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/baidu_verify_I1d1jharjN.html</loc>
+    <loc>http://www.lyyyuna.com/2015/12/19/xiaomiluyou01/</loc>
     
     <lastmod>2017-11-29T00:19:00.170Z</lastmod>
     
@@ -114,21 +121,14 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2015/12/19/xiaomiluyou01/</loc>
+    <loc>http://www.lyyyuna.com/baidu_verify_I1d1jharjN.html</loc>
     
     <lastmod>2017-11-29T00:19:00.170Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2017/04/27/write-a-windows-debugger-01-overview/</loc>
-    
-    <lastmod>2017-11-29T00:19:00.169Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.lyyyuna.com/2017/05/01/write-a-windows-debugger-02-debug-event/</loc>
+    <loc>http://www.lyyyuna.com/2017/04/08/supervisor01/</loc>
     
     <lastmod>2017-11-29T00:19:00.169Z</lastmod>
     
@@ -142,6 +142,13 @@
   </url>
   
   <url>
+    <loc>http://www.lyyyuna.com/2017/04/27/write-a-windows-debugger-01-overview/</loc>
+    
+    <lastmod>2017-11-29T00:19:00.169Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.lyyyuna.com/2016/01/03/sitemap-baidu-autosubmit-1/</loc>
     
     <lastmod>2017-11-29T00:19:00.169Z</lastmod>
@@ -149,9 +156,23 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2017/04/08/supervisor01/</loc>
+    <loc>http://www.lyyyuna.com/2017/05/01/write-a-windows-debugger-02-debug-event/</loc>
     
     <lastmod>2017-11-29T00:19:00.169Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.lyyyuna.com/2015/12/03/scons3-less-simple-things-to-do-with-builds/</loc>
+    
+    <lastmod>2017-11-29T00:19:00.168Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.lyyyuna.com/2016/01/03/scons5-node-objects/</loc>
+    
+    <lastmod>2017-11-29T00:19:00.168Z</lastmod>
     
   </url>
   
@@ -177,16 +198,9 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2016/01/03/scons5-node-objects/</loc>
+    <loc>http://www.lyyyuna.com/2016/05/28/robotframework-tutorial-loops-conditional-execution-and-more/</loc>
     
-    <lastmod>2017-11-29T00:19:00.168Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.lyyyuna.com/2015/12/03/scons3-less-simple-things-to-do-with-builds/</loc>
-    
-    <lastmod>2017-11-29T00:19:00.168Z</lastmod>
+    <lastmod>2017-11-29T00:19:00.167Z</lastmod>
     
   </url>
   
@@ -205,13 +219,6 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2015/11/02/scons2-simple-build/</loc>
-    
-    <lastmod>2017-11-29T00:19:00.167Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.lyyyuna.com/2016/01/07/robotframework-tutorial-overview/</loc>
     
     <lastmod>2017-11-29T00:19:00.167Z</lastmod>
@@ -219,14 +226,14 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2016/05/28/robotframework-tutorial-loops-conditional-execution-and-more/</loc>
+    <loc>http://www.lyyyuna.com/2015/11/02/scons2-simple-build/</loc>
     
     <lastmod>2017-11-29T00:19:00.167Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2015/12/28/robotframework-quickstartguide/</loc>
+    <loc>http://www.lyyyuna.com/2016/04/09/robotframework-tutorial-a-complete-example/</loc>
     
     <lastmod>2017-11-29T00:19:00.166Z</lastmod>
     
@@ -240,7 +247,7 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2016/04/09/robotframework-tutorial-a-complete-example/</loc>
+    <loc>http://www.lyyyuna.com/2015/12/28/robotframework-quickstartguide/</loc>
     
     <lastmod>2017-11-29T00:19:00.166Z</lastmod>
     
@@ -248,13 +255,6 @@
   
   <url>
     <loc>http://www.lyyyuna.com/2016/03/20/python-asyncio01/</loc>
-    
-    <lastmod>2017-11-29T00:19:00.165Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.lyyyuna.com/2017/09/14/python-descriptor/</loc>
     
     <lastmod>2017-11-29T00:19:00.165Z</lastmod>
     
@@ -275,14 +275,21 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2016/01/16/http-proxy-get1/</loc>
+    <loc>http://www.lyyyuna.com/2017/09/14/python-descriptor/</loc>
+    
+    <lastmod>2017-11-29T00:19:00.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.lyyyuna.com/2016/12/21/insidecppmodel1/</loc>
     
     <lastmod>2017-11-29T00:19:00.164Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2016/12/21/insidecppmodel1/</loc>
+    <loc>http://www.lyyyuna.com/2016/01/16/http-proxy-get1/</loc>
     
     <lastmod>2017-11-29T00:19:00.164Z</lastmod>
     
@@ -299,13 +306,6 @@
     <loc>http://www.lyyyuna.com/2016/06/30/handwritten-neural-net04/</loc>
     
     <lastmod>2017-11-29T00:19:00.164Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.lyyyuna.com/2015/11/14/exif-hack/</loc>
-    
-    <lastmod>2017-11-29T00:19:00.163Z</lastmod>
     
   </url>
   
@@ -331,14 +331,21 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2016/03/26/dht01/</loc>
+    <loc>http://www.lyyyuna.com/2015/11/14/exif-hack/</loc>
+    
+    <lastmod>2017-11-29T00:19:00.163Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.lyyyuna.com/2016/05/14/dht-sniffer/</loc>
     
     <lastmod>2017-11-29T00:19:00.162Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2017/04/24/bilibili-users-spider/</loc>
+    <loc>http://www.lyyyuna.com/2016/03/26/dht01/</loc>
     
     <lastmod>2017-11-29T00:19:00.162Z</lastmod>
     
@@ -352,9 +359,16 @@
   </url>
   
   <url>
-    <loc>http://www.lyyyuna.com/2016/05/14/dht-sniffer/</loc>
+    <loc>http://www.lyyyuna.com/2017/04/24/bilibili-users-spider/</loc>
     
     <lastmod>2017-11-29T00:19:00.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.lyyyuna.com/2016/03/27/asyncfileread01/</loc>
+    
+    <lastmod>2017-11-29T00:19:00.161Z</lastmod>
     
   </url>
   
@@ -367,13 +381,6 @@
   
   <url>
     <loc>http://www.lyyyuna.com/2016/03/19/bilibili-danmu02/</loc>
-    
-    <lastmod>2017-11-29T00:19:00.161Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.lyyyuna.com/2016/03/27/asyncfileread01/</loc>
     
     <lastmod>2017-11-29T00:19:00.161Z</lastmod>
     
