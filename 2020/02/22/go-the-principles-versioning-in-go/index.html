@@ -34,7 +34,7 @@
 <meta property="og:image" content="http://www.lyyyuna.com/img/posts/version-in-go/vgo-why-13@2x.png">
 <meta property="og:image" content="http://www.lyyyuna.com/img/posts/version-in-go/vgo-why-15@2x.png">
 <meta property="og:image" content="http://www.lyyyuna.com/img/posts/version-in-go/vgo-why-14@2x.png">
-<meta property="og:updated_time" content="2020-02-24T08:42:21.306Z">
+<meta property="og:updated_time" content="2020-02-24T08:45:45.765Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Golang 的版本管理原则">
 <meta name="twitter:description" content="前言本文翻译+删选+理解自 The Principles of Versioning in Go 为什么需要版本？让我们先看下传统基于GOPATH的go get是如何导致版本管理失败的。 假设有一个全新安装的 Go 环境，我们需要写一个程序导入D，因此运行go get D。记住现在是基于GOPATH的go get，不是 go mod。 1$ go get D  该命令会寻找并下载最新版本的D 1.">
@@ -138,7 +138,7 @@
 <h2 id="软件工程中的版本"><a href="#软件工程中的版本" class="headerlink" title="软件工程中的版本"></a>软件工程中的版本</h2><p>过去两年间（2019），官方试图在<code>go</code>命令中引入<code>Go moduless</code>的概念来支持版本管理。<code>Go moduless</code>带来新的库导入语法——即语义化导入版本(Semantic import versioning)，而在选择版本时，使用了新的算法——即最小版本选择算法。</p>
 <p>你可能会问：为什么不使用其他语言的现成经验？Java 有<code>Maven</code>，Node 有<code>NPM</code>，Ruby 有<code>Bundler</code>，Rust 有<code>Cargo</code>，他们解决版本依赖的思路不好么？</p>
 <p>你可能还会问：Go 团队在 2018 早些时候引入了一个试验性的工具<code>Dep</code>，该工具实现上与<code>Bundler</code>和<code>Cargo</code>一致，现在为啥又变卦了？</p>
-<p>答案是，我们从使用<code>Bundler</code>/<code>Cargo</code>/<code>Dep</code>的经验中发现，它们处理依赖的方法，会使项目越来越复杂，越来越有难以维护。正因为如此，<code>go moduless</code>Go 模块采取了许许多多不同决定。</p>
+<p>答案是我们从使用<code>Bundler</code>/<code>Cargo</code>/<code>Dep</code>的经验中发现，它们所谓处理依赖的方法，只会使项目越来越复杂，<code>go modules</code>决定另辟蹊径。</p>
 <h2 id="三原则"><a href="#三原则" class="headerlink" title="三原则"></a>三原则</h2><p>回到一个很基础的问题：什么是软件工程？软件工程和编程有什么区别？原作者 Russ Cox 使用了这个定义：</p>
 <blockquote>
 <p>Software engineering is what happens to programming<br>when you add time and other programmers.</p>
@@ -345,11 +345,11 @@
 			
 		
 			
-				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
+				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
+				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
 			
 		
 			
@@ -357,19 +357,15 @@
 			
 		
 			
-				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
+				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
+				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
 			
 		
 			
@@ -381,7 +377,7 @@
 			
 		
 			
-				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
+				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
 			
 		
 			
@@ -389,11 +385,15 @@
 			
 		
 			
-				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
+				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
 			
 		
 			
 				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
 			
 		
 			
@@ -405,7 +405,7 @@
 			
 		
 			
-				<li><a href="/tags/Go/" title="Go">Go<sup>1</sup></a></li>
+				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
 			
 		
 			
@@ -413,7 +413,7 @@
 			
 		
 			
-				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
+				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
 			
 		
 		</ul>
