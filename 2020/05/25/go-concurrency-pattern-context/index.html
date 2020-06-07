@@ -1,0 +1,564 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  
+    <title>Golang 并发模式 - Context | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言本文翻译+删选+理解自 Go Concurrency Patterns: Context 在使用 Go 编写的服务器程序中，每个请求都由一个 goroutine 来处理，通常这些请求又会启动额外的 goroutines 来访问后台数据库或者调用 RPC 服务。这些与同一个请求相关的 goroutines，常常需要访问同一个特定的资源，比如用户标识，认证 token 等等。当请求取消或者超时时，">
+<meta name="keywords" content="Go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang 并发模式 - Context">
+<meta property="og:url" content="http://www.lyyyuna.com/2020/05/25/go-concurrency-pattern-context/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言本文翻译+删选+理解自 Go Concurrency Patterns: Context 在使用 Go 编写的服务器程序中，每个请求都由一个 goroutine 来处理，通常这些请求又会启动额外的 goroutines 来访问后台数据库或者调用 RPC 服务。这些与同一个请求相关的 goroutines，常常需要访问同一个特定的资源，比如用户标识，认证 token 等等。当请求取消或者超时时，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-07T04:46:30.236Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang 并发模式 - Context">
+<meta name="twitter:description" content="前言本文翻译+删选+理解自 Go Concurrency Patterns: Context 在使用 Go 编写的服务器程序中，每个请求都由一个 goroutine 来处理，通常这些请求又会启动额外的 goroutines 来访问后台数据库或者调用 RPC 服务。这些与同一个请求相关的 goroutines，常常需要访问同一个特定的资源，比如用户标识，认证 token 等等。当请求取消或者超时时，">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/05/25/go-concurrency-pattern-context/" title="Golang 并发模式 - Context" itemprop="url">Golang 并发模式 - Context</a>
+  </h1>
+  
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2020-05-25T14:19:02.000Z" itemprop="datePublished"> 发表于 2020-05-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Context"><span class="toc-number">2.</span> <span class="toc-text">Context</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Context-派生"><span class="toc-number">3.</span> <span class="toc-text">Context 派生</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例子：谷歌网页搜索"><span class="toc-number">4.</span> <span class="toc-text">例子：谷歌网页搜索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#server-程序"><span class="toc-number">5.</span> <span class="toc-text">server 程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#userip-包"><span class="toc-number">6.</span> <span class="toc-text">userip 包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#google-包"><span class="toc-number">7.</span> <span class="toc-text">google 包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为-Context-作代码适配"><span class="toc-number">8.</span> <span class="toc-text">为 Context 作代码适配</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文翻译+删选+理解自 <a href="https://blog.golang.org/context" target="_blank" rel="noopener">Go Concurrency Patterns: Context</a></p>
+<p>在使用 Go 编写的服务器程序中，每个请求都由一个 goroutine 来处理，通常这些请求又会启动额外的 goroutines 来访问后台数据库或者调用 RPC 服务。这些与同一个请求相关的 goroutines，常常需要访问同一个特定的资源，比如用户标识，认证 token 等等。当请求取消或者超时时，所有相关的 goroutines 都应该快速退出，这样系统才能回收不用的资源。</p>
+<p>为此，Google 公司开发了<a href="https://golang.org/pkg/context" target="_blank" rel="noopener">context</a>包。该库可以跨越 API 边界，给所有 goroutines 传递请求相关的值、取消信号和超时时间。这篇文章会介绍如何使用<a href="https://golang.org/pkg/context" target="_blank" rel="noopener">context</a>库，并给出一个完整的例子。</p>
+<h2 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h2><p><code>context</code>包的核心是<code>Context</code>结构体：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A Context carries a deadline, cancelation signal, and request-scoped values</span></span><br><span class="line"><span class="comment">// across API boundaries. Its methods are safe for simultaneous use by multiple</span></span><br><span class="line"><span class="comment">// goroutines.</span></span><br><span class="line"><span class="keyword">type</span> Context <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// Done returns a channel that is closed when this Context is canceled</span></span><br><span class="line">    <span class="comment">// or times out.</span></span><br><span class="line">    Done() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Err indicates why this context was canceled, after the Done channel</span></span><br><span class="line">    <span class="comment">// is closed.</span></span><br><span class="line">    Err() error</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Deadline returns the time when this Context will be canceled, if any.</span></span><br><span class="line">    Deadline() (deadline time.Time, ok <span class="keyword">bool</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Value returns the value associated with key or nil if none.</span></span><br><span class="line">    Value(key <span class="keyword">interface</span>&#123;&#125;) <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Done</code>方法返回一个 channel，它会给<code>Context</code>上所有的函数发送取消信号，当 channel 关闭时，这些函数应该终止剩余流程立即返回。<code>Err</code>方法返回的错误指出了<code>Context</code>为什么取消。<a href="https://blog.golang.org/pipelines" target="_blank" rel="noopener">Pipelines and Cancelation</a>中讨论了<code>Done</code>的具体用法。</p>
+<p>由于接收和发送信号的通常不是同一个函数，<code>Context</code>并没有提供<code>Cancel</code>方法，基于相同的理由，<code>Done</code>channel 只负责接收。尤其当父操作开启 goroutines 执行子操作时，子操作肯定不能取消父操作。作为替代，<code>WithCancel</code>函数可以用来取消<code>Context</code>。</p>
+<p><code>Context</code>对 goroutines 来说是并发安全的，你可以将单个<code>Context</code>传递给任意数量的 goroutines，然后取消该<code>Context</code>给这些 goroutines 同时发送信号。</p>
+<p><code>Deadline</code>方法用于判断函数究竟要不要运行，比如截止时间将近时，运行也就没必要了。代码可依此为 I/O 操作设置超时时间。</p>
+<p><code>Value</code>方法则为<code>Context</code>存储了请求所有的数据，访问这些数据必须是并发安全的。</p>
+<h2 id="Context-派生"><a href="#Context-派生" class="headerlink" title="Context 派生"></a>Context 派生</h2><p>使用<code>Context</code>包提供的方法可以从已有的<code>Context</code>值派生出新值。这些派生出的值逻辑上构成了一棵树：当根<code>Context</code>取消，其派生出的子<code>Context</code>也会跟着取消。</p>
+<p><code>Background</code>是所有<code>Context</code>树的根，它永远不会被取消：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Background returns an empty Context. It is never canceled, has no deadline,</span></span><br><span class="line"><span class="comment">// and has no values. Background is typically used in main, init, and tests,</span></span><br><span class="line"><span class="comment">// and as the top-level Context for incoming requests.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Background</span><span class="params">()</span> <span class="title">Context</span></span></span><br></pre></td></tr></table></figure>
+<p><code>WithCancel</code>和<code>WithTimeout</code>函数返回的派生<code>Context</code>值，可以先于父值取消。当请求的回调函数返回后，与请求相关的<code>Context</code>即可被取消。当有多个备份后台程序同时提供服务时，<code>WithCancel</code>可用于去除多余的请求。<code>WithTimeout</code>则可用于为请求设置超时时间。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WithCancel returns a copy of parent whose Done channel is closed as soon as</span></span><br><span class="line"><span class="comment">// parent.Done is closed or cancel is called.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithCancel</span><span class="params">(parent Context)</span> <span class="params">(ctx Context, cancel CancelFunc)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// A CancelFunc cancels a Context.</span></span><br><span class="line"><span class="keyword">type</span> CancelFunc <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// WithTimeout returns a copy of parent whose Done channel is closed as soon as</span></span><br><span class="line"><span class="comment">// parent.Done is closed, cancel is called, or timeout elapses. The new</span></span><br><span class="line"><span class="comment">// Context's Deadline is the sooner of now+timeout and the parent's deadline, if</span></span><br><span class="line"><span class="comment">// any. If the timer is still running, the cancel function releases its</span></span><br><span class="line"><span class="comment">// resources.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithTimeout</span><span class="params">(parent Context, timeout time.Duration)</span> <span class="params">(Context, CancelFunc)</span></span></span><br></pre></td></tr></table></figure>
+<p><code>WithValue</code>则在<code>Context</code>上存储了请求相关的值：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WithValue returns a copy of parent whose Value method returns val for key.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithValue</span><span class="params">(parent Context, key <span class="keyword">interface</span>&#123;&#125;, val <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Context</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="例子：谷歌网页搜索"><a href="#例子：谷歌网页搜索" class="headerlink" title="例子：谷歌网页搜索"></a>例子：谷歌网页搜索</h2><p>本例子提供一个 HTTP 服务器，接收类似<code>/search?q=golang&amp;timeout=1s</code>的 GET 请求，并把查询参数值”golang”转推到<a href="https://developers.google.com/web-search/docs/" target="_blank" rel="noopener">谷歌网页搜索API</a>。参数<code>timeout</code>告诉服务器如果谷歌 API 超时就取消请求。</p>
+<p>代码分为三个包：</p>
+<ul>
+<li><a href="https://blog.golang.org/context/server/server.go" target="_blank" rel="noopener">server</a>提供 main 函数，处理<code>/search</code>来的请求。</li>
+<li><a href="https://blog.golang.org/context/userip/userip.go" target="_blank" rel="noopener">userip</a>提供的函数将用户 IP 地址绑定到一个<code>Context</code>值上。 </li>
+<li><a href="https://blog.golang.org/context/google/google.go" target="_blank" rel="noopener">google</a>提供 Search 函数将请求转发到谷歌。</li>
+</ul>
+<h2 id="server-程序"><a href="#server-程序" class="headerlink" title="server 程序"></a>server 程序</h2><p><a href="https://blog.golang.org/context/server/server.go" target="_blank" rel="noopener">server</a>中，请求回调创建了一个名为<code>ctx</code>的<code>Context</code>值，当回调退出时，延迟函数<code>defer cancel()</code>即执行取消操作。如果请求的 URL 带有 timeout 参数，那超时后<code>Context</code>会自动取消：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handleSearch</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ctx is the Context for this handler. Calling cancel closes the</span></span><br><span class="line">    <span class="comment">// ctx.Done channel, which is the cancellation signal for requests</span></span><br><span class="line">    <span class="comment">// started by this handler.</span></span><br><span class="line">    <span class="keyword">var</span> (</span><br><span class="line">        ctx    context.Context</span><br><span class="line">        cancel context.CancelFunc</span><br><span class="line">    )</span><br><span class="line">    timeout, err := time.ParseDuration(req.FormValue(<span class="string">"timeout"</span>))</span><br><span class="line">    <span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="comment">// The request has a timeout, so create a context that is</span></span><br><span class="line">        <span class="comment">// canceled automatically when the timeout expires.</span></span><br><span class="line">        ctx, cancel = context.WithTimeout(context.Background(), timeout)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ctx, cancel = context.WithCancel(context.Background())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> cancel() <span class="comment">// Cancel ctx as soon as handleSearch returns.</span></span><br></pre></td></tr></table></figure>
+<p>回调函数从请求中获取参数信息，并调用<code>userip</code>包获取客户端 IP 地址。由于后台服务中会使用到客户端 IP 地址，故需要将此存储于<code>ctx</code>中：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Check the search query.</span></span><br><span class="line">query := req.FormValue(<span class="string">"q"</span>)</span><br><span class="line"><span class="keyword">if</span> query == <span class="string">""</span> &#123;</span><br><span class="line">    http.Error(w, <span class="string">"no query"</span>, http.StatusBadRequest)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Store the user IP in ctx for use by code in other packages.</span></span><br><span class="line">userIP, err := userip.FromRequest(req)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    http.Error(w, err.Error(), http.StatusBadRequest)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line">ctx = userip.NewContext(ctx, userIP)</span><br></pre></td></tr></table></figure>
+<p>传入<code>ctx</code>和<code>query</code>参数调用<code>google.Search</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Run the Google search and print the results.</span></span><br><span class="line">start := time.Now()</span><br><span class="line">results, err := google.Search(ctx, query)</span><br><span class="line">elapsed := time.Since(start)</span><br></pre></td></tr></table></figure>
+<p>如果搜索成功，会渲染出结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> err := resultsTemplate.Execute(w, <span class="keyword">struct</span> &#123;</span><br><span class="line">    Results          google.Results</span><br><span class="line">    Timeout, Elapsed time.Duration</span><br><span class="line">&#125;&#123;</span><br><span class="line">    Results: results,</span><br><span class="line">    Timeout: timeout,</span><br><span class="line">    Elapsed: elapsed,</span><br><span class="line">&#125;); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Print(err)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="userip-包"><a href="#userip-包" class="headerlink" title="userip 包"></a>userip 包</h2><p><a href="https://blog.golang.org/context/userip/userip.go" target="_blank" rel="noopener">userip</a>包提供了解析用户 IP 地址函数的包，同时会将 IP 地址存储于一个<code>Context</code>值中。<code>Context</code>提供了键值对存储，键值都是<code>interface{}</code>类型，键必须可比较，值必须是并发安全。<code>userip</code>包屏蔽了实现上的细节，并以强类型方式访问<code>Context</code>值。</p>
+<p>为了避免键冲突，<code>userip</code>包首先定义一个非导出类型<code>key</code>，然后用该类型定义的值作为<code>Context</code>的键：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The key type is unexported to prevent collisions with context keys defined in</span></span><br><span class="line"><span class="comment">// other packages.</span></span><br><span class="line"><span class="keyword">type</span> key <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// userIPkey is the context key for the user IP address.  Its value of zero is</span></span><br><span class="line"><span class="comment">// arbitrary.  If this package defined other context keys, they would have</span></span><br><span class="line"><span class="comment">// different integer values.</span></span><br><span class="line"><span class="keyword">const</span> userIPKey key = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p><code>FromRequest</code>从<code>http.Request</code>解析出客户端 IP 地址<code>userIP</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">FromRequest</span><span class="params">(req *http.Request)</span> <span class="params">(net.IP, error)</span></span> &#123;</span><br><span class="line">    ip, _, err := net.SplitHostPort(req.RemoteAddr)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"userip: %q is not IP:port"</span>, req.RemoteAddr)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><code>NewContext</code>将<code>userIP</code>存储于新建的<code>Context</code>中：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewContext</span><span class="params">(ctx context.Context, userIP net.IP)</span> <span class="title">context</span>.<span class="title">Context</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> context.WithValue(ctx, userIPKey, userIP)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>FromContext</code>则相反，从<code>Context</code>取出 IP 地址：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">FromContext</span><span class="params">(ctx context.Context)</span> <span class="params">(net.IP, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ctx.Value returns nil if ctx has no value for the key;</span></span><br><span class="line">    <span class="comment">// the net.IP type assertion returns ok=false for nil.</span></span><br><span class="line">    userIP, ok := ctx.Value(userIPKey).(net.IP)</span><br><span class="line">    <span class="keyword">return</span> userIP, ok</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="google-包"><a href="#google-包" class="headerlink" title="google 包"></a>google 包</h2><p><code>google.Search</code>函数对谷歌 API 发起 HTTP 请求，并解析 JSON 结果。该函数同时接收一个<code>Context</code>参数<code>ctx</code>，如果请求处理时，<code>ctx.Done</code>关闭了，则立即退出。</p>
+<p>谷歌 API 会将搜索内容和用户 IP 地址<code>userIP</code>作为请求参数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Search</span><span class="params">(ctx context.Context, query <span class="keyword">string</span>)</span> <span class="params">(Results, error)</span></span> &#123;</span><br><span class="line">    <span class="comment">// Prepare the Google Search API request.</span></span><br><span class="line">    req, err := http.NewRequest(<span class="string">"GET"</span>, <span class="string">"https://ajax.googleapis.com/ajax/services/search/web?v=1.0"</span>, <span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    q := req.URL.Query()</span><br><span class="line">    q.Set(<span class="string">"q"</span>, query)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If ctx is carrying the user IP address, forward it to the server.</span></span><br><span class="line">    <span class="comment">// Google APIs use the user IP to distinguish server-initiated requests</span></span><br><span class="line">    <span class="comment">// from end-user requests.</span></span><br><span class="line">    <span class="keyword">if</span> userIP, ok := userip.FromContext(ctx); ok &#123;</span><br><span class="line">        q.Set(<span class="string">"userip"</span>, userIP.String())</span><br><span class="line">    &#125;</span><br><span class="line">    req.URL.RawQuery = q.Encode()</span><br></pre></td></tr></table></figure>
+<p><code>Search</code>使用了辅助函数<code>httpDo</code>来发起和取消 HTTP 请求，辅助函数参数有一个是处理 HTTP 响应的闭包：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> results Results</span><br><span class="line">err = httpDo(ctx, req, <span class="function"><span class="keyword">func</span><span class="params">(resp *http.Response, err error)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Parse the JSON search result.</span></span><br><span class="line">    <span class="comment">// https://developers.google.com/web-search/docs/#fonje</span></span><br><span class="line">    <span class="keyword">var</span> data <span class="keyword">struct</span> &#123;</span><br><span class="line">        ResponseData <span class="keyword">struct</span> &#123;</span><br><span class="line">            Results []<span class="keyword">struct</span> &#123;</span><br><span class="line">                TitleNoFormatting <span class="keyword">string</span></span><br><span class="line">                URL               <span class="keyword">string</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> err := json.NewDecoder(resp.Body).Decode(&amp;data); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> _, res := <span class="keyword">range</span> data.ResponseData.Results &#123;</span><br><span class="line">        results = <span class="built_in">append</span>(results, Result&#123;Title: res.TitleNoFormatting, URL: res.URL&#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// httpDo waits for the closure we provided to return, so it's safe to</span></span><br><span class="line"><span class="comment">// read results here.</span></span><br><span class="line"><span class="keyword">return</span> results, err</span><br></pre></td></tr></table></figure>
+<p><code>httpDo</code>函数会在新的 goroutine 中处理 HTTP 请求和响应，同时如果<code>ctx.Done</code>提前关闭，函数会直接退出。</p>
+<h2 id="为-Context-作代码适配"><a href="#为-Context-作代码适配" class="headerlink" title="为 Context 作代码适配"></a>为 Context 作代码适配</h2><p>许多服务器框架已经存储了请求相关值，我们可以实现<code>Context</code>接口的所有方法，来为<code>Context</code>参数适配这些现有框架。而框架的使用者在调用代码时则需要多传入一个<code>Context</code>。</p>
+<p>参考实现：</p>
+<ol>
+<li><a href="https://blog.golang.org/context/gorilla/gorilla.go" target="_blank" rel="noopener">gorilla.go</a>适配了 Gorilla 的<a href="http://www.gorillatoolkit.org/pkg/context" target="_blank" rel="noopener">github.com/gorilla/context</a></li>
+<li><a href="https://blog.golang.org/context/tomb/tomb.go" target="_blank" rel="noopener">tomb.go</a>适配了<a href="https://godoc.org/gopkg.in/tomb.v2" target="_blank" rel="noopener">Tomb</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/语言/">语言</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Go/">Go</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2020/05/25/go-concurrency-pattern-context/" data-title="Golang 并发模式 - Context | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2020/05/29/perftest-analysis-cpu1/" title="Linux 性能分析 - 如何理解 CPU 平均负载">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Linux 性能分析 - 如何理解 CPU 平均负载</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2020/02/22/go-the-principles-versioning-in-go/"  title="Golang 的版本管理原则">
+ <strong>下一篇：</strong><br/> 
+ <span>Golang 的版本管理原则
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Context"><span class="toc-number">2.</span> <span class="toc-text">Context</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Context-派生"><span class="toc-number">3.</span> <span class="toc-text">Context 派生</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#例子：谷歌网页搜索"><span class="toc-number">4.</span> <span class="toc-text">例子：谷歌网页搜索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#server-程序"><span class="toc-number">5.</span> <span class="toc-text">server 程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#userip-包"><span class="toc-number">6.</span> <span class="toc-text">userip 包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#google-包"><span class="toc-number">7.</span> <span class="toc-text">google 包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为-Context-作代码适配"><span class="toc-number">8.</span> <span class="toc-text">为 Context 作代码适配</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

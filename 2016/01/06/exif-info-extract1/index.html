@@ -1,7 +1,7 @@
 
  <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
   
     <title>Python 脚本实现读取图片属性信息 | lyyyuna 的小花园</title>
@@ -11,7 +11,7 @@
     
 
     
-    <meta name="description" content="我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。 这里改用 Python 脚本读取图片信息。有几个说明  没有实现错误处理 没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等 简单修改后应该能实现暴力修改图片的 GPS 信息 但对于本">
+    <meta name="description" content="我之前的这篇文章《暴力修改图片的 GPS 信息》中，讲述了如何从图片的二进制文件中读取 GPS 信息。 这里改用 Python 脚本读取图片信息。有几个说明  没有实现错误处理 没有读取所有信息，大概只有 GPS 信息、图片分辨率、图片像素、设备商、拍摄设备等 简单修改后应该能实现暴力修改图片的 GPS 信息 但对于本身没有 GPS 信息的图片，实现则非常复杂，需要仔细计算每个描述符的偏移量  脚">
 <meta name="keywords" content="Python script,Exif">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Python 脚本实现读取图片属性信息">
@@ -40,7 +40,7 @@
     
     <link rel="stylesheet" href="/css/style.css">
 </head>
-
+</html>
   <body>
     <header>
       
@@ -89,6 +89,7 @@
     
       <a href="/2016/01/06/exif-info-extract1/" title="Python 脚本实现读取图片属性信息" itemprop="url">Python 脚本实现读取图片属性信息</a>
   </h1>
+  
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
@@ -494,6 +495,10 @@ with open(&apos;image.jpg&apos;, &apos;rb&apos;) as f:
 		  
 		
 		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>8</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
 		  
 		
@@ -502,101 +507,8 @@ with open(&apos;image.jpg&apos;, &apos;rb&apos;) as f:
 		  
 		
 		  
-			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
 		  
-		
-		  
-			<li><a href="/categories/语言/" title="语言">语言<sup>13</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  
-<div class="tagslist">
-	<p class="asidetitle">标签</p>
-		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/Python/" title="Python">Python<sup>8</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>5</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/PostgreSQL/" title="PostgreSQL">PostgreSQL<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
-			
 		
 		</ul>
 </div>
@@ -605,18 +517,6 @@ with open(&apos;image.jpg&apos;, &apos;rb&apos;) as f:
   <div class="linkslist">
   <p class="asidetitle">友情链接</p>
     <ul>
-        
-          <li>
-            
-            	<a href="http://www.lihulab.net" target="_blank" title="自动化测试">自动化测试</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://oj.lihulab.net" target="_blank" title="蠡湖实验室 OJ">蠡湖实验室 OJ</a>
-            
-          </li>
         
     </ul>
 </div>

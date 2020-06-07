@@ -1,7 +1,7 @@
 
  <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
   
     <title>DHT 公网嗅探器实现（DHT 爬虫） | lyyyuna 的小花园</title>
@@ -11,7 +11,7 @@
     
 
     
-    <meta name="description" content="前言这里实现的 DHT 嗅探器会在公网捕获种子的 infohash，源码见 GitHub。 DHT 协议介绍见 DHT 协议 - 译。 其实大部分代码来自了 simDHT，我只是改成了 gevent 版本。 为什么我没有用 Python 3 的 asyncio 呢？最大的原因是我没有在官方 API 中找到方便使用 UD">
+    <meta name="description" content="前言这里实现的 DHT 嗅探器会在公网捕获种子的 infohash，源码见 GitHub。 DHT 协议介绍见 DHT 协议 - 译。 其实大部分代码来自了 simDHT，我只是改成了 gevent 版本。 为什么我没有用 Python 3 的 asyncio 呢？最大的原因是我没有在官方 API 中找到方便使用 UDP 协议的接口。asyncio 底层有着类似 Twisted 的事件驱动编程，对">
 <meta name="keywords" content="DHT">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DHT 公网嗅探器实现（DHT 爬虫）">
@@ -38,7 +38,7 @@
     
     <link rel="stylesheet" href="/css/style.css">
 </head>
-
+</html>
   <body>
     <header>
       
@@ -87,6 +87,7 @@
     
       <a href="/2016/05/14/dht-sniffer/" title="DHT 公网嗅探器实现（DHT 爬虫）" itemprop="url">DHT 公网嗅探器实现（DHT 爬虫）</a>
   </h1>
+  
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
@@ -125,7 +126,7 @@
 </code></pre><p>其他 node 除了会发送 get_peers 请求来获取 torrent 之外，也会发送 find_node 来获取节点信息。这意味着，其他 node 的 find_node 请求便是我们更新 node 信息的来源。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">process_find_node_response</span><span class="params">(self, msg, address)</span>:</span></span><br><span class="line">    <span class="comment"># print 'find node' + str(msg)</span></span><br><span class="line">    nodes = decode_nodes(msg[<span class="string">"r"</span>][<span class="string">"nodes"</span>])</span><br><span class="line">    <span class="keyword">for</span> node <span class="keyword">in</span> nodes:</span><br><span class="line">        (nid, ip, port) = node</span><br><span class="line">        <span class="keyword">if</span> len(nid) != <span class="number">20</span>: <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span> ip == self.bind_ip: <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span> port &lt; <span class="number">1</span> <span class="keyword">or</span> port &gt; <span class="number">65535</span>: <span class="keyword">continue</span></span><br><span class="line">        n = KNode(nid, ip, port)</span><br><span class="line">        self.nodes.append(n)</span><br></pre></td></tr></table></figure>
 <p>我们伪造的 X 从队列中取出一个 node，然后发送 find_node，</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">auto_send_find_node</span><span class="params">(self)</span>:</span></span><br><span class="line"></span><br><span class="line">    wait = <span class="number">1.0</span> / self.max_node_qsize / <span class="number">5.0</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            node = self.nodes.popleft()</span><br><span class="line">            self.send_find_node((node.ip, node.port), node.nid)</span><br><span class="line">        <span class="keyword">except</span> IndexError:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">        sleep(wait)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">auto_send_find_node</span><span class="params">(self)</span>:</span></span><br><span class="line"></span><br><span class="line">    wait = <span class="number">1.0</span> / self.max_node_qsize / <span class="number">5.0</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            node = self.nodes.popleft()</span><br><span class="line">            self.send_find_node((node.ip, node.port), node.nid)</span><br><span class="line">        <span class="keyword">except</span> IndexError:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">        sleep(wait)</span><br></pre></td></tr></table></figure>
 <p>实际测试表明，运行时队列一直是满的，所以不用担心 node 不够用。</p>
 <h3 id="解析-infohash"><a href="#解析-infohash" class="headerlink" title="解析 infohash"></a>解析 infohash</h3><p>get_peers 和 announce_peer 请求都含有 infohash。虽然 announce_peer 请求质量更高，但数量少。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_get_peers_request</span><span class="params">(self, msg, address)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        infohash = msg[<span class="string">"a"</span>][<span class="string">"info_hash"</span>]</span><br><span class="line">        tid = msg[<span class="string">"t"</span>]</span><br><span class="line">        nid = msg[<span class="string">"a"</span>][<span class="string">"id"</span>]</span><br><span class="line">        token = infohash[:TOKEN_LENGTH]</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'get peers: '</span> + infohash.encode(<span class="string">"hex"</span>),  address[<span class="number">0</span>], address[<span class="number">1</span>]</span><br><span class="line">        msg = &#123;</span><br><span class="line">            <span class="string">"t"</span>: tid,</span><br><span class="line">            <span class="string">"y"</span>: <span class="string">"r"</span>,</span><br><span class="line">            <span class="string">"r"</span>: &#123;</span><br><span class="line">                <span class="string">"id"</span>: get_neighbor(infohash, self.nid),</span><br><span class="line">                <span class="string">"nodes"</span>: <span class="string">""</span>,</span><br><span class="line">                <span class="string">"token"</span>: token</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        self.send_krpc(msg, address)</span><br><span class="line">    <span class="keyword">except</span> KeyError:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_announce_peer_request</span><span class="params">(self, msg, address)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'announce peer'</span></span><br><span class="line">        infohash = msg[<span class="string">"a"</span>][<span class="string">"info_hash"</span>]</span><br><span class="line">        token = msg[<span class="string">"a"</span>][<span class="string">"token"</span>]</span><br><span class="line">        nid = msg[<span class="string">"a"</span>][<span class="string">"id"</span>]</span><br><span class="line">        tid = msg[<span class="string">"t"</span>]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> infohash[:TOKEN_LENGTH] == token:</span><br><span class="line">            <span class="keyword">if</span> msg[<span class="string">"a"</span>].has_key(<span class="string">"implied_port"</span>) <span class="keyword">and</span> msg[<span class="string">"a"</span>][<span class="string">"implied_port"</span>] != <span class="number">0</span>:</span><br><span class="line">                port = address[<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                port = msg[<span class="string">"a"</span>][<span class="string">"port"</span>]</span><br><span class="line">                <span class="keyword">if</span> port &lt; <span class="number">1</span> <span class="keyword">or</span> port &gt; <span class="number">65535</span>: <span class="keyword">return</span></span><br><span class="line">            <span class="keyword">print</span> <span class="string">'announce peer: '</span> + infohash.encode(<span class="string">"hex"</span>),  address[<span class="number">0</span>], port</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        self.ok(msg, address)</span><br></pre></td></tr></table></figure>
@@ -239,6 +240,10 @@
 		  
 		
 		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>8</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
 		  
 		
@@ -247,101 +252,8 @@
 		  
 		
 		  
-			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
 		  
-		
-		  
-			<li><a href="/categories/语言/" title="语言">语言<sup>13</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  
-<div class="tagslist">
-	<p class="asidetitle">标签</p>
-		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/Python/" title="Python">Python<sup>8</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>5</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/PostgreSQL/" title="PostgreSQL">PostgreSQL<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
-			
 		
 		</ul>
 </div>
@@ -350,18 +262,6 @@
   <div class="linkslist">
   <p class="asidetitle">友情链接</p>
     <ul>
-        
-          <li>
-            
-            	<a href="http://www.lihulab.net" target="_blank" title="自动化测试">自动化测试</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://oj.lihulab.net" target="_blank" title="蠡湖实验室 OJ">蠡湖实验室 OJ</a>
-            
-          </li>
         
     </ul>
 </div>

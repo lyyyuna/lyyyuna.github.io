@@ -1,0 +1,687 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  
+    <title>Linux 性能分析 - 如何理解 CPU 平均负载 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="平均负载的定义uptime是最简单的性能分析命令之一，它的输出非常简单，比如： 12$ uptime 16:08:29 up 42 days,  5:11,  2 users,  load average: 0.33, 0.22, 0.22 前面几列易于理解，分别是当前时间，系统已运行时间，登录的用户数。可是最后的平均负载是什么？查看uptime帮助文档对其的定义： System load ave">
+<meta name="keywords" content="Linux 性能分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 性能分析 - 如何理解 CPU 平均负载">
+<meta property="og:url" content="http://www.lyyyuna.com/2020/05/29/perftest-analysis-cpu1/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="平均负载的定义uptime是最简单的性能分析命令之一，它的输出非常简单，比如： 12$ uptime 16:08:29 up 42 days,  5:11,  2 users,  load average: 0.33, 0.22, 0.22 前面几列易于理解，分别是当前时间，系统已运行时间，登录的用户数。可是最后的平均负载是什么？查看uptime帮助文档对其的定义： System load ave">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-07T08:26:14.942Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux 性能分析 - 如何理解 CPU 平均负载">
+<meta name="twitter:description" content="平均负载的定义uptime是最简单的性能分析命令之一，它的输出非常简单，比如： 12$ uptime 16:08:29 up 42 days,  5:11,  2 users,  load average: 0.33, 0.22, 0.22 前面几列易于理解，分别是当前时间，系统已运行时间，登录的用户数。可是最后的平均负载是什么？查看uptime帮助文档对其的定义： System load ave">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/05/29/perftest-analysis-cpu1/" title="Linux 性能分析 - 如何理解 CPU 平均负载" itemprop="url">Linux 性能分析 - 如何理解 CPU 平均负载</a>
+  </h1>
+  
+    <div class="article-content">Linux 性能分析 - 系列文章:
+        <ol>
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <li> <a href="/2020/05/29/perftest-analysis-cpu1/">Linux 性能分析 - 如何理解 CPU 平均负载</li>
+            
+        
+        </ol>
+    </div>
+
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2020-05-29T08:36:38.000Z" itemprop="datePublished"> 发表于 2020-05-29</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#平均负载的定义"><span class="toc-number">1.</span> <span class="toc-text">平均负载的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进程的状态"><span class="toc-number">2.</span> <span class="toc-text">进程的状态</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#操作系统进程的基本状态"><span class="toc-number">2.1.</span> <span class="toc-text">操作系统进程的基本状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux-进程的基本状态"><span class="toc-number">2.2.</span> <span class="toc-text">Linux 进程的基本状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#理解定义"><span class="toc-number">3.</span> <span class="toc-text">理解定义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#平均负载与-CPU-利用率"><span class="toc-number">3.1.</span> <span class="toc-text">平均负载与 CPU 利用率</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实验"><span class="toc-number">4.</span> <span class="toc-text">实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#工具介绍"><span class="toc-number">4.1.</span> <span class="toc-text">工具介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU-密集型"><span class="toc-number">4.2.</span> <span class="toc-text">CPU 密集型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#I-O-密集型"><span class="toc-number">4.3.</span> <span class="toc-text">I/O 密集型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#大量等待调度的进程"><span class="toc-number">4.4.</span> <span class="toc-text">大量等待调度的进程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小结"><span class="toc-number">5.</span> <span class="toc-text">小结</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="平均负载的定义"><a href="#平均负载的定义" class="headerlink" title="平均负载的定义"></a>平均负载的定义</h2><p><code>uptime</code>是最简单的性能分析命令之一，它的输出非常简单，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ uptime</span><br><span class="line"> 16:08:29 up 42 days,  5:11,  2 users,  load average: 0.33, 0.22, 0.22</span><br></pre></td></tr></table></figure>
+<p>前面几列易于理解，分别是当前时间，系统已运行时间，登录的用户数。可是最后的平均负载是什么？查看<code>uptime</code>帮助文档对其的定义：</p>
+<pre><code>System load averages is the average number of processes that are either in a runnable or uninterruptable state. A  process in a runnable state is either using the CPU or waiting to use the CPU. A process in uninterruptable state is waiting for some I/O access, eg waiting for disk. The averages are taken over the three time intervals. Load averages are not normalized for the number of CPUs in a system, so a load average of 1 means a single CPU system is loaded all the time while on a 4 CPU system it means it was idle 75% of the time.
+</code></pre><p>大概翻译过来就是：</p>
+<pre><code>系统的平均负载是指处于可运行和不可中断状态的进程平均数量。所谓可运行状态是指正在使用或等待使用 CPU，而不可中断状态是指进程正执行某种 I/O 操作，比如读写磁盘。平均负载会计算 1 分钟、5 分钟和 15 分钟内的该指标。不过需要注意的是，该数据没有针对 CPU 个数作归一化处理，所以平均负载 1 在单核系统上意味满负载运行，而在 4 核系统上意味着只使用了 25% 的负载。
+</code></pre><h2 id="进程的状态"><a href="#进程的状态" class="headerlink" title="进程的状态"></a>进程的状态</h2><h3 id="操作系统进程的基本状态"><a href="#操作系统进程的基本状态" class="headerlink" title="操作系统进程的基本状态"></a>操作系统进程的基本状态</h3><p>在操作系统的概念中，进程会不断改变其运行状态，其必须有以下三种基本状态：</p>
+<ol>
+<li>就绪：进程所需要的资源都已经获得，但是还没有分配到 CPU 来运行</li>
+<li>运行：进程分配到 CPU 在运行</li>
+<li>阻塞：进程的某些资源还没有满足，比如缓冲区申请未分配，等待 I/O 完成</li>
+</ol>
+<h3 id="Linux-进程的基本状态"><a href="#Linux-进程的基本状态" class="headerlink" title="Linux 进程的基本状态"></a>Linux 进程的基本状态</h3><p>相比于标准的操作系统概念，Linux 中对于状态有自己的划分：</p>
+<ol>
+<li>D 不可中断睡眠，最常见的是正在访问硬件设备，若中断会导致磁盘数据和进程数据不一致</li>
+<li>R 运行和就绪，对，Linux 上这两个状态是被统计在一起的</li>
+<li>S 可中断睡眠，比如进程正在等待信号唤醒</li>
+<li>T 停止，是处于调试状态的进程</li>
+<li>Z 僵尸进程，即父进程未等待子进程退出</li>
+</ol>
+<h2 id="理解定义"><a href="#理解定义" class="headerlink" title="理解定义"></a>理解定义</h2><p>由上述 Linux 的进程定义，所谓可运行和不可中断状态就是活跃的进程，即正在使用 CPU/等待 CPU/等待 IO 的进程，而平均负载可理解为单位时间内活跃进程的数量。</p>
+<p>如果每个核上都正好跑着一个进程，则说明 CPU 被充分的利用。那么平均负载为 4 在一个四核处理器上就是 CPU 刚好被完全占用，而在单核处理器上，意味着有 3 个进程得不到 CPU，只能干等。</p>
+<h3 id="平均负载与-CPU-利用率"><a href="#平均负载与-CPU-利用率" class="headerlink" title="平均负载与 CPU 利用率"></a>平均负载与 CPU 利用率</h3><p>在未看过本文之前，你很可能将平均负载和 CPU 利用率划上等号，事实上，这是两个独立的概念。</p>
+<ul>
+<li>对于 CPU 密集型进程，因为大量利用了 CPU，故而平均负载升高</li>
+<li>对于 I/O 密集型进程，虽然 CPU 利用率不高，但是大量进程都阻塞住，使得活跃进程数量增加，所以平均负载也会升高</li>
+<li>对于有大量等待调度的进程，这些进程都处于就绪态，平均负载也高。而且由于上下文切换，进程数量多，切换的机会也多，这无形中也增加了负载</li>
+</ul>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>我们就上文提到的三个场景，分别做实验来模拟。</p>
+<p>我们实验所用的系统是 ubuntu 18，机器配置为 2 CPU/16 GB。</p>
+<h3 id="工具介绍"><a href="#工具介绍" class="headerlink" title="工具介绍"></a>工具介绍</h3><p>工欲善其事，必先利其器。有很多现成的工具可以模拟负载，监控和分析系统性能。</p>
+<ol>
+<li><code>stress</code>可以用来对系统施加指定类型的系统压力，它并不是一个基准测试工具</li>
+<li><code>mpstat</code>是一个多核的 CPU 性能分析工具，可以统计每个 CPU 的性能</li>
+<li><code>pidstat</code>是一个多进程性能分析工具，可以统计每个进程的性能</li>
+</ol>
+<p>实验开始时首先查看一下系统的负载情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ uptime</span><br><span class="line"> 15:23:16 up 51 days,  4:26,  1 user,  load average: 0.15, 0.30, 0.31</span><br></pre></td></tr></table></figure>
+<p>确认一下系统的是否是 2 核：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /proc/cpuinfo | grep processor</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+<h3 id="CPU-密集型"><a href="#CPU-密集型" class="headerlink" title="CPU 密集型"></a>CPU 密集型</h3><p>我们利用<code>stress</code>模拟一个 CPU 跑慢的场景：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ stress --cpu 1 --timeout 600</span><br></pre></td></tr></table></figure>
+<p>过两分钟后查看<code>uptime</code>查看平均负载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ uptime</span><br><span class="line"> 15:41:09 up 51 days,  4:44,  2 users,  load average: 1.18, 0.77, 0.49</span><br></pre></td></tr></table></figure>
+<p>可以看到系统负载越升越高，1 分钟内的平均负载高于 5 分钟内平均负载。</p>
+<p>使用<code>mpstat</code>查看 CPU 利用率的情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># ALL 表示输出所有 CPU 的情况，5 表示每隔 5s 输出一次</span><br><span class="line">$ mpstat -P ALL 5</span><br><span class="line">03:42:26 PM  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle</span><br><span class="line">03:42:31 PM  all   51.96    0.00    1.01    0.81    0.00    0.10    0.00    0.00    0.00   46.12</span><br><span class="line">03:42:31 PM    0    3.44    0.00    2.02    1.62    0.00    0.20    0.00    0.00    0.00   92.71</span><br><span class="line">03:42:31 PM    1  100.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00</span><br></pre></td></tr></table></figure>
+<p>可以看到其中一个 CPU 利用率飙到了 100%，这个是平均负载升高的直接原因。</p>
+<p>使用<code>pidstat</code>查看具体是哪个进程占用了 CPU：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 5 表示每隔 5s 输出一次</span><br><span class="line">$ pidstat -u 5</span><br><span class="line">Linux 4.15.0-96-generic (work) 	06/07/2020 	_x86_64_	(2 CPU)</span><br><span class="line"></span><br><span class="line">03:46:19 PM   UID       PID    %usr %system  %guest   %wait    %CPU   CPU  Command</span><br><span class="line">03:46:24 PM     0     10766    0.20    0.20    0.00    0.60    0.40     0  redis-server</span><br><span class="line">03:46:24 PM  1000     27225   99.80    0.00    0.00    0.00   99.80     1  stress</span><br><span class="line">03:46:24 PM  1000     27583    0.00    0.20    0.00    0.00    0.20     0  pidstat</span><br></pre></td></tr></table></figure>
+<p>虽然输出有很多行，但我们很容易就发现是<code>stress</code>这个进程使用了 100% 的 CPU。</p>
+<h3 id="I-O-密集型"><a href="#I-O-密集型" class="headerlink" title="I/O 密集型"></a>I/O 密集型</h3><p>我们还是使用<code>stress</code>模拟 I/O 压力</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ stress -i 1 --timeout 600</span><br></pre></td></tr></table></figure>
+<p>过两分钟后查看<code>uptime</code>查看平均负载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ uptime</span><br><span class="line"> 15:53:43 up 51 days,  4:57,  2 users,  load average: 1.09, 0.94, 0.85</span><br></pre></td></tr></table></figure>
+<p>平均负载果然升高了。</p>
+<p>同时我们看一下 CPU 利用率的情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">03:54:43 PM  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle</span><br><span class="line">03:54:48 PM  all    2.57    0.00    3.81   29.35    0.00    1.75    0.00    0.00    0.00   62.51</span><br><span class="line">03:54:48 PM    0    2.49    0.00    3.53   45.95    0.00    3.33    0.00    0.00    0.00   44.70</span><br><span class="line">03:54:48 PM    1    2.86    0.00    4.09   12.88    0.00    0.20    0.00    0.00    0.00   79.96</span><br></pre></td></tr></table></figure>
+<p>可以看到两个 CPU 都没有被占满。但是<code>%iowait</code>这一项和上一小节有明显的差异，<code>%iowait</code>即是反映 I/O 压力的情况。</p>
+<p>我们接着用<code>pidstat</code>查看具体是哪个进程导致的<code>%iowait</code>升高：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ pidstat -u 5</span><br><span class="line">Linux 4.15.0-96-generic (work) 	06/07/2020 	_x86_64_	(2 CPU)</span><br><span class="line"></span><br><span class="line">03:59:31 PM   UID       PID    %usr %system  %guest   %wait    %CPU   CPU  Command</span><br><span class="line">03:59:36 PM     0         7    0.00    0.20    0.00    0.00    0.20     0  ksoftirqd/0</span><br><span class="line">03:59:36 PM     0         8    0.00    0.20    0.00    0.20    0.20     0  rcu_sched</span><br><span class="line">03:59:36 PM     0       209    0.00    1.20    0.00    0.00    1.20     0  kworker/0:1H</span><br><span class="line">03:59:36 PM   112      2047    0.20    0.20    0.00    0.00    0.40     1  beam.smp</span><br><span class="line">03:59:36 PM     0      9976    0.00    0.20    0.00    0.00    0.20     1  supervisord</span><br><span class="line">03:59:36 PM     0      9981    0.40    0.00    0.00    0.00    0.40     1  mongod</span><br><span class="line">03:59:36 PM     0     10071    0.40    0.00    0.00    0.00    0.40     1  mongod</span><br><span class="line">03:59:36 PM     0     10072    0.40    0.00    0.00    0.00    0.40     0  mongod</span><br><span class="line">03:59:36 PM     0     10073    0.40    0.20    0.00    0.00    0.60     0  mongod</span><br><span class="line">03:59:36 PM     0     10765    0.20    0.00    0.00    0.00    0.20     1  redis-server</span><br><span class="line">03:59:36 PM     0     10766    0.20    0.20    0.00    0.60    0.40     0  redis-server</span><br><span class="line">03:59:36 PM     0     10821    0.20    0.00    0.00    0.00    0.20     1  redis-server</span><br><span class="line">03:59:36 PM  1000     27741    0.00    7.19    0.00    1.40    7.19     0  stress</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>%wait</code>这一项高的还是<code>stress</code>进程。</p>
+<h3 id="大量等待调度的进程"><a href="#大量等待调度的进程" class="headerlink" title="大量等待调度的进程"></a>大量等待调度的进程</h3><p><code>stress</code>可以模拟出处于运行态的进程，以下模拟出 10 个待调度的进程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ stress -c 10 --timeout 600</span><br></pre></td></tr></table></figure>
+<p>过两分钟后查看<code>uptime</code>查看平均负载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ uptime</span><br><span class="line"> 16:09:20 up 51 days,  5:12,  2 users,  load average: 9.38, 4.54, 2.35</span><br></pre></td></tr></table></figure>
+<p>平均负载又升高了，而且远高于以上两个实验，这也是当然的，根据平均负载的定义，这里有 10 个处于可运行的进程，那么平均负载的值肯定会接近 10。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">$ pidstat -u 5</span><br><span class="line">Linux 4.15.0-96-generic (work) 	06/07/2020 	_x86_64_	(2 CPU)</span><br><span class="line"></span><br><span class="line">04:11:59 PM   UID       PID    %usr %system  %guest   %wait    %CPU   CPU  Command</span><br><span class="line">04:12:04 PM     0         8    0.00    0.20    0.00    0.20    0.20     0  rcu_sched</span><br><span class="line">04:12:04 PM     0      9976    0.20    0.00    0.00    0.00    0.20     1  supervisord</span><br><span class="line">04:12:04 PM     0      9981    0.60    0.00    0.00    0.00    0.60     1  mongod</span><br><span class="line">04:12:04 PM     0     10071    0.20    0.00    0.00    0.00    0.20     1  mongod</span><br><span class="line">04:12:04 PM     0     10072    0.20    0.00    0.00    0.00    0.20     0  mongod</span><br><span class="line">04:12:04 PM     0     10073    0.20    0.00    0.00    0.00    0.20     0  mongod</span><br><span class="line">04:12:04 PM     0     10260    0.40    0.20    0.00    0.00    0.60     1  mongod</span><br><span class="line">04:12:04 PM     0     10261    0.40    0.00    0.00    0.00    0.40     1  mongod</span><br><span class="line">04:12:04 PM     0     10262    0.20    0.00    0.00    0.00    0.20     1  mongod</span><br><span class="line">04:12:04 PM     0     10763    0.20    0.00    0.00    0.20    0.20     1  redis-server</span><br><span class="line">04:12:04 PM     0     10764    0.20    0.00    0.00    0.20    0.20     1  redis-server</span><br><span class="line">04:12:04 PM     0     10766    0.20    0.20    0.00    0.80    0.40     0  redis-server</span><br><span class="line">04:12:04 PM     0     10820    0.20    0.00    0.00    0.00    0.20     1  redis-server</span><br><span class="line">04:12:04 PM  1000     28242   19.48    0.00    0.00   80.12   19.48     0  stress</span><br><span class="line">04:12:04 PM  1000     28243   19.28    0.00    0.00   80.12   19.28     1  stress</span><br><span class="line">04:12:04 PM  1000     28244   19.28    0.00    0.00   80.12   19.28     0  stress</span><br><span class="line">04:12:04 PM  1000     28245   19.28    0.00    0.00   79.72   19.28     1  stress</span><br><span class="line">04:12:04 PM  1000     28246   19.48    0.00    0.00   80.12   19.48     0  stress</span><br><span class="line">04:12:04 PM  1000     28247   19.28    0.00    0.00   79.92   19.28     0  stress</span><br><span class="line">04:12:04 PM  1000     28248   19.48    0.00    0.00   79.92   19.48     1  stress</span><br><span class="line">04:12:04 PM  1000     28249   19.48    0.00    0.00   80.52   19.48     1  stress</span><br><span class="line">04:12:04 PM  1000     28250   19.48    0.00    0.00   80.12   19.48     1  stress</span><br><span class="line">04:12:04 PM  1000     28251   19.48    0.00    0.00   80.52   19.48     0  stress</span><br></pre></td></tr></table></figure>
+<p>可以看到有 10 个<code>stress</code>进程在抢 2 个 CPU。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>通过本文我们了解到：平均负载与 CPU 利用率没有必然联系。而当发现负载升高后，需要综合使用<code>uptime</code>, <code>mpstat</code>, <code>pidstat</code>等工具来分析是上述哪三个场景，从而找到负载升高的来源。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/测试/">测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Linux-性能分析/">Linux 性能分析</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2020/05/29/perftest-analysis-cpu1/" data-title="Linux 性能分析 - 如何理解 CPU 平均负载 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2020/05/25/go-concurrency-pattern-context/"  title="Golang 并发模式 - Context">
+ <strong>下一篇：</strong><br/> 
+ <span>Golang 并发模式 - Context
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#平均负载的定义"><span class="toc-number">1.</span> <span class="toc-text">平均负载的定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进程的状态"><span class="toc-number">2.</span> <span class="toc-text">进程的状态</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#操作系统进程的基本状态"><span class="toc-number">2.1.</span> <span class="toc-text">操作系统进程的基本状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux-进程的基本状态"><span class="toc-number">2.2.</span> <span class="toc-text">Linux 进程的基本状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#理解定义"><span class="toc-number">3.</span> <span class="toc-text">理解定义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#平均负载与-CPU-利用率"><span class="toc-number">3.1.</span> <span class="toc-text">平均负载与 CPU 利用率</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实验"><span class="toc-number">4.</span> <span class="toc-text">实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#工具介绍"><span class="toc-number">4.1.</span> <span class="toc-text">工具介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU-密集型"><span class="toc-number">4.2.</span> <span class="toc-text">CPU 密集型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#I-O-密集型"><span class="toc-number">4.3.</span> <span class="toc-text">I/O 密集型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#大量等待调度的进程"><span class="toc-number">4.4.</span> <span class="toc-text">大量等待调度的进程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小结"><span class="toc-number">5.</span> <span class="toc-text">小结</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

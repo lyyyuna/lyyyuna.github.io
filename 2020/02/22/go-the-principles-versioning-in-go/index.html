@@ -1,7 +1,7 @@
 
  <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
   
     <title>Golang 的版本管理原则 | lyyyuna 的小花园</title>
@@ -11,7 +11,7 @@
     
 
     
-    <meta name="description" content="前言本文翻译+删选+理解自 The Principles of Versioning in Go 为什么需要版本？让我们先看下传统基于GOPATH的go get是如何导致版本管理失败的。 假设有一个全新安装的 Go 环境，我们需要写一个程序导入D，因此运行go get D。记住现在是基于GOPATH的go get，不是">
+    <meta name="description" content="前言本文翻译+删选+理解自 The Principles of Versioning in Go 为什么需要版本？让我们先看下传统基于GOPATH的go get是如何导致版本管理失败的。 假设有一个全新安装的 Go 环境，我们需要写一个程序导入D，因此运行go get D。记住现在是基于GOPATH的go get，不是 go mod。 1$ go get D  该命令会寻找并下载最新版本的D 1.">
 <meta name="keywords" content="Go">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Golang 的版本管理原则">
@@ -52,7 +52,7 @@
     
     <link rel="stylesheet" href="/css/style.css">
 </head>
-
+</html>
   <body>
     <header>
       
@@ -101,6 +101,7 @@
     
       <a href="/2020/02/22/go-the-principles-versioning-in-go/" title="Golang 的版本管理原则" itemprop="url">Golang 的版本管理原则</a>
   </h1>
+  
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
@@ -123,15 +124,15 @@
 <h2 id="为什么需要版本？"><a href="#为什么需要版本？" class="headerlink" title="为什么需要版本？"></a>为什么需要版本？</h2><p>让我们先看下传统基于<code>GOPATH</code>的<code>go get</code>是如何导致版本管理失败的。</p>
 <p>假设有一个全新安装的 Go 环境，我们需要写一个程序导入<code>D</code>，因此运行<code>go get D</code>。记住现在是基于<code>GOPATH</code>的<code>go get</code>，不是 <code>go mod</code>。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ go get D</span><br></pre></td></tr></table></figure>
-<p><img src="/img/posts/version-in-go/vgo-why-1@1.5x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-1@1.5x.png" alt></p>
 <p>该命令会寻找并下载最新版本的<code>D 1.0</code>，并假设现在能成功构建。</p>
 <p>几个月后我们需要一个新的库<code>C</code>，我们接着运行<code>go get C</code>，该库的版本为 1.8。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ go get C</span><br></pre></td></tr></table></figure>
-<p><img src="/img/posts/version-in-go/vgo-why-2@1.5x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-2@1.5x.png" alt></p>
 <p><code>C</code>导入<code>D</code>，但是<code>go get</code>发现当前环境内已经下载过<code>D</code>库了，所以 Go 会重复使用该库。不幸的是，本地的<code>D</code>版本是 1.0，而<code>C</code>对<code>D</code>有版本依赖，必须是 1.4 以上（有可能 1.4 有一些 bugfix 或者新 feature）。</p>
 <p>显而易见这里<code>C</code>会构建失败。我们再次运行<code>go get -u C</code>。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ go get -u C</span><br></pre></td></tr></table></figure>
-<p><img src="/img/posts/version-in-go/vgo-why-3@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-3@2x.png" alt></p>
 <p>不幸的是，（假设）一小时前<code>D</code>的作者发布了<code>D 1.6</code>，该版本又引入了一个缺陷。因为<code>go get -u</code>一直使用最新的依赖，所以使用 1.6 的<code>C</code>又构建失败了。</p>
 <p>由这个例子可以看出，基于<code>GOPATH</code>的<code>go get</code>缺乏版本管理，会导致两种问题，要么版本过低，要么版本过高。我们需要一种机制，<code>C</code>和<code>D</code>的作者能够一起开发和测试。</p>
 <p>自从<code>goinstall/go get</code>推出之后，Go 程序员就对版本管理有着强烈的诉求，过去几年间，很多第三方的工具被开发出来。然而，这些工具对版本控制的细节有着不同的实现和理解，这会导致不同的库若使用不同的工具，库之间仍然无法协同工作。</p>
@@ -164,48 +165,48 @@
 <p>对于 Go 程序来说，光改变主版本号还不够，两个主版本号如果名字一模一样，阅读代码还是会造成困扰。</p>
 <p>看起来，情况变得更加糟糕。</p>
 <p>假设包<code>B</code>期望使用 V1 版本的<code>string.Split</code>，而<code>C</code>期望使用 V2 版本的<code>string.Split</code>。如果<code>B</code>和<code>C</code>是分别构建的，那 OK。</p>
-<p><img src="/img/posts/version-in-go/vgo-why-4@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-4@2x.png" alt></p>
 <p>但如果有一个包<code>A</code>同时导入了包<code>B</code>和<code>C</code>呢？那该如何选择<code>string.Split</code>的版本？</p>
-<p><img src="/img/posts/version-in-go/vgo-why-5@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-5@2x.png" alt></p>
 <p>针对<code>Go modules</code>的设计思想，官方意识到兼容性是最基础的原则，是必须支持、鼓励和遵循的。Go 的 FAQ 中写到：</p>
 <blockquote>
 <p>Packages intended for public use should try to maintain backwards compatibility as they evolve. The Go 1 compatibility guidelines are a good reference here: don’t remove exported names, encourage tagged composite literals, and so on. If different functionality is required, add a new name instead of changing an old one. If a complete break is required, create a new package with a new import path.</p>
 </blockquote>
 <p>大致意思是如果新旧两个包导入路径相同，那它们就应该被当作是兼容的。</p>
 <p>这和语义化版本有什么关系呢？兼容性原则要求不同主版本号之间不需要有兼容性上的联系，所以，很自然地要求我们使用不同的导入路径。而<code>Go modules</code>中的做法是把主版本号放入导入路径，我们称之为语义化导入版本(Semantic import versioning)。</p>
-<p><img src="/img/posts/version-in-go/impver@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/impver@2x.png" alt></p>
 <p>在这个例子中，<code>my/thing/v2</code>表示使用版本 2。如果是版本 1，那就是<code>my/thing</code>，没有显式在路径指定版本号，所以路径成为了主版本号的一部分，以此类推，版本 3 的导入路径为<code>my/thing/v3</code>。</p>
 <p>如果<code>strings</code>包是我们开发者自己的模块，我们不想增加新的函数<code>Fields</code>而是重新定义<code>Split</code>，那么可以创建两个模块<code>strings</code>(主版本号 1)和<code>strings/v2</code>(主版本号 2)，这样可以同时存在两个不同的<code>Split</code>。</p>
-<p><img src="/img/posts/version-in-go/vgo-why-6@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-6@2x.png" alt></p>
 <p>依据此路径规则，<code>A</code>、<code>B</code>和<code>C</code>都能构建成功，整个程序都能正常运行。开发者和各种工具都能明白它们是不同的包，就像<code>crypto/rand</code>和<code>math/rand</code>是不同的一样显而易见。</p>
 <p>让我们回到那个不可构建的程序。把<code>strings</code>抽象成包<code>D</code>，，这时候若不使用<em>语义化导入版本方法</em>，这样就遇到了经典的“钻石依赖问题”：<code>B</code>和<code>C</code>单独都能构建，但放在一起就不行。如果尝试构建程序<code>A</code>，那该如何选择版本<code>D</code>呢？</p>
-<p><img src="/img/posts/version-in-go/vgo-why-7@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-7@2x.png" alt></p>
 <p>语义化导入版本切断了“钻石依赖”。因为<code>D</code>的版本 2.0 有不一样的导入路径，<code>D/v2</code>。</p>
-<p><img src="/img/posts/version-in-go/vgo-why-8@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-8@2x.png" alt></p>
 <h3 id="原则-2：可重复性"><a href="#原则-2：可重复性" class="headerlink" title="原则 #2：可重复性"></a>原则 #2：可重复性</h3><p>第二原则是程序构建必须具有可重复性，一个指定版本包的构建结果不应随时间改变。在该原则下，今天我编译代码的结果和其他程序员明年编译的结果是匹配的。<strong>大部分包管理系统并不保证一点</strong>。</p>
 <p>在第一小节我们也看到了，基于<code>GOPATH</code>的<code>go get</code>用的不是最新就是最旧的<code>D</code>。你可能认为，“<code>go get</code>当然会犯错误：它对版本一无所知”。但其实其他一些包管理工具也会犯同样的错误，这里以<code>Dep</code>为例。（<code>Cargo</code>和<code>Bundler</code>也类似）</p>
 <p><code>Dep</code>要求每一个包包含一个<code>manifest</code>来存放元数据，记录下对所有依赖的要求。当<code>Dep</code>下载了<code>C</code>，它读入<code>C</code>的元数据，知道了<code>C</code>需要<code>D 1.4</code>之后的版本。然后<code>Dep</code>下载了最新版本的<code>D</code>来满足这一限制。</p>
 <p>假设在昨天，<code>D</code>最新版本是 1.5：</p>
-<p><img src="/img/posts/version-in-go/vgo-why-9@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-9@2x.png" alt></p>
 <p>而今天，<code>D</code>更新为了 1.6：</p>
-<p><img src="/img/posts/version-in-go/vgo-why-10@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-10@2x.png" alt></p>
 <p>可以看出，该决策方法是不可重复的，会随时间发生改变。</p>
 <p>当然，<code>Dep</code>的开发者意识到了这一点，它们引入了第二个元数据文件——lock 文件。如果<code>C</code>本身是一个完整的程序，当 Go 调用<code>package main</code>的时候，lock 文件会记录下<code>C</code>使用依赖的确切版本，而当需要重复构建时，lock 文件内所记录的依赖具有更高的优先级。也就是说，lock 文件同样能保证重复性原则。</p>
 <p>但 lock 文件只是针对整体程序而言——<code>package main</code>。如果<code>C</code>被别的更大程序所使用，lock 文件就无效了，库<code>C</code>的构建仍会随着时间的改变而改变。</p>
 <p>而<code>Go modules</code>的算法非常简单，那就是“最小版本选择算法”——每一个包指定其依赖的最低版本号。比如假设<code>B 1.3</code>要求最低<code>D 1.3</code>，<code>C 1.8</code>要求最低<code>D 1.4</code>。<code>Go modules</code>不会选择最新的版本，而是选择最小能满足要求的版本，这样，构建的结果是可重复的。</p>
-<p><img src="/img/posts/version-in-go/vgo-why-12@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-12@2x.png" alt></p>
 <p>如果构建的不同部分有不同最低版本要求，<code>go</code>命令会使用最近的那个版本。如图所示，<code>A</code>构建时发现同时有<code>D 1.3</code>和<code>D 1.4</code>的依赖，由于 1.4 大于 1.3，所以构建时会选择<code>D 1.4</code>。<code>D 1.5</code>或者<code>D 1.6</code>存在与否并不会影响该决策。</p>
 <p>在没有 lock 文件的情况下，该算法依然保证了程序和库的可重复性构建。</p>
 <h3 id="原则-3：可合作性"><a href="#原则-3：可合作性" class="headerlink" title="原则 #3：可合作性"></a>原则 #3：可合作性</h3><p>第三原则是可合作性。为了维护 Go 包的生态，我们追求的是一个统一的连贯的系统。相反，我们想避免的是生态分裂，变成一组一组互相之间不可合作的包。</p>
 <p>若开发者们不合作，无论我们使用的工具有多么精巧，技巧多么高超，整个 Go 开源生态一定会走向分裂。这里隐含的意思是，为了修复不兼容性，必须要合作，我们不应排斥合作。</p>
 <p>还是拿库<code>C 1.8</code>举例子，它要求最低版本<code>D 1.4</code>。由于可重复性原则，<code>C 1.8</code>构建会使用<code>D 1.4</code>。如果<code>C 1.8</code>是被其他更大的程序所依赖，且该程序要求<code>D 1.5</code>，那根据最小版本选择算法，会选择<code>D 1.5</code>。这时候构建仍是正确的。</p>
 <p>现在问题来了，<code>D</code> 的作者发布了 1.6 版本，但该版本有问题，<code>C 1.8</code>无法与该版本构建。</p>
-<p><img src="/img/posts/version-in-go/vgo-why-13@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-13@2x.png" alt></p>
 <p>解决的方法是<code>C</code>和<code>D</code>的作者合作来发布 fix。解决方法多种多样。</p>
 <p><code>C</code> 可以推出 1.9 版本，规避掉<code>D 1.6</code>中的 bug。</p>
-<p><img src="/img/posts/version-in-go/vgo-why-15@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-15@2x.png" alt></p>
 <p><code>D</code> 也可以推出 1.7 版本，修复其存在的 bug。同时，根据兼容性原则，<code>C 1.9</code>可以指定其要求最低<code>D 1.7</code>。</p>
-<p><img src="/img/posts/version-in-go/vgo-why-14@2x.png" alt=""></p>
+<p><img src="/img/posts/version-in-go/vgo-why-14@2x.png" alt></p>
 <p>再来复盘一下刚才的故事，最新版本的<code>C</code>和<code>D</code>突然不能一起工作了，这打破了 Go 包的生态，两库的作者必须合作来修复 bug。这种合作对生态是良性的。而正由于<code>Go modules</code>采用的包选择算法/可重复性，那些没有显式指定<code>D 1.6</code>的库都不会被影响。这给了<code>C</code>和<code>D</code>的作者充分的时间来给出最终解决方案。</p>
 <h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>以上是 Go 版本管理的三原则，也是<code>Go modules</code>区别于<code>Dep</code>，<code>Bundler</code>和<code>Cargo</code>的根本原因。</p>
 <ul>
@@ -251,6 +252,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2020/05/25/go-concurrency-pattern-context/" title="Golang 并发模式 - Context">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Golang 并发模式 - Context</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2018/07/06/postgres-function-volatile/"  title="PostgreSQL 中的函数稳定性">
@@ -312,6 +321,10 @@
 		  
 		
 		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>8</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
 		  
 		
@@ -320,101 +333,8 @@
 		  
 		
 		  
-			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
 		  
-		
-		  
-			<li><a href="/categories/语言/" title="语言">语言<sup>13</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  
-<div class="tagslist">
-	<p class="asidetitle">标签</p>
-		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/Python/" title="Python">Python<sup>8</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>5</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/PostgreSQL/" title="PostgreSQL">PostgreSQL<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
-			
 		
 		</ul>
 </div>
@@ -423,18 +343,6 @@
   <div class="linkslist">
   <p class="asidetitle">友情链接</p>
     <ul>
-        
-          <li>
-            
-            	<a href="http://www.lihulab.net" target="_blank" title="自动化测试">自动化测试</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://oj.lihulab.net" target="_blank" title="蠡湖实验室 OJ">蠡湖实验室 OJ</a>
-            
-          </li>
         
     </ul>
 </div>

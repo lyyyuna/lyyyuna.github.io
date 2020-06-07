@@ -1,7 +1,7 @@
 
  <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
   
     <title>Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译） | lyyyuna 的小花园</title>
@@ -11,7 +11,7 @@
     
 
     
-    <meta name="description" content="当你在一个 sprint 中开始写自动化验收测试时，你没必要重新测试之前每个 sprint 的结果。但经过几轮自动化测试之后，整个测试看起来不再像一个精心设计过的测试套件，而是乱七八糟。这些你一定经历过。这篇文章将展示一些最佳的模式和经验，让你写出可伸缩可维护的测试结构。 我们只考虑测试框架本身，忽略和执行有关的问题，">
+    <meta name="description" content="当你在一个 sprint 中开始写自动化验收测试时，你没必要重新测试之前每个 sprint 的结果。但经过几轮自动化测试之后，整个测试看起来不再像一个精心设计过的测试套件，而是乱七八糟。这些你一定经历过。这篇文章将展示一些最佳的模式和经验，让你写出可伸缩可维护的测试结构。 我们只考虑测试框架本身，忽略和执行有关的问题，比如日志系统、并发和测试硬件。由于我们一直使用 Robot Framework">
 <meta name="keywords" content="robot framework">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）">
@@ -20,7 +20,7 @@
 <meta property="og:description" content="当你在一个 sprint 中开始写自动化验收测试时，你没必要重新测试之前每个 sprint 的结果。但经过几轮自动化测试之后，整个测试看起来不再像一个精心设计过的测试套件，而是乱七八糟。这些你一定经历过。这篇文章将展示一些最佳的模式和经验，让你写出可伸缩可维护的测试结构。 我们只考虑测试框架本身，忽略和执行有关的问题，比如日志系统、并发和测试硬件。由于我们一直使用 Robot Framework">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/lyyyuna/blog_img/master/blog/201605/SMAT_structure.png">
-<meta property="og:updated_time" content="2017-11-29T00:19:00.167Z">
+<meta property="og:updated_time" content="2020-06-07T04:46:30.240Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）">
 <meta name="twitter:description" content="当你在一个 sprint 中开始写自动化验收测试时，你没必要重新测试之前每个 sprint 的结果。但经过几轮自动化测试之后，整个测试看起来不再像一个精心设计过的测试套件，而是乱七八糟。这些你一定经历过。这篇文章将展示一些最佳的模式和经验，让你写出可伸缩可维护的测试结构。 我们只考虑测试框架本身，忽略和执行有关的问题，比如日志系统、并发和测试硬件。由于我们一直使用 Robot Framework">
@@ -38,7 +38,7 @@
     
     <link rel="stylesheet" href="/css/style.css">
 </head>
-
+</html>
   <body>
     <header>
       
@@ -87,6 +87,7 @@
     
       <a href="/2016/05/15/robotframework-tutorial-how-to-structure-a-scalable-and-maintainable-acceptance-test-suite/" title="Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）" itemprop="url">Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）</a>
   </h1>
+  
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
@@ -140,7 +141,7 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/自动化测试/">自动化测试</a>
+  <a class="article-category-link" href="/categories/测试/">测试</a>
 </div>
 
 
@@ -237,6 +238,10 @@
 		  
 		
 		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>8</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
 		  
 		
@@ -245,101 +250,8 @@
 		  
 		
 		  
-			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
 		  
-		
-		  
-			<li><a href="/categories/语言/" title="语言">语言<sup>13</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  
-<div class="tagslist">
-	<p class="asidetitle">标签</p>
-		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/Python/" title="Python">Python<sup>8</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>5</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/PostgreSQL/" title="PostgreSQL">PostgreSQL<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
-			
 		
 		</ul>
 </div>
@@ -348,18 +260,6 @@
   <div class="linkslist">
   <p class="asidetitle">友情链接</p>
     <ul>
-        
-          <li>
-            
-            	<a href="http://www.lihulab.net" target="_blank" title="自动化测试">自动化测试</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://oj.lihulab.net" target="_blank" title="蠡湖实验室 OJ">蠡湖实验室 OJ</a>
-            
-          </li>
         
     </ul>
 </div>

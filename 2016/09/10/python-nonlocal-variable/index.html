@@ -1,7 +1,7 @@
 
  <!DOCTYPE HTML>
 <html lang="zh-CN">
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
   
     <title>Python 访问外围作用域中的变量 | lyyyuna 的小花园</title>
@@ -11,7 +11,7 @@
     
 
     
-    <meta name="description" content="在表达式中引用变量时，Python 会按照如下的顺序遍历各个作用域，寻找该变量：  当前函数作用域 任何外围作用域（比如包含当前函数的其他函数） global 作用域，即代码所在的模块的作用域  如果上述作用域内都找不到变量，就会报 NameError 异常。 但是对变量赋值时，规则会有所不同。  如果当前作用域变量已">
+    <meta name="description" content="在表达式中引用变量时，Python 会按照如下的顺序遍历各个作用域，寻找该变量：  当前函数作用域 任何外围作用域（比如包含当前函数的其他函数） global 作用域，即代码所在的模块的作用域  如果上述作用域内都找不到变量，就会报 NameError 异常。 但是对变量赋值时，规则会有所不同。  如果当前作用域变量已存在，那么其值会被替换。 如果不存在，则会视为在当前作用域定义新变量，而不是向外">
 <meta name="keywords" content="Python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Python 访问外围作用域中的变量">
@@ -36,7 +36,7 @@
     
     <link rel="stylesheet" href="/css/style.css">
 </head>
-
+</html>
   <body>
     <header>
       
@@ -85,6 +85,7 @@
     
       <a href="/2016/09/10/python-nonlocal-variable/" title="Python 访问外围作用域中的变量" itemprop="url">Python 访问外围作用域中的变量</a>
   </h1>
+  
   <p class="article-author">By
        
 		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
@@ -116,13 +117,13 @@
 <li>如果不存在，则会视为在当前作用域定义新变量，而不是向外围作用域中寻找。</li>
 </ol>
 <p>如下函数</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">()</span>:</span></span><br><span class="line">    flag = <span class="keyword">True</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">helper</span><span class="params">()</span>:</span></span><br><span class="line">        flag = <span class="keyword">False</span></span><br><span class="line">    helper()</span><br><span class="line">    <span class="keyword">print</span> flag</span><br><span class="line"></span><br><span class="line">function()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">()</span>:</span></span><br><span class="line">    flag = <span class="literal">True</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">helper</span><span class="params">()</span>:</span></span><br><span class="line">        flag = <span class="literal">False</span></span><br><span class="line">    helper()</span><br><span class="line">    <span class="keyword">print</span> flag</span><br><span class="line"></span><br><span class="line">function()</span><br></pre></td></tr></table></figure>
 <p>由于 helper 中变量是赋值，这里 flag 输出仍为 True。习惯了 c 语言之类静态类型语言，这种设计起初会感到困惑，但其可以有效地防止局部变量污染函数外的环境。</p>
 <p>需求总是多样的，一定有程序员想在赋值时访问外围作用域。如果是 Python2，他可以这么做</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">()</span>:</span></span><br><span class="line">    flag = [<span class="keyword">True</span>]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">helper</span><span class="params">()</span>:</span></span><br><span class="line">        flag[<span class="number">0</span>] = <span class="keyword">False</span></span><br><span class="line">    helper()</span><br><span class="line">    <span class="keyword">print</span> flag</span><br><span class="line"></span><br><span class="line">function()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">()</span>:</span></span><br><span class="line">    flag = [<span class="literal">True</span>]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">helper</span><span class="params">()</span>:</span></span><br><span class="line">        flag[<span class="number">0</span>] = <span class="literal">False</span></span><br><span class="line">    helper()</span><br><span class="line">    <span class="keyword">print</span> flag</span><br><span class="line"></span><br><span class="line">function()</span><br></pre></td></tr></table></figure>
 <p>先用 flag[0] 是读操作，产生一次变量引用，寻找到外围作用域中 flag，这时候再赋值 flag[0] = False 便不会新定义变量了。</p>
 <p>如果是 Python3，则可以使用 nonlocal 关键字。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">()</span>:</span></span><br><span class="line">    flag = <span class="keyword">True</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">helper</span><span class="params">()</span>:</span></span><br><span class="line">        <span class="keyword">nonlocal</span> flag</span><br><span class="line">        flag = <span class="keyword">False</span></span><br><span class="line">    helper()</span><br><span class="line">    <span class="keyword">print</span> flag</span><br><span class="line"></span><br><span class="line">function()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">function</span><span class="params">()</span>:</span></span><br><span class="line">    flag = <span class="literal">True</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">helper</span><span class="params">()</span>:</span></span><br><span class="line">        <span class="keyword">nonlocal</span> flag</span><br><span class="line">        flag = <span class="literal">False</span></span><br><span class="line">    helper()</span><br><span class="line">    <span class="keyword">print</span> flag</span><br><span class="line"></span><br><span class="line">function()</span><br></pre></td></tr></table></figure>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -227,6 +228,10 @@
 		  
 		
 		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>8</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
 		  
 		
@@ -235,101 +240,8 @@
 		  
 		
 		  
-			<li><a href="/categories/自动化测试/" title="自动化测试">自动化测试<sup>7</sup></a></li>
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
 		  
-		
-		  
-			<li><a href="/categories/语言/" title="语言">语言<sup>13</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  
-<div class="tagslist">
-	<p class="asidetitle">标签</p>
-		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/Python/" title="Python">Python<sup>8</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/robot-framework/" title="robot framework">robot framework<sup>7</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/scons/" title="scons">scons<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python-script/" title="Python script">Python script<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python2-7源码/" title="Python2.7源码">Python2.7源码<sup>5</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/mnist/" title="mnist">mnist<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/neural-network/" title="neural network">neural network<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/asyncio/" title="asyncio">asyncio<sup>3</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Windows-Debugger/" title="Windows Debugger">Windows Debugger<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/DHT/" title="DHT">DHT<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/http-proxy/" title="http proxy">http proxy<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/cpp/" title="cpp">cpp<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/bilibili/" title="bilibili">bilibili<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Exif/" title="Exif">Exif<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Python3-x源码/" title="Python3.x源码">Python3.x源码<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/PostgreSQL/" title="PostgreSQL">PostgreSQL<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Celery/" title="Celery">Celery<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/shellcode/" title="shellcode">shellcode<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/openwrt/" title="openwrt">openwrt<sup>1</sup></a></li>
-			
 		
 		</ul>
 </div>
@@ -338,18 +250,6 @@
   <div class="linkslist">
   <p class="asidetitle">友情链接</p>
     <ul>
-        
-          <li>
-            
-            	<a href="http://www.lihulab.net" target="_blank" title="自动化测试">自动化测试</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://oj.lihulab.net" target="_blank" title="蠡湖实验室 OJ">蠡湖实验室 OJ</a>
-            
-          </li>
         
     </ul>
 </div>
