@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="lyyyuna 的小花园">
 <meta property="og:description" content="平均负载的定义uptime是最简单的性能分析命令之一，它的输出非常简单，比如： 12$ uptime 16:08:29 up 42 days,  5:11,  2 users,  load average: 0.33, 0.22, 0.22 前面几列易于理解，分别是当前时间，系统已运行时间，登录的用户数。可是最后的平均负载是什么？查看uptime帮助文档对其的定义： System load ave">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-06-07T08:26:14.942Z">
+<meta property="og:updated_time" content="2020-06-20T15:03:15.675Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux 性能分析 - 如何理解 CPU 平均负载">
 <meta name="twitter:description" content="平均负载的定义uptime是最简单的性能分析命令之一，它的输出非常简单，比如： 12$ uptime 16:08:29 up 42 days,  5:11,  2 users,  load average: 0.33, 0.22, 0.22 前面几列易于理解，分别是当前时间，系统已运行时间，登录的用户数。可是最后的平均负载是什么？查看uptime帮助文档对其的定义： System load ave">
@@ -197,6 +197,10 @@
                 <li> <a href="/2020/05/29/perftest-analysis-cpu1/">Linux 性能分析 - 如何理解 CPU 平均负载</li>
             
         
+            
+                <li> <a href="/2020/06/18/perftest-analysis-cpu2/">Linux 性能分析 - 上下文切换</li>
+            
+        
         </ol>
     </div>
 
@@ -221,10 +225,10 @@
 		<h2 id="平均负载的定义"><a href="#平均负载的定义" class="headerlink" title="平均负载的定义"></a>平均负载的定义</h2><p><code>uptime</code>是最简单的性能分析命令之一，它的输出非常简单，比如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ uptime</span><br><span class="line"> 16:08:29 up 42 days,  5:11,  2 users,  load average: 0.33, 0.22, 0.22</span><br></pre></td></tr></table></figure>
 <p>前面几列易于理解，分别是当前时间，系统已运行时间，登录的用户数。可是最后的平均负载是什么？查看<code>uptime</code>帮助文档对其的定义：</p>
-<pre><code>System load averages is the average number of processes that are either in a runnable or uninterruptable state. A  process in a runnable state is either using the CPU or waiting to use the CPU. A process in uninterruptable state is waiting for some I/O access, eg waiting for disk. The averages are taken over the three time intervals. Load averages are not normalized for the number of CPUs in a system, so a load average of 1 means a single CPU system is loaded all the time while on a 4 CPU system it means it was idle 75% of the time.
-</code></pre><p>大概翻译过来就是：</p>
-<pre><code>系统的平均负载是指处于可运行和不可中断状态的进程平均数量。所谓可运行状态是指正在使用或等待使用 CPU，而不可中断状态是指进程正执行某种 I/O 操作，比如读写磁盘。平均负载会计算 1 分钟、5 分钟和 15 分钟内的该指标。不过需要注意的是，该数据没有针对 CPU 个数作归一化处理，所以平均负载 1 在单核系统上意味满负载运行，而在 4 核系统上意味着只使用了 25% 的负载。
-</code></pre><h2 id="进程的状态"><a href="#进程的状态" class="headerlink" title="进程的状态"></a>进程的状态</h2><h3 id="操作系统进程的基本状态"><a href="#操作系统进程的基本状态" class="headerlink" title="操作系统进程的基本状态"></a>操作系统进程的基本状态</h3><p>在操作系统的概念中，进程会不断改变其运行状态，其必须有以下三种基本状态：</p>
+<p>System load averages is the average number of processes that are either in a runnable or uninterruptable state. A  process in a runnable state is either using the CPU or waiting to use the CPU. A process in uninterruptable state is waiting for some I/O access, eg waiting for disk. The averages are taken over the three time intervals. Load averages are not normalized for the number of CPUs in a system, so a load average of 1 means a single CPU system is loaded all the time while on a 4 CPU system it means it was idle 75% of the time.</p>
+<p>大概翻译过来就是：</p>
+<p>系统的平均负载是指处于可运行和不可中断状态的进程平均数量。所谓可运行状态是指正在使用或等待使用 CPU，而不可中断状态是指进程正执行某种 I/O 操作，比如读写磁盘。平均负载会计算 1 分钟、5 分钟和 15 分钟内的该指标。不过需要注意的是，该数据没有针对 CPU 个数作归一化处理，所以平均负载 1 在单核系统上意味满负载运行，而在 4 核系统上意味着只使用了 25% 的负载。</p>
+<h2 id="进程的状态"><a href="#进程的状态" class="headerlink" title="进程的状态"></a>进程的状态</h2><h3 id="操作系统进程的基本状态"><a href="#操作系统进程的基本状态" class="headerlink" title="操作系统进程的基本状态"></a>操作系统进程的基本状态</h3><p>在操作系统的概念中，进程会不断改变其运行状态，其必须有以下三种基本状态：</p>
 <ol>
 <li>就绪：进程所需要的资源都已经获得，但是还没有分配到 CPU 来运行</li>
 <li>运行：进程分配到 CPU 在运行</li>
@@ -258,7 +262,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ uptime</span><br><span class="line"> 15:23:16 up 51 days,  4:26,  1 user,  load average: 0.15, 0.30, 0.31</span><br></pre></td></tr></table></figure>
 <p>确认一下系统的是否是 2 核：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat /proc/cpuinfo | grep processor</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
-<h3 id="CPU-密集型"><a href="#CPU-密集型" class="headerlink" title="CPU 密集型"></a>CPU 密集型</h3><p>我们利用<code>stress</code>模拟一个 CPU 跑慢的场景：</p>
+<h3 id="CPU-密集型"><a href="#CPU-密集型" class="headerlink" title="CPU 密集型"></a>CPU 密集型</h3><p>我们利用<code>stress</code>模拟一个 CPU 跑满的场景：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ stress --cpu 1 --timeout 600</span><br></pre></td></tr></table></figure>
 <p>过两分钟后查看<code>uptime</code>查看平均负载：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ uptime</span><br><span class="line"> 15:41:09 up 51 days,  4:44,  2 users,  load average: 1.18, 0.77, 0.49</span><br></pre></td></tr></table></figure>
@@ -323,6 +327,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2020/06/18/perftest-analysis-cpu2/" title="Linux 性能分析 - 上下文切换">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Linux 性能分析 - 上下文切换</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2020/05/25/go-concurrency-pattern-context/"  title="Golang 并发模式 - Context">
@@ -384,7 +396,7 @@
 		  
 		
 		  
-			<li><a href="/categories/测试/" title="测试">测试<sup>8</sup></a></li>
+			<li><a href="/categories/测试/" title="测试">测试<sup>9</sup></a></li>
 		  
 		
 		  

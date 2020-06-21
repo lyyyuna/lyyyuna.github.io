@@ -1,0 +1,705 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  
+    <title>Linux 性能分析 - 上下文切换 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言上一篇文章中提到，处于可运行状态的进程越多，平均负载也越高。 有人可能会有疑问，这种计算方法合理吗？同样是 100% 的 CPU 使用率，有 10 个可运行进程的系统的平均负载，是有 1 个可运行进程系统的负载的 10 倍？本文就试图从 CPU 上下文切换的角度来解释这一指标的合理性。 上下文切换定义CPU 上下文切换虽然系统的 CPU 个数有限，但能支持同时运行个任务。当然这种同时只是宏观上">
+<meta name="keywords" content="Linux 性能分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 性能分析 - 上下文切换">
+<meta property="og:url" content="http://www.lyyyuna.com/2020/06/18/perftest-analysis-cpu2/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言上一篇文章中提到，处于可运行状态的进程越多，平均负载也越高。 有人可能会有疑问，这种计算方法合理吗？同样是 100% 的 CPU 使用率，有 10 个可运行进程的系统的平均负载，是有 1 个可运行进程系统的负载的 10 倍？本文就试图从 CPU 上下文切换的角度来解释这一指标的合理性。 上下文切换定义CPU 上下文切换虽然系统的 CPU 个数有限，但能支持同时运行个任务。当然这种同时只是宏观上">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.lyyyuna.com/img/posts/perf-cpu/450px-Priv_rings.svg.png">
+<meta property="og:updated_time" content="2020-06-21T09:27:13.662Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux 性能分析 - 上下文切换">
+<meta name="twitter:description" content="前言上一篇文章中提到，处于可运行状态的进程越多，平均负载也越高。 有人可能会有疑问，这种计算方法合理吗？同样是 100% 的 CPU 使用率，有 10 个可运行进程的系统的平均负载，是有 1 个可运行进程系统的负载的 10 倍？本文就试图从 CPU 上下文切换的角度来解释这一指标的合理性。 上下文切换定义CPU 上下文切换虽然系统的 CPU 个数有限，但能支持同时运行个任务。当然这种同时只是宏观上">
+<meta name="twitter:image" content="http://www.lyyyuna.com/img/posts/perf-cpu/450px-Priv_rings.svg.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/06/18/perftest-analysis-cpu2/" title="Linux 性能分析 - 上下文切换" itemprop="url">Linux 性能分析 - 上下文切换</a>
+  </h1>
+  
+    <div class="article-content">Linux 性能分析 - 系列文章:
+        <ol>
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                <li> <a href="/2020/05/29/perftest-analysis-cpu1/">Linux 性能分析 - 如何理解 CPU 平均负载</li>
+            
+        
+            
+                <li> <a href="/2020/06/18/perftest-analysis-cpu2/">Linux 性能分析 - 上下文切换</li>
+            
+        
+        </ol>
+    </div>
+
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2020-06-18T08:30:38.000Z" itemprop="datePublished"> 发表于 2020-06-18</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#上下文切换定义"><span class="toc-number">2.</span> <span class="toc-text">上下文切换定义</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU-上下文切换"><span class="toc-number">2.1.</span> <span class="toc-text">CPU 上下文切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进程上下文切换"><span class="toc-number">2.2.</span> <span class="toc-text">进程上下文切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程上下文切换"><span class="toc-number">2.3.</span> <span class="toc-text">线程上下文切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#中断上下文切换"><span class="toc-number">2.4.</span> <span class="toc-text">中断上下文切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#上下文切换的时机"><span class="toc-number">2.5.</span> <span class="toc-text">上下文切换的时机</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实验"><span class="toc-number">3.</span> <span class="toc-text">实验</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#工具"><span class="toc-number">3.1.</span> <span class="toc-text">工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进程和线程的实验"><span class="toc-number">3.2.</span> <span class="toc-text">进程和线程的实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#stress-进程切换实验"><span class="toc-number">3.2.1.</span> <span class="toc-text">stress 进程切换实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sysbench-线程切换实验"><span class="toc-number">3.2.2.</span> <span class="toc-text">sysbench 线程切换实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#两者的不同"><span class="toc-number">3.2.3.</span> <span class="toc-text">两者的不同</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结论"><span class="toc-number">4.</span> <span class="toc-text">结论</span></a></li></ol>
+		
+		</div>
+		
+		<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="/2020/05/29/perftest-analysis-cpu1/">上一篇文章</a>中提到，处于可运行状态的进程越多，平均负载也越高。</p>
+<p>有人可能会有疑问，这种计算方法合理吗？同样是 100% 的 CPU 使用率，有 10 个可运行进程的系统的平均负载，是有 1 个可运行进程系统的负载的 10 倍？本文就试图从 CPU 上下文切换的角度来解释这一指标的合理性。</p>
+<h1 id="上下文切换定义"><a href="#上下文切换定义" class="headerlink" title="上下文切换定义"></a>上下文切换定义</h1><h2 id="CPU-上下文切换"><a href="#CPU-上下文切换" class="headerlink" title="CPU 上下文切换"></a>CPU 上下文切换</h2><p>虽然系统的 CPU 个数有限，但能支持同时运行个任务。当然这种同时只是宏观上的假象，如果从微观角度观察，会发现系统在不停轮流切换任务，使得每个任务都能获得运行的机会。</p>
+<p>CPU 是状态 + 存储的模型，其符合图灵机这种理想设备：</p>
+<ol>
+<li>内存</li>
+<li>PC 指针指向下一条待运行的指令（状态）</li>
+<li>计算规则</li>
+<li>其他辅助计算的寄存器（状态）</li>
+</ol>
+<p>多任务的每个任务都有自己的状态。当任务 1 切出，任务 2 切入时，CPU 的状态也要切换成任务 2 上一次切出时的状态，这样任务 2 才能继续运行。这些状态即是 CPU 上下文，CPU 上下文切换即保存和恢复 PC 和辅助计算的寄存器。</p>
+<h2 id="进程上下文切换"><a href="#进程上下文切换" class="headerlink" title="进程上下文切换"></a>进程上下文切换</h2><p>CPU 中的寄存器似乎一只手就数的过来，切换的成本非常小，为什么会造成系统负载显著升高呢？Linux 操作系统中的任务有进程和线程，切换的主要成本来自于进程/线程的上下文切换。</p>
+<p>第一点，现代处理器有很多个运行等级。比如在 x86 的保护模式中，有四种特权等级。Linux 使用 Ring 0 和 Ring 3：</p>
+<p><img src="/img/posts/perf-cpu/450px-Priv_rings.svg.png" alt="x86 保护模式下特权等级"></p>
+<ol>
+<li>Ring 0 是内核空间，具有最高权限，可访问所有硬件资源</li>
+<li>Ring 3 是用户空间，权限最低，无法直接访问硬件资源</li>
+</ol>
+<p>用户态权限有限，无法直接操作所有寄存器，进程的切换只能由内核态来管理和调度，所以必然发生用户态 <-> 内核态的频繁转换。而每个特权等级运行的代码不同，所以在切换用户态 <-> 内核态时，内核/用户空间本身的 CPU 上下文也需要互相切换。</-></-></p>
+<p>第二点，进程本身的数据结构庞大。Linux 中使用数据结构 <code>task_struct</code> 来描述进程所有的资源，其主要成员有进程状态、内核栈信息、进程使用状态、PID、优先级、锁、时间片、队列、信号量、内存管理信息、文件列表等等与进程管理、调度密切相关的信息。当切换进程运行，这些数据结构也需要保存和恢复。</p>
+<p>第三点，虚拟内存。内核为每个进程提供了一个假象：进程都是独占地使用内存，这种独占是无法感知也无法使用其它进程的内存。</p>
+<p>虚拟内存和实际的物理内存之间映射不是一个地址一个地址的映射，而是通过页表机制来实现。一页通常是 4096KB，这样的映射关系即为页表数据，为了减少页表数据的大小，会采用多级页表，比如 Linux 为了让进程支持 256T 内存，采用了四级页表。页表机制会带来额外的问题，页表本身也是存在内存里的，四级页表最坏情况下需要 5 次内存 IO 才能获取一个真正的内存数据。</p>
+<p>为了让操作系统更快地操作虚拟内存，x86 处理器专门提供了 TLB(Translation Lookaside Buffer) 来管理虚拟内存到物理内存的映射关系。它可以理解为一个专用缓存，特点就是快，但缺点是存储的数据少，缓存有可能不命中。当系统发生进程切换，从进程 A 切换到进程 B，TLB 也必须刷新，那在刷新后，进程 B 必然会出现 TLB 不命中的情况，导致虚拟内存访问变慢。</p>
+<p>由以上三点可见，进程上下文切换开销巨大，根据 <a href="https://blog.tsunanet.net/2010/11/how-long-does-it-take-to-make-context.html" target="_blank" rel="noopener">Tsuna</a>的测试报告，这一过程会持续数千纳秒。如果进程切换频繁，系统真正运行进程的时间便不够了。</p>
+<h2 id="线程上下文切换"><a href="#线程上下文切换" class="headerlink" title="线程上下文切换"></a>线程上下文切换</h2><p>在 Linux 的实现中，系统调度的基本单位其实是线程，进程是线程的集合，同一个进程的线程看到的虚拟内存是共享的，所以：</p>
+<ol>
+<li>如果切换的两个线程分属不同的进程，因为资源不共享，其切换成本等同于进程上下文切换。</li>
+<li>如果切换的两个线程属于同一个进程，因为虚拟内存是共享的，刷新 TLB 没有必要，切换成本也就少。</li>
+</ol>
+<h2 id="中断上下文切换"><a href="#中断上下文切换" class="headerlink" title="中断上下文切换"></a>中断上下文切换</h2><p>为了快速响应硬件事件，Linux 中发生中断也会打断进程的正常执行，这时候就会发生中断上下文切换。</p>
+<p>中断程序执行于内核空间，与任何进程无关，故用户态进程程序切换到中断处理程序时，没有虚拟内存切换的成本，保持 TLB 不变即可。</p>
+<h2 id="上下文切换的时机"><a href="#上下文切换的时机" class="headerlink" title="上下文切换的时机"></a>上下文切换的时机</h2><p>切换分两种，自愿和非自愿：</p>
+<ol>
+<li>自愿上下文切换(voluntary context switches)。比如当前进程所需资源未满足时，便会挂起等待。又比如调用睡眠函数 sleep 这样的方法将自己主动挂起。</li>
+<li>非自愿上下文切换(non voluntary context switches)。操作系统为保证调度的公平性，会将时间分片，轮流分给每个进程。进程若在自己的时间片内未执行完，便会被系统强制切出 CPU。Linux 系统还支持带优先级的进程，高优先级进程可以打断低优先级进程。</li>
+</ol>
+<p>有一点需要强调，虽然用<code>ps aux</code>能看到数百个进程，但并非意味着 Linux 需要在这数百个进程上切换。它们大部分处于睡眠状态，操作系统只会对处于可运行态的进程间作上下文切换。</p>
+<h1 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h1><h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><p>vmstat 命令帮助文档虽然说是 Report virtual memory statistics，但其实它还能统计 CPU/中断/IO/缺页等使用情况。</p>
+<p>以下是该命令每隔 1 秒输出一次统计数据，输出 10 次（第一次的输出不可信）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ vmstat 1 10</span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</span><br><span class="line"> 0  0    524 2010216 1195432 10930004    0    0     0    50    1    2  4  2 92  3  0</span><br><span class="line"> ...</span><br></pre></td></tr></table></figure>
+<p>我们需要关心的是：</p>
+<ol>
+<li>r，可运行进程的个数（运行和就绪的进程）</li>
+<li>b，不可中断进程的个数</li>
+<li>in，每秒中断次数，包括时钟</li>
+<li>cs，每秒 CPU 上下文切换次数</li>
+<li>us，执行用户代码的时间</li>
+<li>sy，执行内核代码的时间</li>
+</ol>
+<p>vmstat 命令还不够，<a href="/2020/05/29/perftest-analysis-cpu1/">上一篇文章</a>中介绍的 pidstat 可以看到进程上下文切换的数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ pidstat -w 5</span><br><span class="line">Linux 4.15.0-96-generic (work) 	06/20/2020 	_x86_64_	(2 CPU)</span><br><span class="line"></span><br><span class="line">11:46:00 PM   UID       PID   cswch/s nvcswch/s  Command</span><br><span class="line">11:46:05 PM     0         1      1.00      0.00  systemd</span><br><span class="line">11:46:05 PM     0         7     12.38      0.00  ksoftirqd/0</span><br><span class="line">11:46:05 PM     0         8    132.93      0.00  rcu_sched</span><br><span class="line">11:46:05 PM     0        11      0.20      0.00  watchdog/0</span><br><span class="line">11:46:05 PM     0        14      0.20      0.00  watchdog/1</span><br><span class="line">11:46:05 PM     0        16     12.97      0.00  ksoftirqd/1</span><br><span class="line">11:46:05 PM     0       207     25.15      0.00  usb-storage</span><br><span class="line">11:46:05 PM     0       209      7.98      0.00  kworker/0:1H</span><br><span class="line">11:46:05 PM     0       330      2.00      0.00  jbd2/sda2-8</span><br><span class="line">11:46:05 PM     0       333      0.40      0.00  kworker/1:1H</span><br><span class="line">11:46:05 PM     0       436      2.00      1.00  systemd-udevd</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>其中：</p>
+<ol>
+<li>cswch/s，每秒自愿上下文切换次数</li>
+<li>nvcswch/s，每秒非自愿上下文切换次数</li>
+</ol>
+<p>如果要看到线程上下文切换的信息，还需要加上 -t 参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ pidstat -w 5 -t</span><br><span class="line">Linux 4.15.0-96-generic (work) 	06/20/2020 	_x86_64_	(2 CPU)</span><br><span class="line"></span><br><span class="line">11:50:28 PM   UID      TGID       TID   cswch/s nvcswch/s  Command</span><br><span class="line">11:50:33 PM     0      4588         -      0.20      0.20  pili-themisd</span><br><span class="line">11:50:33 PM     0         -      4588      0.20      0.20  |__pili-themisd</span><br><span class="line">11:50:33 PM     0         -      4589     13.44      0.20  |__pili-themisd</span><br><span class="line">11:50:33 PM     0         -      4590      1.98      0.00  |__pili-themisd</span><br><span class="line">11:50:33 PM     0         -      4594      3.75      0.00  |__pili-themisd</span><br><span class="line">11:50:33 PM     0         -      4596      4.55      1.19  |__pili-themisd</span><br><span class="line">11:50:33 PM     0         -      4650      3.95      0.40  |__pili-themisd</span><br><span class="line">11:50:33 PM     0         -      4674      2.96      0.40  |__pili-themisd</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="进程和线程的实验"><a href="#进程和线程的实验" class="headerlink" title="进程和线程的实验"></a>进程和线程的实验</h2><h3 id="stress-进程切换实验"><a href="#stress-进程切换实验" class="headerlink" title="stress 进程切换实验"></a>stress 进程切换实验</h3><p>我们回到最开始的问题，为什么同样是 100% 的 CPU 使用率，有 10 个可运行进程的系统的平均负载，是有 1 个可运行进程系统的负载的 10 倍？</p>
+<p>首先看一下 100% CPU，1 个可运行进程的上下文切换次数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ stress -c 1 -t 600</span><br><span class="line">stress: info: [6800] dispatching hogs: 1 cpu, 0 io, 0 vm, 0 hdd</span><br><span class="line"></span><br><span class="line">➜  ~ vmstat 1 20</span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</span><br><span class="line"> 1  0      0 294216 274960 2234876    0    0     0    24 2714 7362 54  1 45  0  0</span><br><span class="line"> 2  0      0 294208 274960 2234876    0    0     0    68 2327 6601 59  2 39  1  0</span><br><span class="line"> 2  0      0 294216 274960 2234880    0    0     0   116 1555 4465 53  2 45  0  1</span><br><span class="line"></span><br><span class="line">➜  ~ pidstat -w 1</span><br><span class="line">Average:      UID       PID   cswch/s nvcswch/s  Command</span><br><span class="line">Average:        0      9258      0.00     64.39  stress</span><br></pre></td></tr></table></figure>
+<p>首先看一下 100% CPU，10 个可运行进程的上下文切换次数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ stress -c 10 -t 600</span><br><span class="line">stress: info: [7024] dispatching hogs: 10 cpu, 0 io, 0 vm, 0 hdd</span><br><span class="line"></span><br><span class="line">➜  ~ vmstat 1 20</span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</span><br><span class="line">10  0      0 294972 274976 2234964    0    0     0    28 2097 5976 99  2  0  0  0</span><br><span class="line">13  0      0 294900 274976 2234976    0    0     0   176 2256 6545 98  2  0  0  0</span><br><span class="line">10  0      0 295040 274976 2234976    0    0     0    28 2254 6835 99  1  0  0  1</span><br><span class="line"></span><br><span class="line">➜  ~ pidstat -w 1</span><br><span class="line">Average:      UID       PID   cswch/s nvcswch/s  Command</span><br><span class="line">Average:        0      7025      0.00    160.97  stress</span><br><span class="line">Average:        0      7026      0.00    125.14  stress</span><br><span class="line">Average:        0      7027      0.00    136.82  stress</span><br><span class="line">Average:        0      7028      0.00    162.62  stress</span><br><span class="line">Average:        0      7029      0.00    121.83  stress</span><br><span class="line">Average:        0      7030      0.00    170.89  stress</span><br><span class="line">Average:        0      7031      0.00    114.99  stress</span><br><span class="line">Average:        0      7032      0.00    130.54  stress</span><br><span class="line">Average:        0      7033      0.00    165.38  stress</span><br><span class="line">Average:        0      7034      0.00    163.51  stress</span><br></pre></td></tr></table></figure>
+<p>光看 CPU 上下文切换次数似乎差不多，但进程被动上下文切换次数明显上升。我们之前了解到，CPU 切换的成本较小，进程的切换成本最高，这就是系统负载升高的原因。</p>
+<h3 id="sysbench-线程切换实验"><a href="#sysbench-线程切换实验" class="headerlink" title="sysbench 线程切换实验"></a>sysbench 线程切换实验</h3><p>stress 命令只能模拟多进程的系统压力，模拟多线程需要 sysbench 工具。</p>
+<p>运行以下命令模拟 10 个线程竞争：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ sysbench --threads=10 --max-time=300 threads run</span><br><span class="line"></span><br><span class="line">➜  ~ uptime</span><br><span class="line"> 08:41:12 up 69 days,  5:33,  2 users,  load average: 6.32, 6.32, 6.73</span><br><span class="line"></span><br><span class="line">➜  ~ vmstat 1 20</span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</span><br><span class="line"> 8  0      0 292580 275072 2237844    0    0     0    28 15202 1234282 30 69  2  0  0</span><br><span class="line"> 8  0      0 292332 275072 2237848    0    0     0   224 18851 1221323 31 68  1  0  1</span><br><span class="line"> 8  0      0 292280 275072 2237848    0    0     0    28 16822 1177891 32 66  2  0  0</span><br><span class="line"></span><br><span class="line">➜  ~ pidstat -w -t 1 (需要加上 -t，否则不会统计线程的切换信息)</span><br><span class="line">Average:        0         -     11743  19613.96  96288.49  |__sysbench</span><br><span class="line">Average:        0         -     11744  20440.57  93726.42  |__sysbench</span><br><span class="line">Average:        0         -     11745  20680.38  99453.02  |__sysbench</span><br><span class="line">Average:        0         -     11746  19855.47  89219.06  |__sysbench</span><br><span class="line">Average:        0         -     11747  18738.49  97730.38  |__sysbench</span><br><span class="line">Average:        0         -     11748  14536.04  99870.75  |__sysbench</span><br><span class="line">Average:        0         -     11749  15928.11 103604.72  |__sysbench</span><br><span class="line">Average:        0         -     11750  18082.26  94775.66  |__sysbench</span><br><span class="line">Average:        0         -     11751  20995.66  89222.64  |__sysbench</span><br><span class="line">Average:        0         -     11752  20588.30  94581.89  |__sysbench</span><br></pre></td></tr></table></figure>
+<p>在多线程下，每秒 CPU 上下文切换次数达到了近 120 万，任务的自愿和非自愿切换同时升高。当然系统负载自然也就高了。</p>
+<h3 id="两者的不同"><a href="#两者的不同" class="headerlink" title="两者的不同"></a>两者的不同</h3><p>同样是调度 10 个任务，stress 和 sysbench 为什么切换次数区别如此之大？可以从两方面解释：</p>
+<p>第一、同一个进程的线程间切换成本小，切换的频率可以升高。</p>
+<p>第二、sysbench 和 stress 模拟压力的方式不同：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ sysbench threads help</span><br><span class="line">sysbench 1.0.11 (using system LuaJIT 2.1.0-beta3)</span><br><span class="line"></span><br><span class="line">threads options:</span><br><span class="line">  --thread-yields=N number of yields to do per request [1000]</span><br><span class="line">  --thread-locks=N  number of locks per thread [8]</span><br><span class="line"></span><br><span class="line">➜  ~ stress --help</span><br><span class="line">`stress&apos; imposes certain types of compute stress on your system</span><br><span class="line"></span><br><span class="line">Usage: stress [OPTION [ARG]] ...</span><br><span class="line"> -c, --cpu N        spawn N workers spinning on sqrt()</span><br></pre></td></tr></table></figure>
+<ol>
+<li>sysbench 用线程同步方式 (lock) 和主动让出 CPU (yield) 来产生系统压力，属于自愿上下文切换，统计数据中自愿切换的次数非 0。</li>
+<li>stress 用 CPU 密集型操作 (求根 sqrt()) 来产生系统压力，属于非自愿上下文切换，统计数据中自愿切换的次数为 0。</li>
+</ol>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>在 CPU 跑满，系统平均负载均很高的情况下，需要具体情况具体分析：</p>
+<ol>
+<li>自愿上下文切换变多，说明被调度任务在等待资源，有可能发生了 IO 或任务间同步情况</li>
+<li>非自愿上下文切换变多，说明被调度的任务被强制打断，任务在争抢使用 CPU</li>
+<li>如果上下文切换次数离奇的高，说明有可能是多线程场景</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/测试/">测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Linux-性能分析/">Linux 性能分析</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2020/06/18/perftest-analysis-cpu2/" data-title="Linux 性能分析 - 上下文切换 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2020/05/29/perftest-analysis-cpu1/"  title="Linux 性能分析 - 如何理解 CPU 平均负载">
+ <strong>下一篇：</strong><br/> 
+ <span>Linux 性能分析 - 如何理解 CPU 平均负载
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#上下文切换定义"><span class="toc-number">2.</span> <span class="toc-text">上下文切换定义</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU-上下文切换"><span class="toc-number">2.1.</span> <span class="toc-text">CPU 上下文切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进程上下文切换"><span class="toc-number">2.2.</span> <span class="toc-text">进程上下文切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程上下文切换"><span class="toc-number">2.3.</span> <span class="toc-text">线程上下文切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#中断上下文切换"><span class="toc-number">2.4.</span> <span class="toc-text">中断上下文切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#上下文切换的时机"><span class="toc-number">2.5.</span> <span class="toc-text">上下文切换的时机</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#实验"><span class="toc-number">3.</span> <span class="toc-text">实验</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#工具"><span class="toc-number">3.1.</span> <span class="toc-text">工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#进程和线程的实验"><span class="toc-number">3.2.</span> <span class="toc-text">进程和线程的实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#stress-进程切换实验"><span class="toc-number">3.2.1.</span> <span class="toc-text">stress 进程切换实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sysbench-线程切换实验"><span class="toc-number">3.2.2.</span> <span class="toc-text">sysbench 线程切换实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#两者的不同"><span class="toc-number">3.2.3.</span> <span class="toc-text">两者的不同</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结论"><span class="toc-number">4.</span> <span class="toc-text">结论</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>9</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
