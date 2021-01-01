@@ -12,7 +12,7 @@
 
     
     <meta name="description" content="前言和网络 IO 一样，文件读写同样是一个费事的操作。 默认情况下，Python 使用的是系统的阻塞读写。这意味着在 asyncio 中如果调用了  f = file(&amp;apos;xx&amp;apos;) f.read() 会阻塞事件循环。 本篇简述如何用 asyncio.Future 对象来封装文件的异步读写。 代码在 GitHub。目前仅支持 Linux。 阻塞和非阻塞首先需要将文件的读写改为非阻塞">
-<meta name="keywords" content="asyncio,Python">
+<meta name="keywords" content="Python,asyncio">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用 asyncio 封装文件读写">
 <meta property="og:url" content="http://www.lyyyuna.com/2016/03/27/asyncfileread01/index.html">
@@ -139,7 +139,7 @@ if fcntl.fcntl(self.fd, fcntl.F_SETFL, flag | os.O_NONBLOCK) != 0:
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/asyncio/">asyncio</a><a href="/tags/Python/">Python</a>
+  <span></span> <a href="/tags/Python/">Python</a><a href="/tags/asyncio/">asyncio</a>
   </div>
 
 </div>
@@ -230,7 +230,7 @@ if fcntl.fcntl(self.fd, fcntl.F_SETFL, flag | os.O_NONBLOCK) != 0:
 		  
 		
 		  
-			<li><a href="/categories/测试/" title="测试">测试<sup>9</sup></a></li>
+			<li><a href="/categories/测试/" title="测试">测试<sup>12</sup></a></li>
 		  
 		
 		  
@@ -295,7 +295,7 @@ if fcntl.fcntl(self.fd, fcntl.F_SETFL, flag | os.O_NONBLOCK) != 0:
 		
 
 		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2021 
 		
 		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
 		

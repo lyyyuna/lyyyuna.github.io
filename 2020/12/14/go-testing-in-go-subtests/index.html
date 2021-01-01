@@ -1,0 +1,538 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  
+    <title>Golang 与子测试 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言表格驱动测试可谓是最受欢迎的测试方法了，它抽取了相似用例的公共步骤，结构清晰，维护简单，比如： 12345678910111213141516171819202122232425262728293031func TestOlder(t *testing.T) &amp;#123;	cases := []struct &amp;#123;		age1     int		age2     int		expecte">
+<meta name="keywords" content="Go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang 与子测试">
+<meta property="og:url" content="http://www.lyyyuna.com/2020/12/14/go-testing-in-go-subtests/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言表格驱动测试可谓是最受欢迎的测试方法了，它抽取了相似用例的公共步骤，结构清晰，维护简单，比如： 12345678910111213141516171819202122232425262728293031func TestOlder(t *testing.T) &amp;#123;	cases := []struct &amp;#123;		age1     int		age2     int		expecte">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-12-31T15:00:01.302Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang 与子测试">
+<meta name="twitter:description" content="前言表格驱动测试可谓是最受欢迎的测试方法了，它抽取了相似用例的公共步骤，结构清晰，维护简单，比如： 12345678910111213141516171819202122232425262728293031func TestOlder(t *testing.T) &amp;#123;	cases := []struct &amp;#123;		age1     int		age2     int		expecte">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/12/14/go-testing-in-go-subtests/" title="Golang 与子测试" itemprop="url">Golang 与子测试</a>
+  </h1>
+  
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2020-12-14T08:20:02.000Z" itemprop="datePublished"> 发表于 2020-12-14</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-Go-的子测试"><span class="toc-number">2.</span> <span class="toc-text">什么是 Go 的子测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何使用t-Run"><span class="toc-number">3.</span> <span class="toc-text">如何使用t.Run</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#go-test选择子测试运行"><span class="toc-number">4.</span> <span class="toc-text">go test选择子测试运行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Setup-和-Teardown-和-TestMain"><span class="toc-number">5.</span> <span class="toc-text">Setup 和 Teardown 和 TestMain</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>表格驱动测试可谓是最受欢迎的测试方法了，它抽取了相似用例的公共步骤，结构清晰，维护简单，比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestOlder</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	cases := []<span class="keyword">struct</span> &#123;</span><br><span class="line">		age1     <span class="keyword">int</span></span><br><span class="line">		age2     <span class="keyword">int</span></span><br><span class="line">		expected <span class="keyword">bool</span></span><br><span class="line">	&#125;&#123;</span><br><span class="line">        <span class="comment">// 第一个测试用例</span></span><br><span class="line">		&#123;</span><br><span class="line">			age1:     <span class="number">1</span>,</span><br><span class="line">			age2:     <span class="number">2</span>,</span><br><span class="line">			expected: <span class="literal">false</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">        <span class="comment">// 第二个测试用例</span></span><br><span class="line">		&#123;</span><br><span class="line">			age1:     <span class="number">2</span>,</span><br><span class="line">			age2:     <span class="number">1</span>,</span><br><span class="line">			expected: <span class="literal">true</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, c := <span class="keyword">range</span> cases &#123;</span><br><span class="line">		_, p1 := NewPerson(c.age1)</span><br><span class="line">		_, p2 := NewPerson(c.age2)</span><br><span class="line"></span><br><span class="line">		got := p1.older(p2)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> got != c.expected &#123;</span><br><span class="line">			t.Errorf(<span class="string">"Expected %v &gt; %v, got %v"</span>, p1.age, p2.age, got)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是这种写法有着一个致命的缺陷，你无法像之前一样选择某个用例执行，即不支持 <code>go test -run regex</code> 命令行来选择只执行第一个或第二个测试用例。</p>
+<p><code>Go 1.7</code> 中加入了子测试的概念，以解决该问题。</p>
+<h2 id="什么是-Go-的子测试"><a href="#什么是-Go-的子测试" class="headerlink" title="什么是 Go 的子测试"></a>什么是 Go 的子测试</h2><p>子测试在 <code>testing</code> 包中由 <a href="https://golang.org/pkg/testing/#T.Run" target="_blank" rel="noopener">Run 方法</a> 提供，它有俩个参数：子测试的名字和子测试函数，其中名字是子测试的标识符。</p>
+<p>子测试和其他普通的测试函数一样，是在独立的 goroutine 中运行，测试结果也会计入测试报告，所有子测试运行完毕后，父测试函数才会结束。</p>
+<h2 id="如何使用t-Run"><a href="#如何使用t-Run" class="headerlink" title="如何使用t.Run"></a>如何使用<code>t.Run</code></h2><p>使用<code>t.Run</code>重构前言中的测试代码，代码变动了不少：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestOlder</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	cases := []<span class="keyword">struct</span> &#123;</span><br><span class="line">		name     <span class="keyword">string</span></span><br><span class="line">		age1     <span class="keyword">int</span></span><br><span class="line">		age2     <span class="keyword">int</span></span><br><span class="line">		expected <span class="keyword">bool</span></span><br><span class="line">	&#125;&#123;</span><br><span class="line">		&#123;</span><br><span class="line">			name:     <span class="string">"FirstOlderThanSecond"</span>,</span><br><span class="line">			age1:     <span class="number">1</span>,</span><br><span class="line">			age2:     <span class="number">2</span>,</span><br><span class="line">			expected: <span class="literal">false</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">		&#123;</span><br><span class="line">			name:     <span class="string">"SecondOlderThanFirst"</span>,</span><br><span class="line">			age1:     <span class="number">2</span>,</span><br><span class="line">			age2:     <span class="number">1</span>,</span><br><span class="line">			expected: <span class="literal">true</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, c := <span class="keyword">range</span> cases &#123;</span><br><span class="line">		t.Run(c.name, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">			_, p1 := NewPerson(c.age1)</span><br><span class="line">			_, p2 := NewPerson(c.age2)</span><br><span class="line"></span><br><span class="line">			got := p1.older(p2)</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> got != c.expected &#123;</span><br><span class="line">				t.Errorf(<span class="string">"Expected %v &gt; %v, got %v"</span>, p1.age, p2.age, got)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先我们修改了定义用例的结构体，加入了<code>string</code>类型的<code>name</code>属性。这样每个用例都有了自己的名字来标示自己。例如，第一个用例由于参数<code>arg1</code>大于参数<code>arg2</code>，所以被命名称<code>FirstOlderThanSecond</code>。</p>
+<p>然后在<code>for</code>循环中，我们把整个测试逻辑包裹在<code>t.Run</code>块中，并把用例名作为第一个参数。</p>
+<p>运行该测试，可得：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ go <span class="built_in">test</span> -v -count=1</span><br><span class="line">=== RUN   TestOlder</span><br><span class="line">=== RUN   TestOlder/FirstOlderThanSecond</span><br><span class="line">=== RUN   TestOlder/SecondOlderThanFirst</span><br><span class="line">--- PASS: TestOlder (0.00s)</span><br><span class="line">    --- PASS: TestOlder/FirstOlderThanSecond (0.00s)</span><br><span class="line">    --- PASS: TestOlder/SecondOlderThanFirst (0.00s)</span><br><span class="line">PASS</span><br><span class="line">ok  	person	0.004s</span><br></pre></td></tr></table></figure>
+<p>从结果中我们发现，<code>TestOlder</code>派生出另外两个子测试函数：<code>TestOlder/FirstOlderThanSecond</code> 和 <code>TestOlder/SecondOlderThanFirst</code>。在这两个子测试结束之前，<code>TestOlder</code>都不会结束。</p>
+<p>子测试函数的测试结果在终端里是缩进的，且测试用例的名字都以<code>TestOlder</code>开头，这些都用来凸显测试用例之间的父子关系。</p>
+<h2 id="go-test选择子测试运行"><a href="#go-test选择子测试运行" class="headerlink" title="go test选择子测试运行"></a><code>go test</code>选择子测试运行</h2><p>在调试特定测试用例或复现某个 bug 时我们常用<code>go test -run=regex</code>来指定。子测试<code>regex</code>的命名规则和上一节中测试结果一致：<code>父测试名/子测试名</code>。</p>
+<p>比如可用以下命令执行子测试<code>FirstOlderThenSecond</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ go <span class="built_in">test</span> -v -count=1 -run=<span class="string">"TestOlder/FirstOlderThanSecond"</span></span><br><span class="line">=== RUN   TestOlder</span><br><span class="line">=== RUN   TestOlder/FirstOlderThanSecond</span><br><span class="line">--- PASS: TestOlder (0.00s)</span><br><span class="line">    --- PASS: TestOlder/FirstOlderThanSecond (0.00s)</span><br><span class="line">PASS</span><br></pre></td></tr></table></figure>
+<p>如果要执行某个父测试下的所有子测试，可键入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ go <span class="built_in">test</span> -v -count=1 -run=<span class="string">"TestOlder"</span></span><br><span class="line">=== RUN   TestOlder</span><br><span class="line">=== RUN   TestOlder/FirstOlderThanSecond</span><br><span class="line">=== RUN   TestOlder/SecondOlderThanFirst</span><br><span class="line">--- PASS: TestOlder (0.00s)</span><br><span class="line">    --- PASS: TestOlder/FirstOlderThanSecond (0.00s)</span><br><span class="line">    --- PASS: TestOlder/SecondOlderThanFirst (0.00s)</span><br><span class="line">PASS</span><br></pre></td></tr></table></figure>
+<h2 id="Setup-和-Teardown-和-TestMain"><a href="#Setup-和-Teardown-和-TestMain" class="headerlink" title="Setup 和 Teardown 和 TestMain"></a>Setup 和 Teardown 和 TestMain</h2><p>使用过其他测试框架的同学一定不会对<code>Setup</code>和<code>Teardown</code>陌生，这几乎是测试框架的标配。而 <code>testing</code> 包长期以来在这块是缺失的，我们无法为所有的测试用例添加一些公共的初始化和结束步骤。引入<code>t.Run</code>之后，我们便可以实现缺失的功能。</p>
+<p>请看下面的例子，在子测试开始时，先调用<code>setupSubtest(t)</code>做初始化工作，然后使用<code>defer teardownSubtest(t)</code>保证在<code>t.Run</code>结束前执行清理工作。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">setupSubtest</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	t.Logf(<span class="string">"[SETUP] Hello 👋!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">teardownSubtest</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	t.Logf(<span class="string">"[TEARDOWN] Bye, bye 🖖!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestOlder</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">......</span><br><span class="line">	<span class="keyword">for</span> _, c := <span class="keyword">range</span> cases &#123;</span><br><span class="line">		t.Run(c.name, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">            <span class="comment">// setup</span></span><br><span class="line">            setupSubtest(t)</span><br><span class="line">            <span class="comment">// teardown</span></span><br><span class="line">			<span class="keyword">defer</span> teardownSubtest(t)</span><br><span class="line"></span><br><span class="line">			_, p1 := NewPerson(c.age1)</span><br><span class="line">			_, p2 := NewPerson(c.age2)</span><br><span class="line"></span><br><span class="line">			got := p1.older(p2)</span><br><span class="line"></span><br><span class="line">			t.Logf(<span class="string">"[TEST] Hello from subtest %s \n"</span>, c.name)</span><br><span class="line">			<span class="keyword">if</span> got != c.expected &#123;</span><br><span class="line">				t.Errorf(<span class="string">"Expected %v &gt; %v, got %v"</span>, p1.age, p2.age, got)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行测试后，可以看到<code>Setup</code>和<code>Teardown</code>在每个子测试中都会被调用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ go <span class="built_in">test</span> -v -count=1 -run=<span class="string">"TestOlder"</span></span><br><span class="line">=== RUN   TestOlder</span><br><span class="line">=== RUN   TestOlder/FirstOlderThanSecond</span><br><span class="line">=== RUN   TestOlder/SecondOlderThanFirst</span><br><span class="line">--- PASS: TestOlder (0.00s)</span><br><span class="line">    --- PASS: TestOlder/FirstOlderThanSecond (0.00s)</span><br><span class="line">        person_test.go:33: [SETUP] Hello 👋!</span><br><span class="line">        person_test.go:71: [TEST] Hello from subtest FirstOlderThanSecond</span><br><span class="line">        person_test.go:37: [TEARDOWN] Bye, <span class="built_in">bye</span> 🖖!</span><br><span class="line">    --- PASS: TestOlder/SecondOlderThanFirst (0.00s)</span><br><span class="line">        person_test.go:33: [SETUP] Hello 👋!</span><br><span class="line">        person_test.go:71: [TEST] Hello from subtest SecondOlderThanFirst</span><br><span class="line">        person_test.go:37: [TEARDOWN] Bye, <span class="built_in">bye</span> 🖖!</span><br><span class="line">PASS</span><br><span class="line">ok  	person	0.005s</span><br></pre></td></tr></table></figure>
+<p>进一步的，每个包的测试文件其实都包含一个“隐藏”的<code>TestMain(m *testing.M)</code>函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestMain</span><span class="params">(m *testing.M)</span></span> &#123;</span><br><span class="line">	os.Exit(m.Run())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>若重写该函数，在<code>m.Run</code>上下加入<code>Setup</code>和<code>Teardown</code>后便得到了全局的初始化和清理函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">setupSubtest</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"[SETUP] Hello 👋!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">teardownSubtest</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"[TEARDOWN] Bye, bye 🖖!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestMain</span><span class="params">(m *testing.M)</span></span> &#123;</span><br><span class="line">    setupSubtest()</span><br><span class="line">    code := m.Run()</span><br><span class="line">    teardownSubtest(t)</span><br><span class="line">    os.Exit(code)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/测试/">测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Go/">Go</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2020/12/14/go-testing-in-go-subtests/" data-title="Golang 与子测试 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2021/01/01/go-unit-test-comments/" title="Golang 官方关于单元测试方法的一些建议">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Golang 官方关于单元测试方法的一些建议</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2020/06/25/perftest-analysis-load-average/"  title="Linux 性能分析 - 如何理解系统平均负载">
+ <strong>下一篇：</strong><br/> 
+ <span>Linux 性能分析 - 如何理解系统平均负载
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-Go-的子测试"><span class="toc-number">2.</span> <span class="toc-text">什么是 Go 的子测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何使用t-Run"><span class="toc-number">3.</span> <span class="toc-text">如何使用t.Run</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#go-test选择子测试运行"><span class="toc-number">4.</span> <span class="toc-text">go test选择子测试运行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Setup-和-Teardown-和-TestMain"><span class="toc-number">5.</span> <span class="toc-text">Setup 和 Teardown 和 TestMain</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2021 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

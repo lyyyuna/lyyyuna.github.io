@@ -1,0 +1,556 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  
+    <title>Golang 官方关于单元测试方法的一些建议 | lyyyuna 的小花园</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="lyyyuna">
+    
+
+    
+    <meta name="description" content="前言本文是翻译+理解+改编自 Go 官方的TestComments，原文是 Go 源码本身开发时Code Review的注意项。 断言在测试时避免使用断言库。那些有类似xUnit测试框架使用背景的 Go 开发者喜欢写如下的代码： 1234assert.isNotNil(t, &quot;obj&quot;, obj)assert.stringEq(t, &quot;obj.Type&quot;, obj.Type, &quot;blogPost&quot;">
+<meta name="keywords" content="Go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang 官方关于单元测试方法的一些建议">
+<meta property="og:url" content="http://www.lyyyuna.com/2021/01/01/go-unit-test-comments/index.html">
+<meta property="og:site_name" content="lyyyuna 的小花园">
+<meta property="og:description" content="前言本文是翻译+理解+改编自 Go 官方的TestComments，原文是 Go 源码本身开发时Code Review的注意项。 断言在测试时避免使用断言库。那些有类似xUnit测试框架使用背景的 Go 开发者喜欢写如下的代码： 1234assert.isNotNil(t, &quot;obj&quot;, obj)assert.stringEq(t, &quot;obj.Type&quot;, obj.Type, &quot;blogPost&quot;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-01-01T04:35:19.322Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang 官方关于单元测试方法的一些建议">
+<meta name="twitter:description" content="前言本文是翻译+理解+改编自 Go 官方的TestComments，原文是 Go 源码本身开发时Code Review的注意项。 断言在测试时避免使用断言库。那些有类似xUnit测试框架使用背景的 Go 开发者喜欢写如下的代码： 1234assert.isNotNil(t, &quot;obj&quot;, obj)assert.stringEq(t, &quot;obj.Type&quot;, obj.Type, &quot;blogPost&quot;">
+
+    
+    <link rel="alternative" href="/atom.xml" title="lyyyuna 的小花园" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="lyyyuna 的小花园" title="lyyyuna 的小花园"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="lyyyuna 的小花园">lyyyuna 的小花园</a></h1>
+				<h2 class="blog-motto">动静中之动</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="/search/index.html" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" autocomplete="off" name="q" maxlength="20" placeholder="搜索" />
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/01/01/go-unit-test-comments/" title="Golang 官方关于单元测试方法的一些建议" itemprop="url">Golang 官方关于单元测试方法的一些建议</a>
+  </h1>
+  
+  <p class="article-author">By
+       
+		<a href="/about" title="lyyyuna" target="_blank" itemprop="author">lyyyuna</a>
+		
+  <p class="article-time">
+    <time datetime="2021-01-01T04:20:02.000Z" itemprop="datePublished"> 发表于 2021-01-01</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#断言"><span class="toc-number">2.</span> <span class="toc-text">断言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用可读性高的子测试用例名"><span class="toc-number">3.</span> <span class="toc-text">使用可读性高的子测试用例名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#直接比较结构体"><span class="toc-number">4.</span> <span class="toc-text">直接比较结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#只比较稳定的结果"><span class="toc-number">5.</span> <span class="toc-text">只比较稳定的结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#相等性比较和diff"><span class="toc-number">6.</span> <span class="toc-text">相等性比较和diff</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不仅打印期望值，也要打印实际值"><span class="toc-number">7.</span> <span class="toc-text">不仅打印期望值，也要打印实际值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#标识函数名"><span class="toc-number">8.</span> <span class="toc-text">标识函数名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#标识输入"><span class="toc-number">9.</span> <span class="toc-text">标识输入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#失败继续执行"><span class="toc-number">10.</span> <span class="toc-text">失败继续执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#标记测试辅助函数"><span class="toc-number">11.</span> <span class="toc-text">标记测试辅助函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#打印-diff"><span class="toc-number">12.</span> <span class="toc-text">打印 diff</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#表格驱动测试-vs-多个测试函数"><span class="toc-number">13.</span> <span class="toc-text">表格驱动测试 vs 多个测试函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试错误语义"><span class="toc-number">14.</span> <span class="toc-text">测试错误语义</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是翻译+理解+改编自 Go 官方的<a href="https://github.com/golang/go/wiki/TestComments" target="_blank" rel="noopener">TestComments</a>，原文是 Go 源码本身开发时<code>Code Review</code>的注意项。</p>
+<h2 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h2><p>在测试时避免使用断言库。那些有类似<code>xUnit</code>测试框架使用背景的 Go 开发者喜欢写如下的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">assert.isNotNil(t, <span class="string">"obj"</span>, obj)</span><br><span class="line">assert.stringEq(t, <span class="string">"obj.Type"</span>, obj.Type, <span class="string">"blogPost"</span>)</span><br><span class="line">assert.intEq(t, <span class="string">"obj.Comments"</span>, obj.Comments, <span class="number">2</span>)</span><br><span class="line">assert.stringNotEq(t, <span class="string">"obj.Body"</span>, obj.Body, <span class="string">""</span>)</span><br></pre></td></tr></table></figure>
+<p>但有的断言库会过早的终止测试用例（如果断言中调用了<code>t.Fatalf</code>或者<code>panic</code>），有的会漏掉测试如何通过的关键信息。测试应该是精确的，能够一眼看出哪些部分导致用例失败，哪些部分是正确的。不仅如此，放着 Go 的语法不用，断言库却常常创造自己的一整套语法来做非空判断（<code>isNotNil</code>）、字符串比较（<code>stringEq</code>）、表达式求值等等。</p>
+<p>综上，上面那个例子应该改写为：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> obj == <span class="literal">nil</span> || obj.Type != <span class="string">"blogPost"</span> || obj.Comments != <span class="number">2</span> || obj.Body == <span class="string">""</span> &#123;</span><br><span class="line">    t.Errorf(<span class="string">"AddPost() = %+v"</span>, obj)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用可读性高的子测试用例名"><a href="#使用可读性高的子测试用例名" class="headerlink" title="使用可读性高的子测试用例名"></a>使用可读性高的子测试用例名</h2><p>当使用<code>t.Run</code>来创建子测试时，第一个参数是用例的名字。为了确保测试结果在日志上具备高可读性，用例名应该描述要测试的场景，并保证在转义后仍可读（测试用例执行时，会将空格转换为下划线，并转义不可打印的字符）。</p>
+<p>也可以在子测试的函数体中使用<code>t.Log</code>打印子测试用例名，或者包含在失败信息中，这两个地方用例名都不会被转义。</p>
+<h2 id="直接比较结构体"><a href="#直接比较结构体" class="headerlink" title="直接比较结构体"></a>直接比较结构体</h2><p>如果函数返回的是结构体，不推荐一个一个字段的比较，而是构造出你预期的结果，用下文提到的<a href="#相等性比较和diff">cmp 方法</a>直接比较。该规则同样适用于数组和字典。</p>
+<p>如果结构体之间是某种语义上的相等，或者某些字段不支持比较操作（比如类型为<code>io.Reader</code>的字段），那你可以在<a href="https://godoc.org/github.com/google/go-cmp/cmp#Diff" target="_blank" rel="noopener">cmp.Diff</a>和<a href="https://godoc.org/github.com/google/go-cmp/cmp#Equal" target="_blank" rel="noopener">cmp.Equal</a>的参数中传入类型为<a href="https://godoc.org/github.com/google/go-cmp/cmp/cmpopts" target="_blank" rel="noopener">cmpopts</a>的<a href="https://godoc.org/github.com/google/go-cmp/cmp/cmpopts#IgnoreInterfaces" target="_blank" rel="noopener">cmpopts.IgnoreInterfaces</a>来忽略它们。要是还不行，那，就自由发挥吧。</p>
+<p>如果函数返回多个结果，逐个比较并打印，不必拼成一个结构体。</p>
+<h2 id="只比较稳定的结果"><a href="#只比较稳定的结果" class="headerlink" title="只比较稳定的结果"></a>只比较稳定的结果</h2><p>如果被测函数依赖的外部包不受控制，导致输出结果不稳定，就该避免在测试中使用该结果。相反，应该去比较那些在语义上稳定的信息。</p>
+<p>那些输出格式化/序列化字符串的功能，不该假设其输出的字符串一尘不变。举个实际的例子，<code>json.Marshal</code>并不保证输出的字节流永远是相同的，历史上该函数的实现变动过。如果从字符串是否相等的角度去测试<code>json</code>库，那测试用的执行结果无法稳定。而鲁棒性的做法应去解析 JSON 字符串，然后比较其中的每个对象。</p>
+<h2 id="相等性比较和diff"><a href="#相等性比较和diff" class="headerlink" title="相等性比较和diff"></a>相等性比较和diff</h2><p><code>==</code>操作符会按照<a href="https://golang.org/ref/spec#Comparison_operators" target="_blank" rel="noopener">Go 语言规范</a>定义的行为执行相等比较。数字、字符串和指针可以执行比较操作，结构体的每个字段如果都是以上三种类型，那结构体也可做比较。其中指针比较特别，只支持相等操作。</p>
+<p>使用<a href="https://godoc.org/github.com/google/go-cmp/cmp" target="_blank" rel="noopener">cmp</a>包的<a href="https://godoc.org/github.com/google/go-cmp/cmp#Equal" target="_blank" rel="noopener">cmp.Equal</a>可直接比较两个任意的对象，使用<a href="https://godoc.org/github.com/google/go-cmp/cmp#Diff" target="_blank" rel="noopener">cmp.Diff</a>则会输出这两个对象间的差异，而且可读性非常高。</p>
+<p>虽然<code>cmp</code>不在标准库中，但它是由 Go 官方维护的，和每一版的 Go 兼容，适用于大部分对象间的比较需求。</p>
+<p>老旧的代码中会使用<code>reflect.DeepEqual</code>函数来比较复杂的结构体，现在建议用<code>cmp</code>包来代替，因为<code>reflect.DeepEqual</code>对一些未导出的字段和实现细节的变动非常敏感。</p>
+<p>（<code>cmp</code>包使用时添加<code>cmp.Compare(proto.Equal)</code>选项即可直接用于 protocol buffer 消息的比较。）</p>
+<h2 id="不仅打印期望值，也要打印实际值"><a href="#不仅打印期望值，也要打印实际值" class="headerlink" title="不仅打印期望值，也要打印实际值"></a>不仅打印期望值，也要打印实际值</h2><p>测试结果在打印期望结果之前，应该打印函数的实际结果。通常我们会将测试结果格式化为：<code>YourFunc(%v) = %v, want %v</code>。</p>
+<p>对于 diff 的输出，期望结果和实际结果谁前谁后不明显，这时需要加入额外信息帮助理解。这两个什么顺序并不重要，重要的是整个工程应该具有一致性。</p>
+<h2 id="标识函数名"><a href="#标识函数名" class="headerlink" title="标识函数名"></a>标识函数名</h2><p>在大部分测试中，失败消息应该包含所在函数名，即使该消息显而易见来自测试函数。</p>
+<p>优先使用：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.Errorf(<span class="string">"YourFunc(%v) = %v, want %v"</span>, in, got, want)</span><br></pre></td></tr></table></figure>
+<p>而不是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.Errorf(<span class="string">"got %v, want %v"</span>, got, want)</span><br></pre></td></tr></table></figure>
+<h2 id="标识输入"><a href="#标识输入" class="headerlink" title="标识输入"></a>标识输入</h2><p>在大部分测试中，函数输入参数也应该包含在失败消息中。如果输入参数的相关属性不明显（比如，参数较大或晦涩难懂），你应该在测试名中描述本测试的内容，并且将描述信息放入错误消息中。</p>
+<p>对于表格驱动型测试，不要将序号作为测试名的一部分。在测试用例失败后，没人希望回到表格中一个个数来找出失败来自哪个用例。</p>
+<h2 id="失败继续执行"><a href="#失败继续执行" class="headerlink" title="失败继续执行"></a>失败继续执行</h2><p>即使测试用例遇到了失败，它也应尽可能地继续执行，以便能在一次运行中打印出所有失败检查点。这样，如果有人要依照测试结果修复代码时，不用一遍遍重复执行用例来找出下一个 bug。</p>
+<p>从实际角度出发，优先使用<code>t.Error</code>而不是<code>t.Fatal</code>。当比较函数的多个输出时，对每一个分别使用<code>t.Error</code>。</p>
+<p><code>t.Fatal</code>适合在 setup 中使用，因为 setup 一旦失败，其余的步骤便没有再执行的必要。表格驱动的测试中，<code>t.Fatal</code>适合在所有子测试开始前使用。表格中的每一测试用例若遇到不可恢复的错误，如何处理要分具体情况：</p>
+<ul>
+<li>如果你没有使用<code>t.Run</code>运行子测试，那应该使用<code>t.Error</code>并使用<code>conitnue</code>语句直接跳转到下一项用例。</li>
+<li>如果你使用<code>t.Run</code>运行子测试，那<code>t.Fatal</code>只会中断当前用例，其余子测试会继续执行。</li>
+</ul>
+<h2 id="标记测试辅助函数"><a href="#标记测试辅助函数" class="headerlink" title="标记测试辅助函数"></a>标记测试辅助函数</h2><p>辅助函数常用于 setup 和 teardown 任务中，比如构造一个测试数据。</p>
+<p>在辅助函数中调用<a href="https://godoc.org/testing#T.Helper" target="_blank" rel="noopener">t.Helper</a>后，如果辅助函数中某个判断出错，那在测试日志中的错误提示会忽略该辅助函数的调用栈，标记出错的行会焦点在测试用例中，而非在辅助函数中。有点绕，看个例子便一目了然。</p>
+<p>例如未使用<code>t.Helper</code>之前：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"testing"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">testHelper</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	t.Helper()</span><br><span class="line">	t.Fatal()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestHelloWorld</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	testHelper(t)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>出错信息为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">--- FAIL: TestHelloWorld (0.00s)</span><br><span class="line">    main_test.go:6:</span><br><span class="line">FAIL</span><br><span class="line">FAIL	test.test	0.001s</span><br><span class="line">FAIL</span><br></pre></td></tr></table></figure>
+<p>标记代码后：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"testing"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">testHelper</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	t.Helper()</span><br><span class="line">	t.Fatal()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestHelloWorld</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	testHelper(t)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>出错信息为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">--- FAIL: TestHelloWorld (0.00s)</span><br><span class="line">    main_test.go:11:</span><br><span class="line">FAIL</span><br><span class="line">FAIL	test.test	0.002s</span><br><span class="line">FAIL</span><br></pre></td></tr></table></figure>
+<p>可以看到，显示出错的第几行不一样。显然若<code>testHelper</code>被多个测试用例调用，后者的测试日志更易排查。</p>
+<h2 id="打印-diff"><a href="#打印-diff" class="headerlink" title="打印 diff"></a>打印 diff</h2><p>如果函数返回的输出比较长，而出错的地方只是其中一小段，那很难一眼看出区别。这对调试不友好，建议直接输出期望和实际结果的 diff 值。</p>
+<h2 id="表格驱动测试-vs-多个测试函数"><a href="#表格驱动测试-vs-多个测试函数" class="headerlink" title="表格驱动测试 vs 多个测试函数"></a>表格驱动测试 vs 多个测试函数</h2><p>当多个测试用例有着相同的测试逻辑，只是输入数据不同时，就应该使用<a href="https://github.com/golang/go/wiki/TableDrivenTests" target="_blank" rel="noopener">表格驱动测试</a>方法。</p>
+<p>而当每个测试用例需用不同的方法验证时，表格驱动就显得不合适，因为那样就不得不写一堆控制变量放入表格中，将原本的测试逻辑淹没其中，降低了用例的可读性和表格的可维护性。</p>
+<p>实际测试两种方法需结合使用。比如可以写两个表格驱动测试方法，一个测试函数的正常返回结果，另一个测试不同错误消息。</p>
+<h2 id="测试错误语义"><a href="#测试错误语义" class="headerlink" title="测试错误语义"></a>测试错误语义</h2><p>单元测试避免使用字符串比较或者是<code>reflect.DeepEqual</code>去检查函数的错误输出。错误消息若随着业务成长需要经常变动，你会不得不经常修改单元测试用例。</p>
+<p>而依赖库中的错误消息则相对稳定，拿来做字符串比较是可接受的。</p>
+<p>我们应该区分哪些是为了提高排查效率增添的错误消息，哪些只是用于内部编程，而多用<code>fmt.Errorf</code>恰恰会打破内部的稳定性，应尽量少用。</p>
+<p>许多人并不关心他们的 API 返回具体什么错误消息，这种情况下，单元测试中只做错误非空判断就可以了。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/测试/">测试</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Go/">Go</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://www.lyyyuna.com/2021/01/01/go-unit-test-comments/" data-title="Golang 官方关于单元测试方法的一些建议 | lyyyuna 的小花园" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2020/12/14/go-testing-in-go-subtests/"  title="Golang 与子测试">
+ <strong>下一篇：</strong><br/> 
+ <span>Golang 与子测试
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+<section id="comments" class="comment">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#断言"><span class="toc-number">2.</span> <span class="toc-text">断言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用可读性高的子测试用例名"><span class="toc-number">3.</span> <span class="toc-text">使用可读性高的子测试用例名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#直接比较结构体"><span class="toc-number">4.</span> <span class="toc-text">直接比较结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#只比较稳定的结果"><span class="toc-number">5.</span> <span class="toc-text">只比较稳定的结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#相等性比较和diff"><span class="toc-number">6.</span> <span class="toc-text">相等性比较和diff</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不仅打印期望值，也要打印实际值"><span class="toc-number">7.</span> <span class="toc-text">不仅打印期望值，也要打印实际值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#标识函数名"><span class="toc-number">8.</span> <span class="toc-text">标识函数名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#标识输入"><span class="toc-number">9.</span> <span class="toc-text">标识输入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#失败继续执行"><span class="toc-number">10.</span> <span class="toc-text">失败继续执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#标记测试辅助函数"><span class="toc-number">11.</span> <span class="toc-text">标记测试辅助函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#打印-diff"><span class="toc-number">12.</span> <span class="toc-text">打印 diff</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#表格驱动测试-vs-多个测试函数"><span class="toc-number">13.</span> <span class="toc-text">表格驱动测试 vs 多个测试函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试错误语义"><span class="toc-number">14.</span> <span class="toc-text">测试错误语义</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="github-card">
+<p class="asidetitle">Github 名片</p>
+<div class="github-card" data-github="lyyyuna" data-width="220" data-height="119" data-theme="medium">
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+  </div>
+
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数据库/" title="数据库">数据库<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂/" title="杂">杂<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/测试/" title="测试">测试<sup>12</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/系统/" title="系统">系统<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/网络/" title="网络">网络<sup>8</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言/" title="语言">语言<sup>14</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+    </ul>
+</div>
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello, I am lyy <br/>
+			This is my blog, believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/lyyyuna" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		<a href="https://www.douban.com/people/44114278" target="_blank" class="icon-douban" title="豆瓣"></a>
+		
+		
+		<a href="http://www.zhihu.com/people/li-yi-yang-38" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		<a href="mailto:lyyyuna@outlook.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2021 
+		
+		<a href="/about" target="_blank" title="lyyyuna">lyyyuna</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+<script type="text/javascript">
+
+var disqus_shortname = 'lyyyuna';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42389939-1', 'www.lyyyuna.com');  
+ga('send', 'pageview');
+</script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?4ba228e3ecc48b86bafa07900215f733";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
