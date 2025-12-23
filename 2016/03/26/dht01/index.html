@@ -1,0 +1,474 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: DHT 协议 - 译</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>DHT 协议 - 译
+    
+    <div class="subtitle">(<i><a href="/series/BitTorrent 协议实现小记/">BitTorrent 协议实现小记</a>, Part 1</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2016-03
+
+      </div>
+    </div>
+    
+    <p>BitTorrent 使用“分布式哈希表” (DHT) 来存储种子的 peer 信息，且不需要专门的服务器。这样，每一个 peer 都变成一个 tracker。DHT 协议基于 Kademila，且用 UDP 实现。</p>
+<p>请注意文档中的术语以免产生误解。peer 实现了 BitTorrent 协议，既是服务器也是客户端，且监听在 TCP 端口。node 实现了 DHT 协议，同样既是服务器也是客户端，监听在 UDP 端口。DHT 由 node 和 peer 的位置信息构成。BitTorrent 客户端有一个 DHT node，用来和 DHT 中的其他 node 通信用，从而获取 peer 的位置。</p>
+<h2>概览</h2>
+<p>每一个 node 都有一个全球唯一标识符，称作 node ID。Node ID 是从 160-bit 的空间中随机选取的，这和 BitTorrent 的
+infohashes 一致。距离参数（Distance metric）用来比较两个 node ID 之间的接近程度。Nodes 必须维护一个包含其他 node 联系信息的路由表。对那些和自身接近的其他 Node ID，路由表中会有跟多细节。所以 DHT 中，接近自己的 ID 有很多，远的 ID 则较少。</p>
+<p>在 Kademila 中，距离参数使用异或计算，结果为无符号整形，即</p>
+<pre><code>distance(A, B) = | A XOR B |
+</code></pre>
+<p>值越小越接近。</p>
+<p>当一个 node 想要获取种子的其他 peer 时，它先计算种子的 infohash 和路由表中已有 nodes 的距离参数。然后向距离种子最近的 node 询问 peer 信息。如果恰巧该 node 有，则返回给询问的 node。否则，该 node 把自己路由表中离种子最近的 node 信息返回。本 node 拿到返回信息之后，不停重复上述步骤直到没有新 node 信息返回。搜索结束时，客户端将<strong>自己</strong>的 peer 信息返回给离种子最近的 node。</p>
+<p>peer 查询的返回值必须包含令牌(token)。如果一个 node 宣称自己拥有的 peer 正在下载种子时，必须使用最近接收到的 token。当本 node 试图下载种子时，被请求的 node 检查 IP 地址对应的 token 是否一致。这么做是为了防止恶意主机从其他主机下载种子。由于 token 仅仅由请求 node 返回给被请求 node，故协议并未规定其实现。token 在分发后一段时间内必须被接受。BitTorrent 使用 IP + secret 的 SHA1 值作为 token，每 5 分钟改变一次，有 10 分钟有效期。</p>
+<h2>路由表</h2>
+<p>每一个 node 维护了一个好 node 的路由表。路由表的中 node 被用作查询的起始节点，并返回查询的响应信息。</p>
+<p>并非所有 node 是等价的，有些是“好”的，有些则不。大部分 node 能够使用 DHT 协议发送查询和接受响应，但却不能响应其他 node 的查询。所以在路由表中，必须只包含好的 node。一个好的 node 被定义为能在 15 分钟内响应查询，或者 15 分钟内曾经响应过。若 15 钟没响应，则是可疑的。若对一系列请求都失去响应，则为坏的 node。已知的好的 node 拥有更高的优先级。</p>
+<p>路由表覆盖从 0 到 2^160 完整的 node ID 空间。路由表又被分为 bucket，每一个拥有一部分子空间。空的表只有一个 bucket，其 ID 范围为 min=0 到 max=2^160。当 ID 为 N 的 node 插入到表中时，它必须放在 min=0 到 max=2^160 之间。由于空的表只有一个 bucket，所有 node 都在该 bucket 中。每个 bucket 可以存放 K 个 node，目前 K &lt;= 8。当 bucket 存满好的 node 时，不允许再插入，除非其本身就在该 bucket 中。在这种情况下，原 bucket 分裂为两个相同大小的 bucket，比如原始 bucket 分裂为 0 到 2^159，2^159 到 2^160。</p>
+<p>当 bucket 装满了好的 node，新的 node 会被丢弃。一旦 bucket 中的某个 node 变坏，就会用新的  node 来替换这个坏的 node。如果 bucket 中有在 15 分钟内都没有活跃过的 bucket，则其为可疑的 node，这时我们向最久没有联系的 node 发送 ping。如果有回复，那么我们向下一个可疑的 node 发送 ping，不断这样循环下去，直到有某一个 node 没有给出 ping 的回复，或者当前 bucket 中的所有 node 都是好的 (即都不是可疑节点，且在过去 15 分钟内都有活动)。如果 bucket 中的某个 node 没有对我们的 ping 给出回复，还会再试一次 (再发送一次 ping，也许仍然是活跃的，但由于网络拥塞，所以发生了丢包现象，注意 DHT 的包都是 UDP 的)，而不是立即丢弃该 node 或者直接用新 node 来替代它。这样，路由表中永远是活跃的 node。</p>
+<p>每个 bucket 都应该维护一个 lastchange 字段来表明自身的&quot;新鲜&quot;程度。当 bucket 中的 node 被 ping 并给出了回复，或者一个 node 被加入到了 bucket，或者有新的 node 替代了旧的，bucket 的 lastchange 字段都应当更新。如果一个 bucket 的 lastchange 在过去的 15 分钟内都没有变化，那么将重更新它。这个重更新为：从这个 bucket 所覆盖的范围中随机选择一个 node ID，并对这个 ID 执行 find_nodes 搜索。请注意，收到请求的 node 通常不需要常常更新自己所在的 bucket。反之，不常常收到请求的 node 才需要周期性地更新所在 bucket。有了上述措施，在 DHT 时，才能有足够多的好的 node。</p>
+<p>当插入第一个 node 到路由表并启动时，这个 node 应试着查找 DHT 中离自己最近的 node。这个查找工作是通过不断的发出 find_node 消息给越来越近的 node 来完成的，当没有更近的 node 时，搜索停止。路由表应当由客户端软件保存。</p>
+<h2>BitTorrent 协议扩展</h2>
+<p>BitTorrent 协议被扩展为可通过 tracker 得到的 peer 之间互换 node 的 UDP 端口号。在这种方式下，当下载种子时，客户端能够自动更新路由表。新安装的客户端在无 tracker 的种子中获取不到路由表，必须在种子文件中找到联系信息。</p>
+<p>Peers 如果支持 DHT 协议，会将 BitTorrent 协议握手消息的 8 字节保留位的最后一位置为 1。如果 peer 收到一个握手消息，表明对方支持 DHT 协议，则应该发送 PORT 消息。它由字节 0x09 开始，payload 的长度是 2 个字节，包含了这个 peer 的 DHT 所使用的 UDP 端口号。当 peer 收到这样的消息是应当向对方的 IP 和消息中指定的端口号的节点发送 ping。如果收到了 ping 的回复，则将新 node 的联系信息加入到路由表中。</p>
+<h2>种子文件扩展</h2>
+<p>无 tracker 的种子文件中不含有 announce 关键字，相反，其包含有 nodes 关键字。该关键字应该包含种子创建者路由表的 K 个最近 node。也可以选择设置成已知的可用 node，比如这个种子的创建者。请不要加入 router.bittorrent.com。</p>
+<pre><code>nodes = [[&quot;&lt;host&gt;&quot;, &lt;port&gt;], [&quot;&lt;host&gt;&quot;, &lt;port&gt;], ...]
+nodes = [[&quot;127.0.0.1&quot;, 6881], [&quot;your.router.node&quot;, 4804]]
+</code></pre>
+<h2>KRPC 协议</h2>
+<p>KRPC 协议是一个简单的 RPC 通信框架，其在 UDP 上使用 bencoded 编码的字典，包含请求与回复，但没有重试。有三种消息类型：query, response, error。对于 DHT 协议来说，有 4 种 query: ping, find_node, get_peers, announce_peer。</p>
+<p>KRPC 消息是一个简单字典，包含两个必填关键字，附加的关键字取决于消息类型。第一个必填关键字是 t，这是一个字符串表示的 transaction ID。它由请求 node 产生，且包含在回复中，所以回复有可能对应单个 node 的多个请求。transaction ID 应该被编码成字符串表示的二进制数字，通常是两个字符，这样就能包含 2^16 种请求。另一个必填关键字是 y，其对应值表示消息类型，为 q, r 或 e。</p>
+<h2>联系信息编码</h2>
+<p>peer 的联系信息被编码成 6 字节的字符串。4 字节为 IP 地址，2 字节为端口号，均用网络字节序表示。</p>
+<p>node 的联系信息被编码成 26 字节的字符串。20 字节为 node ID，剩余为 IP 和端口号信息，均用网络字节序表示。</p>
+<h2>Queries</h2>
+<p>query 为键值对 y:q，含有两个附加关键字，q 和 a。关键字 q 的值包含了请求类型的字符串表示。关键字 a 的值包含了一个所有返回值的字典。</p>
+<h2>Responses</h2>
+<p>response 为键值对 y:r，含有一个附加关键字 r。关键字 r 的值包含了一个所有返回值的字典。</p>
+<h2>Errors</h2>
+<p>error 为键值对 y:e，含有一个附加关键字 e。e 为一个列表。第一个元素是整形表示的错误码。第二个元素是字符串表示的错误信息。以下为可能的错误码，</p>
+<pre><code>Code        Description 
+=======================
+201         Generic Error 
+202         Server Error 
+203         Protocol Error, such as a malformed 
+            packet, invalid arguments, or bad 
+            token 
+204         Method Unknown 
+</code></pre>
+<p>示例，</p>
+<pre><code>generic error = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;e&quot;, &quot;e&quot;:[201, &quot;A Generic Error Ocurred&quot;]}
+bencoded = d1:eli201e23:A Generic Error Ocurrede1:t2:aa1:y1:ee
+</code></pre>
+<h2>DHT Queries</h2>
+<p>所有的 query 都有一个键值对 'id:请求 node ID'。所有的 response 也有一个键值对 'id:响应的 node ID'。</p>
+<h3>ping</h3>
+<p>最基本的 query 是 ping。这时候 q=ping，id 为 20 字节网络字节序表示的发送者 node ID。该 query 的响应为 id=响应者 node ID。</p>
+<pre><code>arguments:  {&quot;id&quot; : &quot;&lt;querying nodes id&gt;&quot;}
+
+response: {&quot;id&quot; : &quot;&lt;queried nodes id&gt;&quot;}
+</code></pre>
+<p>示例，</p>
+<pre><code>ping Query = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;q&quot;, &quot;q&quot;:&quot;ping&quot;, &quot;a&quot;:{&quot;id&quot;:&quot;abcdefghij0123456789&quot;}}
+bencoded = d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aa1:y1:qe
+
+Response = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;r&quot;, &quot;r&quot;: {&quot;id&quot;:&quot;mnopqrstuvwxyz123456&quot;}}
+bencoded = d1:rd2:id20:mnopqrstuvwxyz123456e1:t2:aa1:y1:re
+</code></pre>
+<h3>find_node</h3>
+<p>find_node 被用来查找给定 ID 的 node 的联系信息。这时 q == find_node。find_node 请求包含 2 个参数，第一个参数是 id，包含了请求 node ID。第二个参数是 target，包含了请求者正在查找的 node ID。当一个 node 接收到了 find_node 的 query，他应该给出对应的回复，回复中包含 2 个关键字 id 和 nodes，nodes 是字符串类型，包含了被请求 node 的路由表中最接近目标 node 的 K(8) 个最接近的 node 的联系信息。</p>
+<pre><code>arguments:  {&quot;id&quot; : &quot;&lt;querying nodes id&gt;&quot;, &quot;target&quot; : &quot;&lt;id of target node&gt;&quot;}
+
+response: {&quot;id&quot; : &quot;&lt;queried nodes id&gt;&quot;, &quot;nodes&quot; : &quot;&lt;compact node info&gt;&quot;}
+</code></pre>
+<p>示例，</p>
+<pre><code>find_node Query = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;q&quot;, &quot;q&quot;:&quot;find_node&quot;, &quot;a&quot;: {&quot;id&quot;:&quot;abcdefghij0123456789&quot;, &quot;target&quot;:&quot;mnopqrstuvwxyz123456&quot;}}
+bencoded = d1:ad2:id20:abcdefghij01234567896:target20:mnopqrstuvwxyz123456e1:q9:find_node1:t2:aa1:y1:qe
+
+Response = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;r&quot;, &quot;r&quot;: {&quot;id&quot;:&quot;0123456789abcdefghij&quot;, &quot;nodes&quot;: &quot;def456...&quot;}}
+bencoded = d1:rd2:id20:0123456789abcdefghij5:nodes9:def456...e1:t2:aa1:y1:re
+</code></pre>
+<h3>get_peers</h3>
+<p>get_peers 与种子文件的 infohash 有关。这时 q=get_peers。get_peers 请求包含 2 个参数。第一个参数是 id，包含了请求 node 的 ID。第二个参数是 info_hash，它代表种子文件的 infohash。如果被请求的 node 有对应 info_hash 的 peers，他将返回一个关键字 values，这是一个列表类型的字符串。每一个字符串包含了 CompactIP-address/portinfo 格式的 peers 信息。如果被请求的 node 没有这个 infohash 的 peers，那么他将返回关键字 nodes，这个关键字包含了被请求 node 的路由表中离 info_hash 最近的 K 个 node，使用 Compactnodeinfo 格式回复。在这两种情况下，关键字 token 都将被返回。之后的 annouce_peer 请求中必须包含 token。token 是一个短的二进制字符串。</p>
+<pre><code>arguments:  {&quot;id&quot; : &quot;&lt;querying nodes id&gt;&quot;, &quot;info_hash&quot; : &quot;&lt;20-byte infohash of target torrent&gt;&quot;}
+
+response: {&quot;id&quot; : &quot;&lt;queried nodes id&gt;&quot;, &quot;token&quot; :&quot;&lt;opaque write token&gt;&quot;, &quot;values&quot; : [&quot;&lt;peer 1 info string&gt;&quot;, &quot;&lt;peer 2 info string&gt;&quot;]}
+
+or: {&quot;id&quot; : &quot;&lt;queried nodes id&gt;&quot;, &quot;token&quot; :&quot;&lt;opaque write token&gt;&quot;, &quot;nodes&quot; : &quot;&lt;compact node info&gt;&quot;}
+</code></pre>
+<p>示例，</p>
+<pre><code>get_peers Query = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;q&quot;, &quot;q&quot;:&quot;get_peers&quot;, &quot;a&quot;: {&quot;id&quot;:&quot;abcdefghij0123456789&quot;, &quot;info_hash&quot;:&quot;mnopqrstuvwxyz123456&quot;}}
+bencoded = d1:ad2:id20:abcdefghij01234567899:info_hash20:mnopqrstuvwxyz123456e1:q9:get_peers1:t2:aa1:y1:qe
+
+Response with peers = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;r&quot;, &quot;r&quot;: {&quot;id&quot;:&quot;abcdefghij0123456789&quot;, &quot;token&quot;:&quot;aoeusnth&quot;, &quot;values&quot;: [&quot;axje.u&quot;, &quot;idhtnm&quot;]}}
+bencoded = d1:rd2:id20:abcdefghij01234567895:token8:aoeusnth6:valuesl6:axje.u6:idhtnmee1:t2:aa1:y1:re
+
+Response with closest nodes = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;r&quot;, &quot;r&quot;: {&quot;id&quot;:&quot;abcdefghij0123456789&quot;, &quot;token&quot;:&quot;aoeusnth&quot;, &quot;nodes&quot;: &quot;def456...&quot;}}
+bencoded = d1:rd2:id20:abcdefghij01234567895:nodes9:def456...5:token8:aoeusnthe1:t2:aa1:y1:re
+</code></pre>
+<h3>announce_peer</h3>
+<p>announce_peer 表示某个端口正在下载种子文件。announce_peer 包含 4 个参数。第一个参数是 id，包含了请求 node ID；第二个参数是 info_hash，包含了种子文件的 infohash；第三个参数是 port 包含了整型的端口号，表明 peer 在哪个端口下载；第四个参数是 token，这是在之前的 get_peers 请求中收到的回复中所包含的。收到 announce_peer 请求的 node 必须检查这个 token 与回复的 token 是否相同。如果相同，那么被请求的 node 将记录发送者的 IP 和端口号，记录在 peer 联系信息中对应的 infohash 下。</p>
+<pre><code>arguments:  {&quot;id&quot; : &quot;&lt;querying nodes id&gt;&quot;,
+&quot;implied_port&quot;: &lt;0 or 1&gt;,
+&quot;info_hash&quot; : &quot;&lt;20-byte infohash of target torrent&gt;&quot;,
+&quot;port&quot; : &lt;port number&gt;,
+&quot;token&quot; : &quot;&lt;opaque token&gt;&quot;}
+
+response: {&quot;id&quot; : &quot;&lt;queried nodes id&gt;&quot;}
+</code></pre>
+<p>示例，</p>
+<pre><code>announce_peers Query = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;q&quot;, &quot;q&quot;:&quot;announce_peer&quot;, &quot;a&quot;: {&quot;id&quot;:&quot;abcdefghij0123456789&quot;, &quot;implied_port&quot;: 1, &quot;info_hash&quot;:&quot;mnopqrstuvwxyz123456&quot;, &quot;port&quot;: 6881, &quot;token&quot;: &quot;aoeusnth&quot;}}
+bencoded = d1:ad2:id20:abcdefghij01234567899:info_hash20:&lt;br /&gt;
+mnopqrstuvwxyz1234564:porti6881e5:token8:aoeusnthe1:q13:announce_peer1:t2:aa1:y1:qe
+
+Response = {&quot;t&quot;:&quot;aa&quot;, &quot;y&quot;:&quot;r&quot;, &quot;r&quot;: {&quot;id&quot;:&quot;mnopqrstuvwxyz123456&quot;}}
+bencoded = d1:rd2:id20:mnopqrstuvwxyz123456e1:t2:aa1:y1:re
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+
+      
+        <a class="next" href="/2016/05/14/dht-sniffer/">
+          DHT 公网嗅探器实现（DHT 爬虫）
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

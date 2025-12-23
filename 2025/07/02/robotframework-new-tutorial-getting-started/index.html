@@ -1,0 +1,610 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 入门指南</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 入门指南
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 1</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-07
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>十年前我翻译过 <a href="https://www.lyyyuna.com/series/Robot%20Framework%20%E6%95%99%E7%A8%8B/">Robot Framework 的一些列文章</a>，这些年其实我早已不再使用这个框架，但是看到搜索引擎仍有读者访问我翻译的旧文章，因此我决定更新一下。</p>
+<h2>介绍</h2>
+<p>Robot Framework 是一个基于 Python 的、可扩展的关键字驱动自动化框架，适用于以下领域：</p>
+<ol>
+<li>验收测试（Acceptance Testing）</li>
+<li>验收测试驱动开发（ATDD）</li>
+<li>行为驱动开发（BDD）</li>
+<li>机器人流程自动化（RPA）</li>
+</ol>
+<p>该框架可在分布式异构环境中使用，支持跨不同技术和接口的自动化需求。</p>
+<h3>为什么使用 Robot Framework？</h3>
+<ol>
+<li>直观的表格化语法
+<ul>
+<li>提供统一、易用的表格语法编写测试用例</li>
+</ul>
+</li>
+<li>关键字复用体系
+<ul>
+<li>支持基于现有关键字创建更高层次的可复用关键字</li>
+</ul>
+</li>
+<li>可视化测试报告
+<ul>
+<li>生成易读的HTML格式测试报告与日志</li>
+</ul>
+</li>
+<li>跨平台独立性
+<ul>
+<li>与平台和被测应用解耦</li>
+</ul>
+</li>
+<li>可扩展库架构
+<ul>
+<li>提供简洁的库 API，支持使用 Python 原生开发定制测试库</li>
+</ul>
+</li>
+<li>持续集成支持
+<ul>
+<li>提供命令行接口与基于 XML 的输出文件，轻松对接 CI 系统</li>
+</ul>
+</li>
+<li>全栈测试能力，支持测试类型包括：
+<ul>
+<li>Web应用</li>
+<li>REST APIs</li>
+<li>移动应用</li>
+<li>进程监控</li>
+<li>远程系统（Telnet/SSH等）</li>
+</ul>
+</li>
+<li>数据驱动测试
+<ul>
+<li>支持创建数据驱动的测试用例</li>
+</ul>
+</li>
+<li>多环境变量支持
+<ul>
+<li>内置变量机制，特别适合多环境测试</li>
+</ul>
+</li>
+<li>智能测试分类
+<ul>
+<li>通过标签(tag)体系实现测试用例的分类与筛选</li>
+</ul>
+</li>
+<li>版本控制集成
+<ul>
+<li>测试套件以文件/目录形式存储，可与产品代码同步版本管理</li>
+</ul>
+</li>
+<li>生命周期控制
+<ul>
+<li>提供测试用例级和测试套件级的setup/teardown机制</li>
+</ul>
+</li>
+<li>模块化架构
+<ul>
+<li>支持为具有多接口的复杂应用创建测试</li>
+</ul>
+</li>
+</ol>
+<h3>架构</h3>
+<p>Robot Framework 是一个通用的、与应用和具体技术无关的框架。它具有一个高度模块化的架构，如下图所示：</p>
+<p><img src="/img/posts/rf-new-tutor/architecture.png" alt="Robot Framework 架构"></p>
+<p>测试数据采用简单、易编辑的表格格式。Robot Framework 启动时会对数据进行处理，执行测试用例并生成日志和报告。该核心框架本身不涉及任何被测目标信息，与目标的交互均由库文件处理。这些库既可直接调用应用程序接口，也能通过底层测试工具作为驱动进行操作。</p>
+<h3>截图</h3>
+<p>以下截图展示了测试数据样例及生成的报告和日志。</p>
+<p><img src="/img/posts/rf-new-tutor/testdata_screenshots.png" alt="测试用例文件"></p>
+<p><img src="/img/posts/rf-new-tutor/screenshots.png" alt="测试报告和日志"></p>
+<h2>安装步骤</h2>
+<p>本指南介绍了在不同操作系统上安装 Robot Framework 及其前置条件的方法。若已安装 Python，则可通过标准包管理器 pip 安装 Robot Framework：</p>
+<pre><code class="language-bash">$ pip install robotframework
+</code></pre>
+<h3>安装 Python</h3>
+<p>Robot Framework 基于 Python 实现，因此安装前需预先安装 Python 或其替代实现 PyPy。另一项推荐的前置条件是确保已配置 pip 包管理器。</p>
+<p>Robot Framework 要求 Python 版本为 3.8 或更高。</p>
+<h4>在 Linux 上安装 Python</h4>
+<p>在 Linux 系统上，默认情况下应该已安装合适的 Python 版本并自带 pip 工具。若未安装，则需要查阅所用发行版的官方文档了解安装方法。如果想使用发行版默认提供版本之外的其它 Python 版本，同样需要参考发行版文档进行操作。</p>
+<p>要检查当前安装的Python版本，可在终端中运行以下命令：</p>
+<pre><code class="language-bash">$ python --version
+Python 3.10.13
+</code></pre>
+<p>请注意，如果你的 Linux 发行版同时提供了较旧的 Python 2，直接运行 <code>python</code> 命令可能会调用 Python 2。要使用 Python 3，你可以使用 <code>python3</code> 命令，或者更精确地指定版本（例如 <code>python3.8</code>）。如果你安装了多个 Python 3 版本，并且需要明确指定使用哪一个，同样需要使用这些带版本号的命令：</p>
+<pre><code class="language-bash">$ python3.11 --version
+Python 3.11.7
+$ python3.12 --version
+Python 3.12.1
+</code></pre>
+<p>在系统自带的 Python 环境下直接安装 Robot Framework 存在一定风险，可能导致操作系统依赖的 Python 环境出现问题。如今大多数 Linux 发行版默认采用用户级安装（user installs）来避免此类情况，但用户也可以自行选择使用虚拟环境（virtual environments）进行隔离。</p>
+<h4>在 Windows 上安装 Python</h4>
+<p>在 Windows 系统上，Python 默认并未预装，但安装过程十分简便。推荐通过 <a href="http://python.org/">python.org</a> 下载官方 Windows 安装程序进行安装。若需了解其他安装方式（如通过 Microsoft Store 安装），请参阅 <a href="https://docs.python.org/3/using/windows.html">Python 官方文档</a>。</p>
+<p>在 Windows 上安装 Python 时，建议将 Python 添加至 PATH 环境变量，以便通过命令行更便捷地运行 Python 及其相关工具（如 pip 和 Robot Framework）。若使用<a href="https://docs.python.org/3/using/windows.html#windows-full">官方安装程序</a>，只需在初始对话框勾选&quot;将 Python 3.x 添加到 PATH&quot;选项即可。</p>
+<p>要验证 Python 是否安装成功并已添加至 PATH 环境变量，可打开命令提示符并执行以下命令：</p>
+<pre><code class="language-bash">C:\&gt;python --version
+Python 3.10.9
+</code></pre>
+<p>在 Windows 系统中安装多个 Python 版本时，执行 <code>python</code> 命令将默认调用 PATH 环境变量中优先级最高的版本。如需使用其他版本，最简单的方法是使用 <a href="https://docs.python.org/3/using/windows.html#launcher">py launcher</a>：</p>
+<pre><code class="language-bash">C:\&gt;py --version
+Python 3.10.9
+C:\&gt;py -3.12 --version
+Python 3.12.1
+</code></pre>
+<h4>在 macOS 上安装 Python</h4>
+<p>在 macOS 系统中，默认提供的 Python 版本不兼容 Python 3，因此需要单独安装。推荐访问 <a href="http://python.org/">python.org</a> 下载官方 macOS 安装程序进行安装。若使用 <a href="https://brew.sh/">Homebrew</a> 等包管理器，也可以通过它来安装 Python。</p>
+<p>与其他操作系统相同，可以在 macOS 上使用 <code>python --version</code> 命令来验证 Python 是否安装成功。</p>
+<h4>安装 PyPy</h4>
+<p>PyPy 是 Python 的另一种实现方案。相较于标准 Python 实现，其主要优势在于运行速度更快且内存占用更低，但实际效果取决于具体使用场景。若执行效率至关重要，至少尝试测试 PyPy 通常是个不错的选择。</p>
+<p>PyPy 的安装过程简单直接，你可在 <a href="http://pypy.org/">pypy.org</a> 获取安装程序及详细指南。要验证 PyPy 是否安装成功，可运行以下命令：</p>
+<pre><code class="language-bash">pypy --version
+
+pypy3 --version
+</code></pre>
+<h4>配置 PATH</h4>
+<p>PATH 环境变量定义了系统在哪些目录中查找可执行命令。为方便通过命令行使用 Python、pip 和 Robot Framework，建议将以下两个目录添加至 PATH 中：</p>
+<ol>
+<li>Python 的安装目录</li>
+<li>存放 pip 和 robot 等命令的目录</li>
+</ol>
+<p>在 Linux 或 macOS 系统上使用 Python 时，Python 及其相关工具通常会自动配置到 PATH 中。若仍需手动更新 PATH，通常需要编辑系统级或用户级的配置文件。具体需要编辑哪个文件以及如何编辑，取决于操作系统类型，请查阅相应系统的文档获取详细信息。</p>
+<p>在 Windows 系统中，确保 PATH 正确配置的最简便方法是在运行安装程序时勾选&quot;将 Python 3.x 添加到 PATH&quot;选项。如需手动修改 PATH，请按以下步骤操作：</p>
+<ol>
+<li>通过系统设置找到&quot;环境变量&quot;配置项
+<ul>
+<li>系统变量影响所有用户（需管理员权限）</li>
+<li>用户变量仅影响当前账户（通常修改此项即可）</li>
+</ul>
+</li>
+<li>选择 PATH 变量（可能显示为 Path）并点击&quot;编辑&quot;
+<ul>
+<li>若编辑用户变量且 PATH 不存在，请点击&quot;新建&quot;</li>
+</ul>
+</li>
+<li>将以下两个目录添加到 PATH 中：
+<ul>
+<li>Python 安装目录</li>
+<li>安装目录下的 Scripts 子目录</li>
+</ul>
+</li>
+<li>点击&quot;确定&quot;保存修改</li>
+<li>需启动新的命令提示符窗口才能使变更生效</li>
+</ol>
+<h3>用 pip 安装 Robot Framework</h3>
+<p>这里介绍了使用 Python 标准包管理工具 pip 安装 Robot Framework 的方法。若你使用的是 Conda 等其他包管理器，虽可替代使用，但需查阅其官方文档获取具体安装说明。</p>
+<p>通常情况下，安装 Python 时会自动附带安装 pip。如未自动安装，请参考该 Python 发行版的官方文档，了解如何单独安装 pip。</p>
+<h4>运行 pip 命令</h4>
+<p>通常可以直接运行 pip 命令使用 pip 工具，但在 Linux 系统上，可能需要改用 pip3 或更具体的版本号命令（如 pip3.8）。执行 pip 命令时，系统会优先调用 PATH 环境变量中第一个匹配的可执行文件。若安装了多个 Python 版本，可通过 <code>python -m pip</code> 方式明确指定使用特定版本的 pip。</p>
+<p>要确认系统是否已安装 pip，可执行 <code>pip --version</code> 来检查。</p>
+<p>Linux 上的例子：</p>
+<pre><code class="language-bash">$ pip --version
+pip 23.2.1 from ... (python 3.10)
+$ python3.12 -m pip --version
+pip 23.3.1 from ... (python 3.12)
+</code></pre>
+<p>Windows 上的例子：</p>
+<pre><code class="language-bash">C:\&gt; pip --version
+pip 23.2.1 from ... (python 3.10)
+C:\&gt; py -m 3.12 -m pip --version
+pip 23.3.2 from ... (python 3.12)
+</code></pre>
+<p>在后续章节中，我们将统一使用 <code>pip</code> 命令作为示例。根据你的具体环境，可能需要改用前文所述的其他替代方案（如 <code>pip3</code> 或 <code>python -m pip</code>）。</p>
+<h4>安装和卸载 Robot Framework</h4>
+<p>使用 pip 最简单的方式是让其自动从 Python 软件包索引(<a href="https://pypi.org/project/robotframework">PyPI</a>)查找并下载安装包，但也可以手动安装从 PyPI 单独下载的软件包。以下是几种最常用的安装方式，更多详细信息和示例请参阅 <a href="https://pip.pypa.io/">pip 官方文档</a>：</p>
+<pre><code class="language-bash"># 安装最新版 (不会升级)
+pip install robotframework
+
+# 升级到最新稳定版本
+pip install --upgrade robotframework
+
+# 升级到最新 pre 版本
+pip install --upgrade --pre robotframework
+
+# 安装特定版本
+pip install robotframework==7.0
+
+# 从下载的包中安装（无网络）
+pip install robotframework-7.0-py3-none-any.whl
+
+# 从 GitHub 最新的代码中安装
+pip install https://github.com/robotframework/robotframework/archive/master.zip
+
+# 卸载
+pip uninstall robotframework
+</code></pre>
+<h3>从源码安装 Robot Framework</h3>
+<p>另一种安装方式是获取 Robot Framework 源码并通过 setup.py 脚本进行安装。此方法仅建议在无法使用 pip 的情况下采用。</p>
+<p>获取源码有两种途径：</p>
+<ol>
+<li>从 PyPI 下载源码发行包并解压</li>
+<li>克隆 GitHub 仓库后检出所需的发布标签</li>
+</ol>
+<p>获取源码后，执行以下命令即可完成安装：</p>
+<pre><code class="language-bash">python setup.py install
+</code></pre>
+<p><code>setup.py</code> 脚本支持多个参数配置，例如：</p>
+<ol>
+<li>可指定非默认安装路径（无需管理员权限）</li>
+<li>可用于生成不同格式的发行包</li>
+</ol>
+<p>运行 <code>python setup.py --help</code> 命令查看完整参数说明。</p>
+<h3>验证安装</h3>
+<p>要验证安装的 Robot Framework 版本是否正确，请执行以下命令：</p>
+<pre><code class="language-bash">$ robot --version
+Robot Framework 7.0 (Python 3.10.3 on linux)
+</code></pre>
+<p>若执行上述命令时提示&quot;command not found&quot;（命令未找到）或&quot;无法识别&quot;等错误，建议首先检查 PATH 环境变量配置是否正确。</p>
+<p>若已在多个 Python 版本下安装 Robot Framework，直接运行 robot 命令将执行 PATH 中优先级最高的版本。如需指定特定版本，可使用 <code>python -m robot</code> 命令格式：</p>
+<pre><code class="language-bash">$ python3.12 -m robot --version
+Robot Framework 7.0 (Python 3.12.1 on linux)
+
+C:\&gt;py -3.11 -m robot --version
+Robot Framework 7.0 (Python 3.11.7 on win32)
+</code></pre>
+<h3>虚拟环境</h3>
+<p>Python 虚拟环境（<a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">virtual environments</a>）可将 Python 包安装在特定项目或应用的独立隔离位置，而非全部安装到全局共享位置。其主要应用场景包括：</p>
+<ol>
+<li>项目依赖隔离
+<ul>
+<li>为不同项目创建独立环境安装所需依赖包</li>
+<li>避免项目间因需要同一包的不同版本而产生冲突</li>
+</ul>
+</li>
+<li>系统环境保护
+<ul>
+<li>防止全局 Python 环境被污染</li>
+<li>在 Linux 系统中尤为重要，因其发行版可能依赖系统 Python 环境</li>
+<li>随意修改全局安装可能导致严重系统问题</li>
+</ul>
+</li>
+</ol>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+
+      
+        <a class="next" href="/2025/07/11/robotframework-new-tutorial-test-data-syntax/">
+          Robot Framework 新版教程 - 测试数据语法
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

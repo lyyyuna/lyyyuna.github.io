@@ -1,0 +1,605 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Siril 教程：天文摄影中的图像堆栈与处理</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Siril 教程：天文摄影中的图像堆栈与处理
+    
+    <div class="subtitle">(<i><a href="/series/下一站，猎户座/">下一站，猎户座</a>, Part 3</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-12
+
+      </div>
+    </div>
+    
+    <p>天文摄影让我们能够捕捉夜空之美，但由于长曝光时间和低光条件，单张图像往往包含噪声且缺乏细节。为了克服这一问题，天文摄影师使用一种称为图像堆栈的技术。通过组合同一场景的多张图像，我们可以增强信噪比并揭示更多天体细节。</p>
+<p>在本指南中，我将带你了解使用 Siril 堆栈天文摄影图像的过程，Siril 是一款专为天文图像处理设计的功能强大的免费软件。</p>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/46.png" alt="堆栈后的 M31 仙女座星系"></p>
+<h2>为什么使用 Siril？</h2>
+<p>Siril 是一款专为天文摄影图像叠加而设计的软件，提供一系列强大的工具，能满足高质量天文图像处理的需求。其核心功能包括精密的对齐与校准工具，可修正由大气和光学因素引起的偏移与畸变，从而生成清晰准确的叠加图像。Siril 的叠加算法在弱光天文摄影中能有效抑制噪点，同时保留精细细节，呈现出明亮生动的画面。此外，Siril 还提供背景提取、色彩校准与测光色偏校正功能，能增强天体的自然色彩。该软件同时支持自动化流程与手动调控，兼顾从新手到高阶用户的不同需求。作为一款免费开源工具，Siril 持续保持更新，是天文学爱好者强大且易用的理想选择。</p>
+<h2>安装 Siril</h2>
+<p>你可以从 <a href="https://siril.org">siril.org</a> 下载安装最新的 Siril。</p>
+<h2>前置条件</h2>
+<p>进行图像叠加处理时，您需要准备一组针对同一天体或相同天区的多张图像。请确保这些图像在相似的拍摄条件和一致的参数设置下获得，以实现最佳的叠加效果。您使用的图像数量越多，最终成像质量越好，因为叠加处理能有效抑制噪点并增强细节表现。</p>
+<h2>实践天文摄影图像堆栈</h2>
+<p>你可以从以下资源下载用于天文摄影图像叠加的练习素材，以获得实际操作经验：</p>
+<ul>
+<li><a href="https://astropix.com">Astropix</a></li>
+<li><a href="https://astrobackyard.com">AstroBackyard</a></li>
+</ul>
+<p>这些资源提供了出色的数据集，可供您练习图像叠加与后期处理技巧。</p>
+<h2>图像校准</h2>
+<p>本部分将说明如何在 Siril 中为图像叠加整理文件。</p>
+<h3>在 Siril 中组织图像文件以进行堆栈</h3>
+<p>在使用 Siril 处理天文摄影图像前，妥善整理文件至关重要。</p>
+<ol>
+<li>首先，以你处理的天体或星团名称创建一个主目录。（例如：M31 - 仙女座星系）</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/one.png" alt="创建主目录"></p>
+<ol start="2">
+<li>在该目录内，创建四个子文件夹：lights、darks、biases 和 flats。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/two.png" alt="创建子目录"></p>
+<ul>
+<li><strong>Lights</strong>：将所有目标天体的原始图像（计划用于叠加的图片）放入 lights 文件夹。</li>
+<li><strong>Darks</strong>：将暗场图像放置于此，用于校正传感器噪声。</li>
+<li><strong>Biases</strong>：将偏置场图像添加到此文件夹，以校正读取噪声。</li>
+<li><strong>Flats</strong>：存储平场图像，用于校正传感器暗角或灰尘影响。</li>
+</ul>
+<ol start="3">
+<li>在此步骤中，我们仅将亮场文件（原始图像）放入 lights 文件夹。本指南将仅使用这些亮场图像进行操作。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/three.png" alt="放置光学文件"></p>
+<p><strong>注意</strong>：这些目录至关重要，因为 Siril 的内置脚本依赖它们来执行叠加流程。如果未正确创建这些目录并放入对应的图像文件，脚本将无法运行，您会遇到错误。遵循此结构能确保叠加工作流程顺利进行。</p>
+<h2>启动 Siril</h2>
+<h3>设置工作区</h3>
+<p>默认情况下，Siril 启动时的工作目录可能与您存储图像的目录不同。为确保 Siril 能够访问您的图像并正确执行叠加操作，请按以下步骤更改工作目录：</p>
+<ol>
+<li>打开 Siril：在您的计算机上启动 Siril。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/four.png" alt="打开 Siril"></p>
+<ol start="2">
+<li>要更改 Siril 中的当前工作目录，请点击窗口左上角的<strong>主页</strong>图标。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/five~2.png" alt="主页图标位置"></p>
+<ol start="3">
+<li>此操作将打开文件浏览器，您可以导航至并选择存储图像文件的目录。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/seven~2.png" alt="文件浏览器界面"></p>
+<ol start="4">
+<li>导航至包含 lights、darks、flats 和 biases 文件夹的目录后，点击<strong>打开</strong>，将此目录设为 Siril 的工作目录。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/eight~2.png" alt="确认目录选择"></p>
+<p>现在，Siril 已设置为在指定目录中处理图像。您可以通过查看 Siril 窗口左上角显示的当前工作目录路径来确认这一点。</p>
+<h3>安装脚本</h3>
+<ol>
+<li>点击 Siril 窗口右上角的<strong>三横线菜单</strong>图标。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/nine~2.png" alt="三横线菜单图标"></p>
+<ol start="2">
+<li>点击<strong>获取脚本</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/ten~2.png" alt="Get Scripts 选项"></p>
+<ol start="3">
+<li>点击后，系统将跳转至 Siril 的官方文档页面。在该页面的<strong>获取更多脚本</strong>章节下找到 <a href="https://gitlab.com/free-astro/siril-scripts">GitLab</a> 链接并点击进入。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/111.png" alt="GitLab 链接"></p>
+<ol start="4">
+<li>点击 <strong>preprocessing</strong> 目录。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/122.png" alt="Preprocessing 选择"></p>
+<ol start="5">
+<li>点击 <strong>OSC_Preprocessing_WithoutDBF.ssf</strong> 文件。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/13.png" alt="OSC_Preprocessing_WithoutDBF.ssf 脚本"></p>
+<p><strong>注意</strong>：我们将下载 <strong>OSC_Preprocessing_WithoutDBF.ssf</strong> 脚本，因为本教程仅使用亮场图像进行处理。</p>
+<ol start="6">
+<li>下载 <strong>OSC_Preprocessing_WithoutDBF.ssf</strong> 脚本文件。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/144.png" alt="下载脚本"></p>
+<p>下载脚本后，请将其放置在以下目录中：</p>
+<p><code>/This PC/Local Disk (C:)/Program Files/Siril/scripts/</code></p>
+<p>一旦脚本正确安装并放置在正确的目录中，你就可以开始在 Siril 中进行堆栈工作流程了。</p>
+<h3>图像堆栈</h3>
+<ol>
+<li>点击顶部菜单中的<strong>脚本</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/15~2.png" alt="Scripts 菜单"></p>
+<ol start="2">
+<li>从可用脚本列表中选择 <strong>OSC_Preprocessing_WithoutDBF</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/16~2.png" alt="选择脚本"></p>
+<ol start="3">
+<li>点击<strong>运行</strong>以执行该脚本。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/17~2.png" alt="Run 按钮"></p>
+<ol start="4">
+<li>等待脚本执行完成。你可以在控制台窗口中查看执行进度。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/18~2.png" alt="控制台进度窗口"></p>
+<p>最终叠加完成的图像将保存在名为 <strong>M31</strong> 的主目录中。</p>
+<ol start="5">
+<li>要打开最终叠加图像，请点击顶部菜单中的<strong>打开</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/19~2.png" alt="Open 菜单选项"></p>
+<p>最终叠加完成的图像将命名为 <strong>result.fit</strong>，并以 FITS 格式保存。</p>
+<ol start="6">
+<li>选择 <strong>result.fit</strong> 文件，然后点击底部的<strong>打开</strong>按钮以加载图像。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/20~2.png" alt="选择 result.fit 文件"></p>
+<ol start="7">
+<li>这是 M31 原始叠加图像在<strong>线性视图</strong>下的显示效果。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/21~2.png" alt="原始堆栈图像显示"></p>
+<ol start="8">
+<li>要从&quot;线性&quot;视图切换到&quot;自动拉伸&quot;视图，只需点击<strong>线性</strong>按钮，然后选择<strong>自动拉伸</strong>以调整图像显示效果。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/22~2.png" alt="Linear 到 Autostretch 切换"></p>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/23~2.png" alt="Autostretch 视图"></p>
+<p><strong>注意</strong>：自动拉伸会对图像数据进行临时拉伸，使微弱细节更易见，但不会永久改变原始数据。这在对叠加图像进行进一步后处理前，用于预览非常有用。</p>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/24~2.png" alt="Autostretch 结果"></p>
+<p><strong>注意</strong>：对叠加图像应用自动拉伸后，你可能会注意到绿色噪点。这很常见，可以在后续处理中进行校正。</p>
+<ol start="9">
+<li>要切换到<strong>直方图视图</strong>，请从视图选项中选择<strong>直方图</strong>。切换到直方图视图可以让您更精细地控制图像的色调范围，从而更好地观察细节和调整曝光。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/26~2.png" alt="直方图视图"></p>
+<p>在直方图视图中，您可以看到图像像素值的分布情况。该视图有助于调整亮度和对比度。</p>
+<h2>背景提取</h2>
+<p>背景提取是天文学图像处理中至关重要的一步。它有助于去除图像中不需要的背景噪声或背景亮度变化，让天体目标更加清晰地显现出来。在本节中，我们将详细介绍在 Siril 中执行背景提取的步骤。</p>
+<p>在开始后处理之前，首先需要裁剪掉在直方图视图中可见的图像边缘的畸变和噪声。</p>
+<ol>
+<li>要进行裁剪，请在图像上<strong>左键单击</strong>，拖动鼠标框选您希望保留的区域，然后<strong>右键单击</strong>并选择<strong>裁剪</strong>以应用更改。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/27~3.png" alt="裁剪工具界面"></p>
+<p>裁剪完成后，请切换回<strong>自动拉伸</strong>视图以增强图像可见度，然后开始<strong>背景提取</strong>流程。</p>
+<ol start="2">
+<li>导航至<strong>图像处理</strong>菜单。</li>
+</ol>
+<p>Siril 中的背景提取是一个帮助去除天文图像中不需要的背景噪声或亮度变化的过程。</p>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/28.png" alt="Image Processing 菜单"></p>
+<ol start="3">
+<li>选择<strong>背景提取</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/29.png" alt="Background Extraction 选择"></p>
+<ol start="4">
+<li>点击<strong>生成样本</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/33.png" alt="生成采样点"></p>
+<p><strong>注意</strong>：Siril 利用这些样本来估计背景强度以及由光污染或传感器噪声等因素引起的亮度梯度。选择样本后，Siril 会从图像中减去估算出的背景模型，从而获得更干净、更均匀的背景。</p>
+<ol start="5">
+<li>为确保背景提取的准确性，请<strong>右键单击</strong>删除任何离明亮恒星或天体过近的样本。这有助于避免图像中天体的干扰，确保只对背景进行建模。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/30.png" alt="在亮星附近移除采样点"></p>
+<ol start="6">
+<li>点击<strong>计算背景</strong>以完成此步骤，然后点击<strong>应用</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/31.png" alt="计算背景并应用"></p>
+<p>应用背景提取后，您将注意到图像质量有显著提升。背景噪声和亮度变化将减少，使天体目标更加清晰地凸显出来。</p>
+<h2>测光色彩校准</h2>
+<p>在天文摄影图像叠加中，测光色彩校准对于校正由光污染、传感器特性及不同曝光条件等因素引起的色彩失衡至关重要。在 Siril 中，此过程通过调整叠加图像的色彩，使其与天体的真实色彩相匹配，从而确保结果准确且自然。Siril 通过分析图像中恒星及其他天体的色彩，并调整红、绿、蓝通道以消除任何不必要的色偏来实现这一校准。这项校准对于生成科学准确且视觉一致的图像至关重要，尤其是在叠加多帧具有不同色彩偏差的图像时。</p>
+<ol>
+<li>要进行测光色彩校准，请点击<strong>色彩校准</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/50.png" alt="Color Calibration 菜单"></p>
+<ol start="2">
+<li>选择<strong>测光色彩校准</strong>。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/51.png" alt="Photometric Color Calibration"></p>
+<p>随后将弹出一个窗口，您需要输入星表编号以匹配对应的赤经与赤纬坐标。若您使用望远镜拍摄，坐标信息通常会<strong>自动显示</strong>；若使用数码单反相机拍摄，坐标值<strong>默认可能为零</strong>。</p>
+<p>对于 M31（仙女座星系）图像进行校准时，其星表编号为 <strong>NGC 224</strong>。</p>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/52.png" alt="输入星表编号窗口"></p>
+<p>你可以从多种星表（如 VizieR、SIMBAD 或 CDS）中选择，以确保坐标与正确的星表条目匹配。</p>
+<p>为提高校准精度，请补充输入望远镜的<strong>焦距</strong>和<strong>像素尺寸</strong>。这些参数有助于根据您的设备配置优化测光校正效果。</p>
+<p>填写完所有必要信息后，点击<strong>确定</strong>。</p>
+<h2>去除绿色噪点</h2>
+<p>绿色噪点是天文摄影图像中常见的问题，尤其在使用某些相机或传感器时更为明显。它表现为图像中出现绿色调或色偏，会影响最终图像的整体质量和色彩准确性。去除绿色噪点对于获得更均衡、自然的图像至关重要。</p>
+<ol>
+<li>如果图像中仍存在绿色噪点，请点击<strong>去除绿色噪点</strong>将其消除。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/34.png" alt="Remove green noise 选项"></p>
+<ol start="2">
+<li>保持默认选项不变，直接点击<strong>应用</strong>即可。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/35.png" alt="Remove green noise 设置"></p>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/36.png" alt="去噪后的结果"></p>
+<p>去除绿色噪点后，图像变得更干净，色彩也更均衡了。</p>
+<h2>图像拉伸</h2>
+<p>图像拉伸是天文学图像处理中至关重要的一步。它能增强叠加图像中微弱细节和色彩的可见度，使图像更具视觉吸引力。在本节中，我们将详细介绍有效拉伸图像的步骤。</p>
+<ol>
+<li>将视图切换为<strong>线性视图</strong>，然后点击<strong>直方图变换</strong>对图像进行拉伸。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/40.png" alt="Histogram Transformation"></p>
+<ol start="2">
+<li>点击 <strong>clip(%)</strong> 上方的图标，应用自动拉伸算法。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/41.png" alt="Autostretch 算法图标"></p>
+<ol start="3">
+<li>选择 <strong>Asinh</strong> 变换。此调整将增强图像中的细节表现。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/37.png" alt="Asinh 变换选择"></p>
+<ol start="4">
+<li>将<strong>拉伸因子</strong>调整至最大值，以增强图像的对比度和细节。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/38.png" alt="拉伸因子调整"></p>
+<ol start="5">
+<li>点击<strong>应用</strong>以使更改生效。</li>
+</ol>
+<h2>应用色彩调整</h2>
+<ol>
+<li>点击<strong>色彩饱和度</strong>选项，以增强图像中色彩的生动度。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/42.png" alt="Color Saturation 选项"></p>
+<ol start="2">
+<li>
+<p>选择<strong>全局</strong>，以使用多种色彩调整选项。</p>
+</li>
+<li>
+<p>选定所需的色彩选项后，通过调整<strong>数量</strong>滑块来增加色彩饱和度。点击<strong>应用</strong>以确认并应用更改，从而提升图像的色彩活力。</p>
+</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/43.png" alt="色彩饱和度调整"></p>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/46.png" alt="色彩饱和度调整"></p>
+<p>这是最终叠加图像的处理结果。你可以使用各类照片编辑软件进一步微调和增强，以进行更多调整与优化。</p>
+<ol start="4">
+<li>点击右上角的<strong>保存</strong>或<strong>下载</strong>选项，以保存最终结果图像。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/47.png" alt="保存/下载按钮"></p>
+<ol start="5">
+<li>保存图像时，你可以根据需求选择不同的文件格式。</li>
+</ol>
+<p><img src="/imgrrr/%E4%B8%8B%E4%B8%80%E7%AB%99%EF%BC%8C%E7%8C%8E%E6%88%B7%E5%BA%A7/49.png" alt="文件格式选择"></p>
+<ol start="6">
+<li>点击<strong>保存</strong>以下载最终图像。</li>
+</ol>
+<h2>结论</h2>
+<p>总的来说，Siril 对于天文摄影师而言是一款极其强大的工具，它提供了一系列功能，使图像叠加和校准等复杂任务变得更为简易。其通过多种脚本实现的自动化支持尤为突出，能为您节省大量时间和精力，尤其是在处理大量图像时。然而，要获得最佳效果，仍需在掌握工作流程上投入一定的耐心与实践。</p>
+<p>需要注意的是，本指南专为使用望远镜进行天文摄影的初学者设计，并未涵盖更高级的技术，例如广义双曲拉伸变换、反卷积、降噪，或像 StarNet 这类高级星点处理工具。</p>
+<p>若您希望深入了解这些领域，我强烈推荐您访问 <a href="https://www.youtube.com/@DeepSpaceAstro">Deep Space Astro</a> 的 YouTube 频道，那里提供了关于高级图像处理技巧的详尽教程。</p>
+<h2>致谢</h2>
+<p>图像来源于 <a href="https://astropix.com">Astropix</a> 和 <a href="https://astrobackyard.com">AstroBackyard</a>，感谢他们通过高质量天文摄影资源做出的&quot;宝贵贡献&quot;。</p>
+<p><em>本教程翻译自 <a href="https://sathvikacharyaa.github.io/sirilastro/">https://sathvikacharyaa.github.io/sirilastro/</a></em></p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2025/06/09/tianwen-m16/">
+          哈勃望远镜同款“创生之柱” -- M16 鹰状星云
+        </a>
+      
+
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

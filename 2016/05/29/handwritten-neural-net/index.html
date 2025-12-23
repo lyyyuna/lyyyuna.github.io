@@ -1,0 +1,484 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 基于 BP 神经网络的识别手写体数字 - 神经网络基础</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>基于 BP 神经网络的识别手写体数字 - 神经网络基础
+    
+    <div class="subtitle">(<i><a href="/series/基于 BP 神经网络的识别手写体数字/">基于 BP 神经网络的识别手写体数字</a>, Part 1</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2016-05
+
+      </div>
+    </div>
+    
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+<h2>前言</h2>
+<p>上个月，公司内部举办了机器学习比赛，内容是识别手写体数字。</p>
+<p>我提交的方案参考 <a href="http://michaelnielsen.org/">Michael Nielsen</a>。以下大部分内容也参考了<a href="http://neuralnetworksanddeeplearning.com/chap1.html">他写的深度学习在线电子书</a>。</p>
+<p>人类视觉系统其实非常神奇，恐怕自己都没意识到，考虑以下的手写数字：</p>
+<p><img src="/img/blog/201605/504192.png" alt="504192"></p>
+<p>大部分人能够识别出数字为 504192。人脑每一半球都有着近 1.4 亿个神经元，之间有数以百亿的连接，能够进行复杂的图像处理。相当于每个人随身携带了一台超级计算机，数百万年的进化让该系统训练有素，能够适应并理解视觉世界。</p>
+<p>当真正开始编写程序时，就会意识到手写数字中复杂之处。在教小孩认数字 9 时，可能会 “这个数字顶上有个圈，右下角有个垂直的竖线。。”，或者你给他看一眼写的 9，他就能学会了。但这些步骤根本无法用传统的算法来描述，因为一个手写数字有着无限的细节。</p>
+<p>神经网络算法则用另一种方法来解决问题。首先，会准备如下的训练数据，</p>
+<p><img src="/img/blog/201605/train_data.png" alt="训练数据"></p>
+<p>然后，系统便以此为基础<strong>学习</strong>。换句话说，神经网络能够使用这些训练数据自动推导出识别手写数字的规则。并且，训练集越多，神经网络准确率越高。所以虽然上图只展示了 100 个数字，但如果有上百万个训练集的话，我们的手写数字识别器效果会更好。</p>
+<p>神经网络是一个简单易实现的算法，不会超过 100 行代码。我们也会在将来探讨更为复杂的深度学习算法。</p>
+<h2>感知器 Perceptron</h2>
+<p>什么是神经网络？我们从<strong>感知器</strong>说起。</p>
+<p>感知器是上世纪 50 年代，<a href="http://en.wikipedia.org/wiki/Frank_Rosenblatt">Frank Rosenblatt</a> 受 <a href="http://en.wikipedia.org/wiki/Warren_McCulloch">Warren McCulloch</a> 和 <a href="http://en.wikipedia.org/wiki/Walter_Pitts">Walter Pitts</a> <a href="http://scholar.google.ca/scholar?cluster=4035975255085082870">工作</a>的启发，所提出的概念。如今，其他的人工神经元模型更常用，最广泛的是 <strong>sigmoid</strong> 神经元。现在先让我们看看感知器模型，它将帮助我们了解为什么 sigmoid 神经元更受欢迎。</p>
+<p>感知器如何工作呢？一个感知器有多个二进制输入，$x_1, x_2, ...$，并只有一个二进制的输出：</p>
+<p><img src="/img/blog/201605/perceptron.png" alt="感知器模型"></p>
+<p>这个例子中，感知器有三个输入，$x_1, x_2, x_3$。通常输入数目由需要而定。Rosenblatt 给每一个输入引入一个权重，$w_1, w_2, ...$，在输出增加一个阈值，超过阈值时才会输出 1，以下为输出与输入的关系：</p>
+<p>\begin{equation}<br>
+output = \left\{\begin{aligned}
+0, \sum_jw_jx_j \leq threshold \\
+1, \sum_jw_jx_j &gt; threshold
+\end{aligned}\right.
+\end{equation}</p>
+<p>这个简单的公式就是感知器的工作原理！</p>
+<p>下面给出一个简单的模型，虽然不是实际例子，但易于理解。假设周末即将来临，你听说自己所在的城市会举办奶酪节。你太喜欢奶酪了，但还是得考虑一下周末的天气情况。你将根据下面三个因素来做决定：</p>
+<ol>
+<li>天气怎样？</li>
+<li>你的女朋友和你一起去吗？</li>
+<li>节日举办地驾车方便吗？</li>
+</ol>
+<p>将这三种因素量化成二进制数 $x_1, x_2, x_3$。比如如果天气好，则 $x_1=1$，否则为 $x_1=0$。其他三种因素同理。现在假设你太喜欢奶酪了，以至于女朋友和交通不遍都不太影响你，但你又怕糟糕的天气弄脏衣服。我们可以将感知器设计为：天气权重$w_1=6$，女朋友权重 $w_2=2$ 和交通状况权重 $w_3=2$。可以看到天气占了很大的权重。最后将感知器阈值设为 5 便得到了我们需要的决策模型。一旦天气不好，感知器输出为 0，天气晴朗就输出 1。而女朋友同去与否和交通状况都没法影响感知器输出。</p>
+<p>通过改变加权系数和阈值，便能得到不同的决策系统。比如将阈值调整为 3，这样女朋友就对你很重要啦，她要是想去，天气再糟你也得跟着一起受罪。</p>
+<p>虽然感知器并不是人类决策系统的完整模型，但其能对各种条件做加权。而且似乎越复杂的网路越能做出微妙的决策：</p>
+<p><img src="/img/blog/201605/complex_perceptron.png" alt="复杂网络"></p>
+<p>在这个网络中，第一列感知器 - 我们也称作感知器第一层，只是简单地对输入做加权。而第二层感知器则对第一层决策的结果再一步加权，做出更复杂更抽象的决定。同样还可以增加神经网络的层数来作出更复杂的决定。</p>
+<p>顺便提一句，上述定义中，感知器只有一个输出，但是上述网络似乎有多个输出。事实上，这仍然是单输出系统，只是单个输出连接到了下一层的多个输入而已。</p>
+<p>让我们来简化一下感知器的数学表达式，原来的判断条件 $\sum_jw_jx_j &gt; threshold$ 略显累赘。首先用点积形式简化，记 $w \cdot x \equiv \sum_j w_j x_j$，其中 $w$ 是权重向量，$x$ 是输入向量。然后将阈值移到不等式左边，并用偏移的概念取代它，记 $b \equiv - threshold$。感知器规则可重写如下：</p>
+<p>\begin{equation}<br>
+output = \left\{\begin{aligned}
+0, w \cdot x + b \leq 0 \\
+1, w \cdot x + b &gt; 0
+\end{aligned}\right.
+\end{equation}</p>
+<p>偏移的概念可用来度量感知器的“兴奋”程度，假如偏移值很大，那么很小的输入就会在输出端反应出来。但若偏移值很小，则说明感知器比较“迟钝”，输入很大时，输出才有变化。接下来的文章中，都会使用偏移而不是阈值的概念。</p>
+<h2>sigmoid 神经元</h2>
+<p>自学习的 idea 听起来太棒了。如何为神经网络设计算法呢？假设我们的神经网络全部由感知器构成，输入为手写体数字扫描图的每一个原始像素点。我们希望神经网络能够自调整权重和偏移值，从而能对手写数字准确分类。为了解自学习过程，我们来做一个思想实验，假设我们在权重或偏移做一个小的改变，我们期望输出也会有相应小的变化：</p>
+<p><img src="/img/blog/201605/neural_net.png" alt="神经网络"></p>
+<p>比如神经网络错误地将数字 9 认为为数字 8，我们就可以对参数做微调（可能某个人写的 9 像 8），修正输出，不断重复上述过程，从而使输出符合我们的预期。</p>
+<p>实际中，由感知器组成的神经网络并不如所愿。由于感知器的输出不是连续的，0 到 1 是阶跃变化，上述参数的微调往往带来输出的剧烈变化。这下便导致自学习过程完全不可控，有时一点小小的噪声，输出就天壤之变。</p>
+<p>针对这个问题，我们可以换用 sigmoid 神经元。sigmoid 神经元和感知器是类似的，但输出是连续且变化缓慢的。这个微小的不同使神经网络算法化成为了可能。</p>
+<p>好，让我来描述一下 sigmoid 神经元。其结构和感知器一样：</p>
+<p><img src="/img/blog/201605/sigmoid.png" alt="sigmoid 神经元"></p>
+<p>同样有输入 $x_1, x_2, ...$。不同是，输入可以取 0 到 1 之间的任何值，比如 0.638。sigmoid 对每一个输入有一个权重，$w_1, w_2, ...$，以及全局的偏移 $b$。但是 sigmoid 的输出不再限于 0 和 1，而是</p>
+<p>\begin{equation}<br>
+\sigma(z) \equiv \frac{1}{1+e^{-z}}.
+\end{equation}</p>
+<p>将 $z=w \cdot x+b$ 展开，可得</p>
+<p>\begin{equation}
+\frac{1}{1+\exp(-\sum_j w_j x_j-b)}. \label{eq4}
+\end{equation}</p>
+<p>初看上去，sigmoid 神经元似乎与感知器有着天壤之别，其代数表达式也显得晦涩难懂。然而他们之间是有很多相似之处的。</p>
+<p>假设当 $z\equiv w \cdot x + b$ 趋向于正无穷，则 $e^{-z}\approx 0$ 和 $\sigma(z) \approx 1$。换句话说，当输入很大时，sigmoid 神经元的输出趋向于 1，这和感知器是一样的。相反的，当 $z\equiv w \cdot x + b$ 趋向于负无穷，则 $e^{-z} \rightarrow \infty$，且 $\sigma(z) \approx 0$。这和感知器又是一样的。只有当输入不大时，才会与感知器表现不同。</p>
+<p>让我们看一下 sigmoid 函数和阶跃函数的图像：</p>
+<p><img src="/img/blog/201605/sigmoid_function.png" alt="sigmoid 函数"></p>
+<p><img src="/img/blog/201605/step_function.png" alt="阶跃函数"></p>
+<p>如果 $\sigma$ 是阶跃函数，那么 sigmoid 神经元就会退化成感知器，也就是说 sigmoid 神经元是平滑了的感知器。函数 $\sigma$ 的平滑度意味着，权重的微小变化 $\Delta w_j$ 和偏移的微小变化 $\Delta b$ 会在输出有相应的变化 $\Delta \mbox{output}$，运用泰勒公式可得：</p>
+<p>\begin{eqnarray}
+\Delta \mbox{output} \approx \sum_j \frac{\partial , \mbox{output}}{\partial w_j}
+\Delta w_j + \frac{\partial , \mbox{output}}{\partial b} \Delta b,
+\label{5}
+\end{eqnarray}</p>
+<p>其中，求和是对所有的权重和偏移变化求和。 $\partial ,\mbox{output} / \partial w_j$ 是 $\mbox{output}$ 对 $w_j$ 的偏导数，$\partial , \mbox{output} /\partial b$ 是 $\mbox{output}$ 对 $b$ 的偏导数。从这个近似表达式可以看出，$\Delta \mbox{ouput}$ 是 $\Delta w_j, \Delta b$ 的线性函数。比起感知器那种非线性的输出输入关系，线性化便于调试，也有利于算法化。</p>
+<p>如何理解 sigmoid 神经元的输出呢？显然最大的不同是 sigmoid 神经元不只输出 0 或 1，而是 0，1 之间所有的实数，比如 0.4 来指出一幅图片是 9 的概率为 40%，60% 的概率不是 9。</p>
+<h2>神经网络的结构</h2>
+<p>神经网络的结构：</p>
+<p><img src="/img/blog/201605/net_structure.png" alt="神经网络的结构"></p>
+<p>如上所述，最左边的那一层被称做输入层，其中的神经元是输入神经元。最右或者输出层包含了输出神经元，该例中只有一个输出神经元。由于中间的神经元既不是输入也不是输出，中间那层被称为隐藏层。该例中只有一个隐藏层，有些神经网络有多个隐藏层，比如下面这张图中有两个隐藏层：</p>
+<p><img src="/img/blog/201605/multi-layer_net_structure.png" alt="两个隐藏层"></p>
+<p>神经网络输入输出的设计通常很直接。比如手写数字，假设扫描图是 $28 \times 28=784$ 的灰度图像，输入就有 784 个神经元，输出就是每个数字的概率，一共 10 个输出神经元。</p>
+<h2>神经网络识别手写数字目录</h2>
+<ol>
+<li><a href="http://www.lyyyuna.com/2016/05/29/handwritten-neural-net/">基于 BP 神经网络的识别手写体数字 - 神经网络基础</a></li>
+<li><a href="http://www.lyyyuna.com/2016/06/25/handwritten-neural-net02/">基于 BP 神经网络的手写体数字识别 - 设计与实现</a></li>
+<li><a href="http://www.lyyyuna.com/2016/06/26/handwritten-neural-net03/">基于 BP 神经网络的手写体数字识别 - 反向传播算法</a></li>
+<li><a href="http://www.lyyyuna.com/2016/06/30/handwritten-neural-net04/">基于 BP 神经网络的手写体数字识别 - 优化</a></li>
+</ol>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+
+      
+        <a class="next" href="/2016/06/25/handwritten-neural-net02/">
+          基于 BP 神经网络的手写体数字识别 - 设计与实现
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>
