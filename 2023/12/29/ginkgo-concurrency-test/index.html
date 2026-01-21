@@ -1,0 +1,654 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Ginkgo 并发测试教程</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Ginkgo 并发测试教程
+    
+    <div class="subtitle">(<i><a href="/series/Ginkgo 使用笔记/">Ginkgo 使用笔记</a>, Part 4</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2023-12
+
+      </div>
+    </div>
+    <div class="post-summary">如何正确编写并发测试用例？</div>
+    <h2>前言</h2>
+<p><code>Ginkgo CLI</code> 加上 <code>--nodes xxx</code> 或 <code>--procs yyy</code> 参数后，就能让原本顺序执行的测试用例变成并发执行。</p>
+<p>但好奇的你，可能会有如下问题：</p>
+<ol>
+<li>集测并发的顺序是固定的还是随机的？</li>
+<li>集测之间的共享变量会有并发安全问题吗？</li>
+<li>有一些需要独占资源的测试用例，如何在并发中控制它们的顺序？</li>
+<li>xxx</li>
+</ol>
+<p>下面，我们就来一一解答。</p>
+<p>P.S. 本文基于 <code>Ginkgo v2.13.2</code>。</p>
+<h2>并发模型</h2>
+<p><code>Ginkgo</code> 是 <code>Go</code> 语言编写的集测框架，还兼容 <code>go test</code>，不免想当然认为，<code>Ginkgo</code> 是基于 goroutine 实现的多并发。但是恰恰相反，经过<a href="/2022/05/12/inside-the-ginkgo/">Ginkgo 测试框架实现解析</a>的分析，<code>Ginkgo</code> 其实是多进程模型，每个进程会使用<strong>相同的随机数种子</strong>打乱用例，得到次序一致的随机序列。</p>
+<p>这样，<code>Ginkgo</code> 就实现了：</p>
+<ol>
+<li>每次运行用例顺序随机。</li>
+<li>借助进程得到并发隔离。</li>
+</ol>
+<p>那么，单个进程内共享变量是安全的吗？看下面这个例子：</p>
+<pre><code class="language-go">Context(&quot;test&quot;, Id(&quot;27838&quot;), func() {
+    var global int
+
+    It(&quot;a&quot;, func() {
+        global++
+        fmt.Println(&quot;a&quot;, global)
+    })
+
+    It(&quot;b&quot;, func() {
+        global++
+        fmt.Println(&quot;b&quot;, global)
+    })
+
+    It(&quot;c&quot;, func() {
+        global++
+        fmt.Println(&quot;c&quot;, global)
+    })
+})
+</code></pre>
+<p>假设并发 1，实际结果为</p>
+<pre><code>a 1
+b 2
+c 3
+</code></pre>
+<p>假设并发 2，实际结果为</p>
+<pre><code>a 1
+b 1
+c 2
+
+或
+
+a 1
+b 2
+c 1
+</code></pre>
+<p>假设并发 3，实际结果为</p>
+<pre><code>a 1
+b 1
+c 1
+</code></pre>
+<p>两个用例如果被分配在同一个进程中，去访问同一个变量，就会互相干扰，应使用 <code>BeforeEach</code> 对变量显式初始化：</p>
+<pre><code class="language-go">Context(&quot;test&quot;, Id(&quot;27838&quot;), func() {
+    var global int
+
+    BeforeEach(func() {
+        global = 0
+    })
+
+    It(&quot;a&quot;, func() {
+        global++
+    ....
+    })
+})
+</code></pre>
+<p><code>BeforeEach</code> 会互相干扰吗？<strong>不会</strong>，同一个进程中同一个时刻只会有一个测试用例在运行。</p>
+<h2>并发集测的初始化</h2>
+<p>多进程不像 goroutine 那样容易实现并发同步，这给那些只需要做一遍的集测初始化步骤带来了挑战（比如，在集测开始之前，往数据库中导入测试数据）。</p>
+<p>为此，<code>Ginkgo</code> 提供了以下的解决方案：</p>
+<pre><code class="language-go">// 集测并发开始前执行
+func SynchronizedBeforeSuite(
+    process1 func() []byte,
+    allProcesses func([]byte),
+)
+
+// 集测并发结束后执行
+func SynchronizedAfterSuite(
+    allProcesses func(),
+    process1 func(),
+)
+</code></pre>
+<p><code>SynchronizedBeforeSuite</code> 有两个参数：</p>
+<ol>
+<li>其中 <code>process1</code> 只在第 1 个进程内运行，<code>allProcesses</code> 会在所有进程内运行。</li>
+<li><code>process1</code> 运行结束后才会运行 <code>allProcesses</code>。</li>
+<li><code>process1</code> 的返回值会作为参数传递给 <code>allProcesses</code>。</li>
+</ol>
+<p>举个例子，有一个云存储上传测试场景，并发为 5，需要在测试前创建存储空间，空间名用 <code>bucketid</code> 来标识，在 <code>Ginkgo</code> 中可以这么做：</p>
+<pre><code class="language-go">// 全局变量存储空间名
+var bucketId string
+
+func SynchronizedBeforeSuite(
+    // process1
+    func() []byte {
+        // 创建存储空间，得到空间名
+        id := CreateBucket()
+        // 向后传递空间名
+        return []byte(id)
+    },
+    // allProcesses
+    func(rId []byte) {
+        // 得到空间名
+        bucketId = string(rId)
+    },
+)
+</code></pre>
+<ol>
+<li><code>process1</code> 负责创建该存储空间，将空间名以字节形式传递给其他并发进程。</li>
+<li>其他并发进程将收到的字节转化为字符串，再赋值给全局变量 <code>bucketId</code>。</li>
+<li>集测并发开始后，全局变量 <code>bucketId</code> 就拿到了初始化后的空间名。</li>
+</ol>
+<p>一定要<strong>注意</strong>，这里 <code>process1</code> 和 <code>allProcesses</code> 虽然写在一起，但其实是在<strong>不同阶段</strong>和<strong>不同进程</strong>内执行的，不能认为它们能够共享全局变量。同时，初始化进程和并发进程之间只能传递字节数据，不能直接传递变量对象（受限于进程间通信），如果要传递复杂的对象，可以使用 <code>json</code> 做序列化反序列化。下面的例子中，<code>info</code> 变量在每个并发进程内都拿到了初始化后的空间名和用户名：</p>
+<pre><code class="language-go">type testinfo struct {
+    bucketId string `json:&quot;bucket_id&quot;`
+    userId string `json:&quot;user_id&quot;`
+}
+
+// 全局变量
+var info testinfo
+
+func SynchronizedBeforeSuite(
+    // process1
+    func() []byte {
+        info := SetupTestInfo()
+        // 序列化
+        data, _  := json.Marshal(&amp;info)
+        return data
+    },
+    // allProcesses
+    func(data []byte) {
+        // 反序列化
+        json.Unmarshal(data, &amp;info)
+    },
+)
+</code></pre>
+<p><code>SynchronizedAfterSuite</code> 的工作原理类似，不再赘述。</p>
+<p>从我个人角度来看，<code>Ginkgo</code> 这种机制并不直观，幸好集测初始化一般是由团队中的测试架构者来设计，能够避免初学者误用。</p>
+<h2>控制并发中的顺序</h2>
+<h3>排它执行</h3>
+<p>有一些测试，运行的时候不能有其他测试的干扰，例如：</p>
+<ol>
+<li>某个接口的性能测试。</li>
+<li>测试独占资源。</li>
+</ol>
+<p><code>Ginkgo</code> 提供了 <code>Serial</code> 装饰器：</p>
+<pre><code class="language-go">Describe(&quot;空间&quot;, Serial, func() {
+    It(&quot;创建空间性能测试&quot;, func() {
+        ...
+    })
+
+    It(&quot;测试空间 id 是否单调递增&quot;, func() {
+        ...
+    })
+
+    It(&quot;修改空间为私有&quot;, func() {
+        ...
+    })
+})
+</code></pre>
+<p><code>Ginkgo</code> 会等待所有并发用例结束后，在第一个进程内运行 <code>Serial</code> 用例。</p>
+<h3>顺序执行</h3>
+<p>假设如下场景需要按顺序执行：</p>
+<ol>
+<li>创建一个存储空间。</li>
+<li>先测试上传文件。</li>
+<li>然后测试下载文件，下载的文件可以使用步骤 2 中成功上传的文件。</li>
+</ol>
+<p>用例 3 必须等待用例 2 执行完毕。
+（你可能会觉得上述的三个用例可以合并为单个用例中的三个步骤，这里只是为了演示，面对复杂的多场景测试，最好还是拆分成多个用例）</p>
+<p><code>Ginkgo</code> 提供了 <code>Ordered</code> 装饰器：</p>
+<pre><code class="language-go">Describe(&quot;空间&quot;, Ordered, func() {
+    It(&quot;创建空间&quot;, func() {
+        ...
+    })
+
+    It(&quot;上传文件&quot;, func() {
+        ...
+    })
+
+    It(&quot;下载文件&quot;, func() {
+        ...
+    })
+})
+</code></pre>
+<p><code>Ginkgo</code> 会保证同一个 <code>Ordered</code> 容器内的测试用例按顺序执行。和 <code>Serial</code> 不一样，<code>Ordered</code> 容器内外的用例会并发执行，并且可以放在任意一个并发进程内，不会局限在第一个进程。</p>
+<h4>一次性初始化</h4>
+<p>原本的初始化 <code>BeforeEach</code> 节点在 <code>Ordered</code> 容器内仍然有效，含义不变：</p>
+<pre><code class="language-go">Describe(&quot;空间&quot;, func() {
+    BeforeEach(func() {
+        fmt.Println(&quot;a&quot;)
+    })
+
+    Context(&quot;&quot;, Ordered, func() {
+        BeforeEach(func() {
+            fmt.Println(&quot;b&quot;)
+        })
+
+        It(&quot;创建空间&quot;, func() {
+            // 执行 BeforeEach a
+            // 执行 BeforeEach b
+        })
+
+        It(&quot;上传文件&quot;, func() {
+            // 执行 BeforeEach a
+            // 执行 BeforeEach b
+        })
+
+        It(&quot;下载文件&quot;, func() {
+            // 执行 BeforeEach a
+            // 执行 BeforeEach b
+        })
+    })
+
+    It(&quot;列举文件&quot;, func () {
+        // 只执行 BeforeEach a
+    })
+})
+</code></pre>
+<p>如果 <code>Ordered</code> 内的用例，只想执行一次初始化该怎么做呢？对于 <code>Ordered</code> 容器<strong>外</strong>初始化，<code>Ginkgo</code> 提供了 <code>OncePerOrdered</code> 装饰器：</p>
+<pre><code class="language-go">Describe(&quot;空间&quot;, func() {
+    BeforeEach(OncePerOrdered, func() {
+        fmt.Println(&quot;a&quot;)
+    })
+
+    Context(&quot;&quot;, Ordered, func() {
+        // 只执行一次 BeforeEach a
+        BeforeEach(func() {
+            fmt.Println(&quot;b&quot;)
+        })
+
+        It(&quot;创建空间&quot;, func() {
+            // 执行 BeforeEach b
+        })
+
+        It(&quot;上传文件&quot;, func() {
+            // 执行 BeforeEach b
+        })
+
+        It(&quot;下载文件&quot;, func() {
+            // 执行 BeforeEach b
+        })
+    })
+
+    It(&quot;列举文件&quot;, func () {
+        // 只执行 BeforeEach a
+    })
+})
+</code></pre>
+<p>对于 <code>Ordered</code> 容器<strong>内</strong>初始化，<code>Ginkgo</code> 提供了 <code>BeforeAll</code> 和 <code>AfterAll</code> 节点来替换 <code>BeforeEach</code> 和 <code>AfterEach</code> 节点：</p>
+<pre><code class="language-go">Describe(&quot;空间&quot;, func() {
+    // a
+    BeforeEach(OncePerOrdered, func() {
+        fmt.Println(&quot;a&quot;)
+    })
+
+    Context(&quot;&quot;, Ordered, func() {
+        // 只执行一次 BeforeEach a
+        // 只执行一次 BeforeEach b
+        BeforeAll(func() {
+            fmt.Println(&quot;b&quot;)
+        })
+
+        It(&quot;创建空间&quot;, func() {
+        })
+
+        It(&quot;上传文件&quot;, func() {
+        })
+
+        It(&quot;下载文件&quot;, func() {
+        })
+    })
+
+    It(&quot;列举文件&quot;, func () {
+        // 只执行 BeforeEach a
+    })
+})
+</code></pre>
+<p>这样，<code>Ordered</code> 容器内的三个创建空间、上传文件、下载文件用例只会初始化一次 a 和 b，而 <code>Ordered</code> 容器外的列举文件用例，仍然会执行初始化 a。</p>
+<h4>错误机制</h4>
+<p>默认情况下 <code>Ordered</code> 容器内的用例只要出错，剩下的用例便会跳过，直接执行 <code>AfterAll</code> 节点做清理工作，在测试报告中，这些未执行的用例也会显示成 <code>Skip</code>。</p>
+<p>如果 <code>Ordered</code> 容器内的用例并没有依赖关系，只是单纯组合在一起，那这种默认行为就不合适了，你可以使用 <code>ContinueOnFailure</code> 装饰器修改成继续执行剩余用例。</p>
+<h4>重试机制</h4>
+<p><code>Ginkgo run --flake-attempts [int]</code> 命令可将集测设置成重试模式。对于 <code>Ordered</code> 容器内的用例，重试不包括 <code>BeforeAll</code> 和 <code>AfterAll</code> 内的步骤。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2023/12/24/ginkgo-label-tutorial/">
+          Ginkgo Label 标签的使用教程
+        </a>
+      
+
+      
+        <a class="next" href="/2025/04/07/ginkgo-label-en-tutorial/">
+          How to use Ginkgo label in your test
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

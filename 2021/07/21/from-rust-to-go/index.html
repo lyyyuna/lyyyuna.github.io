@@ -1,0 +1,634 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 从 Rust 看 Go</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>从 Rust 看 Go
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2021-07
+
+      </div>
+    </div>
+    <div class="post-summary">从 Rust 的设计哲学中可以借鉴什么？</div>
+    <h2>前言</h2>
+<p>Rust 是一门着眼于安全、速度和并发的编程语言。</p>
+<p>程序除了业务问题外，最常见的就是安全问题。从前 C++ 存在着内存管理、数据共享时“野指针”等问题。Go 和 Rust 在改善 C++ 的问题上走了两条完全不同的路。</p>
+<ul>
+<li>Go 靠垃圾回收，Java/Python 有垃圾回收+虚拟机</li>
+<li>Rust 则靠的是<strong>编译器</strong>与程序员的种种<strong>约定</strong>规则</li>
+</ul>
+<p>在七牛，主力语言是 Go，为什么我们还要学习一门新语言 - 他山之石。新的语言，代表着对事物更新的理解和更好的阐述方式，可以帮助我们更好地编写 Go 代码。</p>
+<p>P.S. Rust 语言学习曲线陡峭，不适合初学者，即使简单的代码也需要融汇贯通所有概念。但本文并不要求你有 Rust 背景。</p>
+<h2>变量可变性</h2>
+<p>首先，变量默认是<strong>不可变的</strong>，意味着如下的代码会报错：</p>
+<pre><code class="language-rust">let x = 1;
+x = 2;
+</code></pre>
+<p>如果要改变，则需要显式的将变量声明为可变：</p>
+<pre><code class="language-rust">let mut x = 1;
+</code></pre>
+<p>这看起来增加了程序员的负担，但在多线程环境下，意味着只读不写，在编译时更易推理出潜在的并发读写问题。</p>
+<h2>变量所有权</h2>
+<p>这是 Rust 特有的概念。编程中，我们经常需要把一个对象传来传去，</p>
+<h3>理解 = 的意义</h3>
+<p>现在我们从 Rust 的角度重新看待 <code>=</code> 操作符。</p>
+<p>Rust 强化了“所有权”的概念：</p>
+<ol>
+<li>Rust 每一个值都有一个所有者变量与之绑定</li>
+<li>是所有者的变量只能有一个</li>
+<li>当所有着变量离开作用时，绑定解除，值被丢弃</li>
+</ol>
+<p>我们分两种情况：</p>
+<ol>
+<li>Move 语义
+<ul>
+<li>定义变量我们会使用 <code>=</code> 符号：<code>let x = String::from(&quot;hello&quot;);</code> 。在 Rust 中这应该理解为：内存中有一个字符串，有变量 x 与之绑定，x 是该字符串的所有者</li>
+<li>复制时我们也会用 <code>=</code> 符号：<code>y = x</code>。在 Rust 中应该理解为：x 放弃对字符串的所有权，转移给 y。也就意味着使用“复制”来形容 <code>=</code> 符号，不再合适，这里应称为 <code>Move</code></li>
+</ul>
+</li>
+<li>Copy 语义
+<ul>
+<li><code>=</code> 符号意味着复制，<code>y = x</code>，y 得到了一份拷贝，两个变量的所有权互不干扰</li>
+</ul>
+</li>
+</ol>
+<p>变量所有权只能有一个，但 Rust 提供“借用”的方法：不可变借用 <code>&amp;</code> 与可变借用 <code>&amp;mut</code>：</p>
+<p>通过借用，可实现变量的共享访问。（Rust 严格规定：在任意时刻，要么只能有一个可变引用，要么只能有多个不可变引用。）</p>
+<p>所有权、借用、可变不可变如何防止潜在错误呢？让我们看四个例子。</p>
+<p>例 1：</p>
+<pre><code class="language-rust">struct T(u64);
+
+fn main() {
+    let a = T(42);
+    let b = bar(a);
+    let c = bar(a); // 错误
+}
+
+fn bar(x: T) -&gt; u64 {
+    x.0 * 2
+}
+</code></pre>
+<p>这里 bar 函数传参数是 <code>Move</code> 语义，第一次转移后，a 已经不再拥有原值的所有权。</p>
+<p>例 2：</p>
+<pre><code class="language-rust">struct T(u64);
+
+fn main() {
+    let a = T(42);
+    let b = bar(&amp;a);
+    let c = bar(&amp;a);
+}
+
+fn bar(x: &amp;T) -&gt; u64 {
+    x.0 * 2
+}
+</code></pre>
+<p>bar 函数参数是不可变借用，所以可以重复调用。</p>
+<p>例 3：</p>
+<pre><code class="language-rust">struct T(u64);
+
+fn main() {
+    let a = T(42);
+    let b = bar(&amp;a); 
+}
+
+fn bar(x: &amp;T) -&gt; u64 {
+    x.0 += 1 // 错误
+}
+</code></pre>
+<p>bar 函数参数是不可变借用，赋值操作改变了值，引起冲突。</p>
+<p>例 4：</p>
+<pre><code class="language-rust">struct T(u64);
+
+fn main() {
+    let mut a = T(42);
+    let b = bar(&amp;mut a);
+}
+
+fn bar(x: &amp;mut T) -&gt; u64 {
+    x.0 += 1
+}
+</code></pre>
+<p>bar 函数参数是可变借用，操作合法。</p>
+<p>让我们看看 Go 中如下的代码：</p>
+<pre><code class="language-go">func main() {
+    arr := []int{1, 2, 3}
+    if IsOdd(arr) == true {
+        fmt.Println(&quot;got&quot;)
+    }
+}
+
+func IsOdd(arr []int) bool {
+    ...
+}
+</code></pre>
+<p>main 函数中我们调用 <code>IsOdd</code> 函数来判断数组中是否有奇数，假如 <code>IsOdd</code> 是外部库引入，或者是由团队内其他同学提供，我们是否有把握数组不会被误更改？可见，变量传递在 Rust 中如此精细，可有效的防止类似的错误。</p>
+<h3>所有权与并发安全</h3>
+<p>所有权的强化也促进了并发安全，让我们看看这段 Go 代码：</p>
+<pre><code class="language-go">func main() {
+    m := make(map[int]int)
+
+    go func() {
+        for {
+            time.Sleep(time.Millisecond)
+            _, _ = m[1]
+        }
+    }()
+
+    go func() {
+        for {
+            time.Sleep(time.Millisecond)
+            m[1]++
+        }
+    }()
+}
+</code></pre>
+<p>两个 goroutine，一个读一个写，存在并发安全问题，需要加互斥锁，或者使用 <code>Sync.Map</code>。那 Rust 如何避免呢？我们看下等价的 Rust 代码：</p>
+<pre><code class="language-rust">let mut m: HashMap&lt;u64, u64&gt; = HashMap::new();
+
+tread::spawn(move || loop {
+    thread::sleep(time::Duration::from_millis(1));
+    let _ = m.get(&amp;1); // m 所有权被转移
+})
+
+tread::spawn(move || {
+    let mut i = 0;
+    loop {
+        thread::sleep(time::Duration::from_millis(1));
+        i += 1;
+        m.insert(i, 1); // 已被转移，错误
+    }
+})
+</code></pre>
+<p>首先闭包传递要求 <code>Move</code> 语义，所以字典 m 的所有权会被移入第一个线程。当第二个线程再使用字典 m 时已无所有权，编译器便会报错，阻止你用错误的方法并发访问字典 m。Rust 另有正确方法来并发读写（使用 Arc 和 Mutex），这里不再介绍。</p>
+<p>Rust 与 Go 相比：</p>
+<ul>
+<li>Go 中既可以正确的编写并发代码，也可以错误的编写并发代码，编译器不管</li>
+<li>Rust 中错误的并发方法无法通过编译</li>
+</ul>
+<h2>资源管理</h2>
+<h3>传值 vs 传引用</h3>
+<p>变量专递还存在着经典的“传值 vs 传引用”问题。</p>
+<p>比如：</p>
+<pre><code class="language-go">a := 1
+b = a
+b = 6
+fmt.Println(a, b) // 1, 6
+</code></pre>
+<p>与</p>
+<pre><code class="language-go">a := []int{1, 2, 3}
+b = a
+b[1] = 6
+fmt.Println(a, b) // {1, 6, 3} {1, 6, 3}
+</code></pre>
+<p>Go 初学者分不清区别，老手一不留神也会搞错。</p>
+<p>这里问题根源和资源管理的方式有关。变量在内存中一般有两种方式：</p>
+<ol>
+<li>栈管理</li>
+<li>栈 + 堆管理</li>
+</ol>
+<h3>栈管理</h3>
+<ul>
+<li>函数调用时，会压栈，调用结束返回上一层函数时，会弹栈（处理器支持）</li>
+<li>对于基础类型/非变长类型的函数内局部变量，可以直接在当前函数栈内分配，这些栈内分配的内存就是资源</li>
+<li>由于弹栈操作，分配的内存即被回收，无需特殊的逻辑处理</li>
+</ul>
+<h3>栈 + 堆管理</h3>
+<ul>
+<li>对于变长类型（Go 语言的 map/slice，Rust 的 Vec<T> / Map&lt;K, V&gt; 等等）无法在栈内预先分配内存</li>
+<li>在栈上存放指针，指针本身大小确定，指针指向堆，堆上分配的内存大小可变</li>
+<li>Go 用垃圾回收释放堆内存</li>
+<li>Rust 由上文提到的所有权保证离开作用域时释放</li>
+</ul>
+<h3>对 Go 的思考</h3>
+<p>再来看“传值 vs 传引用”的问题。无论传值还是传引用，都是对栈管理的值（部分值）的拷贝，即：</p>
+<ul>
+<li>所谓传值，栈拷贝复制了值的所有部分</li>
+<li>所谓传引用，栈拷贝只复制了栈上的指针部分，堆的部分没有复制。两个指针指向同一个堆</li>
+</ul>
+<h2>空值与错误处理</h2>
+<p>ust 有强大的类型系统，支持 enum + 模板类型。它将空值定义为</p>
+<pre><code class="language-rust">struct Option&lt;T&gt; {
+    Some(T),
+    None,
+}
+</code></pre>
+<p>将错误定义为</p>
+<pre><code class="language-rust">enum Result&lt;T, E&gt; {
+   Ok(T),
+   Err(E),
+}
+</code></pre>
+<h3>空值</h3>
+<p>Go 在测试与生产环境中难免遇到空指针异常，比如：</p>
+<pre><code class="language-go">type struct A {
+    str *string
+    dic map[int]string
+}
+
+func (a *A) test() {
+    *a.str += &quot;world&quot;
+    a.dic[1] = &quot;hello&quot;
+}
+
+aa = A{}
+aa.test()
+</code></pre>
+<p>go 会对变量默认初始化，所以 <code>aa.str</code> 得到的是一个未指向任何 string 的空指针，<code>aa.dic</code> 是也未指向 map。调用 <code>aa.test()</code> 就会发生多种空指针异常：</p>
+<pre><code>panic: runtime error: invalid memory address or nil pointer dereference
+
+panic: assignment to entry in nil map
+</code></pre>
+<p>类似代码在 Rust 里面会怎么样呢？</p>
+<pre><code class="language-rust">struct A {
+    ss: Option&lt;Box&lt;String&gt;&gt;,
+    dic: HashMap&lt;i64, String&gt;,
+}
+
+impl A {
+    fn test(&amp;self) {
+        match self.ss {
+            Some(_) =&gt; ...,
+            None =&gt; ...
+        } 
+    }
+}
+</code></pre>
+<p>Rust 要求必须显式初始化，dic 未指向 map 的问题就解了。然后，无论成员变量 ss 初始化为 <code>Some(T)</code> 还是 <code>None</code>，match 语法会要求程序员对每种情况都编码，从而避免“空指针”。</p>
+<h3>错误处理</h3>
+<p>Go 和 Rust 都没有使用抛异常，而是返回 err 的方式来处理错误。比如 Go：</p>
+<pre><code class="language-go">result, err := do_something()
+if err != nil {
+    return nil, err
+}
+</code></pre>
+<p>Go 采用多返回值方式，程序报错返回错误问题，通过判断 <code>err != nil</code> 来决定程序是否继续执行或终止该逻辑。当然，如果接触过 Go 项目时，会发现程序中大量充斥着 <code>if err != nil</code> 的代码，判断是手动逻辑，往往我们可能因为疏忽，导致这段逻辑缺失，缺少校验。</p>
+<p>Rust 里怎么做呢：</p>
+<pre><code class="language-rust">fn do_something() -&gt; Result&lt;u64&gt; {
+    Ok(4)
+}
+
+let result = do_something();
+match result {
+    Ok(_) =&gt; {},
+    Err(_) =&gt; {},
+}
+</code></pre>
+<p>首先，有 match 语句保证每个枚举值必须得到处理，否则编译器就会报错。进一步的，无论有没有错误返回，上层逻辑只需要面对一个值（即例子中的 result），多个函数可以实现链式调用。</p>
+<h2>面向接口编程</h2>
+<p>Go 的 interface 和 Rust 的 trait 类似，都是面向接口编程，但有些差别：</p>
+<ol>
+<li>Go 不需要 struct 显式地指定 interface 实现：它只需要实现接口中定义的所有方法。它们之间是松耦合的关系，靠编译器最终编译时才能串联</li>
+<li>Rust 需要显式声明 struct 实现某个 trait。而且，Rust 还支持为不是自己定义的类型增加 trait 实现。</li>
+</ol>
+<p>在我看来，Go 这种松耦合关系有几个缺点。</p>
+<p>首先，通过文档（godoc），很难一眼看出类型是否符合特定接口，比如，<a href="https://golang.org/pkg/net/#TCPConn">TCPConn 类型</a>，初看文档，完全不知道它是否符合 <a href="https://golang.org/pkg/io/#Writer">Writer 接口</a> 和 <a href="https://golang.org/pkg/io/#Reader">Reader 接口</a>，仔细比对方法签名，才能确认。</p>
+<p>然后就是当修改/增加接口内方法签名时，波及的实现类很难一下找出，只有当这些在使用接口时才会被发现。</p>
+<p>Rust 的 trait 实现强制声明就很好的解决了上述两个痛点。对于文档，类型所有实现的 trait 都一目了然。而当 trait 变动，而类型定义却没有更改时编译器会报错。</p>
+<h2>包管理</h2>
+<p>Go 的包管理器 <code>go mod</code> 起步太晚，Go 1.13 才迈入生产环境，而且其设计理念过于理想化，在主流语言的包管理中独树一帜，现在讨论它优劣还为时过早，可参考笔者做的相关<a href="http://www.lyyyuna.com/2020/02/22/go-the-principles-versioning-in-go/">分享</a>。</p>
+<p>Rust 的包管理 <code>cargo</code> 很早便有了，它不仅是包管理工具，更是项目组织管理工具，从项目的建立、构建到测试、运行直至部署，为 Rust 项目的管理提供尽可能完整的手段。</p>
+<h2>总结</h2>
+<p>我们总结出一些有助于提升 Go 代码安全性的 Tips：</p>
+<ol>
+<li>思考变量是否是可变的</li>
+<li>思考变量是否是共享的，并加以并发保护</li>
+<li>思考变量是值传递还是引用传递，避免副作用</li>
+<li>不要遗漏 err 和 nil</li>
+<li>涉及接口的变动要慎重</li>
+</ol>
+<p>Rust 特性和编程范式极多，本文不可能一一阐述，有兴趣的同学可以移步<a href="https://doc.rust-lang.org/book/">官方教程</a>。</p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 实现基于 HTTPS 代理的中间人攻击</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>实现基于 HTTPS 代理的中间人攻击
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2018-03
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>在给产品做 Web 安全测试时，经常会使用代理工具来收集 URL 及相关请求参数。</p>
+<p>在我之前的文章介绍了 <a href="http://www.lyyyuna.com/2016/01/16/http-proxy-get1/">使用 Python 实现一个简单的 HTTP 代理</a>。但这留下一个问题，如何处理 HTTPS 流量？</p>
+<h2>HTTP 隧道代理原理</h2>
+<p>RFC 为这类代理给出了规范，<a href="https://tools.ietf.org/html/draft-luotonen-web-proxy-tunneling-01">Tunneling TCP based protocols through Web proxy servers</a>。简单来讲就是通过 Web 代理服务器用隧道方式传输基于 TCP 的协议。HTTP 协议正文部分为客户端发送的原始 TCP 流量，代理发送给远端服务器后，将接收到的 TCP 流量原封不动返回给浏览器。</p>
+<p>下面这张图片来自于《HTTP 权威指南》，展示了 HTTP 隧道代理的原理。
+<img src="/img/blog/201803/connect.png" alt="HTTP 隧道"></p>
+<p>浏览器首先发起 CONNECT 请求：</p>
+<pre><code>CONNECT example.com:443 HTTP/1.1
+</code></pre>
+<p>代理收到这样的请求后，依据 host 地址与服务器建立 TCP 连接，并响应给浏览器这样一个 HTTP 报文：</p>
+<pre><code>HTTP/1.1 200 Connection Established
+</code></pre>
+<p>该报文不需要正文。浏览器一旦收到这个响应报文，就可认为与服务器的 TCP 连接已打通，后续可直接透传。</p>
+<h2>HTTPS 流量中间人攻击</h2>
+<p>我们很容易想到，HTTPS 代理本质上就是隧道透传，代理服务器只是透传 TCP 流量，与 GET/POST 代理有本质区别。隧道透传是安全的，代理没有私钥来解密 TLS 流量。</p>
+<p>这带来一个问题，现在 HTTPS 越来越普遍，测试时不会特意关掉 TLS，做安全测试也就拿不到 URL 及请求参数。那怎么做呢？</p>
+<p>首先是来看正常的隧道代理示意图：</p>
+<p><img src="/img/blog/201803/tls1.png" alt="TLS 示意图 1"></p>
+<p>在如图红色的透传流量中，插入我们的<strong>中间人</strong>：</p>
+<ol>
+<li>用一个 TLS 服务器伪装成远端的真正的服务器，接下浏览器的 TLS 流量，解析成明文。</li>
+<li>用明文作为原始数据，模拟 TLS 客户端向远端服务器转发。</li>
+</ol>
+<p>示意图如下：</p>
+<p><img src="/img/blog/201803/tls2.png" alt="TLS 示意图 2"></p>
+<p>由于中间人拿到了明文，也就能够继续收集 URL 及相关请求参数。</p>
+<h3>证书问题</h3>
+<p>大家知道，HTTP 是需要证书的。浏览器会验证服务器发来的证书是否合法。证书若是由合法的 CA 签发，则称为合法的证书。现代浏览器在安装时都会附带全世界所有合法的 CA 证书。由 CA 证书可验证远端服务器的证书是否是合法 CA 签发的。</p>
+<p>在 TLS 示意图 2 中，浏览器会验证假 TLS 服务器的证书：</p>
+<ol>
+<li>第一验证是否是合法 CA 签发。</li>
+<li>第二验证该证书 CN 属性是否是所请求的域名。即若浏览器打开 <code>www.example.com</code>，则返回的证书 CN 属性必须是 <code>www.example.com</code>。</li>
+</ol>
+<p>对于第一点，合法 CA 是不可能为我们签证书的，否则就是重大安全事件了。我们只能自制 CA，并将自制 CA 导入浏览器信任链。</p>
+<p>对于第二点，需要自制 CA 实时为域名 <code>www.example.com</code> 签一个假的证书。</p>
+<h2>Go 实现</h2>
+<p>不同于之前 <a href="http://www.lyyyuna.com/2016/01/16/http-proxy-get1/">Python 实现的 HTTP 代理</a>，这次的 HTTPS 中间人代理用 Go 实现。源码见 <a href="https://github.com/lyyyuna/mitm">https://github.com/lyyyuna/mitm</a></p>
+<p>首先是启动一个 http server。</p>
+<pre><code class="language-go">// mitmproxy.go
+func Gomitmproxy(conf *config.Cfg, ch chan bool) {
+	tlsConfig := config.NewTLSConfig(&quot;gomitmproxy-ca-pk.pem&quot;, &quot;gomitmproxy-ca-cert.pem&quot;, &quot;&quot;, &quot;&quot;)
+	handler := InitConfig(conf, tlsConfig)
+	server := &amp;http.Server{
+		Addr:         &quot;:&quot; + *conf.Port,
+		ReadTimeout:  1 * time.Hour,
+		WriteTimeout: 1 * time.Hour,
+		Handler:      handler,
+    }
+............
+	go func() {
+		server.ListenAndServe()
+		ch &lt;- true
+	}()
+
+	return
+}
+</code></pre>
+<p><code>handler</code> 是一个实现了 <code>ServeHTTP</code> 接口的 <code>Handler</code>。</p>
+<pre><code class="language-go">func (handler *HandlerWrapper) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	if req.Method == &quot;CONNECT&quot; {
+		handler.https = true
+		handler.InterceptHTTPS(resp, req)
+	} else {
+		handler.https = false
+		handler.DumpHTTPAndHTTPS(resp, req)
+	}
+}
+</code></pre>
+<p>根据请求不同分为两大类。普通 GET/POST 请求，由于是明文，可直接进行抓包。而 CONNECT 请求，则走 <code>InterceptHTTPS</code>。我们默认走 CONNECT 隧道的都是 HTTPS 流量，其他 TCP 应用层协议则不予考虑。</p>
+<pre><code class="language-go">func (handler *HandlerWrapper) InterceptHTTPS(resp http.ResponseWriter, req *http.Request) {
+	addr := req.Host
+	host := strings.Split(addr, &quot;:&quot;)[0]
+
+    // step 1, 为每个域名签发证书
+	cert, err := handler.FakeCertForName(host)
+	if err != nil {
+		logger.Fatalln(&quot;Could not get mitm cert for name: %s\nerror: %s&quot;, host, err)
+		respBadGateway(resp)
+		return
+	}
+
+    // step 2，拿到原始 TCP 连接
+	connIn, _, err := resp.(http.Hijacker).Hijack()
+	if err != nil {
+		logger.Fatalln(&quot;Unable to access underlying connection from client: %s&quot;, err)
+		respBadGateway(resp)
+		return
+	}
+
+	tlsConfig := copyTlsConfig(handler.tlsConfig.ServerTLSConfig)
+    tlsConfig.Certificates = []tls.Certificate{*cert}
+    // step 3，将 TCP 连接转化为 TLS 连接
+	tlsConnIn := tls.Server(connIn, tlsConfig)
+	listener := &amp;mitmListener{tlsConnIn}
+	httpshandler := http.HandlerFunc(func(resp2 http.ResponseWriter, req2 *http.Request) {
+		req2.URL.Scheme = &quot;https&quot;
+		req2.URL.Host = req2.Host
+		handler.DumpHTTPAndHTTPS(resp2, req2)
+	})
+
+	go func() {
+        // step 4，启动一个伪装的 TLS 服务器
+		err = http.Serve(listener, httpshandler)
+		if err != nil &amp;&amp; err != io.EOF {
+			logger.Printf(&quot;Error serving mitm'ed connection: %s&quot;, err)
+		}
+	}()
+
+	connIn.Write([]byte(&quot;HTTP/1.1 200 Connection Established\r\n\r\n&quot;))
+}
+</code></pre>
+<ol>
+<li>第一步通过 <code>FakeCertForName</code> 为浏览器请求的域名签发证书。签发所使用的 CA 为 <code>gomitmproxy-ca-pk.pem</code>, <code>gomitmproxy-ca-cert.pem</code>。</li>
+<li>第二步通过 <code>http.Hijacker</code> 拿到原始的 TCP 连接。</li>
+<li>第三步通过 <code>tlsConnIn := tls.Server(connIn, tlsConfig)</code>，将 TCP 连接转换为 TLS 连接。该 TLS 连接已配置有 CA 签发的证书。所谓的 TLS 连接，即 Go 应用程序可直接在该连接上拿到原始明文。</li>
+<li>第四步通过 <code>http.Serve(listener, httpshandler)</code> 响应这个 TLS 连接。响应的回调函数所看到的都是明文，即可进行 HTTP 抓包。</li>
+</ol>
+<h2>结语</h2>
+<p>上述过程即为 Burp Suite, ZAP 和 fiddler 等进行 HTTPS 抓包的原理。</p>
+<p>我自制 HTTPS 中间人代理，主要是想结合 Sqlmap 做一个自动化 SQL 注入系统。由于目前所在 QA 团队并不具备 SQL 注入测试的经验，最大化的自动化所有过程就成了我的目标。目前还有 csrf token 未解决，主要是 csrf 实现千差万别，没有通用解决方法。。。</p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

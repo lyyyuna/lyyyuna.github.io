@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 知乎轮带逛 - 定向爬取轮子哥赞过的妹子图</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>知乎轮带逛 - 定向爬取轮子哥赞过的妹子图
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2016-02
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>轮带逛，是指跟着轮子哥的知乎动态很容易找到高质量妹子图。然而知乎动态管理和搜索都不友好，如果手工翻阅动态工作量很大，所以写了一个脚本，用于找出那些妹子图片。</p>
+<p>这是脚本的<a href="https://github.com/lyyyuna/zhihu_lundaiguang">源码链接</a></p>
+<p>GitHub 上已经有一些知乎的第三方 API，如 <a href="https://github.com/7sDream/zhihu-py3">zhihu-py3</a> 和 <a href="https://github.com/egrcc/zhihu-python">zhihu-python</a> 。</p>
+<p>但我想用异步写，且定制性高，所以还是从头造个轮子。</p>
+<h2>页面分析</h2>
+<h3>知乎登陆过程分析</h3>
+<p>上述 GitHub 知乎的 API 都是使用邮箱、密码、验证码来登陆的，现在知乎支持只使用邮箱/手机号、密码来登陆。虽然老接口仍然可用，但新方法更便捷。</p>
+<p>因为登陆过程会有 Redirects，所以建议打开 Firebug 的 Persist，或者是使用 Burpsuite 之类的代理来捕获 https 数据流量。</p>
+<p>以下是使用邮箱登陆时关键的两个请求。</p>
+<p><img src="/img/blog/201602/login1.jpg" alt="登陆请求"></p>
+<p>以下为提交密码的请求，可以看到 POST 四个参数。</p>
+<p><img src="/img/blog/201602/login_post.jpg" alt="提交账号"></p>
+<p>remember_me 为记住我，而 _xsrf 是在登陆页面 html 代码的隐藏参数。</p>
+<p><img src="/img/blog/201602/login_xsrf.jpg" alt="隐藏参数"></p>
+<p>在获取用户更多动态时需要将 _xsrf 作为参数之一提交。但是这里有个小坑，这里获取的 _xsrf 值并不等于获取动态时提交的 _xsrf。实际上经过测试，在登陆时也根本不需要提交这个 _xsrf 参数。个人猜测这是旧接口的遗留代码。</p>
+<p>那么之后获取更多动态时的 _xsrf 来自哪呢？它藏在 cookies 中。然而知乎的 cookies 并不是一次性获取完毕，如下图所示，登陆完毕只拿到了五个项。（事先把知乎的 cookies 清空）</p>
+<p><img src="/img/blog/201602/cookies1.jpg" alt="第一次 cookies"></p>
+<p>而紧接着的第二个 GET 请求，才会拿到这个关键的 _xsrf cookies。</p>
+<p><img src="/img/blog/201602/cookies2.jpg" alt="第二次 cookies"></p>
+<p>至此，登陆完毕。</p>
+<h3>知乎用户新动态分析</h3>
+<p>分析可借助浏览器调试工具查看，这里总结如下。</p>
+<ul>
+<li>每个用户动态位于 ('div', class_='zm-profile-section-item zm-item clearfix')；</li>
+<li>上述 div 标签中，若 'data-type-detail' == 'member_voteup_answer'，则为该用户送出的赞；</li>
+<li>上述 div 标签中，data-time 属性的值需作为获取更多状态时作为 start 提交；</li>
+<li>每个回答在点击之前&quot;显示全部&quot;之前是隐藏的，位于 ('textarea', class_='content hidden')，隐藏内容被转义过；</li>
+<li>每个回答的评论链接位于 ('div', class_='zm-item-answer')。</li>
+</ul>
+<h3>获取知乎回答的评论</h3>
+<p>GET 上述的评论链接，会返回一个 json 数据。json['paging'] 中为评论总数、每页评论数、当前页。json['data'] 为评论数据。</p>
+<p><img src="/img/blog/201602/comments.jpg" alt="评论 json 数据"></p>
+<h3>模拟点击“更多”，获取更多动态</h3>
+<p>以 cookies 中的 _xsrf 和当前最后一个 data-time 为参数 POST，即可获得更多状态。返会的是 html 代码，然后重复上述步骤直到没有更多状态为止。</p>
+<h2>程序及算法</h2>
+<p>其实算法很简单。所有轮带逛的回答评论中都有类似“轮带逛、文明观球、营养快线”等关键字，只要符合这个规律，就可以判断出这条动态是我们的目标。</p>
+<p>我采用 Python3.5 原生的 asyncio 来实现异步，用 aiohttp 编写了所有的底层 GET/POST 请求。一共分为三个任务：crawl_voteup_answer、download_image、monitor，任务之间通过队列通信。</p>
+<pre><code>        \
+        |                                      |                     |
+crawl_voteup_answer --&gt; 登陆 --&gt; 找到赞 --&gt; 分析评论 --&gt; 获取图片链接 -/
+                                                            |
+                                                       queue.put(url)
+                                                        
+                                    download_image &lt;-- queue.get(url)
+</code></pre>
+<p>monitor 任务中主要是打印队列中等待的链接个数。另外，大约每隔 200s 会让整个爬虫停止 20s，以避免知乎可能的反爬虫措施。</p>
+<h2>结论</h2>
+<p>我用以下的参数，花了两个小时爬完了轮子哥的所有动态。</p>
+<pre><code>more_interval = 1 # 点击更多的时间间隔
+comment_interval = 0.2 # 获取评论的时间间隔
+img_interval = 0.2 # 下载图片的时间间隔 
+</code></pre>
+<p>一共找到 3669 个妹子图片，其中有效的估计为 85%。而且根据终端的打印过程粗略分析，轮子个在 2015.6 之前还是很正经的，专注于技术问题，而在 2015.6 之后大约有 3000 个妹子图。</p>
+<p><img src="/img/blog/201602/meizi.jpg" alt="妹子图"></p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

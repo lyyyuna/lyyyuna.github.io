@@ -1,0 +1,1342 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Go 垃圾回收器指南（译）</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Go 垃圾回收器指南（译）
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-09
+
+      </div>
+    </div>
+    <div class="post-summary">把官网的动画也搬来了</div>
+    <style>
+.gc-guide-graph {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.gc-guide-graph-controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.gc-guide-graph-controls div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+  height: 24px;
+}
+
+.gc-guide-counter {
+  display: block;
+  overflow-x: hidden; /* Prevent automatic resizing, which makes the input jittery. */
+  width: 10em; /* Never contains more than 10 characters. */
+}
+
+.gc-guide-equation {
+  display: block;
+  text-align: center;
+}
+
+.gc-guide-note {
+  margin-left: 3em;
+}
+</style>
+<p>本文翻译自官网 <a href="https://tip.golang.org/doc/gc-guide">https://tip.golang.org/doc/gc-guide</a>。</p>
+<h2>引言</h2>
+<p>本指南旨在通过深入解析 Go 垃圾回收器的工作原理，帮助高级 Go 开发者更准确地评估应用性能成本，并为优化应用程序资源利用率提供实践指导。本指南不要求你掌握垃圾回收相关知识，但最好熟悉 Go 编程语言。</p>
+<p>Go 语言负责管理所有 Go 值的存储分配 —— 在大多数情况下，开发者无需关心这些值的存储位置及存储机制。然而在实际运行中，这些值必须被存储在<strong>物理内存</strong>中，而物理内存是有限资源。正因内存资源有限，必须通过精细化的内存管理和回收机制来确保 Go 程序运行期间不会出现内存耗尽的情况。内存的分配与回收工作由 Go 实现层自动完成。</p>
+<p>自动内存回收的另一个术语是<strong>垃圾回收</strong>（garbage collection）。高阶视角下，垃圾回收器（简称 GC）是一种通过识别内存中不再使用的部分来替应用程序自动回收内存的系统。Go 标准工具链提供的运行时库随每个应用打包发布，该运行时库内置了垃圾回收器。</p>
+<p>需要特别说明的是：<a href="https://tip.golang.org/ref/spec">Go 语言规范</a>并未强制要求实现本文所述的垃圾回收器，仅规定 Go 值的底层存储必须由语言自身管理。这种刻意留下的灵活性是为了允许采用完全不同的内存管理技术。</p>
+<p>因此，本指南针对的是 Go 编程语言的一种特定实现（标准工具链 —— gc Go 编译器和工具链）。虽然 Gccgo 和 Gollvm 采用了高度相似的GC实现，大部分概念相通，但具体实现细节可能存在差异。</p>
+<p>本文档是动态更新的活文档，将随时间推移持续更新以反映 Go 最新版本的特性。当前版本描述的是 Go 1.19 时期的垃圾回收器实现。</p>
+<h3>Go 值的存储位置</h3>
+<p>在深入探讨垃圾回收机制之前，我们首先需要了解哪些内存不需要 GC 管理。</p>
+<p>例如，存储在局部变量中的非指针类型 Go 值通常完全不受 Go 垃圾回收器管理。Go 会安排将这类内存分配与创建它们的<a href="https://tip.golang.org/ref/spec#Declarations_and_scope">词法作用域</a>绑定。一般而言，这种方式比依赖 GC 更高效，因为 Go 编译器能够预先确定内存释放时机，并生成清理内存的机器指令。这种为 Go 值分配内存的方式通常被称为&quot;栈分配&quot;，因为存储空间位于 goroutine 栈上。</p>
+<p>而那些无法通过这种方式分配内存的Go值——因为编译器无法确定其生命周期——则被称为&quot;逃逸到堆上&quot;。可以将&quot;堆&quot;理解为内存分配的容错机制，用于存放需要特定存储位置的 Go 值。在堆上分配内存的行为通常称为&quot;动态内存分配&quot;，因为编译器和运行时都难以对这种内存的使用方式和清理时机做出预设。这正是垃圾回收器发挥作用的地方：它是专门用于识别和清理动态内存分配的系统。</p>
+<p>Go 值需要逃逸到堆上的原因有很多。其中一个可能是其大小动态决定。例如，当切片的底层数组初始大小由变量而非常量决定时。需要注意的是，逃逸行为具有传递性：如果将某个 Go 值的引用写入已确定要逃逸的另一个 Go 值中，则该值也必须逃逸。</p>
+<p>Go 值是否逃逸取决于其使用上下文以及编译器的逃逸分析算法。试图精确列举值逃逸的具体情况既不可靠也难以实现：该算法本身相当复杂，且会随着 Go 版本更新而变化。关于如何识别值逃逸的详细信息，请参阅<a href="https://tip.golang.org/doc/gc-guide#Eliminating_heap_allocations">消除堆分配</a>章节。</p>
+<h3>追踪式垃圾回收</h3>
+<p>垃圾回收（Garbage collection）可指代多种自动回收内存的方法，例如引用计数。在本文语境中，垃圾回收特指<strong>追踪式</strong>垃圾回收（tracing garbage collection）—— 通过指针传递关系来识别正在使用的所谓<strong>存活</strong>对象。</p>
+<p>让我们更严谨地定义这些术语：</p>
+<ul>
+<li><strong>对象</strong>（Object）—— 指通过动态分配获得的内存块，其中包含一个或多个 Go 值。</li>
+<li><strong>指针</strong>（Pointer）—— 指向对象内任意值的内存地址。这自然包括 <code>*T</code> 类型的 Go 值，但也包含内置 Go 值的组成部分。字符串、切片、通道、映射和接口值都包含 GC 必须追踪的内存地址。</li>
+</ul>
+<p>对象与指向其他对象的指针共同构成<strong>对象图</strong>（object graph）。为识别存活内存，GC 从程序<strong>根节点</strong>（roots）开始遍历对象图，这些根节点指针明确标识了程序正在使用的对象。局部变量和全局变量就是根节点的两个典型示例。遍历对象图的过程称为扫描（scanning）。在 Go 文档中可能遇到的另一个术语是对象<strong>是否可达</strong>（reachable），这意味着该对象可通过扫描过程被发现。需要注意的是，除唯一例外情况外，内存一旦不可达将始终保持不可达状态。</p>
+<p>该基础算法是所有追踪式 GC 的共性。不同追踪式 GC 的差异在于发现存活内存后的处理方式。Go 的 GC 采用标记-清除（mark-sweep）技术，这意味着为了跟踪进度，G C会将其遇到的值<strong>标记</strong>为存活。完成追踪后，GC 会遍历堆中所有内存，将未标记的内存释放供分配使用。此过程称为<strong>清除</strong>（sweeping）。</p>
+<p>你可能熟悉的另一种技术是将对象实际移动到内存的新区域，并留下转发指针（forwarding pointer）用于后续更新所有应用程序指针。采用这种对象移动方式的 GC 称为<strong>移动式 GC</strong>（moving GC）；而 Go 采用的是<strong>非移动式 GC</strong>（non-moving GC）。</p>
+<h2>GC 工作周期</h2>
+<p>由于 Go 的垃圾回收器采用标记-清除算法，其运行主要分为两个阶段：标记阶段（mark phase）和清除阶段（sweep phase）。这个表述看似同义反复，却蕴含重要洞察：在所有内存完成追踪之前，不可能将内存释放回可用状态 —— 因为可能存在尚未扫描的指针仍维持着对象的存活状态。因此，清除操作必须与标记操作完全分离。此外，当没有与 GC 相关的工作需要处理时，GC 也可能处于完全非活跃状态。GC 会持续在清除、闲置和标记这三个阶段之间循环切换，这个过程被称为 <strong>GC 工作周期</strong>。在本文档中，我们将 GC 工作周期视为从清除阶段开始，经关闭状态后进入标记阶段的循环过程。</p>
+<p>接下来几个章节将重点帮助读者建立对 GC 成本的直观认知，从而协助用户根据自身需求调整 GC 参数。</p>
+<h3>理解垃圾回收的成本</h3>
+<p>垃圾回收器本质上是构建在复杂系统之上的复杂软件。在尝试理解 GC 并调整其行为时，很容易陷入细节的泥潭。本节旨在提供一个分析框架，帮助理解 Go 垃圾回收器的成本构成及其调优参数。</p>
+<p>首先，我们基于三个基本公理建立GC成本模型：</p>
+<ol>
+<li>
+<p>GC 仅涉及两种资源：物理内存和CPU时间。</p>
+</li>
+<li>
+<p>GC 的内存成本包括存活堆内存（live heap memory）、标记阶段前新分配的堆内存，以及元数据存储空间 —— 即使元数据与前述成本成比例，其占比也相对微小。</p>
+<blockquote>
+<p>第 N 个周期的 GC 内存成本 = 周期 N-1 的存活堆内存 + 新分配堆内存</p>
+</blockquote>
+<p>存活堆内存是指前一个 GC 周期确认为存活的内存，而新分配堆内存是当前周期内分配的内存（这些内存到周期结束时可能存活也可能不再存活）。任意时间点的存活内存量是程序的固有属性，并非 GC 能直接控制。</p>
+</li>
+<li>
+<p>GC 的 CPU 成本模型由固定周期成本和与存活堆大小成比例的边际成本组成：</p>
+<blockquote>
+<p>第 N 个周期的 GC CPU 时间 = 每周期固定 CPU 时间成本 + 每字节平均 CPU 时间成本 × 周期 N 的存活堆内存</p>
+</blockquote>
+<p>每周期固定 CPU 时间成本包括每个周期固定发生的操作，例如为下一个 GC 周期初始化数据结构。这项成本通常很小，仅为保持模型完整性而纳入。</p>
+<p>GC 的大部分 CPU 成本来自标记和扫描操作，这体现在边际成本中。标记扫描的平均成本既取决于 GC 实现，也受程序行为影响。例如：更多指针意味着更多 GC 工作，因为 GC 至少需要访问程序中的所有指针；链表和树等结构也会增加 GC 并行遍历的难度，从而提升每字节平均成本。</p>
+<p>本模型未纳入清除操作的成本（该成本与堆内存总量成正比，包括已失效内存的清理）。对于 Go 当前 GC 实现而言，清除速度远快于标记扫描，其成本相对可忽略不计。</p>
+</li>
+</ol>
+<p>该模型简洁而有效：它准确归纳了 GC 的主要成本构成。同时表明，垃圾回收器的总 CPU 成本取决于给定时间范围内的 GC 周期总数。最终，这个模型揭示了 GC 本质上存在时间与空间权衡的基本规律。</p>
+<p>为理解其中机理，让我们探讨一个受限但实用的场景：<strong>稳态</strong>（steady state）。从 GC 的视角来看，应用程序的稳态由以下特性定义：</p>
+<ul>
+<li>
+<p>应用程序分配新内存的速率（单位：字节/秒）保持恒定</p>
+<p>这意味着从 GC 的角度看，应用程序的工作负载随时间推移基本保持一致。例如对于 Web 服务，这表现为稳定的请求速率，且请求类型分布与平均生命周期保持相对恒定。</p>
+</li>
+<li>
+<p>GC 的边际成本保持恒定</p>
+<p>这意味着对象图的统计特征——如对象大小分布、指针数量、数据结构平均深度等——在不同周期间保持稳定。</p>
+</li>
+</ul>
+<p>让我们通过示例说明：假设某应用以 10 MiB/秒的速度分配内存，GC 扫描速率为 100 MiB/CPU 秒（此为假设值），且固定 GC 成本为零。稳态虽不对存活堆大小设限，但为简化起见，假设该应用的存活堆始终为 10 MiB（注意：恒定存活堆不意味着所有新分配内存都会失效，而是指 GC 运行后，新旧堆内存的某种组合保持存活状态）。若 GC 周期每 1 个 CPU 秒触发一次，那么在稳态下，示例应用每个 GC 周期的堆内存总量将为 20 MiB。每个 GC 周期需要 0.1 个 CPU 秒完成工作，导致 10% 的开销。</p>
+<p>现在假设 GC 周期降低频率，每 2 个 CPU 秒触发一次。此时在稳态下，示例应用每个 GC 周期的堆内存总量将增至 30 MiB。但由于扫描成本仅与存活堆相关，每个 GC 周期仍只需 0.1 个 CPU 秒完成工作。这意味着 GC 开销从 10% 降至 5%，代价是内存使用量增加 50%。</p>
+<p>这种开销变化正是前文所述的根本性时间/空间权衡。而 <strong>GC 频率</strong>是这一权衡的核心：执行 GC 越频繁，内存使用越少，反之亦然。那么 G C实际执行频率如何确定？在 Go 中，决定 GC 启动时机是用户可控的主要参数。</p>
+<h3>GOGC</h3>
+<p>从高层视角看，GOGC 参数决定了 GC CPU 开销与内存占用之间的权衡关系。</p>
+<p>其运作机制是通过设定每个 GC 周期后的目标堆大小（target heap size），即下一个周期堆内存总量的目标值。GC 的目标是在堆内存总量超过目标值之前完成回收周期。堆内存总量定义为上一周期结束时的存活堆大小，加上自上一周期以来应用分配的新堆内存。而目标堆内存的计算公式为：</p>
+<blockquote>
+<p>目标堆内存 = 存活堆 + (存活堆 + GC根节点) * GOGC / 100</p>
+</blockquote>
+<p>举例说明：假设某 Go 程序的存活堆为 8 MiB，goroutine 栈占用 1 MiB，全局变量中的指针占 1 MiB。当 GOGC 值为 100 时，下次 GC 触发前可分配的新内存量为 10 MiB（即 10 MiB 内存基数的 100%），此时堆内存总量将达到 18 MiB。若 GOGC 值为 50，则可分配新内存为 5 MiB（50%）；GOGC 值为 200 时，则可分配 20 MiB（200%）。</p>
+<blockquote>
+<p>注意：从 Go 1.18 开始，GOGC 计算才包含根节点集（GC roots）。此前版本仅计算存活堆大小。通常 goroutine 栈内存占比较小，存活堆大小是 GC 工作的主要来源，但在存在数十万 goroutine 的程序中，旧版 GC 会做出错误判断。</p>
+</blockquote>
+<p>堆内存目标值直接控制 GC 频率：目标值越大，GC 等待下一次标记阶段启动的时间就越长，反之亦然。虽然精确的计算公式有助于进行预估，但最好从根本目的来理解 GOGC：它是一个在 GC CPU 开销与内存占用之间选择平衡点的参数。核心结论是：<strong>GOGC 值翻倍会使堆内存开销翻倍，同时使 GC CPU 成本大致减半</strong>，反之亦然（完整推导参见<a href="https://tip.golang.org/doc/gc-guide#Additional_notes_on_GOGC">附录</a>）。</p>
+<blockquote>
+<p>注意：目标堆大小仅是一个目标值，实际 GC 周期可能因多种原因无法恰好在目标值处完成。一方面，足够大的堆分配操作可能直接超越目标值；另一方面，GC 实现中存在的其他因素（已超出本指南所述基础模型范畴）也会产生影响。更多细节请参阅延迟章节，完整实现细节可参考补充资源。</p>
+</blockquote>
+<p>GOGC 可通过两种方式配置：使用 GOGC 环境变量（所有 Go 程序均识别），或通过 <code>runtime/debug</code> 包中的 <a href="https://pkg.go.dev/runtime/debug#SetGCPercent">SetGCPercent</a> API 进行设置。</p>
+<p>需要注意，通过设置 <code>GOGC=off</code> 或调用 <code>SetGCPercent(-1)</code> 可以完全关闭 GC（前提是未设置内存限制）。从概念上讲，此设置相当于将 GOGC 设为无限大，因为触发 GC 前可分配的新内存量将没有上限。</p>
+<p>为更好地理解前述内容，请尝试使用基于前文 G C成本模型构建的交互式可视化工具。该可视化模拟了某个程序的执行过程：其非 GC 工作需要 10 秒 CPU 时间完成，在第一秒进行初始化操作（存活堆增长）后进入稳定状态。程序总共分配 200 MiB 内存，其中 20 MiB 为持续存活状态。假设仅存活堆产生 GC 工作量，且（为简化模型）程序不使用其他内存。</p>
+<p>通过滑动条调整 GOGC 值，观察应用程序在总耗时和 GC 开销方面的响应。每个 GC 周期在新分配堆内存降为零时结束。新分配内存降为零所需的时间包含周期N的标记阶段与周期 N+1 的清除阶段耗时。请注意本可视化（及本指南所有可视化工具）假设 GC 执行时应用程序暂停，因此 GC CPU 成本完全体现为新分配内存降为零的时间跨度。此设定仅为简化可视化，实际原理仍然适用。X 轴会动态缩放以完整显示程序 CPU 时间耗时。注意 GC 使用的额外 CPU 时间会增加总体持续时间。</p>
+<div class="gc-guide-graph" data-workload='[
+    {"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 1.00, "oldDeathRate": 0.00},
+    {"duration": 9.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.00}
+]' data-config='{
+    "fixedCost": 0.04,
+    "otherMem": 0,
+    "GOGC": "graph1-gogc",
+    "memoryLimit": 100000
+}'></div>
+<div class="gc-guide-graph-controls">
+    <div>
+        GOGC
+        <input type="range" min="0" max="10" step="0.005" value="6.64" id="graph1-gogc">
+        <div class="gc-guide-counter" id="graph1-gogc-display"></div>
+    </div>
+</div>
+<p>可以观察到，GC 始终会产生一定的 CPU 和峰值内存开销。当 GOGC 值增大时，CPU 开销降低，但峰值内存会随存活堆大小成比例增加。当 GOGC 值减小时，峰值内存需求降低，但需要额外承担更多的 CPU 开销。</p>
+<blockquote>
+<p>注意：图表显示的是 CPU 时间，而非程序完成的挂钟时间（wall-clock time）。如果程序在单 CPU 上运行且完全利用资源，则两者等效。实际场景中的程序通常运行在多核系统上，且不会始终 100% 占用 CPU。这种情况下 GC 对挂钟时间的影响会更小。</p>
+</blockquote>
+<blockquote>
+<p>注意：Go GC 设有 4 MiB 的最小堆总量限制，因此若 GOGC 设置的目标值低于该阈值，会自动向上取整。可视化工具已体现此细节。</p>
+</blockquote>
+<p>下面是一个更动态且贴近实际的示例：同样假设无 GC 时程序需要 10 CPU 秒完成，但中期稳态分配速率急剧上升，且第一阶段存活堆大小存在波动。此示例展示了当存活堆大小实际变化时的稳态表现，以及更高分配速率如何导致更频繁的 GC 周期。</p>
+<div class="gc-guide-graph" data-workload='[
+    {"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 1.00, "oldDeathRate": 0.00},
+    {"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.50},
+    {"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.50, "oldDeathRate": 0.00},
+    {"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.50},
+    {"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.50, "oldDeathRate": 0.00},
+    {"duration": 5.0, "allocRate": 200, "scanRate": 1024, "newSurvivalRate": 0.02, "oldDeathRate": 1.00}
+]' data-config='{
+    "fixedCost": 0.04,
+    "otherMem": 0,
+    "GOGC": "graph2-gogc",
+    "memoryLimit": 100000
+}'></div>
+<div class="gc-guide-graph-controls">
+    <div>
+        GOGC
+        <input type="range" min="0" max="10" step="0.005" value="6.64" id="graph2-gogc">
+        <div class="gc-guide-counter" id="graph2-gogc-display"></div>
+    </div>
+</div>
+<h3>内存限制</h3>
+<p>在 Go 1.19 之前，GOGC 是唯一可用于调整 GC 行为的参数。虽然它能有效设定权衡关系，但存在一个根本缺陷：未考虑可用内存是有限的。试想当存活堆大小出现瞬时峰值时的情况：由于 GC 会根据存活堆大小按比例设置总堆大小，即使通常情况下更高的 GOGC 值能提供更好的权衡，也必须按照峰值存活堆大小来配置 GOGC。</p>
+<p>下面的可视化演示生动展现了这种瞬时堆内存峰值的情境：</p>
+<div class="gc-guide-graph" data-workload='[
+    {"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 1.00, "oldDeathRate": 0.00},
+    {"duration": 4.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.00},
+    {"duration": 0.5, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 1.00, "oldDeathRate": 0.00},
+    {"duration": 0.5, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.00},
+    {"duration": 0.5, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.50},
+    {"duration": 3.5, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.00}
+]' data-config='{
+    "fixedCost": 0.04,
+    "otherMem": 0,
+    "GOGC": "graph3-gogc",
+    "memoryLimit": 100000
+}'></div>
+<div class="gc-guide-graph-controls">
+    <div>
+        GOGC
+        <input type="range" min="0" max="10" step="0.005" value="6.64" id="graph3-gogc">
+        <div class="gc-guide-counter" id="graph3-gogc-display"></div>
+    </div>
+</div>
+<p>若示例工作负载运行在可用内存略超 60 MiB 的容器中，那么即使其他 GC 周期本有充足内存空间可利用，GOGC 值也无法提升至 100 以上。更严重的是，在某些应用中这类瞬时峰值可能罕见且难以预测，导致偶尔出现不可避免且代价高昂的内存不足（out-of-memory）状况。</p>
+<p>正因如此，Go 在 1.19 版本中新增了运行时内存限制功能。内存限制可通过两种方式配置：使用 GOMEMLIMIT 环境变量（所有Go程序均识别），或调用 <code>runtime/debug</code> 包中的 <code>SetMemoryLimit</code> 函数。</p>
+<p>该内存限制设定了 Go 运行时所能使用的内存总量上限。其统计范围根据 <a href="https://pkg.go.dev/runtime#MemStats">runtime.MemStats</a> 指标定义为：</p>
+<pre><code>Sys - HeapReleased
+</code></pre>
+<p>或等价于基于 <a href="https://pkg.go.dev/runtime/metrics">runtime/metrics</a> 包的表述方式：</p>
+<pre><code>/memory/classes/total:bytes - /memory/classes/heap/released:bytes
+</code></pre>
+<p>由于 Go 垃圾回收器能够显式控制堆内存使用量，它会根据内存限制以及 Go 运行时使用的其他内存量来设定总堆大小。</p>
+<p>下方的可视化演示展现了与 GOGC 章节相同的单阶段稳态工作负载，但此次额外增加了 10 MiB 的 Go 运行时开销，并提供了可调节的内存限制功能。请尝试同步调整 GOGC 值和内存限制参数，观察系统的响应变化。</p>
+<div class="gc-guide-graph" data-workload='[
+    {"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 1.00, "oldDeathRate": 0},
+    {"duration": 9.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0}
+]' data-config='{
+    "fixedCost": 0.04,
+    "otherMem": 10,
+    "GOGC": "graph4-gogc",
+    "memoryLimit": "graph4-memlimit"
+}'></div>
+<div class="gc-guide-graph-controls">
+    <div>
+        GOGC
+        <input type="range" min="0" max="10" step="0.005" value="6.64" id="graph4-gogc">
+        <div class="gc-guide-counter" id="graph4-gogc-display"></div>
+    </div>
+    <div>
+        Memory Limit
+        <input type="range" min="1" max="100" step="0.5" value="100" id="graph4-memlimit">
+        <div class="gc-guide-counter" id="graph4-memlimit-display"></div>
+    </div>
+</div>
+<p>可以观察到，当内存限制低于 GOGC 设定的峰值内存（GOGC 为 100 时对应 42 MiB）时，GC 会以更高频率运行以确保峰值内存不超限。</p>
+<p>回到先前讨论的瞬时堆内存峰值示例，通过设置内存限制并调高 GOGC 值，我们可以实现两全其美：既避免内存超限，又提升资源利用率。请尝试操作下方的交互式可视化演示：</p>
+<div class="gc-guide-graph" data-workload='[
+	{"duration": 1.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 1.00, "oldDeathRate": 0.00},
+	{"duration": 4.0, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.00},
+	{"duration": 0.5, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 1.00, "oldDeathRate": 0.00},
+	{"duration": 0.5, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.00},
+	{"duration": 0.5, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.50},
+	{"duration": 3.5, "allocRate": 20, "scanRate": 1024, "newSurvivalRate": 0.00, "oldDeathRate": 0.00}
+]' data-config='{
+	"fixedCost": 0.04,
+	"otherMem": 0,
+	"GOGC": "graph5-gogc",
+	"memoryLimit": "graph5-memlimit"
+}'></div>
+<div class="gc-guide-graph-controls">
+	<div>
+		GOGC
+		<input type="range" min="0" max="10" step="0.005" value="6.64" id="graph5-gogc">
+		<div class="gc-guide-counter" id="graph5-gogc-display"></div>
+	</div>
+	<div>
+		Memory Limit
+		<input type="range" min="1" max="100" step="0.5" value="100" id="graph5-memlimit">
+		<div class="gc-guide-counter" id="graph5-memlimit-display"></div>
+	</div>
+</div>
+<p>可以观察到，在某些 GOGC 值与内存限制的组合下，峰值内存使用会严格受限于内存限制值，但程序其他执行阶段仍遵循 GOGC 设定的总堆大小规则。</p>
+<p>这一现象引出一个重要细节：即使将 GOGC 设置为 off（关闭），内存限制仍然有效！实际上，这种特殊配置代表了资源利用效率的最大化，因为它设定了维持特定内存限制所需的最低 GC 频率。在这种情况下，程序整个执行过程中的堆大小都会增长至接近内存限制值。</p>
+<p>然而，尽管内存限制显然是一个强大的工具，<strong>但其使用并非没有代价</strong>，也绝不会削弱 GOGC 的实用价值。</p>
+<p>试想当存活堆增长到使总内存使用接近内存限制时会发生什么。在上方的稳态可视化演示中，尝试关闭 GOGC 并逐步降低内存限制值，观察系统反应。可以注意到，当 GC 为维持一个不可能实现的内存限制而持续执行时，应用程序的总耗时将开始无限增长。</p>
+<p>这种因持续 GC 循环导致程序无法取得合理进展的情况称为<strong>系统颠簸</strong>（thrashing）。这种情况特别危险，因为它实质上会使程序陷入停滞。更糟糕的是，它可能恰恰发生在我们试图用 GOGC 避免的场景中：足够大的瞬时堆峰值可能导致程序无限期停滞！尝试在瞬时堆峰值的可视化演示中降低内存限制（约 30 MiB 或更低），可以观察到最严重的行为正是从堆峰值开始出现的。</p>
+<p>在许多场景下，无限期停滞比内存不足（out-of-memory）状况更糟糕，因为后者往往会导致更快速的故障。</p>
+<p>正因如此，内存限制被定义为<strong>软性限制</strong>（soft limit）。Go 运行时并不保证在所有情况下都能维持此内存限制，仅承诺会付出合理程度的努力。这种内存限制的宽松性对于避免系统颠簸行为至关重要，因为它为 GC 提供了回旋余地：允许内存使用暂时超出限制，以避免在 GC 上消耗过多时间。</p>
+<p>其内部运作机制是：GC 会在特定时间窗口内设置其可使用的CPU时间上限（并对极短瞬时的CPU使用峰值设置滞后缓冲）。当前该限制设定为约 50%，时间窗口为 <code>2 * GOMAXPROCS</code> CPU 秒。限制 GC CPU 时间的后果是 GC 工作会被延迟，而此时 Go 程序可能持续分配新的堆内存，甚至可能超出内存限制。</p>
+<p>设定 50% GC CPU 限制的理念基于最坏情况考量：当程序拥有充足可用内存时，若内存限制设置错误（被误设过低），程序运行速度最多只会下降 2 倍，因为 GC 最多只能占用 50% 的 CPU 时间。</p>
+<blockquote>
+<p>注意：本页面的可视化演示未模拟 GC CPU 限制机制。</p>
+</blockquote>
+<h4>应用建议</h4>
+<p>虽然内存限制是一项强大工具，且 Go 运行时已采取措施减轻误用带来的最坏影响，但审慎使用仍然至关重要。以下提供一系列实用建议，说明内存限制最适合的应用场景以及可能弊大于利的情况。</p>
+<ul>
+<li>
+<p>当 Go 程序的执行环境完全受控，且该程序是唯一访问特定资源集（如容器内存限制等内存预留机制）的应用时，应充分利用内存限制功能。</p>
+<p>典型示例：将Web服务部署到具有固定可用内存的容器中。</p>
+<p><strong>此时的经验法则是：预留额外 5-10% 的内存余量，以应对 Go 运行时无法感知的内存开销。</strong></p>
+</li>
+<li>
+<p>可实时调整内存限制以适应变化的环境条件。</p>
+<p>典型示例：CGO 程序中 C 语言库临时需要大量内存时。</p>
+</li>
+<li>
+<p>若 Go 程序可能与其他程序共享有限内存，且这些程序与 Go 程序通常解耦，则不应在设置内存限制的同时关闭 GOGC。应保留内存限制以抑制不良瞬时行为，但需将 GOGC 设置为适用于常规场景的合理较小值。</p>
+<p>除非程序完全同步（如 Go 程序调用子进程并阻塞等待），否则尝试为协同程序“预留”内存会导致可靠性下降 —— 因为不可避免地两个程序都会需要更多内存。让 Go 程序在不需要时减少内存使用，反而能带来更可靠的整体效果。此建议同样适用于内存超配（overcommit）场景，即单台机器上容器的内存限制总和可能超过实际物理内存。</p>
+</li>
+<li>
+<p>在部署到不可控的执行环境时，尤其是当程序内存使用量与输入数据量成正比时，应避免使用内存限制。</p>
+<p>典型示例：CLI 工具或桌面应用程序。在无法预知输入数据规模或系统可用内存的情况下固化内存限制，会导致难以排查的崩溃和性能劣化。此外，高级终端用户可根据需要自行设置内存限制。</p>
+</li>
+<li>
+<p>当程序已接近环境内存上限时，切勿试图通过设置内存限制来避免内存不足。</p>
+<p>这实际上是将内存不足风险替换为应用严重减速风险 —— 即使 Go 已努力缓解系统颠簸，这种权衡往往得不偿失。此时更有效的方案是：要么提升环境内存上限（然后酌情设置内存限制），要么降低 GOGC 值（其提供的权衡方案比缓解颠簸更清晰可控）。</p>
+</li>
+</ul>
+<h3>延迟</h3>
+<p>本文中的可视化模型将应用程序模拟为在 GC 执行期间暂停。确实存在这种行为的 GC 实现，它们被称为“全局暂停”（stop-the-world）式垃圾回收器。</p>
+<p>然而，Go 的 GC 并非完全全局暂停，其大部分工作是与应用程序并发执行的。这主要是为了降低应用程序的延迟 —— 特指单个计算单元（如 web 请求）的端到端持续时间。截至目前，本文主要考虑的是应用程序吞吐量（如每秒处理的 web 请求数），GC 周期章节中的每个示例都聚焦于程序执行的总 CPU 耗时。但对于 web 服务而言，此类总时长的意义远不如单个请求的延迟重要：虽然吞吐量（即每秒查询数）仍然关键，但每个请求的延迟往往更为重要。</p>
+<p>就延迟而言，全局暂停式 GC 可能需要相当长的时间来执行其标记和清除阶段，在此期间应用程序（对 web 服务而言即所有正在处理的请求）无法继续执行。相反，Go 的 GC 避免了让任何全局应用程序暂停的时长与堆大小成正比，其核心追踪算法在应用程序主动执行期间完成（暂停时间在算法上更强烈地与 <code>GOMAXPROCS</code> 成正比，但通常主要受停止运行中的 goroutine 所需时间支配）。并发回收并非没有代价：实践中它通常导致设计出的 GC 吞吐量低于等效的全局暂停式垃圾回收器。但需要注意的是，<strong>低延迟并不意味着低吞吐量</strong>，而且 Go 垃圾回收器的性能在延迟和吞吐量两方面都随着时间的推移稳步提升。</p>
+<p>Go 当前 GC 的并发特性并不影响本文至今讨论的任何内容：所有论述均不依赖于这一设计选择。 GC 频率仍然是 GC 在 CPU 时间和内存之间进行吞吐量权衡的主要方式，事实上它也在延迟方面扮演这一角色。这是因为 GC 的大部分成本发生在标记阶段活跃期间。</p>
+<p>关键结论是：<strong>降低 GC 频率也可能带来延迟改善</strong>。这不仅适用于通过修改调优参数（如增加 GOGC 和/或内存限制）来降低 GC 频率，也适用于优化指南中描述的各种优化措施。</p>
+<p>然而，延迟通常比吞吐量更难理解，因为它是程序瞬间执行的产物，而不仅仅是成本的简单累加。因此，延迟与 GC 频率之间的关联并不直接。以下为有意深入探究者列出可能的延迟来源：</p>
+<ol>
+<li>GC 在标记与清除阶段切换时产生的短暂全局暂停，</li>
+<li>标记阶段 GC 占用 25% CPU 资源导致的调度延迟，</li>
+<li>用户 goroutine 为响应高分配速率而协助 GC 工作，</li>
+<li>GC 标记阶段指针写入需要执行额外工作，</li>
+<li>运行中的 goroutine 必须暂停以进行根节点扫描。</li>
+</ol>
+<p>除指针写入需额外工作外，这些延迟源均可在执行跟踪（execution traces）中观察到。</p>
+<h3>Finalizers, cleanups, and weak pointers</h3>
+<p>垃圾回收通过有限的内存营造出无限内存的假象。内存被分配后无需显式释放，这种机制使得 API 设计和并发算法相比基础的手动内存管理更为简洁（某些采用手动内存管理的语言使用&quot;智能指针&quot;和编译期所有权追踪等替代方案来确保对象释放，但这些特性已深度嵌入这些语言的 API 设计规范中）。</p>
+<p>只有存活对象——即那些可从全局变量或某个 goroutine 的计算中访问到的对象 —— 才能影响程序行为。对象在任何时间点变为不可达（即“死亡”）后，都可以被 GC 安全回收。这为 GC 设计提供了广阔空间，例如 Go 当前采用的追踪式设计。在语言层面，对象的死亡是不可观察事件。</p>
+<p>然而，Go 运行时库提供了三种打破这种假象的特性：清理函数（cleanups）、弱指针（weak pointers）和终结器（finalizers）。每种特性都提供了观察和响应对象死亡的方式，对于终结器而言甚至能逆转死亡状态。这自然增加了 Go 程序的复杂性，并为 GC 实现带来额外负担。但这些特性之所以存在，是因为它们在多种场景中非常实用，Go 程序始终在使用并受益于这些功能。</p>
+<p>关于每个特性的具体细节，请参阅相应的包文档（<a href="https://tip.golang.org/pkg/runtime#AddCleanup">runtime.AddCleanup</a>、<a href="https://tip.golang.org/pkg/weak#Pointer">weak.Pointer</a>、<a href="https://tip.golang.org/pkg/runtime#SetFinalizer">runtime.SetFinalizer</a>）。下文提供使用这些特性的通用建议，列举各特性可能引发的常见问题，并给出测试这些功能使用的指导方案。</p>
+<h4>通用建议</h4>
+<ul>
+<li>
+<p>编写单元测试。</p>
+<p>清理函数、弱指针和终结器的具体执行时机难以预测，即使经过多次连续运行，也很容易让人误以为一切正常。但这些特性极易引发难以察觉的错误。虽然为它们编写测试可能颇具挑战，但正因其使用如此微妙，测试工作显得比往常更加重要。</p>
+</li>
+<li>
+<p>避免在常规 Go 代码中直接使用这些特性。</p>
+<p>这些都是具有微妙限制和行为特性的底层功能。例如，无法保证清理函数或终结器在程序退出时一定会运行，甚至可能根本不会执行。其 API 文档中的长篇注释应被视为警告。绝大多数 Go 代码并不会直接受益于这些特性，而只是间接受益。</p>
+</li>
+<li>
+<p>将这些机制的使用封装在包内部。</p>
+<p>尽可能避免让这些机制的使用泄露到包的公共 API 中；应提供接口使用户难以或无法误用它们。例如，与其要求用户为某些 C 语言分配的内存设置清理函数进行释放，不如编写一个包装包并将这些细节隐藏其中。</p>
+</li>
+<li>
+<p>将对具有终结器、清理函数和弱指针的对象的访问权限，限制在创建并应用这些机制的包内部。</p>
+<p>这一点虽与前述建议相关，但值得特别强调，因为它是以更低错误率使用这些特性的强大模式。例如，<a href="https://tip.golang.org/pkg/unique">unique 包</a>在底层使用弱指针，但完全封装了被弱指针引用的对象。这些值永远不会被应用程序的其他部分修改，只能通过 <a href="https://tip.golang.org/pkg/unique#Handle.Value">Value 方法</a>进行复制，从而为包用户维持了无限内存的假象。</p>
+</li>
+<li>
+<p>优先确定性清理非内存资源，将终结器和清理函数作为备选方案。</p>
+<p>清理函数和终结器非常适合处理内存资源（如外部分配的内存：C 语言分配的内存或 mmap 映射的引用）。C 语言 malloc 分配的内存最终必须通过 C 的 free 释放。在为 C 内存创建的包装对象上附加调用 free 的终结器，是通过垃圾回收确保 C 内存最终被回收的合理方式。</p>
+<p>然而，非内存资源（如文件描述符）通常受到系统限制，而 Go 运行时通常无法感知这些限制。此外，包作者对特定 Go 程序中垃圾回收的时机几乎无法控制（例如，GC 运行频率由 GOGC 控制，而实际操作中该值可能被设置为各种不同数值）。这两个因素共同导致清理函数和终结器不适合作为释放非内存资源的唯一机制。</p>
+<p>如果你是封装非内存资源的包作者，请考虑提供显式 API 来确定性释放资源（通过 Close 方法或类似机制），而非依赖通过清理函数或终结器的垃圾回收。相反，建议将清理函数和终结器作为尽力而为的错误处理机制：要么像 <a href="https://tip.golang.org/pkg/os#File">os.File</a> 那样始终清理资源，要么向用户报告未能确定性清理的故障。</p>
+</li>
+<li>
+<p>优先选择清理函数而非终结器。</p>
+<p>从历史来看，终结器的引入是为了简化 Go 代码与 C 代码的接口，并清理非内存资源。其预期用途是将其应用于拥有 C 内存或其他非内存资源的包装对象，以便在 Go 代码使用完毕后释放资源。这些原因至少部分解释了为何终结器适用范围狭窄、为何任何对象只能有一个终结器，以及为何该终结器必须仅附加到对象的首字节。这种限制已经抑制了一些用例：例如，任何希望内部缓存传入对象信息的包，都无法在对象消失后清理这些信息。</p>
+<p>但更严重的是，由于终结器会复活其附加的对象（以便传递给终结器函数，甚至允许对象继续存活），导致其效率低下且容易出错。这意味着如果对象是引用环的一部分，则永远无法被释放，且对象所占内存至少要到下一个垃圾回收周期才能被重用。</p>
+<p>然而，正因为终结器会复活对象，它们的执行顺序比清理函数更具明确定义。因此，终结器在清理具有复杂销毁顺序要求的结构时仍然可能（但很少）有用。</p>
+<p>但对于 Go 1.24 及更高版本的所有其他用途，我们推荐使用清理函数，因为它们比终结器更灵活、更不易出错且更高效。</p>
+</li>
+</ul>
+<h4>常见清理函数问题</h4>
+<ul>
+<li>
+<p>附加了清理函数的对象绝不能从清理函数中可达（例如通过捕获的局部变量）。这将导致对象无法被回收，且清理函数永远无法执行。</p>
+<pre><code class="language-go">f := new(myFile)
+f.fd = syscall.Open(...)
+runtime.AddCleanup(f, func(fd int) {
+    syscall.Close(f.fd) // 错误示例：此处引用了 f，导致清理函数无法执行！
+}, f.fd)
+</code></pre>
+</li>
+<li>
+<p>附加了清理函数的对象绝不能从清理函数的参数中可达。这将导致对象无法被回收，且清理函数永远无法执行。</p>
+<pre><code class="language-go">f := new(myFile)
+f.fd = syscall.Open(...)
+runtime.AddCleanup(f, func(f *myFile) {
+    syscall.Close(f.fd)
+}, f) // 错误示例：此处引用了 f，将导致清理函数永远无法执行！此特定情况还会引发 panic。
+</code></pre>
+</li>
+<li>
+<p>终结器具有明确定义的执行顺序，而清理函数则没有。清理函数之间还可以并发执行。</p>
+</li>
+<li>
+<p>长时间运行的清理函数应当创建 goroutine，以避免阻塞其他清理函数的执行。</p>
+</li>
+<li>
+<p><code>runtime.GC</code> 不会等待所有不可达对象的清理函数执行完成，仅会等待它们全部入队。</p>
+</li>
+</ul>
+<h4>常见弱指针问题</h4>
+<ul>
+<li>
+<p>弱指针可能在其 <code>Value</code> 方法中意外返回 <code>nil</code>。务必通过 <code>nil</code> 检查来保护 <code>Value</code> 调用，并制定备用方案。</p>
+</li>
+<li>
+<p>当弱指针被用作映射键时，它们不会影响映射值的可达性。因此，若弱指针映射键指向的对象同时可从映射值中访问，该对象仍将被视为可达。</p>
+</li>
+</ul>
+<h4>常见终结器问题</h4>
+<ul>
+<li>
+<p>附加了终结器的对象绝不能通过任何路径从自身可达（换言之，它们不能处于引用环中）。这将导致对象无法被回收，且终结器永远无法执行。</p>
+<pre><code class="language-go">f := new(myCycle)
+f.self = f // 错误示例：f 可从 f 自身可达，因此该终结器将永远无法执行。
+runtime.SetFinalizer(f, func(f *myCycle) {
+    ...
+})
+</code></pre>
+</li>
+<li>
+<p>附加了终结器的对象绝不能从终结器函数中可达（例如通过捕获的局部变量）。这将导致对象无法被回收，且终结器永远无法执行。</p>
+<pre><code class="language-go">f := new(myFile)
+f.fd = syscall.Open(...)
+runtime.SetFinalizer(f, func(_ *myFile) {
+    syscall.Close(f.fd) // 错误示例：此处引用了外部 f，将导致清理函数无法执行！
+})
+</code></pre>
+</li>
+<li>
+<p>附加了终结器的对象引用链（例如链表中的引用关系）至少需要经过与链中对象数量相等的 GC 周期才能完成全部清理。务必保持终结器层级扁平化！</p>
+<pre><code class="language-go">// 错误示例：回收此链表至少需要 10 个GC周期才能完成。
+node := new(linkedListNode)
+for range 10 {
+    tmp := new(linkedListNode)
+    tmp.next = node
+    node = tmp
+    runtime.SetFinalizer(node, func(node *linkedListNode) {
+        ...
+    })
+}
+</code></pre>
+</li>
+<li>
+<p>避免在包边界返回的对象上设置终结器。这将导致包用户可能调用 <code>runtime.SetFinalizer</code> 来修改你返回对象的终结器，这种意外行为可能被包用户最终依赖。</p>
+</li>
+<li>
+<p>长时间运行的终结器应当创建新的 goroutine，以避免阻塞其他终结器的执行。</p>
+</li>
+<li>
+<p><code>runtime.GC</code> 不会等待所有不可达对象的终结器执行完成，仅会等待它们全部入队。</p>
+</li>
+</ul>
+<h4>测试对象回收</h4>
+<p>使用这些特性时，为相关代码编写测试可能颇具挑战。以下是为使用这些特性的代码编写健壮测试的建议：</p>
+<ul>
+<li>
+<p>避免将此类测试与其他测试并行运行。这能极大提高确定性，并确保在任何给定时刻都能精准掌控系统状态。</p>
+</li>
+<li>
+<p>使用 <code>runtime.GC</code> 在测试开始时建立基准状态。通过 <code>runtime.GC</code> 强制弱指针置为 <code>nil</code>，并促使清理函数和终结器入队执行（注意：<code>runtime.GC</code> 不会等待清理函数和终结器执行完成，仅会确保它们全部入队）。</p>
+<p>要编写最健壮的测试，可注入阻塞机制使测试能等待清理函数或终结器完成（例如：从测试中传递可选通道给清理函数/终结器，并在执行完成后向通道写入信号）。若实现难度过大，替代方案是循环检查特定清理后状态是否达成。例如：os 包测试在循环中调用 <code>runtime.Gosched</code>，持续检查不可达文件是否已被关闭。</p>
+</li>
+<li>
+<p>若为终结器编写测试，且存在终结器对象链，则至少需要执行与测试创建的最长链长度相等的 <code>runtime.GC</code> 调用次数，才能确保所有终结器执行完毕。</p>
+</li>
+<li>
+<p>在竞态检测模式下进行测试，以发现并发清理之间、清理/终结器代码与代码库其他部分之间的竞态条件。</p>
+</li>
+</ul>
+<h3>补充资源</h3>
+<p>尽管上文提供的信息准确无误，但若要深入理解 Go 垃圾回收器设计中的成本与权衡，仍需更多细节支撑。更多详细信息请参阅以下补充资源：</p>
+<p>1.<a href="https://gchandbook.org/">The GC Handbook</a> —— 关于垃圾回收器设计的优秀通用参考资源。
+2. <a href="https://google.github.io/tcmalloc/design.html">TCMalloc</a> —— C/C++ 内存分配器 TCMalloc 的设计文档，Go 内存分配器基于此构建。
+3. <a href="https://tip.golang.org/blog/go15gc">Go 1.5 GC announcement</a> —— 宣布 Go 1.5 并发垃圾回收器的博客文章，详细描述了算法实现。
+4. <a href="https://tip.golang.org/blog/ismmkeynote">Getting to Go</a> —— 深入探讨截至 2018 年 Go 垃圾回收器设计演进的技术演讲。
+5. <a href="https://docs.google.com/document/d/1wmjrocXIWTr1JxU-3EQBI6BK6KgtiFArkG47XK73xIQ/edit">Go 1.5 concurrent GC pacing</a> —— 确定何时启动并发标记阶段的设计文档。
+6. <a href="https://tip.golang.org/issue/30333">Smarter scavenging</a> —— 修订 Go 运行时向操作系统归还内存方式的设计文档。
+7. <a href="https://tip.golang.org/issue/35112">Scalable page allocator</a> —— 修订Go运行时管理操作系统内存方式的设计文档。
+8. <a href="https://tip.golang.org/issue/44167">GC pacer redesign (Go 1.18)</a> —— 修订并发标记阶段启动算法的新设计文档。
+9. <a href="https://tip.golang.org/issue/48409">Soft memory limit (Go 1.19)</a> —— 关于软内存限制功能的设计文档。</p>
+<h2>关于虚拟内存的说明</h2>
+<p>本指南主要关注 GC 的物理内存使用，但经常出现的问题是：这具体意味着什么？以及与虚拟内存（通常在 to p等程序中显示为“VSS”）有何区别？</p>
+<p>物理内存是大多数计算机中实际物理 RAM 芯片承载的内存。虚拟内存是操作系统提供的对物理内存的抽象，用于隔离不同程序。程序保留不映射任何物理地址的虚拟地址空间通常也是可接受的。</p>
+<p><strong>由于虚拟内存只是操作系统维护的映射，进行不映射物理内存的大容量虚拟内存保留通常成本极低。</strong></p>
+<p>Go 运行时在以下几个方面依赖这种虚拟内存成本视图：</p>
+<ul>
+<li>
+<p>Go 运行时从不删除已映射的虚拟内存。相反，它使用大多数操作系统提供的特殊操作来显式释放与某些虚拟内存范围关联的物理内存资源。</p>
+<p>该技术被显式用于管理内存限制，并将 Go 运行时不再需要的内存返还给操作系统。Go 运行时还会在后台持续释放不再需要的内存。详见补充资源。</p>
+</li>
+<li>
+<p>在 32 位平台上，Go 运行时会预先为堆保留 128 MiB 到 512 MiB 的地址空间，以限制碎片问题。</p>
+</li>
+<li>
+<p>Go 运行时在多个内部数据结构的实现中使用大容量虚拟内存地址空间保留。在 64 位平台上，这些结构通常至少需要约 700 MiB 的虚拟内存占用。在 32 位平台上，其占用可忽略不计。</p>
+</li>
+</ul>
+<p>因此，虚拟内存指标（如 top 中的“VSS”）通常对于理解 Go 程序的内存占用处不大。建议重点关注“RSS”等更能直接反映物理内存使用情况的指标。</p>
+<h2>调优指南</h2>
+<h3>成本识别</h3>
+<p>在优化 Go 应用与 GC 的交互之前，首要任务是确认 GC 确实是主要性能成本来源。</p>
+<p>Go 生态提供多种工具用于识别成本和优化应用。关于这些工具的简要概述，请参阅<a href="https://tip.golang.org/doc/diagnostics">诊断指南</a>。此处我们将聚焦其中部分工具，并说明理解 GC 影响和行为的合理使用顺序。</p>
+<ol>
+<li>
+<p>CPU 性能分析</p>
+<p>CPU 性能分析是理想的起点。虽然 CPU 分析能提供 CPU 时间消耗的概览，但未经训练的眼睛可能难以识别 GC 在特定应用中的影响程度。幸运的是，理解 GC 的作用主要归结于了解 runtime 包中不同函数的含义。以下是解读 CPU 分析结果时实用的函数子集：</p>
+<p>请注意，下列函数非叶函数（leaf functions），因此可能不会默认显示在 pprof 工具的 top 命令结果中。建议使用 <code>top -cum</code> 命令或直接对这些函数使用 list 命令，并重点关注累计百分比（cumulative percent）列。</p>
+<ul>
+<li>
+<p><code>runtime.gcBgMarkWorker</code>：后台标记工作 goroutine 的入口点。此处耗时与GC频率及对象图的复杂度和大小成正比，代表了应用在标记扫描阶段的基础时间成本。</p>
+<p>在这些 goroutine 中，你可能会发现对 <code>runtime.gcDrainMarkWorkerDedicated</code>、<code>runtime.gcDrainMarkWorkerFractional</code> 和 <code>runtime.gcDrainMarkWorkerIdle</code> 的调用，这些指示了工作器类型。在基本空闲的 Go 应用中，GC 会利用额外的（空闲）CPU 资源来加速工作，这通过 <code>runtime.gcDrainMarkWorkerIdle</code> 符号体现。因此，此处的时间可能占据 CPU 样本的很大比例 —— GC 认为这些是免费资源。若应用变得活跃，空闲工作器的 CPU 时间将下降。常见场景是应用完全在单个 goroutine 中运行但 <code>GOMAXPROCS &gt; 1</code>。</p>
+</li>
+<li>
+<p><code>runtime.mallocgc</code>：堆内存分配器的入口点。此处累计耗时过高（&gt;15%）通常表明存在大量内存分配。</p>
+</li>
+<li>
+<p><code>runtime.gcAssistAlloc</code>：goroutine 通过此函数投入时间协助GC进行标记扫描。此处累计耗时过高（&gt;5%）表明应用分配速度可能超过了 GC 处理能力，这既反映了 GC 的显著影响，也代表了应用在标记扫描上花费的时间。注意此函数包含在 <code>runtime.mallocgc</code> 调用树中，因此也会推高该函数的耗时统计。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>执行跟踪分析</p>
+<p>虽然 CPU 性能分析非常适合识别总体时间消耗，但对于更细微、罕见或专门与延迟相关的性能成本，其作用有限。相比之下，执行跟踪（execution traces）能为 Go 程序的短期执行窗口提供丰富而深入的视角。执行跟踪包含各种与 Go GC 相关的事件，可以直接观察具体的执行路径以及应用程序与 Go GC 的交互方式。所有被追踪的 GC 事件在跟踪查看器（trace viewer）中都配有清晰的标签标识。</p>
+<p>有关如何开始使用执行跟踪，请参阅 <a href="https://pkg.go.dev/runtime/trace">runtime/trace 包的文档说明</a>。</p>
+</li>
+<li>
+<p>GC 跟踪日志</p>
+<p>当其他方法均无效时，Go GC 提供了几种不同的专用跟踪方式，可深入揭示 GC 行为细节。这些跟踪日志总是直接输出到 STDERR（每 GC 周期一行），通过所有 Go 程序识别的 <code>GODEBUG</code> 环境变量配置。由于需要熟悉GC实现细节，这些日志主要用于调试 Go GC 本身，但偶尔也有助于深入理解 GC 行为。</p>
+<p>核心GC跟踪通过设置 <code>GODEBUG=gctrace=1</code> 启用，其输出格式在 <a href="https://pkg.go.dev/runtime#hdr-Environment_Variables">runtime 包文档的环境变量章节</a> 中有详细说明。</p>
+<p>补充性的“节奏器跟踪”（pacer trace）通过设置 <code>GODEBUG=gcpacertrace=1</code> 启用，可提供更深入的洞察。解读此输出需要理解 GC 的“节奏器”机制（参见补充资源），这已超出本指南范围。</p>
+</li>
+</ol>
+<h3>消除堆分配</h3>
+<p>降低 GC 成本的一种根本方法是减少 GC 需要管理的值数量。下文所述的技术可带来最显著的性能提升，因为正如 GOGC 章节所示，Go 程序的分配速率是影响 GC 频率的关键因素 —— 而 GC 频率正是本指南的核心成本指标。</p>
+<h4>堆内存分析</h4>
+<p>在确认 GC 是主要成本来源后，下一步是定位大部分堆分配的来源。内存分析（确切地说是堆内存分析）对此非常有用。请查阅相关文档了解如何开始使用。</p>
+<p>内存分析通过分配时的堆栈跟踪来定位程序中的堆分配来源。每份内存分析报告可通过四种方式分解内存：</p>
+<ul>
+<li>使用中对象（inuse_objects）—— 按存活对象数量进行分解。</li>
+<li>使用中空间（inuse_space）—— 按存活对象占用的字节内存量进行分解。</li>
+<li>分配对象数（alloc_objects）—— 按程序启动后分配的对象总数进行分解。</li>
+<li>分配空间（alloc_space）—— 按程序启动后分配的内存总量进行分解。</li>
+</ul>
+<p>在这些不同的堆内存视图间切换，可通过 pprof 工具的 <code>-sample_index</code> 标志实现，或在交互模式下使用 sample_index 选项完成。</p>
+<blockquote>
+<p>注意：内存分析默认仅对堆对象进行抽样采样，因此不会包含每个堆分配的完整信息。但这已足以识别热点区域。如需调整采样率，请参阅 <a href="https://pkg.go.dev/runtime#pkg-variables">runtime.MemProfileRate</a>。</p>
+</blockquote>
+<p>就降低 GC 成本而言，分配空间（alloc_space）通常是最实用的视图，因其直接对应分配速率。该视图能指示能带来最大优化收益的分配热点区域。</p>
+<h4>逃逸分析</h4>
+<p>在借助堆内存分析定位候选堆分配点后，如何消除它们？关键在于利用 Go 编译器的逃逸分析机制，让编译器为这些内存找到更高效的存储方案（例如 goroutine 栈）。幸运的是，Go 编译器能够描述将 Go 值逃逸到堆中的具体原因。掌握这些信息后，问题就转化为通过重组源代码来改变分析结果（这通常是最困难的部分，但已超出本指南范围）。</p>
+<p>关于如何获取 Go 编译器逃逸分析信息，最简单的方式是通过 Go 编译器支持的调试标志，该标志会以文本格式描述对指定包应用或未应用的所有优化措施（包括值是否逃逸）。尝试以下命令（其中 <code>[package]</code> 为 Go 包路径）：</p>
+<pre><code class="language-bash">$ go build -gcflags=-m=3 [package]
+</code></pre>
+<p>该信息还可在支持 LSP 的编辑器中以可视化叠加层形式呈现 —— 它以代码操作（code action）功能对外提供。例如在 VS Code 中，调用“Source Action... &gt; Show compiler optimization details”命令可为当前包启用诊断信息（也可运行“Go: Toggle compiler optimization details”命令）。通过以下配置设置控制显示的注释类型：</p>
+<blockquote>
+<p>通过设置 <a href="https://github.com/golang/vscode-go/wiki/settings#uidiagnosticannotations">ui.diagnostic.annotations</a> 包含 escape 来启用逃逸分析叠加层。</p>
+</blockquote>
+<p>最后，Go 编译器还以机器可读（JSON）格式提供这些信息，可用于构建额外的自定义工具。详细信息请参阅 <a href="https://cs.opensource.google/go/go/+/master:src/cmd/compile/internal/logopt/log_opts.go;l=25;drc=351e0f4083779d8ac91c05afebded42a302a6893">Go 源代码中的相关文档</a>。</p>
+<h3>实现特异性优化</h3>
+<p>Go 垃圾回收器对存活内存的分布特征非常敏感，因为复杂的对象图和指针结构既会限制并行性，也会为GC带来更多工作负荷。因此，GC 包含针对特定常见结构的优化措施。以下列出对性能优化最直接有用的几项：</p>
+<blockquote>
+<p>注意：应用下述优化可能会降低代码可读性（掩盖设计意图），且可能随 Go 版本迭代失效。建议仅在最关键处应用这些优化，具体位置可通过&quot;成本识别&quot;章节所列工具确定。</p>
+</blockquote>
+<ul>
+<li>
+<p>不含指针的值与其他值分开存储。</p>
+<p>因此，从数据结构中消除非必需的指针可能带来优势，因为这能降低 GC 对程序造成的缓存压力。相应地，依赖索引而非指针的数据结构（尽管类型安全性降低）可能表现更佳。但仅当明确对象图复杂且 GC 在标记扫描上耗时显著时，才值得采用此优化。</p>
+</li>
+<li>
+<p>GC 会在值的最后一个指针处停止扫描。</p>
+<p>因此，将指针字段集中在结构体值的开头可能有利。但仅当明确应用在标记扫描上耗时显著时才值得这样做（理论上编译器可自动完成，但尚未实现，目前结构体字段仍按源代码书写顺序排列）。</p>
+</li>
+</ul>
+<p>此外，GC 必须与其看到的几乎每个指针进行交互，因此使用切片索引（而非指针）有助于降低  GC 成本。</p>
+<h3>Linux 透明大页（THP）</h3>
+<p>当程序访问内存时，CPU 需要将其使用的虚拟内存地址转换为指向所访问数据的物理内存地址。为此，CPU 会查询“页表”（page table）—— 这个由操作系统管理的数据结构负责维护虚拟内存到物理内存的映射关系。页表中的每个条目代表一个不可分割的物理内存块（称为页，page），故名页表。</p>
+<p>透明大页（THP）是 Linux 的一项特性，它能透明地将支撑连续虚拟内存区域的物理内存页替换为更大的内存块（称为大页）。通过使用更大的内存块，表示相同内存区域所需的页表条目更少，从而提升页表查询速度。然而，如果系统只使用大页的一小部分，更大的内存块会导致更多浪费。</p>
+<p>在生产环境运行 Go 程序时，启用 Linux 透明大页可以提升吞吐量和降低延迟，但代价是增加内存使用量。堆内存较小的应用通常无法从 THP 中受益，反而可能消耗大量额外内存（最高达50%）。而堆内存较大（1 GiB 或以上）的应用往往能获得显著收益（吞吐量提升最高 10%），且额外内存开销很小（1-2% 或更低）。无论哪种情况，了解 THP 设置都很有帮助，建议始终进行实际测试。</p>
+<p>在 Linux 环境中，可通过修改 <code>/sys/kernel/mm/transparent_hugepage/enabled</code> 来启用或禁用透明大页。详见官方 <a href="https://www.kernel.org/doc/html/next/admin-guide/mm/transhuge.html">Linux 管理指南</a>。如果你选择在生产环境中启用透明大页，我们为 Go 程序推荐以下附加设置：</p>
+<ul>
+<li>
+<p>将 <code>/sys/kernel/mm/transparent_hugepage/defrag</code> 设置为 <code>defer</code> 或 <code>defer+madvise</code>。</p>
+<p>此设置控制 Linux 内核将常规页合并为大页的激进程度。<code>defer</code> 指示内核在后台以惰性方式合并大页。更激进的设置在内存受限系统中可能引发停滞，并通常会损害应用延迟。<code>defer+madvise</code> 类似 <code>defer</code>，但对系统中显式请求大页且依赖其提升性能的其他应用更友好。</p>
+</li>
+<li>
+<p>将 <code>/sys/kernel/mm/transparent_hugepage/khugepaged/max_ptes_none</code> 设置为 0。</p>
+<p>此设置控制 Linux 内核守护进程在尝试分配大页时可分配的额外页数量。默认设置为最大激进模式，通常会抵消 Go 运行时归还内存给操作系统的努力。在 Go 1.21 之前，Go 运行时尝试缓解默认设置的负面影响，但会带来 CPU 成本。从 Go 1.21+ 和 Linux 6.2+ 开始，Go 运行时不再改变大页状态。</p>
+<p>如果你在升级到 Go 1.21.1 或更高版本后遇到内存使用增加的问题，尝试应用此设置很可能解决问题。作为额外解决方案，你可调用 <a href="https://tip.golang.org/pkg/golang.org/x/sys/unix#Prctl">Prctl</a> 函数并传入 <code>PR_SET_THP_DISABLE</code> 在进程级别禁用大页，或设置 <code>GODEBUG=disablethp=1</code>（该选项在 Go 1.21.6 和 Go 1.22 中添加）来禁用堆内存的大页功能。请注意 <code>GODEBUG</code> 设置可能在未来的版本中被移除。</p>
+</li>
+</ul>
+<h2>附录</h2>
+<h3>关于 GOGC 的补充说明</h3>
+<p>GOGC 章节曾指出：GOGC 值翻倍会使堆内存开销翻倍，同时使 GC CPU 成本减半。为理解其原理，让我们进行数学分解。</p>
+<p>首先，堆目标值为总堆大小设定目标。但这个目标主要影响新分配堆内存，因为存活堆是应用的基础固有属性：</p>
+<pre><code>目标堆内存 = 存活堆 + (存活堆 + GC 根节点) * GOGC / 100
+
+总堆内存 = 存活堆 + 新分配堆内存
+
+⇒
+
+新分配堆内存 = (存活堆 + GC根节点) * GOGC / 100
+</code></pre>
+<p>由此可见，GOGC 翻倍会使每周期新分配堆内存量也翻倍，这正体现了堆内存开销。注意：存活堆 + GC 根节点是 GC 需扫描内存量的近似值。</p>
+<p>接下来分析 GC CPU 成本。总成本可分解为单周期成本乘以某时间段 T 内的 GC 频率：</p>
+<pre><code>总 GC CPU 成本 = (单周期 GC CPU 成本) * (GC 频率) * T
+</code></pre>
+<p>单周期GC CPU成本可从GC模型推导：</p>
+<pre><code>单周期 GC CPU 成本 = (存活堆 + GC 根节点) * (每字节成本) + 固定成本
+</code></pre>
+<p>（此处忽略清除阶段成本，因为标记扫描成本占主导）</p>
+<p>稳态由恒定分配速率和恒定每字节成本定义，因此可推导 GC 频率：</p>
+<pre><code>GC 频率 = 分配速率 / 新分配堆内存 = 分配速率 / [(存活堆 + GC 根节点) * GOGC / 100]
+</code></pre>
+<p>整合公式得到总成本完整方程：</p>
+<pre><code>总 GC CPU 成本 = [分配速率 / ((存活堆 + GC 根节点) * GOGC / 100)] * [(存活堆 + GC 根节点) * 每字节成本 + 固定成本] * T
+</code></pre>
+<p>对于足够大的堆（代表大多数情况），GC 周期的边际成本远高于固定成本，可简化公式：</p>
+<pre><code>总 GC CPU 成本 = (分配速率) / (GOGC / 100) * (每字节成本) * T
+</code></pre>
+<p>由此简化公式可知：GOGC 翻倍会使总 GC CPU 成本减半（注意：本指南可视化模拟了固定成本，因此当 GOGC 翻倍时，显示的 GC CPU 开销不会精确减半）。此外，GC CPU 成本主要取决于分配速率和内存扫描的每字节成本。具体降低这些成本的方法请参阅优化指南。</p>
+<blockquote>
+<p>注意：存活堆大小与 GC 实际需扫描的内存量存在差异——相同大小的存活堆若结构不同，将导致不同的 CPU 成本但相同的内存成本，从而产生不同的权衡结果。这就是为什么堆结构是稳态定义的一部分。理论上堆目标应仅包含可扫描的存活堆（作为 GC 需扫描内存的更精确近似），但当可扫描存活堆很小而存活堆总体很大时，会导致异常行为。</p>
+</blockquote>
+<script src="https://www.lyyyuna.com/libs/d3/d3.v7.min.js"></script>
+<script>
+    // Complete JavaScript implementation from Go's gc-guide.js
+    function StackedAreaChart({
+        xSeries,
+        marginTop = 30,
+        marginRight = 100,
+        marginBottom = 60,
+        marginLeft = 50,
+    } = {}) {
+        const width = 756;
+        const height = 189;
+        const svg = d3.create("svg")
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", [0, 0, width, height]);
+
+        const xRange = [marginLeft, width - marginRight];
+        const yRange = [height - marginBottom, marginTop];
+
+        // Add empty axes first.
+        svg.append("g")
+            .classed("x axis", true)
+            .attr("transform", `translate(0,${height-marginBottom})`)
+
+        svg.append("g")
+            .classed("y axis", true)
+            .attr("transform", `translate(${marginLeft},0)`)
+
+        const update = function(data, mutTime) {
+            const seriesKeys = Object.keys(data[0]).filter(s => s !== xSeries);
+
+            let seriesColors = new Array();
+            if (seriesKeys.length > 3) {
+                const colorFn = d3.interpolateViridis;
+                for (let i = 0; i < seriesKeys.length; i++) {
+                    seriesColors.push(colorFn((i / 10) - Math.floor(i/10)));
+                }
+            } else {
+                seriesColors = ["#253443", "#007d9c", "#50b7e0"];
+                if (seriesKeys.length < 3) {
+                    seriesColors = seriesColors.slice(seriesKeys.length-1);
+                }
+            }
+            const seriesScale = d3.scaleOrdinal()
+                .domain(seriesKeys)
+                .range(seriesColors);
+
+            const yStack = (d3.stack().keys(seriesKeys))(data);
+
+            const xDomain = d3.extent(d3.map(data, p => p[xSeries]));
+            const yDomain = d3.extent(d3.map(yStack[yStack.length-1], p => p[1]));
+            yDomain[0] = 0;
+
+            const xScale = d3.scaleLinear(xDomain, xRange);
+            const yScale = d3.scaleLinear(yDomain, yRange);
+
+            const xAxis = d3.axisBottom(xScale).tickFormat(x => `${x.toFixed(1)} s`);
+            svg.selectAll("g.x.axis")
+                .style("font-size", "11px")
+                .call(xAxis);
+
+            const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(x => `${x.toFixed(0)} MiB`);
+            svg.selectAll("g.y.axis")
+                .style("font-size", "11px")
+                .call(yAxis);
+
+            const area = d3.area()
+                .curve(d3.curveLinear)
+                .x(d => xScale(d.data[xSeries]))
+                .y0(d => yScale(d[0]))
+                .y1(d => yScale(d[1]));
+
+            svg.selectAll("path.series")
+                .data(yStack)
+                .join("path")
+                    .classed("series", true)
+                    .attr("d", area)
+                    .style("fill", d => seriesScale(d.key));
+
+            svg.selectAll("text.label")
+                .data(seriesKeys)
+                .join("text")
+                    .classed("label", true)
+                    .attr("text-anchor", "left")
+                    .attr("font-size", "12px")
+                    .attr("x", width-marginRight+20)
+                    .attr("y", d => (seriesKeys.length-1-seriesKeys.indexOf(d))*24+60)
+                    .attr("fill", "currentColor")
+                    .attr("display", (() => {
+                        if (seriesKeys.length <= 3) {
+                            return "inherit";
+                        }
+                        return "none";
+                    })())
+                    .text(d => d);
+
+            svg.selectAll("rect.legend")
+                .data(seriesKeys)
+                .join("rect")
+                    .classed("legend", true)
+                    .attr("stroke", "none")
+                    .attr("x", width-marginRight+7)
+                    .attr("y", d => (seriesKeys.length-1-seriesKeys.indexOf(d))*24+51)
+                    .attr("width", 10)
+                    .attr("height", 10)
+                    .attr("display", (() => {
+                        if (seriesKeys.length <= 3) {
+                            return "inherit";
+                        }
+                        return "none";
+                    })())
+                    .attr("fill", d => seriesScale(d));
+
+            svg.selectAll("text.duration")
+                .data([xDomain[1]])
+                .join("text")
+                    .classed("duration", true)
+                    .attr("text-anchor", "left")
+                    .attr("font-size", "10px")
+                    .attr("x", width-marginRight+5)
+                    .attr("y", height-marginBottom+10)
+                    .attr("fill", "currentColor")
+                    .attr("font-weight", "bold")
+                    .text(d => `Total: ${d.toFixed(2)} s`);
+
+            svg.selectAll("text.results")
+                .data([[(xDomain[1]-mutTime)/xDomain[1]*100, yDomain[1]]])
+                .join("text")
+                    .classed("results", true)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "12px")
+                    .attr("x", marginLeft + (width-marginLeft-marginRight)/2)
+                    .attr("y", height-marginBottom+37)
+                    .attr("fill", "currentColor")
+                    .attr("font-weight", "bold")
+                    .text(d => `GC CPU = ${d[0].toFixed(1)}%, Peak Mem = ${d[1].toFixed(1)} MiB`);
+
+            const peakLive = d3.max(d3.map(data, p => p["Live Heap"]));
+            const otherMem = d3.max(d3.map(data, p => p["Other Mem."]));
+
+            svg.selectAll("text.subresults")
+                .data([[peakLive, otherMem]])
+                .join("text")
+                    .classed("subresults", true)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "11px")
+                    .attr("x", marginLeft + (width-marginLeft-marginRight)/2)
+                    .attr("y", height-marginBottom+51)
+                    .attr("fill", "currentColor")
+                    .text(d => {
+                        let base = "";
+                        if (d[0]) {
+                            base += `Peak Live Mem = ${d[0].toFixed(1)} MiB`;
+                        }
+                        if (d[1]) {
+                            base += `, Other Mem = ${d[1].toFixed(1)} MiB`;
+                        }
+                        if (base !== "") {
+                            base = "(" + base + ")";
+                        }
+                        return base;
+                    });
+        }
+        return [svg.node(), update];
+    }
+
+    function gcModel(workload, config) {
+        let otherMem = config["otherMem"];
+        if (typeof(otherMem) !== 'number') {
+            otherMem = document.getElementById(config["otherMem"]).value;
+        }
+        let gogc = config["GOGC"];
+        if (typeof(gogc) !== 'number') {
+            gogc = document.getElementById(config["GOGC"]).value;
+        }
+        let memoryLimit = config["memoryLimit"];
+        if (typeof(memoryLimit) !== 'number') {
+            memoryLimit = document.getElementById(config["memoryLimit"]).value;
+        }
+        let initialLive = 0;
+        if ("initialLive" in config) {
+            initialLive = config["initialLive"];
+        }
+        let trackLive = false;
+        if ("trackLive" in config) {
+            trackLive = config["trackLive"];
+            if (typeof(trackLive) !== 'boolean') {
+                trackLive = document.getElementById(config["trackLive"]).checked;
+            }
+        }
+        let fixedWindow = Infinity;
+        if ("fixedWindow" in config) {
+            fixedWindow = config["fixedWindow"];
+        }
+        const data = new Array();
+
+        // State.
+        const minHeapGoal = 4; // MiB
+        let t = 0;
+        let liveHeap = initialLive;
+        let newHeap = 0;
+        let liveFromCycle = new Array();
+        liveFromCycle.push(initialLive);
+        liveFromCycle.push(0);
+
+        const computeHeapGoal = (liveHeap) => {
+            let heapGoal = liveHeap*(1.0 + (gogc / 100));
+            if (gogc === Infinity) {
+                heapGoal = Infinity;
+            }
+            if (heapGoal+otherMem > memoryLimit) {
+                heapGoal = memoryLimit - otherMem
+            }
+            if (gogc !== Infinity && heapGoal < minHeapGoal) {
+                heapGoal = minHeapGoal
+            }
+            if (heapGoal < liveHeap + 0.0625) {
+                heapGoal = liveHeap + 0.0625
+            }
+            return heapGoal
+        }
+        let heapGoal = computeHeapGoal(minHeapGoal / (1 + gogc/100)); // Fake a live heap for minHeapGoal.
+        if (initialLive !== 0) {
+            heapGoal = computeHeapGoal(initialLive);
+        }
+
+        let n = 0;
+        const emit = function() {
+            const datum = {"t": t};
+            // The series will be automatically stacked, so for the best
+            // possible presentation, we should make sure to put in
+            // "other mem" first, then "live," then "new."
+            // This is roughly in order of "least dynamic" series
+            // to "most dynamic" which helps make the graph easier to
+            // interpret.
+            if (otherMem !== 0) {
+                datum["Other Mem."] = otherMem;
+            }
+            if (trackLive) {
+                for (let i = 0; i < liveFromCycle.length; i++) {
+                    datum[`Live Heap From GC ${i+1}`] = liveFromCycle[i];
+                }
+            } else {
+                datum["Live Heap"] = liveHeap;
+                datum["New Heap"] = newHeap;
+            }
+            data.push(datum)
+        }
+
+        // Emit points.
+        emit();
+        let nextLive = 0;
+        let nextWillLive = 0;
+        let nextWillDie = 0;
+        let totalMutTime = 0;
+        for (const work of workload) {
+            let left = work.duration;
+            let lastLive = liveHeap + nextLive;
+            const willLive = work.duration * work.allocRate * work.newSurvivalRate;
+            const willDie = lastLive * work.oldDeathRate;
+            while (left > 0) {
+                if (t >= fixedWindow) {
+                    break;
+                } else if (t + left > fixedWindow) {
+                    left = fixedWindow - t;
+                }
+                let alloc = left * work.allocRate;
+                let endCycle = false;
+                if (liveHeap+newHeap+alloc > heapGoal) {
+                    alloc = heapGoal-liveHeap-newHeap;
+                    endCycle = true;
+                }
+                newHeap += alloc;
+
+                // Calculate mutator time.
+                const mutTime = alloc / work.allocRate;
+                left -= mutTime;
+                t += mutTime;
+                totalMutTime += mutTime;
+                nextLive += (willLive - willDie) * (mutTime / work.duration);
+
+                // For tracking per-GC live memory.
+                nextWillLive += willLive * (mutTime / work.duration);
+                nextWillDie += willDie * (mutTime / work.duration);
+                liveFromCycle[liveFromCycle.length-1] = newHeap;
+
+                if (endCycle) {
+                    emit();
+
+                    liveHeap += nextLive;
+                    for (let i = 0; i < liveFromCycle.length; i++) {
+                        const live = liveFromCycle[i];
+                        if (live > 0) {
+                            if (live > nextWillDie) {
+                                liveFromCycle[i] -= nextWillDie;
+                                nextWillDie = 0;
+                                break;
+                            }
+                            nextWillDie -= live;
+                            liveFromCycle[i] = 0;
+                        }
+                    }
+                    liveFromCycle[liveFromCycle.length-1] = nextWillLive;
+
+                    nextLive = 0;
+                    nextWillLive = 0;
+                    nextWillDie = 0;
+                    newHeap = 0;
+                    const gcTime = liveHeap / work.scanRate + config.fixedCost;
+                    t += gcTime;
+
+                    emit();
+
+                    heapGoal = computeHeapGoal(liveHeap)
+
+                    liveFromCycle.push(newHeap);
+                }
+            }
+            emit();
+        }
+        if (trackLive) {
+            for (let i = 0; i < data.length; i++) {
+                for (let j = 0; j < liveFromCycle.length; j++) {
+                    const key = `Live Heap From GC ${j+1}`;
+                    if (!(key in data[i])) {
+                        data[i][key] = 0;
+                    }
+                }
+            }
+        }
+        return [data, totalMutTime];
+    }
+
+    const graphs = document.querySelectorAll('.gc-guide-graph');
+
+    for (let i = 0; i < graphs.length; i++) {
+        const workload = JSON.parse(graphs[i].getAttribute("data-workload"));
+        const config = JSON.parse(graphs[i].getAttribute("data-config"));
+        const [chart, update] = StackedAreaChart({xSeries: "t"});
+
+        const setupSlider = function(parameter, f, fmt) {
+            if (typeof(config[parameter]) !== 'number') {
+                const id = config[parameter];
+                const slider = document.getElementById(id);
+                const display = document.getElementById(id+"-display");
+                const value = f(slider.value);
+
+                if (display) {
+                    display.innerHTML = fmt(value);
+                }
+                config[parameter] = value;
+
+                slider.oninput = function() {
+                    const value = f(this.value);
+
+                    if (display) {
+                        display.innerHTML = fmt(value);
+                    }
+                    config[parameter] = value;
+
+                    const [data, mutTime] = gcModel(workload, config);
+                    update(data, mutTime);
+                }
+            }
+        };
+        const setupCheckbox = function(parameter) {
+            if (parameter in config && typeof(config[parameter]) !== 'boolean') {
+                const id = config[parameter];
+                const checkbox = document.getElementById(id);
+
+                config[parameter] = checkbox.checked;
+
+                checkbox.oninput = function() {
+                    config[parameter] = checkbox.checked;
+
+                    const [data, mutTime] = gcModel(workload, config);
+                    update(data, mutTime);
+                }
+            }
+        };
+        setupSlider("otherMem", x => parseInt(x), x => `${x} MiB`);
+        setupSlider("GOGC", x => {
+            const v = Math.round(Math.pow(2, parseFloat(x)))
+            if (v >= 1024) {
+                return Infinity;
+            }
+            return v;
+        }, x => {
+            if (x === Infinity) {
+                return "off";
+            }
+            return `${x}`;
+        });
+        setupSlider("memoryLimit", x => parseFloat(x), x => `${x.toFixed(1)} MiB`);
+        setupCheckbox("trackLive");
+
+        const [data, mutTime] = gcModel(workload, config);
+        update(data, mutTime);
+        graphs[i].appendChild(chart);
+    }
+</script>
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

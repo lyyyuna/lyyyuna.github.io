@@ -1,0 +1,590 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 快速入门指南</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 快速入门指南
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2015-12
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<h3>关于本指南</h3>
+<p>《Robot Framework 快速入门指南》介绍了 <a href="http://robotframework.org/">Robot Framework</a> 的一些最重要的特性。你不仅可以打开并浏览这些例子，而且你也可以把本指南当成一个 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#executing-this-guide">可执行的演示程序</a>。所有这些特性在《<a href="http://robotframework.org/robotframework/#user-guide">Robot Framework 用户指南</a>》中有详细的介绍。</p>
+<h3>Robot Framework 概览</h3>
+<p><a href="http://robotframework.org/">Robot Framework</a> 是一个通用的开源自动化测试框架，常被用作验收测试 (acceptance testing) 和验收测试驱动开发 (acceptance test-driven development, ATDD)。它有着易用的表格测试数据语法，并且采用了关键字驱动的测试方法。你可以使用 Python 或者 Java 编写的测试库莱扩展框架的测试能力，而且用户可以使用和测试用例相同的语法，来创建新的高级关键字。</p>
+<p>Robot Framework 独立于操作系统和应用。核心框架采用 Python 编写，同样能够在 Jython (JVM) 和 IronPython (.NET) 上运行。该框架有着丰富的生态系统，包含多种多样独立开发的通用测试库和工具。</p>
+<p>有关 Robot Framework 极其生态系统更多的信息，你可以浏览 <a href="http://robotframework.org/">http://robotframework.org/</a>。在那，你可以看到更多丰富的文档，演示程序，测试库和其他的工具列表，等等。</p>
+<h3>演示程序</h3>
+<p>在本指南中的示例应用程序是一个经典的登录示例的变体：这是用 Python 编写的基于命令行的身份验证服务器。该应用程序允许用户做三件事：</p>
+<ul>
+<li>用有效的密码创建一个新账户；</li>
+<li>使用有效的账户和密码登陆；</li>
+<li>用已有的账户改变密码。</li>
+</ul>
+<p>应用程序本身是文件 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/sut/login.py">sut/login.py</a> 中，可以直接执行命令 python sut/login.py。如果试图用一个不存在的用户帐户，或者无效的密码登陆，都会显示如下的错误消息：</p>
+<pre><code>&gt; python sut/login.py login nobody P4ssw0rd
+Access Denied
+</code></pre>
+<p>当创建一个有效帐户和密码，并登录成功后：</p>
+<pre><code>&gt; python sut/login.py create fred P4ssw0rd
+SUCCESS
+
+&gt; python sut/login.py login fred P4ssw0rd
+Logged In
+</code></pre>
+<p>当使用无效凭据更改密码，显示的错误消息和之前相同。新密码会进行有效性验证，如果无效，则给出如下错误消息：</p>
+<pre><code>&gt; python sut/login.py change-password fred wrong NewP4ss
+Changing password failed: Access Denied
+
+&gt; python sut/login.py change-password fred P4ssw0rd short
+Changing password failed: Password must be 7-12 characters long
+
+&gt; python sut/login.py change-password fred P4ssw0rd NewP4ss
+SUCCESS 
+</code></pre>
+<p>该应用程序使用一个简单的数据库文件来追踪用户状态。该文件位于操作系统相关的临时目录。</p>
+<h2>执行演示程序</h2>
+<p>这些说明会解释如何自己运行本指南的演示程序，如果你不感兴趣，你仍然可以查看 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#viewing-results">在线结果</a>。</p>
+<h3>安装</h3>
+<p>推荐使用 <a href="http://python.org/">Python</a> 的 <a href="http://pip-installer.org/">pip</a> 工具来安装 Robot Framework。你可以直接运行：</p>
+<pre><code>pip install robotframework
+</code></pre>
+<p>你可以查看 <a href="https://github.com/robotframework/robotframework/blob/master/INSTALL.rst">Robot Framework 安装指南</a>，了解更多的安装方法，和有关安装的更多一般信息。</p>
+<p>这个示例是使用 <a href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> 标记语言书写，采用框架的代码块中的测试数据。想要用这种格式执行本测试需要安装 [docutils](Robot Framework test data in code blocks) 模块：</p>
+<pre><code>pip install docutils
+</code></pre>
+<p>请注意，目前官方还不支持 Python3。请查阅 <a href="https://github.com/robotframework/robotframework/blob/master/INSTALL.rst">安装指南</a> 了解非官方的 Python3 移植，极其最近的支持程度。</p>
+<h3>执行</h3>
+<p>安装完以后，你还需要获取演示实例。最方便的方法就是下载一个 <a href="https://github.com/robotframework/QuickStartGuide/releases">发布版本</a> 或者获取 <a href="https://github.com/robotframework/QuickStartGuide/archive/master.zip">最新版本</a> 后在任意位置解压，你也可以直接克隆这个 <a href="https://github.com/robotframework/QuickStartGuide">仓库</a>。</p>
+<p>当你安装完，并获取一切必要条件之后，你可以用 pybot 命令运行本演示：</p>
+<pre><code>pybot QuickStart.rst
+</code></pre>
+<p>你还可以配置各种命令行选项来执行：</p>
+<pre><code>pybot --log custom_log.html --name Custom_Name QuickStart.rst
+</code></pre>
+<p>运行 pybot --help 来获取可用的选项列表。</p>
+<h3>查看结果</h3>
+<p>运行演示程序将会生成以下三个结果文件。这些文件被在线链接到可用的预执行文件，但运行演示程序时会在本地创建它们。</p>
+<ul>
+<li><a href="http://robotframework.org/QuickStartGuide/report.html">report.html</a> 测试报告</li>
+<li><a href="http://robotframework.org/QuickStartGuide/log.html">log.html</a> 详细的测试执行 log</li>
+<li><a href="http://robotframework.org/QuickStartGuide/output.xml">output.xml</a> XML 格式的机读报告</li>
+</ul>
+<h2>测试用例</h2>
+<h3>工作流测试</h3>
+<p>Robot Framework 测试用例是使用简单的表格语法创建。例如，下面的表有两个测试：</p>
+<ul>
+<li>
+<p>用户能够创建账户并登录</p>
+</li>
+<li>
+<p>用户不能使用错误的密码登录</p>
+<p>*** Test Cases ***
+User can create an account and log in
+Create Valid User    fred    P4ssw0rd
+Attempt to Login with Credentials    fred    P4ssw0rd
+Status Should Be    Logged In</p>
+<p>User cannot log in with bad password
+Create Valid User    betty    P4ssw0rd
+Attempt to Login with Credentials    betty    wrong
+Status Should Be    Access Denied</p>
+</li>
+</ul>
+<p>请注意，这些测试读起来就像是用英语书写的手动测试步骤，而并不像是自动化测试。这是因为 Robot Framework 采用关键字驱动的测试方法，使得编写测试时能够使用自然语言，来描述过程的步骤和预期结果。测试用例是由关键字和其可能的参数构成。</p>
+<h3>高级别测试</h3>
+<p>测试用例也可以使用更抽象的关键字创建，这些例子没有任何位置参数。这允许使用更自由的文字，甚至方便那些不懂技术的客户或其他项目利益相关者互相交流。在 <a href="http://en.wikipedia.org/wiki/Acceptance_test-driven_development">验证测试驱动开发</a> 或其他变体中这种方法尤其重要。</p>
+<p>Robot Framework 并不强制要求测试用例的格式。一个常见的风格是使用 given-when-then 风格，即 <a href="http://en.wikipedia.org/wiki/Behavior_driven_development">行为驱动开发</a> (behavior-driven development, BDD)。</p>
+<pre><code>*** Test Cases ***
+User can change password
+    Given a user has a valid account
+    When she changes her password
+    Then she can log in with the new password
+    And she cannot use the old password anymore
+</code></pre>
+<h3>数据驱动测试</h3>
+<p>我们经常会碰到这种情况，测试用例相似仅仅是输入或输出数据不同。在这种情况下_数据驱动测试_允许不同的测试数据，而无需重复工作流。在 Robot Framework 中使用 [Template] 设置，可以将用例转换为数据驱动的测试，而用例中定义的数据作为模板关键字运行：</p>
+<pre><code>*** Test Cases ***
+Invalid password
+    [Template]    Creating user with invalid password should fail
+    abCD5            ${PWD INVALID LENGTH}
+    abCD567890123    ${PWD INVALID LENGTH}
+    123DEFG          ${PWD INVALID CONTENT}
+    abcd56789        ${PWD INVALID CONTENT}
+    AbCdEfGh         ${PWD INVALID CONTENT}
+    abCD56+          ${PWD INVALID CONTENT}
+</code></pre>
+<p>除了在单独的测试中使用 [Template] 设置，也可以在之后介绍的 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#setups-and-teardowns">启动和卸载</a> 的设置表格中使用 Test Template 选项。在本例中，模板能够避免为了过长或过短密码，再去创建其他无效的用例。如果不使用模板，你就不得不为每一个输入输出创建一个用例，而使用模板只要一个用例。</p>
+<p>请注意，上述例子的错误消息是使用 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#variables">变量</a> 来指定。</p>
+<h2>关键字</h2>
+<p>测试用例的关键字有两种来源。<a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#library-keywords">库关键字</a> 来自导入的测试库，所谓的 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#user-keywords">用户关键字</a> 可由和创建测试用例相同的表格语法来书写。</p>
+<h3>库关键字</h3>
+<p>所有在测试库中定义的低级关键字都是由标准编程语言实现的，通常是 Python 或者 Java。Robot Framework 有着丰富的 <a href="http://robotframework.org/#test-libraries">测试库</a>，它们被分成_标准库_，<em>外部库_和_自定义库</em>。标准库分布于核心框架和一些通用库中，比如 OperatingSystem, Screenshot 和 BuiltIn 中。 这些库比较特别，当安装完框架后便是可用的。而如用于网络测试的 <a href="https://github.com/rtomac/robotframework-selenium2library/#readme">Selenium2Library</a>，必须单独安装。如果这些库还不够用， <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#creating-test-libraries">创建自定义库</a> 是非常简单的。</p>
+<p>为了使用一个测试库提供的关键字，必须先导入该库。本指南中的测试需要 OperatingSystem 库 (如 Remove File) 和自定义库 LoginLibrary 库 (如 Attempt to login with credentials)。它们都在如下的设置表格中导入：</p>
+<pre><code>*** Settings ***
+Library           OperatingSystem
+Library           lib/LoginLibrary.py
+</code></pre>
+<h3>用户关键字</h3>
+<p>Robot Framework 最强大的特性是允许用户使用已有关键字来创建新的高级关键字。这种语法被称作_用户自定义关键字_，或者简称为_用户关键字_。关键字语法和创建测试用例是类似的。上述例子中所有的高级关键字都在如下的关键字表格中创建：</p>
+<pre><code>*** Keywords ***
+Clear login database
+    Remove file    ${DATABASE FILE}
+
+Create valid user
+    [Arguments]    ${username}    ${password}
+    Create user    ${username}    ${password}
+    Status should be    SUCCESS
+
+Creating user with invalid password should fail
+    [Arguments]    ${password}    ${error}
+    Create user    example    ${password}
+    Status should be    Creating user failed: ${error}
+
+Login
+    [Arguments]    ${username}    ${password}
+    Attempt to login with credentials    ${username}    ${password}
+    Status should be    Logged In
+
+# Keywords below used by higher level tests. Notice how given/when/then/and
+# prefixes can be dropped. And this is a commend.
+
+A user has a valid account
+    Create valid user    ${USERNAME}    ${PASSWORD}
+
+She changes her password
+    Change password    ${USERNAME}    ${PASSWORD}    ${NEW PASSWORD}
+    Status should be    SUCCESS
+
+She can log in with the new password
+    Login    ${USERNAME}    ${NEW PASSWORD}
+
+She cannot use the old password anymore
+    Attempt to login with credentials    ${USERNAME}    ${PASSWORD}
+    Status should be    Access Denied
+</code></pre>
+<p>用户自定义关键字可以包含其他用户关键字，或者是库关键字。正如你在本例中看到的那样，用户自定义关键字可以包含参数。它们还可以返回值，甚至是包括 FOR 循环。现在，重要的是，用户自定义关键字使得测试作者能过复用之前相同的步骤序列。用户自定义关键字也使得测试作者保持测试用例具有高可读性，并在不同场景下使用合适的抽象级别。</p>
+<h2>变量</h2>
+<h3>定义变量</h3>
+<p>变量是 Robot Framework 的一个组成部分。通常在测试中使用的任何数据，如有更改，最好定义为变量。变量的定义语法非常简单，如下变量表所示：</p>
+<pre><code>*** Variables ***
+${USERNAME}               janedoe
+${PASSWORD}               J4n3D0e
+${NEW PASSWORD}           e0D3n4J
+${DATABASE FILE}          ${TEMPDIR}${/}robotframework-quickstart-db.txt
+${PWD INVALID LENGTH}     Password must be 7-12 characters long
+${PWD INVALID CONTENT}    Password must be a combination of lowercase and uppercase letters and numbers
+</code></pre>
+<p>变量还可以由命令行给出，这对不同环境中执行测试用例是非常有用的。例如，可以如下执行演示程序：</p>
+<pre><code>pybot --variable USERNAME:johndoe --variable PASSWORD:J0hnD0e QuickStart.rst
+</code></pre>
+<p>除用户定义的变量外，有一些是始终可用的内置变量。这些变量包括 ${TEMPDIR} 和 ${/}，这在上述示例中被使用。</p>
+<h3>使用变量</h3>
+<p>变量可以在测试数据的大多数地方使用。他们最常被用作关键字的参数，像下面的测试用例演示的那样。返回值分配给变量和以后使用。例如，如下的 Database Should Contain <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#user-keywords">用户关键字</a>，将数据库内容设置在 ${database} 变量中，然后使用 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#user-keywords">BuiltIn</a> 关键字 Should Contain 来验证内容的正确性。库和用户关键字都能返回值。</p>
+<pre><code>*** Test Cases ***
+User status is stored in database
+    [Tags]    variables    database
+    Create Valid User    ${USERNAME}    ${PASSWORD}
+    Database Should Contain    ${USERNAME}    ${PASSWORD}    Inactive
+    Login    ${USERNAME}    ${PASSWORD}
+    Database Should Contain    ${USERNAME}    ${PASSWORD}    Active
+
+*** Keywords ***
+Database Should Contain
+    [Arguments]    ${username}    ${password}    ${status}
+    ${database} =     Get File    ${DATABASE FILE}
+    Should Contain    ${database}    ${username}\t${password}\t${status}\n
+</code></pre>
+<h2>组织测试用例</h2>
+<h3>测试套件</h3>
+<p>测试用例的集合被称为 Robot Framework 中的测试套件。每个输入文件，该文件包含测试用例构成一个测试套件。当 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#executing-this-guide">执行本指南</a>，你可以看到控制台输出的 QuickStart。这个名字就是从文件名中生成的，在报告和日志中也可以看到。</p>
+<p>也可以通过层次结构来组织测试用例，将测试用例文件放入目录，再将这些目录放置到其他目录中。所有这些目录会自动创建高级测试套件，目录名即为测试套件的名字。由于测试套件只是文件和目录，它们可以很方便地放置在任何版本控制系统中。</p>
+<h3>安装和卸载</h3>
+<p>如果要在每个测试用例想在之前或之后要执行的某些关键字，可以在 Test Setup 和 Test Teardown 中设置。同样的，如果要在测试套件之前或之后执行某些关键字，你只需要在 Suite Setup 和 Suite Teardown 中设置。 单个测试也可以通过测试用例表格的 [Setup] 和 [Teardown] 使用自定义安装或卸载。这和之前 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#data-driven-tests">数据驱动测试</a> 使用 [Template] 的方法是相同的。</p>
+<p>在本演示中我们要确保在开始执行之前，每个测试之后，数据库被清除：</p>
+<pre><code>*** Settings ***
+Suite Setup       Clear Login Database
+Test Teardown     Clear Login Database
+</code></pre>
+<h3>使用标签</h3>
+<p>Robot Framework 允许设置测试用例标签，赋予其元数据。标签可以 Force Tags  和  Default Tags 为文件中所有测试用例强制设置，如下表中的所有测试用例。还可以通过 [Tags] 为单个测试用例设置，比如 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/QuickStart.rst#using-variables">之前</a> 的 User status is stored in database 测试。</p>
+<pre><code>*** Settings ***
+Force Tags        quickstart
+Default Tags      example    smoke
+</code></pre>
+<p>当你在执行完后查看报告，你可以看到每个测试用例有指定的标签，也可以看到针对每个标签生成的统计信息。标签也可以用于许多其他用途，其中最重要的是有选择地执行测试。你可以试试，比如下列命令：</p>
+<pre><code>pybot --include smoke QuickStart.rst
+pybot --exclude database QuickStart.rst
+</code></pre>
+<h2>创建测试库</h2>
+<p>Robot Framework 提供了一个简单的 API 来使用 Python 或 Java 创建测试库，一些远程库接口还允许使用其他编程语言。《<a href="http://robotframework.org/robotframework/#user-guide">Robot Framework 用户指南</a>》包含有关库 API 的详细说明。</p>
+<p>举例来说，我们来看一下本例中的 LoginLibrary 测试库。库位于 <a href="https://github.com/robotframework/QuickStartGuide/blob/master/lib/LoginLibrary.py">lib/LoginLibrary.py</a>，源代码如下。通过源代码可以看到，关键字 Create User 如何映射到实际的执行方法 create_user。</p>
+<pre><code>import os.path
+import subprocess
+import sys
+
+
+class LoginLibrary(object):
+
+    def __init__(self):
+        self._sut_path = os.path.join(os.path.dirname(__file__),
+                                    '..', 'sut', 'login.py')
+        self._status = ''
+
+    def create_user(self, username, password):
+        self._run_command('create', username, password)
+
+    def change_password(self, username, old_pwd, new_pwd):
+        self._run_command('change-password', username, old_pwd, new_pwd)
+
+    def attempt_to_login_with_credentials(self, username, password):
+        self._run_command('login', username, password)
+
+    def status_should_be(self, expected_status):
+        if expected_status != self._status:
+            raise AssertionError(&quot;Expected status to be '%s' but was '%s'.&quot;
+                                % (expected_status, self._status))
+
+    def _run_command(self, command, *args):
+        command = [sys.executable, self._sut_path, command] + list(args)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT)
+        self._status = process.communicate()[0].strip()
+</code></pre>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

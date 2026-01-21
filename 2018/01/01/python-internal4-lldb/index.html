@@ -1,0 +1,1067 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Python 3.x 源码 - 编译调试之旅</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Python 3.x 源码 - 编译调试之旅
+    
+    <div class="subtitle">(<i><a href="/series/Python 源码之旅/">Python 源码之旅</a>, Part 4</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2018-01
+
+      </div>
+    </div>
+    
+    <h2>建立环境</h2>
+<ol>
+<li>从 GitHub 上下载源码</li>
+</ol>
+<pre><code>$ git clone https://github.com/python/cpython
+$ cd cpython
+</code></pre>
+<ol start="2">
+<li>编译之前打开 <code>--with-pydebug</code> 选项</li>
+</ol>
+<pre><code>$ ./configure --with-pydebug
+$ make
+</code></pre>
+<p>编译完成之后，会在当前目录看到一个二进制文件 <code>python</code>。如果你使用的是 macOS，文件名为 <code>python.exe</code>，此文后续在命令行中请用 <code>python.exe</code> 代替 <code>python</code>。</p>
+<h2>用 GDB 调试</h2>
+<p>我们将使用 <code>gdb</code> 来追踪 <code>python</code> 的行为。</p>
+<p>本小结也是一个 <code>gdb</code> 入门教程。</p>
+<h3>GDB 快捷键</h3>
+<ul>
+<li>r (run)，运行程序</li>
+<li>b (break)，设置断点</li>
+<li>s (step)，单步运行</li>
+<li>c (continue)，继续运行程序，在断点处会停止运行</li>
+<li>l (list)，列出当前程序的源代码</li>
+<li>ctrl+x，打开 tui 模式</li>
+<li>ctrl+p，往上</li>
+<li>ctrl+n，往下</li>
+</ul>
+<h3>GDB 介绍</h3>
+<p>在编译目录敲入命令 <code>gdb python</code>：</p>
+<pre><code>$ gdb python
+GNU gdb (GDB) 7.12
+Copyright (C) 2016 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type &quot;show copying&quot;
+and &quot;show warranty&quot; for details.
+This GDB was configured as &quot;x86_64-pc-linux-gnu&quot;.
+Type &quot;show configuration&quot; for configuration details.
+For bug reporting instructions, please see:
+&lt;http://www.gnu.org/software/gdb/bugs/&gt;.
+Find the GDB manual and other documentation resources online at:
+&lt;http://www.gnu.org/software/gdb/documentation/&gt;.
+For help, type &quot;help&quot;.
+Type &quot;apropos word&quot; to search for commands related to &quot;word&quot;...
+Reading symbols from python...done.
+(gdb) 
+</code></pre>
+<p>在最后一行我们看到 <code>Reading symbols from python...done.</code>，说明现在我们可以通过 <code>gdb</code> 来调试 python 了。</p>
+<p>现在程序还没有运行，调试器在程序最前端停止下来。</p>
+<p>每一个 C 程序都从 <code>main()</code> 函数开始运行，所以我们在 <code>main()</code> 上打一个断点：</p>
+<pre><code>(gdb) b main
+Breakpoint 1 at 0x41d1d6: file ./Programs/python.c, line 20.
+(gdb)
+</code></pre>
+<p><code>gdb</code> 会在 <code>Programs/python.c, line 20</code> 处打上断点。从这条信息可以看出，<code>Python</code> 的入口点为 <code>Programs/python.c:20</code>。另外，如果你事先已知晓源码，可以直接：</p>
+<pre><code>(gdb) b Programs/python.c:20
+Breakpoint 3 at 0x41d1d6: file ./Programs/python.c, line 20.
+(gdb)
+</code></pre>
+<p>运行 <code>python</code>：</p>
+<pre><code>(gdb) r
+Starting program: /home/grd/Python/cpython/python 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &quot;/usr/lib/libthread_db.so.1&quot;.
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffdff8) at ./Programs/python.c:20
+20	{
+(gdb)
+</code></pre>
+<p>我们停在了之前设置的断点处，使用 <code>list</code> 列出源代码：</p>
+<pre><code>(gdb) l
+15	}
+16	#else
+17	
+18	int
+19	main(int argc, char **argv)
+20	{
+21	    wchar_t **argv_copy;
+22	    /* We need a second copy, as Python might modify the first one. */
+23	    wchar_t **argv_copy2;
+24	    int i, res;
+(gdb) 
+</code></pre>
+<p>或者使用 <code>ctrl+x</code> 调出 <code>tui</code>：</p>
+<pre><code>   ┌──./Programs/python.c─────────────────────────────────────────────────────────┐
+   │15      }                                                                     │
+   │16      #else                                                                 │
+   │17                                                                            │
+   │18      int                                                                   │
+   │19      main(int argc, char **argv)                                           │
+B+&gt;│20      {                                                                     │
+   │21          wchar_t **argv_copy;                                              │
+   │22          /* We need a second copy, as Python might modify the first one. */│
+   │23          wchar_t **argv_copy2;                                             │
+   │24          int i, res;                                                       │
+   │25          char *oldloc;                                                     │
+   │26                                                                            │
+   └──────────────────────────────────────────────────────────────────────────────┘
+multi-thre Thread 0x7ffff7f9de In: main                         L20   PC: 0x41d1d6 
+(gdb)
+</code></pre>
+<p>在 <code>tui</code> 模式，也可以看到我们停在了源代码的第 20 行。</p>
+<p>继续运行 <code>continue</code>，将进入 <code>python</code> 的交互式解释器环境。</p>
+<pre><code>(gdb) c
+   │29                                                                                                                                                                                                                                      │
+   │30          argv_copy = (wchar_t **)PyMem_RawMalloc(sizeof(wchar_t*) * (argc+1));                                                                                                                                                       │
+   │31          argv_copy2 = (wchar_t **)PyMem_RawMalloc(sizeof(wchar_t*) * (argc+1));                                                                                                                                                      │
+   │32          if (!argv_copy || !argv_copy2) {                                                                                                                                                                                            │
+   └────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+multi-thre Thread 0x7ffff7f9de In: main                                                                                                                                                                                   L20   PC: 0x41d1d6 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &quot;/usr/lib/libthread_db.so.1&quot;.
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffdff8) at ./Programs/python.c:20
+(gdb) c
+Continuing.
+Python 3.7.0a0 (default, Feb 22 2017, 22:10:22) 
+[GCC 6.3.1 20170109] on linux
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt;
+</code></pre>
+<h2>调试语法分析器</h2>
+<h3>调试语法分析器</h3>
+<p>创建一个简单的 python 脚本 <code>test.py</code>：</p>
+<pre><code class="language-python">a = 100
+</code></pre>
+<p>打开 gdb，设置参数，运行 python：</p>
+<pre><code>$ gdb python
+(gdb) set args test.py
+// 或者
+$ gdb --args python test.py
+</code></pre>
+<p>并在 <code>main</code> 函数上打断点：</p>
+<pre><code>(gdb) b main
+Breakpoint 1 at 0x41d1d6: file ./Programs/python.c, line 20.
+(gdb) r
+Starting program: /home/grd/Python/cpython/python 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &quot;/usr/lib/libthread_db.so.1&quot;.
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffdff8) at ./Programs/python.c:20
+20	{Starting program: /home/grd/Python/cpython/python 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &quot;/usr/lib/libthread_db.so.1&quot;.
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffdff8) at ./Programs/python.c:20
+20	{
+(gdb) 
+</code></pre>
+<h4>Program/python.c</h4>
+<p>如果你仔细查看 <code>Program/python.c</code> 的源码，会发现 <code>main()</code> 做了很多事情，核心是调用 <code>Py_Main(argc, argv_copy)</code> 函数：</p>
+<pre><code class="language-c">    argv_copy2[argc] = argv_copy[argc] = NULL;
+
+    setlocale(LC_ALL, oldloc);
+    PyMem_RawFree(oldloc);
+
+    res = Py_Main(argc, argv_copy);
+
+    /* Force again malloc() allocator to release memory blocks allocated
+       before Py_Main() */
+    (void)_PyMem_SetupAllocators(&quot;malloc&quot;);
+</code></pre>
+<h4>Modules/main.c</h4>
+<p>简单来说，<code>Py_Main</code> 会做如下：</p>
+<ol>
+<li>初始化哈希随机：391</li>
+<li>重置 Warning 选项：394，395</li>
+<li>通过 <code>_PyOS_GetOpt()</code> 解析命令行选项：397</li>
+<li>通过 <code>Py_Initialize()</code> 初始化 python：693</li>
+<li>导入 <code>readline</code> 模块：723</li>
+<li>依次执行：
+<ol>
+<li><code>run_command()</code></li>
+<li><code>RunModule()</code></li>
+<li><code>RunInteractiveHook()</code></li>
+<li><code>RunMainFromImporter()</code></li>
+<li><code>run_file()</code></li>
+<li><code>PyRun_AnyFileFlags()</code></li>
+</ol>
+</li>
+</ol>
+<p>将断点打在 <code>run_file</code>，第 793 行，可以用 <code>p filename</code> 查看当前文件名：</p>
+<pre><code>(gdb) b Modules/main.c:793
+(gdb) c
+(gdb) p filename
+$1 = 0x931050 L&quot;test.py
+(gdb) s
+</code></pre>
+<p><code>run_file</code> 只是一个装饰器，该装饰器会调用 <code>Python/pythonrun.c</code> 中的 <code>PyRun_InteractiveLoopFlags()</code> 或 <code>PyRun_PyRun_SimpleFileExFlags</code>。从名字上就可以看出一个会进入交互式环境，另一个就是带参数的 python 调用。这里，我们带上了参数 <code>test.py</code>，所以会运行 <code>PyRun_PyRun_SimpleFileExFlags</code>。</p>
+<h4>Python/pythonrun.c</h4>
+<p><code>PyRun_SimpleFileExFlags()</code> 首先会用 <code>maybe_pyc_file()</code> 检查所传文件是否是 <code>.pyc</code> 格式。</p>
+<p>在我们的例子中，由于是 <code>.py</code> 文件，所以接着会调用 <code>PyRun_FileExFlags()</code>。最后调用 <code>PyParser_ASTFromFileObject()</code> 来建立抽象语法树（AST）。</p>
+<p>抽象语法树需调用 <code>Parser/parsetok.c</code> 中的 <code>PyParser_ParseFileObject()</code> 创建节点，再用 <code>PyAST_FromNodeObject()</code> 函数从节点构建 AST 树。</p>
+<h4>Parser/parsetok.c</h4>
+<p><code>PyParser_ParseFileObject()</code> 会从 <code>PyTokenizer_FromFile()</code> 中获取所有的 toekn，将这些 token 传入 <code>parsetok()</code> 创建节点。</p>
+<p>最有趣的部分是其中包含一个无限循环：</p>
+<pre><code class="language-c">type = PyTokenizer_Get(tok, &amp;a, &amp;b);
+</code></pre>
+<p>该函数是 <code>tok_get()</code> 的装饰器，它会返回预定义于 <code>token.h</code> 中的 token 类型：</p>
+<pre><code class="language-c">// include/token.h
+#define ENDMARKER	0
+#define NAME		1
+#define NUMBER		2
+#define STRING		3
+#define NEWLINE		4
+#define INDENT		5
+#define DEDENT		6
+#define LPAR		7
+#define RPAR		8
+#define LSQB		9
+...
+#define RARROW          51
+#define ELLIPSIS        52
+/* Don't forget to update the table _PyParser_TokenNames in tokenizer.c! */
+#define OP		53
+#define AWAIT		54
+#define ASYNC		55
+#define ERRORTOKEN	56
+#define N_TOKENS	57
+</code></pre>
+<p>在 for 循环的第一轮，我们在 gdb 中打印上述代码中的 <code>type</code>：</p>
+<pre><code>(gdb) p type
+$1 = 1
+</code></pre>
+<p>根据头文件中的宏，值 1 对应 <code>NAME</code>，说明该 token 为一个变量名。</p>
+<p>在第 236 行，<code>str[lbbben] = '\0'</code> 会储存 token 所对应的字符串，即 <code>a</code>：</p>
+<pre><code>(gdb) p str
+$2 = 0x7ffff6eb5a18 &quot;a&quot;
+</code></pre>
+<p>看起来很有道理，因为我们的源码为 <code>a = 100</code>，第一个 token 字符串应对应于 <code>a</code>，类型为 <code>NAME</code>。</p>
+<p>解析器接下来会调用 <code>PyParser_AddToken()</code>，这会将 token 加入语法树中。</p>
+<h3>语法生成</h3>
+<p>语法的文本表示在 <code>Grammar/Grammar</code> 中，这是用 <code>yacc</code> 写的，我建议直接忽略。而语法的数字表示在 <code>Python/graminit.c</code> 中，其中包含了 DFA 数组。</p>
+<p>修改 <code>test.py</code> 的内容为：</p>
+<pre><code class="language-python">class foo:
+    pass
+</code></pre>
+<p>打开 gdb，在 <code>PyParser_AddToken()</code> 上打断点：</p>
+<pre><code>$ gdb python
+(gdb) b PyParser_AddToken
+(gdb) r test.py
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &quot;/usr/lib/libthread_db.so.1&quot;.
+
+Breakpoint 1, PyParser_AddToken (ps=ps@entry=0x9cf4f0, type=type@entry=1, str=str@entry=0x7ffff6eb5a18 &quot;class&quot;, lineno=1, col_offset=0, expected_ret=expected_ret@entry=0x7fffffffdc34) at Parser/parser.c:229
+229	{
+</code></pre>
+<p>为了看到 DFA 的状态变化，在 <code>dfa *d = ps-&gt;p_stack.s_top-&gt;s_dfa</code> 下一行打上断点：</p>
+<pre><code>(gdb) b 244
+Breakpoint 2 at 0x5b5933: file Parser/parser.c, line 244.
+(gdb) c
+Breakpoint 2, PyParser_AddToken (ps=ps@entry=0x9cf4f0, type=type@entry=1, str=str@entry=0x7ffff6eb5a18 &quot;class&quot;, lineno=1, col_offset=0, expected_ret=expected_ret@entry=0x7fffffffdc34) at Parser/parser.c:244
+244	        state *s = &amp;d-&gt;d_state[ps-&gt;p_stack.s_top-&gt;s_state];
+</code></pre>
+<p>然后打印出 <code>d</code> 的值：</p>
+<pre><code>(gdb) p *d
+$6 = {d_type = 269, d_name = 0x606340 &quot;stmt&quot;, d_initial = 0, d_nstates = 2, d_state = 0x8a6a40 &lt;states_13&gt;, d_first = 0x60658c &quot;&quot;}
+(gdb) set print pretty
+(gdb) p *d
+$8 = {
+  d_type = 269,
+  d_name = 0x606340 &quot;stmt&quot;,
+  d_initial = 0,
+  d_nstates = 2,
+  d_state = 0x8a6a40 &lt;states_13&gt;,
+  d_first = 0x60658c &quot;&quot;
+}
+...
+...
+(gdb) p d-&gt;d_name
+'file_input'
+(gdb)
+</code></pre>
+<p>对比 <code>d_name</code> 的值，发现它出现在 <code>Grammar/Grammar</code> 中：</p>
+<pre><code># Grammar for Python
+
+single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE
+file_input: (NEWLINE | stmt)* ENDMARKER
+eval_input: testlist NEWLINE* ENDMARKER
+</code></pre>
+<p>运行多次，我们会发现 <code>d_name</code> 按如下的顺序变化：<code>file_input</code>, <code>stmt</code>, <code>compound_stmt</code>, <code>classdef</code>, <code>classdef</code>, <code>classdef</code>, <code>classdef</code>, <code>suite</code>, <code>suite</code>, <code>suite</code>, <code>stmt</code>, <code>simple_stmt</code>, <code>small_stmt</code>, <code>pass_stmt</code>, <code>simple_stmt</code>, <code>suite</code>, <code>file_input</code>, <code>file_input</code>。</p>
+<h3>回顾</h3>
+<p>查看一下到目前为止的调用栈：</p>
+<ul>
+<li><code>main()</code></li>
+<li><code>Py_Main()</code></li>
+<li><code>run_file()</code></li>
+<li><code>PyRun_AnyFileExFlags()</code></li>
+<li><code>PyRun_SimpleFileExFlags()</code></li>
+<li><code>PyRun_FileExFlags()</code></li>
+<li><code>PyParser_ASTFromFileObject()</code>
+<ul>
+<li><code>PyParser_ParseFileObject()</code>
+<ul>
+<li><code>parsetok()</code></li>
+<li><code>PyParser_AddToken()</code></li>
+</ul>
+</li>
+<li><code>PyAST_FromNodeObject()</code></li>
+</ul>
+</li>
+</ul>
+<h2>调试抽象语法树（AST）生成器</h2>
+<p>我们从 <code>PyParser_ParseFileObject()</code> 构建了语法树，下一步是生成 AST。</p>
+<p>在此之前，需要介绍一些宏。这些宏定义于 <code>Include/node.h</code> 中，用于从节点结构中查询数据：</p>
+<ul>
+<li><code>CHILD(node *, int)</code>，返回第 n 个节点（从 0 开始）</li>
+<li><code>RCHILD(node *, int)</code>，从右往左返回第 n 个节点，使用负数</li>
+<li><code>NCH(node *)</code>，返回节点总数</li>
+<li><code>STR(node *)</code>，返回节点的字符串表示，比如冒号 token，会返回 <code>:</code></li>
+<li><code>TYPE(node *)</code>，返回节点的类型，类型定义于 <code>Include/graminit.h</code></li>
+<li><code>REQ(node *, TYPE)</code>，判断节点类型是否是 <code>TYPE</code></li>
+<li><code>LINENO(node *)</code>，获取解析规则源码所在的行数，规则定义在 <code>Python/ast.c</code></li>
+</ul>
+<p>在 <code>Python/ast.c</code> 中的 <code>PyAST_FromNodeObject()</code> 将语法树转换为 AST。</p>
+<pre><code class="language-c">for (i = 0; i &lt; NCH(n) - 1; i++) {
+    ch = CHILD(n, i);
+    if (TYPE(ch) == NEWLINE)
+        continue;
+    REQ(ch, stmt);
+    num = num_stmts(ch);
+    if (num == 1) {
+        s = ast_for_stmt(&amp;c, ch);
+        if (!s)
+            goto out;
+        asdl_seq_SET(stmts, k++, s);
+    }
+    else {
+        ch = CHILD(ch, 0);
+        REQ(ch, simple_stmt);
+        for (j = 0; j &lt; num; j++) {
+            s = ast_for_stmt(&amp;c, CHILD(ch, j * 2));
+            if (!s)
+                goto out;
+            asdl_seq_SET(stmts, k++, s);
+        }
+    }
+}
+res = Module(stmts, arena);
+</code></pre>
+<p><code>ast_for_stmt()</code> 是 <code>ast_for_xx</code> 的装饰器，其中 <code>xx</code> 是对应函数处理的语法规则。</p>
+<h2>调试符号表生成器</h2>
+<p>回到 <code>Python/pythonrun.c</code> 中的 <code>PyRun_FileExFlags()</code>。它会接着将结果 <code>mod</code> 传入 <code>run_mod()</code> 函数中。它完成了重要的两步：第一，生成代码对象（<code>PyAST_CompileObject()</code>），第二，进入解析循环（<code>PyEval_EvalCode()</code>）。</p>
+<p><code>PyAST_CompileObject()</code> 位于 <code>Python/compile.c</code>。它有两个重要的函数：</p>
+<ol>
+<li><code>PySumtable_BuildObject()</code></li>
+<li><code>compiler_mod()</code></li>
+</ol>
+<p><code>Python/symtable.c</code> 中的 <code>PySumtable_BuildObject()</code> 用于生成符号表。</p>
+<p>符号表的结构定义在 <code>Include/symtble.h</code> 中：</p>
+<pre><code class="language-c">struct _symtable_entry;
+
+struct symtable {
+    PyObject *st_filename;          /* name of file being compiled,
+                                       decoded from the filesystem encoding */
+    struct _symtable_entry *st_cur; /* current symbol table entry */
+    struct _symtable_entry *st_top; /* symbol table entry for module */
+    PyObject *st_blocks;            /* dict: map AST node addresses
+                                     *       to symbol table entries */
+    PyObject *st_stack;             /* list: stack of namespace info */
+    PyObject *st_global;            /* borrowed ref to st_top-&gt;ste_symbols */
+    int st_nblocks;                 /* number of blocks used. kept for
+                                       consistency with the corresponding
+                                       compiler structure */
+    PyObject *st_private;           /* name of current class or NULL */
+    PyFutureFeatures *st_future;    /* module's future features that affect
+                                       the symbol table */
+    int recursion_depth;            /* current recursion depth */
+    int recursion_limit;            /* recursion limit */
+};
+
+typedef struct _symtable_entry {
+    PyObject_HEAD
+    PyObject *ste_id;        /* int: key in ste_table-&gt;st_blocks */
+    PyObject *ste_symbols;   /* dict: variable names to flags */
+    PyObject *ste_name;      /* string: name of current block */
+    PyObject *ste_varnames;  /* list of function parameters */
+    PyObject *ste_children;  /* list of child blocks */
+    PyObject *ste_directives;/* locations of global and nonlocal statements */
+    _Py_block_ty ste_type;   /* module, class, or function */
+    int ste_nested;      /* true if block is nested */
+    unsigned ste_free : 1;        /* true if block has free variables */
+    unsigned ste_child_free : 1;  /* true if a child block has free vars,
+                                     including free refs to globals */
+    unsigned ste_generator : 1;   /* true if namespace is a generator */
+    unsigned ste_coroutine : 1;   /* true if namespace is a coroutine */
+    unsigned ste_varargs : 1;     /* true if block has varargs */
+    unsigned ste_varkeywords : 1; /* true if block has varkeywords */
+    unsigned ste_returns_value : 1;  /* true if namespace uses return with
+                                        an argument */
+    unsigned ste_needs_class_closure : 1; /* for class scopes, true if a
+                                            closure over __class__
+                                             should be created */
+    int ste_lineno;          /* first line of block */
+    int ste_col_offset;      /* offset of first line of block */
+    int ste_opt_lineno;      /* lineno of last exec or import * */
+    int ste_opt_col_offset;  /* offset of last exec or import * */
+    int ste_tmpname;         /* counter for listcomp temp vars */
+    struct symtable *ste_table;
+} PySTEntryObject;
+</code></pre>
+<p>可以看出，符号表其实是一个字典结构，每一项是一个符号对应关系。</p>
+<p>在第 281 行的 for 循环打上断点（<code>for (i = 0; i &lt; asdl_seq_LEN(seq); i++)</code>），会来到 <code>symtable_visit_stmt()</code> 函数，该函数生成符号表的每一项。接着打断点：</p>
+<pre><code>(gdb) b symtable_visit_stmt
+</code></pre>
+<p>就能观察到类似 <code>xx_kind</code> 的表达式，例如 <code>Name_kind</code> 会调用 <code>symtable_add_def()</code> 将一个符号定义加入到符号表中。</p>
+<h2>调试编译器和字节码生成器</h2>
+<p>回到函数 <code>PyAST_CompileObject()</code> 中，下一步是 <code>compiler_mod()</code>，将抽象语法树转换为上下文无关语法。</p>
+<p>在此处打断点（<code>b compiler_mod</code>）。swtich 分支会把我们带进 <code>Module_kind</code>，里面会调用 <code>compiler_body()</code> 函数，接着单步调试，就会发现一个 for 循环：</p>
+<pre><code class="language-c">for (; i &lt; asdl_seq_LEN(stmts); i++)
+    VISIT(c, stmt, (stmt)ty)asdl_seq_GET(stmts, i));
+</code></pre>
+<p>这里，我们在抽象语义描述语言（ASDL）中遍历，调用宏 <code>VISIT</code>，接着调用 <code>compiler_visit_expr(c, nodeZ)</code>。</p>
+<p>以下宏会产生字节码：</p>
+<ul>
+<li><code>ADDOP()</code>，增加一个指定的字节码</li>
+<li><code>ADDOP_I()</code>，增加的字节码是带参数的</li>
+<li><code>ADDOP_O(struct compiler *c, int op, PyObject * type, PyObject *obj)</code>，根据指定 <code>PyObject</code> 在序列中的位置，增加一个字节码，但是不考虑 name mangling。常用于全局、常量或参数的变量名寻找，因为这种变量名的作用域是未知的。</li>
+<li><code>ADDOP_NAME()</code>，和 <code>ADDOP_O</code> 类似，但是会考虑 name mangling。用于属性加载和导入。</li>
+<li><code>ADDOP_JABS()</code>，创建一个绝对跳转</li>
+<li><code>ADDOP_JREL()</code>，创建一个相对跳转</li>
+</ul>
+<p>为了验证是否生成了正确的字节码，可以在 <code>test.py</code> 上运行：</p>
+<pre><code>$ python -m dis test.py
+  1           0 LOAD_CONST               0 (100)
+              2 STORE_NAME               0 (a)
+              4 LOAD_CONST               1 (None)
+              6 RETURN_VALUE
+</code></pre>
+<h2>调试解析器循环</h2>
+<p>一旦字节码生成，下一步是由解析器运行程序。回到 <code>Python/pythonrun.c</code> 文件中，我们接着会调用函数 <code>PyEval_EvalCode()</code>，这是对 <code>PyEval_EvalCodeEx()/_PyEval_EvalCodeWithName()</code> 的装饰器函数。</p>
+<blockquote>
+<p>和 Python2.7 不一样，<code>PyEval_EvalCodeEx</code> 不会建立函数栈，这一步被移入 <code>_PyEval_EvalCodeWithName</code>。</p>
+</blockquote>
+<p>栈对象的结构定义于 <code>Include/frameobject.h</code>：</p>
+<pre><code class="language-c">typedef struct _frame {
+    PyObject_VAR_HEAD
+    struct _frame *f_back;      /* previous frame, or NULL */
+    PyCodeObject *f_code;       /* code segment */
+    PyObject *f_builtins;       /* builtin symbol table (PyDictObject) */
+    PyObject *f_globals;        /* global symbol table (PyDictObject) */
+    PyObject *f_locals;         /* local symbol table (any mapping) */
+    PyObject **f_valuestack;    /* points after the last local */
+    /* Next free slot in f_valuestack.  Frame creation sets to f_valuestack.
+       Frame evaluation usually NULLs it, but a frame that yields sets it
+       to the current stack top. */
+    PyObject **f_stacktop;
+    PyObject *f_trace;          /* Trace function */
+
+    /* In a generator, we need to be able to swap between the exception
+       state inside the generator and the exception state of the calling
+       frame (which shouldn't be impacted when the generator &quot;yields&quot;
+       from an except handler).
+       These three fields exist exactly for that, and are unused for
+       non-generator frames. See the save_exc_state and swap_exc_state
+       functions in ceval.c for details of their use. */
+    PyObject *f_exc_type, *f_exc_value, *f_exc_traceback;
+    /* Borrowed reference to a generator, or NULL */
+    PyObject *f_gen;
+
+    int f_lasti;                /* Last instruction if called */
+    /* Call PyFrame_GetLineNumber() instead of reading this field
+       directly.  As of 2.3 f_lineno is only valid when tracing is
+       active (i.e. when f_trace is set).  At other times we use
+       PyCode_Addr2Line to calculate the line from the current
+       bytecode index. */
+    int f_lineno;               /* Current line number */
+    int f_iblock;               /* index in f_blockstack */
+    char f_executing;           /* whether the frame is still executing */
+    PyTryBlock f_blockstack[CO_MAXBLOCKS]; /* for try and loop blocks */
+    PyObject *f_localsplus[1];  /* locals+stack, dynamically sized */
+} PyFrameObject;
+</code></pre>
+<p>在 <code>_PyEval_EvalCodeWithName()</code> 中，会用 <code>_PyFrame_New_NoTrack()</code> 创建一个栈对象，这个栈是对 C 程序函数栈的模拟，在最后，会调用 <code>PyEval_EvalFrameEx()</code>。</p>
+<p><code>PyEval_EvalFrameEx()</code> 然后会在 <code>PyThreadState</code> 上调用 <code>eval_frame()/_PyEval_EvalFrameDefault()</code> 函数。这个函数也会被 Python 虚拟机调用。</p>
+<p>跟踪进入 <code>_PyEval_EvalFrameDefault()</code>，我们可以观察到第 1054 行有一个无限循环，在不断产生字节码。</p>
+<h2>调试 Python 对象</h2>
+<p><code>PyObject</code> 是通用 Python 对象，定义于 <code>Include/object.h</code> 中。</p>
+<h3>简介</h3>
+<p>每一种 <code>PyObject</code> 都有着相似的跟踪步骤：</p>
+<ul>
+<li>用 gdb 打开 python</li>
+<li>在对象创建函数上打断点</li>
+<li>用交互式命令环境，创建我们想要的对象</li>
+<li>在断点处，开始一步步跟踪代码</li>
+</ul>
+<p>例如，我们想单步调试 <code>PyBoolObject</code>：</p>
+<pre><code>$ gdb python
+(gdb) b bool_newbb
+Breakpoint 1 at 0x44812f: file Objects/boolobject.c, line 44.
+(gdb) r
+[GCC 6.3.1 20170109] on linux
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; a = bool(1)
+
+Breakpoint 1, bool_new (type=0x87a700 &lt;PyBool_Type&gt;, args=(1,), kwds=0x0) at Objects/boolobject.c:44
+44	{
+</code></pre>
+<h3>PyObject</h3>
+<p>通用 Python 对象定义为</p>
+<pre><code class="language-c">typedef struct _object {
+    _PyObject_HEAD_EXTRA
+    Py_ssize_t ob_refcnt;
+    struct _typeobject *ob_type;
+} PyObjecdt;
+</code></pre>
+<p>在预处理器展开宏 <code>_PyObject_HEAD_EXTRA</code> 后，它会变成一个双向列表：</p>
+<pre><code class="language-c">typedef struct _object {
+    struct _object *_ob_next;
+    struct _object *_ob_prev;
+    Py_ssize_t ob_refcnt;
+    struct _typeobject *ob_type;
+} PyObjecdt;
+</code></pre>
+<p>该对象包含两个重要元素：引用计数和类型对象。</p>
+<h3>PyVarObject</h3>
+<p>Python 也有变长对象，定义为：</p>
+<pre><code class="language-c">typedef struct {
+    PyObject ob_base;
+    Py_ssize_t ob_size; /* Number of items in variable part */
+} PyVarObject;
+</code></pre>
+<p>几乎和 <code>PyObject</code> 一样，但多了一项用于表示对象的长度信息。</p>
+<h3>PyTypeObject</h3>
+<p><code>PyTypeObject</code> 是 Python 对象的类型表示。在 Python 中可以如下表达式获取任何对象的类型信息：</p>
+<pre><code class="language-python">&gt;&gt;&gt; t = type(1)
+&gt;&gt;&gt; dir(t)
+['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__index__', '__init__', '__init_subclass__', '__int__', '__invert__', '__le__', '__lshift__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__round__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'bit_length', 'conjugate', 'denominator', 'from_bytes', 'imag', 'numerator', 'real', 'to_bytes']
+</code></pre>
+<p>这些方法都定义在 <code>PyTypeObject</code> 中：</p>
+<pre><code class="language-c">#ifdef Py_LIMITED_API
+typedef struct _typeobject PyTypeObject; /* opaque */
+#else
+typedef struct _typeobject {
+    PyObject_VAR_HEAD
+    const char *tp_name; /* For printing, in format &quot;&lt;module&gt;.&lt;name&gt;&quot; */
+    Py_ssize_t tp_basicsize, tp_itemsize; /* For allocation */
+
+    /* Methods to implement standard operations */
+
+    destructor tp_dealloc;
+    printfunc tp_print;
+    getattrfunc tp_getattr;
+    setattrfunc tp_setattr;
+    PyAsyncMethods *tp_as_async; /* formerly known as tp_compare (Python 2)
+                                    or tp_reserved (Python 3) */
+    reprfunc tp_repr;
+
+    /* Method suites for standard classes */
+
+    PyNumberMethods *tp_as_number;
+    PySequenceMethods *tp_as_sequence;
+    PyMappingMethods *tp_as_mapping;
+
+    /* More standard operations (here for binary compatibility) */
+
+    hashfunc tp_hash;
+    ternaryfunc tp_call;
+    reprfunc tp_str;
+    getattrofunc tp_getattro;
+    setattrofunc tp_setattro;
+
+    /* Functions to access object as input/output buffer */
+    PyBufferProcs *tp_as_buffer;
+
+    /* Flags to define presence of optional/expanded features */
+    unsigned long tp_flags;
+
+    const char *tp_doc; /* Documentation string */
+
+    /* Assigned meaning in release 2.0 */
+    /* call function for all accessible objects */
+    traverseproc tp_traverse;
+
+    /* delete references to contained objects */
+    inquiry tp_clear;
+
+    /* Assigned meaning in release 2.1 */
+    /* rich comparisons */
+    richcmpfunc tp_richcompare;
+
+    /* weak reference enabler */
+    Py_ssize_t tp_weaklistoffset;
+
+    /* Iterators */
+    getiterfunc tp_iter;
+    iternextfunc tp_iternext;
+
+    /* Attribute descriptor and subclassing stuff */
+    struct PyMethodDef *tp_methods;
+    struct PyMemberDef *tp_members;
+    struct PyGetSetDef *tp_getset;
+    struct _typeobject *tp_base;
+    PyObject *tp_dict;
+    descrgetfunc tp_descr_get;
+    descrsetfunc tp_descr_set;
+    Py_ssize_t tp_dictoffset;
+    initproc tp_init;
+    allocfunc tp_alloc;
+    newfunc tp_new;
+    freefunc tp_free; /* Low-level free-memory routine */
+    inquiry tp_is_gc; /* For PyObject_IS_GC */
+    PyObject *tp_bases;
+    PyObject *tp_mro; /* method resolution order */
+    PyObject *tp_cache;
+    PyObject *tp_subclasses;
+    PyObject *tp_weaklist;
+    destructor tp_del;
+
+    /* Type attribute cache version tag. Added in version 2.6 */
+    unsigned int tp_version_tag;
+
+    destructor tp_finalize;
+
+#ifdef COUNT_ALLOCS
+    /* these must be last and never explicitly initialized */
+    Py_ssize_t tp_allocs;
+    Py_ssize_t tp_frees;
+    Py_ssize_t tp_maxalloc;
+    struct _typeobject *tp_prev;
+    struct _typeobject *tp_next;
+#endif
+} PyTypeObject;
+#endif
+</code></pre>
+<p>所有的整数对象现在都在 <code>Objects/longobject.c</code> 中实现，定义为 <code>PyLong_Type</code> 类型。<code>PyLong_Type</code> 就是一个 <code>PyTypeObject</code> 对象。</p>
+<pre><code class="language-c">PyTypeObject PyLong_Type = {
+    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)
+    &quot;int&quot;,                                      /* tp_name */
+    offsetof(PyLongObject, ob_digit),           /* tp_basicsize */
+    sizeof(digit),                              /* tp_itemsize */
+    long_dealloc,                               /* tp_dealloc */
+    0,                                          /* tp_print */
+    0,                                          /* tp_getattr */
+    0,                                          /* tp_setattr */
+    0,                                          /* tp_reserved */
+    long_to_decimal_string,                     /* tp_repr */
+    &amp;long_as_number,                            /* tp_as_number */
+    0,                                          /* tp_as_sequence */
+    0,                                          /* tp_as_mapping */
+    (hashfunc)long_hash,                        /* tp_hash */
+    0,                                          /* tp_call */
+    long_to_decimal_string,                     /* tp_str */
+    PyObject_GenericGetAttr,                    /* tp_getattro */
+    0,                                          /* tp_setattro */
+    0,                                          /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE |
+        Py_TPFLAGS_LONG_SUBCLASS,               /* tp_flags */
+    long_doc,                                   /* tp_doc */
+    0,                                          /* tp_traverse */
+    0,                                          /* tp_clear */
+    long_richcompare,                           /* tp_richcompare */
+    0,                                          /* tp_weaklistoffset */
+    0,                                          /* tp_iter */
+    0,                                          /* tp_iternext */
+    long_methods,                               /* tp_methods */
+    0,                                          /* tp_members */
+    long_getset,                                /* tp_getset */
+    0,                                          /* tp_base */
+    0,                                          /* tp_dict */
+    0,                                          /* tp_descr_get */
+    0,                                          /* tp_descr_set */
+    0,                                          /* tp_dictoffset */
+    0,                                          /* tp_init */
+    0,                                          /* tp_alloc */
+    long_new,                                   /* tp_new */
+    PyObject_Del,                               /* tp_free */
+};
+</code></pre>
+<h3>PyLongObject</h3>
+<p>定义于 <code>Include/longobject.h</code>：</p>
+<pre><code class="language-c">typedef struct _longobject PyLongObject; /* Revealed in longintrepr.h */
+</code></pre>
+<h3>PyBoolObject</h3>
+<p><code>PyBoolObject</code> 在 Python 中存储布尔类型，定义于 <code>Include/boolobject.h</code> 中。</p>
+<h3>PyFloatObject</h3>
+<p>在 <code>Include/floatobject.h</code> 中：</p>
+<pre><code class="language-c">typedef struct {
+    PyObject_HEAD
+    double ob_fval;
+} PyFloatObject;
+</code></pre>
+<h3>PyListObject</h3>
+<p>在 <code>Include/listobject.h</code> 中：</p>
+<pre><code class="language-c">typedef struct {
+    PyObject_VAR_HEAD
+    /* Vector of pointers to list elements.  list[0] is ob_item[0], etc. */
+    PyObject **ob_item;
+
+    /* ob_item contains space for 'allocated' elements.  The number
+     * currently in use is ob_size.
+     * Invariants:
+     *     0 &lt;= ob_size &lt;= allocated
+     *     len(list) == ob_size
+     *     ob_item == NULL implies ob_size == allocated == 0
+     * list.sort() temporarily sets allocated to -1 to detect mutations.
+     *
+     * Items must normally not be NULL, except during construction when
+     * the list is not yet visible outside the function that builds it.
+     */
+    Py_ssize_t allocated;
+} PyListObject;
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2017/12/28/python-internal3-string-object/">
+          Python 2.7 源码 - 字符串对象
+        </a>
+      
+
+      
+        <a class="next" href="/2018/01/06/python-internal5-pyc/">
+          Python 2.7 源码 - pyc 的结构
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

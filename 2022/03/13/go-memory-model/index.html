@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Go 内存模型</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Go 内存模型
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2022-03
+
+      </div>
+    </div>
+    
+    <p>并发场景下最讨厌的是对变量的读写操作隐含着违反直觉的结果。这时候，就需要语言的<strong>内存模型</strong>了。所有语言的内存模型都在讲着一件事情，什么操作才能让写变量的结果被另一个线程/协程读到。</p>
+<p>幸好 Go 一直是一个设计的很“简单”的语言，它的内存模型需要记住的结论很少，我们很容易就写出基于 goroutine 的并发安全程序。</p>
+<p>先解释一个经典的名词 <code>happens-before</code>：如果一个事件的发生在另一个事件之前，那么第一个事件的结果必须影响到第二个事件。<code>happens-before</code> 听上去理应如此，但由于现代处理器的多核、指令重排，编译器优化等等因素，<code>happens-before</code> 不是天然成立的。</p>
+<p>接下来看一下 Go 内存模型规定了哪些操作是确定的：</p>
+<ol>
+<li>如果包 <code>p</code> 导入了包 <code>q</code>，那么包 <code>q</code> 的 <code>init</code> 函数 <code>happens-before</code> 包 <code>p</code> 的任何代码。</li>
+<li>所有包的 <code>init</code> 函数 <code>happens-before</code> <code>main.main</code> 函数。</li>
+<li>用 <code>go</code> 语句启动新的 <code>goroutine</code>，该语句本身 <code>happens-before</code> 启动的这个新 <code>goroutine</code>。</li>
+<li><code>channel</code> 上的发送 <code>happens-before</code> 该 <code>channel</code> 上的接收。</li>
+<li>关闭 <code>channel</code> 的操作 <code>happens-before</code> 在 <code>channel</code> 上读到零值（零值意味着 <code>channel</code> 关闭）。</li>
+<li>无缓冲 <code>channel</code> 的接收 <code>happens-before</code> 该 <code>channel</code> 上的发送完成。</li>
+<li>容量为 C 的 <code>channel</code> 接收到第 k 个元素 <code>happens-before</code> 该 <code>channel</code> 第 k+C 个元素发送完成。</li>
+<li>两个变量 n 和 m，n 出现在 m 的前面，若使用互斥锁 <code>sync.Mutex</code> 或 <code>sync.RWMutex</code> 保护，那么变量 n 的 <code>l.Unlock</code> <code>happens-before</code> 变量 m 的 <code>l.Lock()</code>。</li>
+<li>如果有多个对 <code>once.Do(f)</code> 的调用，那么第一个调用 <code>f()</code> 函数 <code>happens-before</code> 任何其他 <code>once.Do(f)</code> 的调用返回。</li>
+<li><code>sync.Cond</code> 的 <code>Broadcast</code> 和 <code>Signal</code> 调用 <code>happens-before</code> 阻塞中 <code>Wait</code> 调用。</li>
+<li>对于 <code>Sync.Map</code>，<code>Load</code>, <code>LoadAndDelete</code> 和 <code>LoadOrStore</code> 都是读操作。<code>Delete</code>, <code>LoadAndDelete</code> 和 <code>Store</code> 都是写操作。<code>LoadOrStore</code> 如果 <code>loaded</code> 返回 <code>false</code>，那也是写操作。<code>Sync.Map</code> 的所有写操作 <code>happens-before</code> 读操作。</li>
+<li>对于 <code>Sync.Pool</code>，<code>Put</code> <code>happens-before</code> <code>Get</code>，<code>New</code> <code>happens-before</code> <code>Get</code>。</li>
+<li>对于 <code>Sync.WaitGroup</code>，<code>Done</code> <code>happens-before</code> 任何一个阻塞中的 <code>Wait</code>。</li>
+<li><code>sync.atomic</code> 包是一些列原子操作的合集，可用于不同 goroutine 间的同步。如果原子操作 B 的观察到原子操作 A 的结果，那么 A <code>happens-before</code> B。一旦使用了原子操作，那么程序便拥有了<strong>一致</strong>的执行顺序。</li>
+</ol>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

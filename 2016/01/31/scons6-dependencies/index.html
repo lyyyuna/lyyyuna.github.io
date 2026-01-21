@@ -1,0 +1,829 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: SCons 用户指南第六章 - 依赖</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>SCons 用户指南第六章 - 依赖
+    
+    <div class="subtitle">(<i><a href="/series/SCons 用户指南/">SCons 用户指南</a>, Part 6</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2016-01
+
+      </div>
+    </div>
+    
+    <p>目前为止，我们看到的都是 SCons 一次性编译的例子。但编译工具一个最主要的功能是只重新编译源码改变的部分，换句话说，SCons 不应该浪费时间重新编译不该编译的内容。比如之前的 hello 例子，你可以调用 SCons 两次看结果的不同：</p>
+<pre><code>% scons -Q
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% scons -Q
+scons: `.' is up to date.
+</code></pre>
+<p>第二次执行时，SCons 意识到 hello 程序对于源码来说已经是最新的了，它会拒绝重新编译。你可以通过命令行显式指定程序名来看的更清楚些：</p>
+<pre><code>% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% scons -Q hello
+scons: `hello' is up to date.
+</code></pre>
+<p>请注意，SCons 报告的 &quot;...is up to date&quot; 是为了避免混淆输出，且只是针对命令行中显式指定的文件名。</p>
+<h2>判断输入文件何时改变：Decider 函数</h2>
+<p>编译工具的一个重要方面是在输入文件改变时能发现并重新编译，从而保证软件实时更新。SCons 默认使用 MD5 签名或校验和来跟踪文件内容，也可以使用修改时间戳来跟踪。你甚至可以指定 Python 函数来决定文件是否改变。</p>
+<h3>使用 MD5 签名来决定文件是否改变</h3>
+<p>SCons 默认使用 MD5 签名而不是文件的修改时间来跟踪文件的内容。这意味着，如果你习惯基于文件修改时间来重编译，你会有点不习惯。我们用 touch 命令做个例子：</p>
+<pre><code>% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% touch hello.c
+% scons -Q hello
+scons: `hello' is up to date.
+</code></pre>
+<p>可以看到，即使改过时间，SCons 仍然能够判断出文件内容并没有改变，也就避免了 hello 的再次编译。又比如有人修改了文件，但文件内容没改变，这时候也不会重新编译。但当文件内容真的改变了，SCons 就能够检查到并重新编译：</p>
+<pre><code>% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+%     [CHANGE THE CONTENTS OF hello.c]
+% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+</code></pre>
+<p>请注意，如果你愿意，你可以用 Decider 方法来显式地指定默认的行为（比如 MD5 签名）：</p>
+<pre><code>Program('hello.c')
+Decider('MD5')
+</code></pre>
+<p>你也可以用 'MD5' 的同义词 'content'。</p>
+<h4>使用 MD5 签名的好处</h4>
+<p>用 MD5 签名来判定内容是否改变带来一个很大的好处：那就是如果一个源文件重新编译后的二进制文件没有改变，则其下游依赖于此的目标文件就不需要重编译。</p>
+<p>举例来说，用户如果只是更改了源文件的一个注释，那么重新编译的 hello.o 文件会和之前的完全一致（假设编译器没有做手脚）。SCons 这时候就不会重新编译 hello.o：</p>
+<pre><code>% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+%   [CHANGE A COMMENT IN hello.c]
+% scons -Q hello
+cc -o hello.o -c hello.c
+scons: `hello' is up to date.
+</code></pre>
+<p>本质上，当 SCons 意识到文件没有改变时，会对其他依赖于此的编译行为作“短路”处理。虽然分析目标文件（hello.o）内容会花费一些时间，但相比于漫长的编译时间无疑有很高的性价比。</p>
+<h3>使用时间戳来判断文件是否改变</h3>
+<p>你也可以使用时间戳，而不是文件内容来决定是否重编译。SCons 有两种使用时间戳的方法来判断输入文件是否改变。</p>
+<p>最常用的时间戳判断法和 Make 类似：那就是，如果源文件的修改时间比目标文件更新，就重编译。参照如下的调用 Decider 方法：</p>
+<pre><code>Object('hello.c')
+Decider('timestamp-newer')
+</code></pre>
+<p>这种模式下，SCons 有点像 Make，可以用 touch 命令来验证这一点：</p>
+<pre><code>% scons -Q hello.o
+cc -o hello.o -c hello.c
+% touch hello.c
+% scons -Q hello.o
+cc -o hello.o -c hello.c
+</code></pre>
+<p>实际上正因为其行为和 Make 类似，你也可以用 'make' 字符串来代替 'timestamp-newer'：</p>
+<pre><code>Object('hello.c')
+Decider('make')
+</code></pre>
+<p>类似于 Make 的时间戳方法有一个缺点，那就是如果一个输入文件的修改时间比目标文件早，那么目标文件不会重编译。比如你从备份库中恢复源文件就会触发这种行为。恢复的源文件其内容很有可能发生改变，但由于修改时间早于目标文件，也就自然不会重编译。</p>
+<p>不过 SCons 能够在每次编译的时候记录源文件的时间戳，只要时间戳不同就会出发重编译。这样即使新的源文件比目标文件还要早，也能轻松应对。你可以使用 'timestamp-match' 参数让 SCons 使用这种模式：</p>
+<pre><code>Object('hello.c')
+Decider('timestamp-match')
+</code></pre>
+<p>在这种模式下，只要源文件时间戳改变，就会重编译。所以即使我们用 touch -t 选项来将源文件改成一个老的时间（1989.1.1），SCons 仍然会充编译：</p>
+<pre><code>% scons -Q hello.o
+cc -o hello.o -c hello.c
+% touch -t 198901010000 hello.c
+% scons -Q hello.o
+cc -o hello.o -c hello.c
+</code></pre>
+<p>通常，用 timestamp-newer 的唯一理由是，你可能有一些特殊需求：改动会来自老文件。</p>
+<h3>同时使用 MD 签名和时间戳来判断文件是否改变</h3>
+<p>处于性能的原因，SCons 提供了折中的方法：只对时间戳改变的文件作 MD5 校验。向 Decider 方法传递 'MD5-timestamp' 参数：</p>
+<pre><code>Program('hello.c')
+Decider('MD5-timestamp')
+</code></pre>
+<p>这样配置之后，其行为会类似于 'MD5' 参数：</p>
+<pre><code>% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% touch hello.c
+% scons -Q hello
+scons: `hello' is up to date.
+% edit hello.c
+    [CHANGE THE CONTENTS OF hello.c]
+% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+</code></pre>
+<p>不过，可以看到，第二个 SCons 调用仅会查看 hello.c 文件的修改时间，而不需要打开文件并计算 MD5 校验和。这种行为能够显著地加速编译。</p>
+<p>不过缺点是，如果文件在一秒钟之内完成修改，那么 SCons 就不会去重编译它。当然实际开发编程时，基本不会有人这么快完成源文件的修改动作。不过一些编译脚本或者持续集成工具会自动修改文件，这种行为会非常快，这时候 Decider('MD5-timestamp') 就不合适了。</p>
+<h3>写一个自定义的 Decider 方法</h3>
+<p>传递给 Decider 方法的不同字符串，会让 SCons 采用各种内置函数来分析目标文件的依赖（通常是源文件）。当然啦，你也可以自己写一个函数来分析依赖有没有发生变化。</p>
+<p>比如，假设我们有很多特定格式的数据在同一个文件中，用来生成不同的目标文件，但每一个目标文件只是依赖于某几个数据。我们想建立这种特定的依赖行为。然而，由于数据太多，我们只想在时间戳改变的时候才去分析输入文件。这时候我们就可以写一个自定义的 Decider 方法：</p>
+<pre><code>Program('hello.c')
+def decide_if_changed(dependency, target, prev_ni):
+    if self.get_timestamp() != prev_ni.timestamp:
+        dep = str(dependency)
+        tgt = str(target)
+        if specific_part_of_file_has_changed(dep, tgt):
+            return True
+    return False
+Decider(decide_if_changed)
+</code></pre>
+<p>请注意在函数定义中，dependency 是第一个参数，然后是 target。这两个参数都是 SCons 的 Node 节点，紧接会用 str() 函数将其转为字符串。</p>
+<p>第三个参数 prev_ni 是上次目标文件编译时依赖的签名或时间戳信息。实际上 prev_ni 可以按需求包含各种不同信息。对于普通文件，prev_ni 对象有着以下的属性：</p>
+<ul>
+<li>.csig 是目标文件上次编译时其依赖的内容签名，或称之为 MD5 签名。</li>
+<li>.size 依赖文件的二进制字节数。</li>
+<li>.timestamp 依赖文件上次的修改时间。</li>
+</ul>
+<p>请注意，在 Decider 方法中忽略一些参数是常见的做法，且不会影响编译行为。</p>
+<p>另一事需要注意，在第一次运行 SCons 前，三个属性并不都是初始化过的。比如 .sconsign DB 文件在没有目标文件之前不会存在。所以，你必须每次都检查一下 prev_ni 属性的可用性。</p>
+<p>最终我们得到一个基于 csig 的决策函数的例子。请注意每次调用，依赖文件的签名信息必须通过 get_csig 函数来初始化（这是手动的！）。</p>
+<pre><code>env = Environment()
+
+def config_file_decider(dependency, target, prev_ni):
+    import os.path
+
+    # We always have to init the .csig value...
+    dep_csig = dependency.get_csig()
+    # .csig may not exist, because no target was built yet...
+    if 'csig' not in dir(prev_ni):
+        return True
+    # Target file may not exist yet
+    if not os.path.exists(str(target.abspath)):
+        return True
+    if dep_csig != prev_ni.csig:
+        # Some change on source file =&gt; update installed one
+        return True
+    return False
+
+def update_file():
+    f = open(&quot;test.txt&quot;,&quot;a&quot;)
+    f.write(&quot;some line\n&quot;)
+    f.close()
+
+update_file()
+
+# Activate our own decider function
+env.Decider(config_file_decider)
+
+env.Install(&quot;install&quot;,&quot;test.txt&quot;)
+</code></pre>
+<h3>混合使用不同方法来判断一个文件是否改变</h3>
+<p>上一个例子展现了如何使用全局 Decider 方法来解决依赖问题。有时候你会希望对不同目标文件应用不同的决策方法。这时候你可以使用 env.Decider 方法，这样就只会对特定的编译环境产生影响。</p>
+<p>举例来说，我们希望在一次编译中使用 MD5 校验，并在另一次编译中对相同的源文件使用时间戳，那么你就可以这样：</p>
+<pre><code>env1 = Environment(CPPPATH = ['.'])
+env2 = env1.Clone()
+env2.Decider('timestamp-match')
+env1.Program('prog-MD5', 'program1.c')
+env2.Program('prog-timestamp', 'program2.c')
+</code></pre>
+<p>假设两次编译都包含了 inc.h 文件，那么更新 inc.h 的修改时间（用 touch 命令）就会触发不同的重编译行为：</p>
+<pre><code>% scons -Q
+cc -o program1.o -c -I. program1.c
+cc -o prog-MD5 program1.o
+cc -o program2.o -c -I. program2.c
+cc -o prog-timestamp program2.o
+% touch inc.h
+% scons -Q
+cc -o program2.o -c -I. program2.c
+cc -o prog-timestamp program2.o
+</code></pre>
+<h2>决策函数的历史版本</h2>
+<p>现在的 SCons 版本仍然支持两个曾经主要的决策函数。它们被官方加入 2.0 版本，但现在已经不鼓励使用，因为它们在源文件和目标文件之间建立了一种令人费解的决策行为。现在你只可能在维护旧版本的 SConscript 文件中才会碰到它们。</p>
+<h3>SourceSignature 方法</h3>
+<p>SourceSignature 方法非常直接，支持两种决策方法，第一个就是 MD5 签名法：</p>
+<pre><code>Program('hello.c')
+SourceSignatures('MD5')
+</code></pre>
+<p>另一个是时间戳：</p>
+<pre><code>Program('hello.c')
+SourceSignatures('timestamp')
+</code></pre>
+<p>它们分别和 Decider('MD5') 和 Decider('timestamp-match') 很像，但是在这种行为之下，SCons 只能依赖于源文件的变化，即那些不是从其他文件生成的文件。</p>
+<h3>TargetSignatures 方法</h3>
+<p>当一个目标文件本身被作为其它目标的文件的依赖时，可以用 TargetSignature 方法来决定 SCons 的行为。也就是说，TargetSignature 方法可以配置那些最终目标依赖的临时二进制文件。</p>
+<p>TargetSignature 方法同样支持 'MD5' 和 'timestamp' 两个参数，其意义和上节所述是一致的。这个例子中：</p>
+<pre><code>Program('hello.c')
+TargetSignatures('MD5')
+</code></pre>
+<p>hello.o 的 MD5 签名将决定最终程序 hello 是否被重编译。在下面的例子中：</p>
+<pre><code>Program('hello.c')
+TargetSignatures('timestamp')
+</code></pre>
+<p>hello.o 的时间戳将决定最终程序 hello 是否被重编译。</p>
+<p>TargetSignatures 方法还支持 'source' 和 'build' 两个额外的参数。'source' 参数指定了目标文件和源文件使用同样的决策行为（即和 SourceSignature 一样）。所以在这个例子中：</p>
+<pre><code>Program('hello.c')
+TargetSignatures('source')
+SourceSignatures('timestamp')
+</code></pre>
+<p>所有目标和源文件都将使用修改时间戳来判断是否改变。</p>
+<p>最后，'build' 参数指定了 SCons 必须检察目标文件的编译状态，如果一个目标文件被重编译了，在不检查其内容或时间戳的情况下，所有依赖于此的下游目标文件也应该重编译。如果没有重编译，则使用 SourceSignature 重复上节的行为。</p>
+<p>这其实是模仿了更早 SCons 版本的 build signatures 行为。build signatures 会合并所有输入文件的签名，这样就不需要计算目标文件的 MD5 签名。虽然在某些配置下能提高性能，但远不如 Decider('MD5-timestamp') 高效。</p>
+<h2>隐式依赖：$CPPPATH 配置变量</h2>
+<p>假设我们的 &quot;Hello, World!&quot; 程序用 #include 包含了 hello.h 头文件：</p>
+<pre><code>#include &lt;hello.h&gt;
+int
+main()
+{
+    printf(&quot;Hello, %s!\n&quot;, string);
+}
+</code></pre>
+<p>hello.h 中内容为：</p>
+<pre><code>#define string    &quot;world&quot;
+</code></pre>
+<p>在这个例子中，我们希望 SCons 在发现 hello.h 内容改变时，能重编译。为此，我们需要修改 SConstruct 文件：</p>
+<pre><code>Program('hello.c', CPPPATH = '.')
+</code></pre>
+<p>$CPPPATH 告诉 SCons 去当前目录寻找源程序包含的头文件。这时候：</p>
+<pre><code>% scons -Q hello
+cc -o hello.o -c -I. hello.c
+cc -o hello hello.o
+% scons -Q hello
+scons: `hello' is up to date.
+%     [CHANGE THE CONTENTS OF hello.h]
+% scons -Q hello
+cc -o hello.o -c -I. hello.c
+cc -o hello hello.o
+</code></pre>
+<p>首先可以注意到，SCons 添加了 $CPPPATH 变量所指定的 -I. 参数，这样编译时能够在本地目录的 hello.h 文件。</p>
+<p>然后，SCons 会扫描 hello.c 包含的 hello.h 内容来决定是否重编译。SCons 会将这标记为目标文件的隐式依赖，所有依赖于 hello.c 和 hello.h 的文件都会被重编译。</p>
+<p>像 $LIBPATH 变量那样，$CPPPATH 变量可以是一些目录路径的列表，或者是目录路径分割的字符串（在 POSIX/Linux 上是 ':'，在 Windows 上是 ';'）。这两个方法都能使 SCons 产生正确的编译选项：</p>
+<pre><code>Program('hello.c', CPPPATH = ['include', '/home/project/inc'])
+</code></pre>
+<p>在 POSIX 或 Linux 系统上：</p>
+<pre><code>% scons -Q hello
+cc -o hello.o -c -Iinclude -I/home/project/inc hello.c
+cc -o hello hello.o
+</code></pre>
+<p>在 Windows 上：</p>
+<pre><code>C:\&gt;scons -Q hello.exe
+cl /Fohello.obj /c hello.c /nologo /Iinclude /I\home\project\inc
+link /nologo /OUT:hello.exe hello.obj
+embedManifestExeCheck(target, source, env)
+</code></pre>
+<h2>缓存隐式依赖</h2>
+<p>扫描每个 #include 文件会耗费额外的时间。当构建大型系统时，扫描时间只占了一小部分的编译时间。但重编译部分组件时，扫描占据的时间就非常可观，在真正编译前，SCons 会花费大量的时间判断所有依赖是否是最新的。</p>
+<p>实际中，错误的依赖中会浪费 SCons 扫描时间只是一个小问题。然而，等待时间通常让开发人员不能忍。因此，SCons 允许你缓存依赖关系，下次编译可以直接使用。你只需要在命令行中指定 --implicit-cache 选项：</p>
+<pre><code>% scons -Q --implicit-cache hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% scons -Q hello
+scons: `hello' is up to date.
+</code></pre>
+<p>如果你不想每次在命令行指定 --implicit-cache 选项，你可以在 SConscript 文件中设置 implicit_cache ，使其成为默认行为：</p>
+<pre><code>SetOption('implicit_cache', 1)
+</code></pre>
+<p>SCons 默认不缓存隐式依赖，因为当依赖发生改变后，SCons 不能及时发现变化。具体来说，在以下情况，--implicit-cache 选项会导致重编译失败：</p>
+<ul>
+<li>当使用 --implicit-cache 选项，SCons 会忽略如 $CPPPATH 或 $LIBPATH 路径中的任何变化，比如不同目录的同名文件。</li>
+<li>当使用 --implicit-cache 选项，如果一个和之前同名的文件被加入到路径中，SCons 就无法检测到变化。</li>
+</ul>
+<h3>--implicit-deps-changed 选项</h3>
+<p>在使用隐式依赖关系时，有时你想重新扫描文件以重建缓存。比如说，你项目编译依赖的一个外部库最近有了更新，这时候缓存的隐式依赖就过时了。你可以通过 --implicit-deps-changed 选项来更新缓存：</p>
+<pre><code>% scons -Q --implicit-deps-changed hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% scons -Q hello
+scons: `hello' is up to date.
+</code></pre>
+<p>在这个例子中，SCons 会重新扫描隐式依赖并更新缓存。</p>
+<h3>--implicit-deps-unchanged 选项</h3>
+<p>在建立缓存时，SCons 默认会区分那些修改过的文件。然而有时，即使源文件发生变化，你仍然想强制 SCons 使用缓存中的依赖。在 #include 包含的头文件没变化，而只是源文件做了修改的情况下，这可以加速编译过程。在下面这个例子中，你可以使用 --implicit-deps-unchanged 选项：</p>
+<pre><code>% scons -Q --implicit-deps-unchanged hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% scons -Q hello
+scons: `hello' is up to date.
+</code></pre>
+<p>这里，SCons 假设缓存是最新的，且不会去重新扫描文件。但实际是，对于持续的微小代码改动，这样虽然减少了编译时间，但有可能却让产品错过了显著的性能提升。</p>
+<h2>显式依赖：Depends 方法</h2>
+<p>有时候，SCons 不能发现文件的依赖。在这种情况下，就需要你显式地定义文件之间的依赖关系，才能在文件改动后触发重编译。这通过 Depends 方法来实现：</p>
+<pre><code>hello = Program('hello.c')
+Depends(hello, 'other_file')
+
+% scons -Q hello
+cc -c hello.c -o hello.o
+cc -o hello hello.o
+% scons -Q hello
+scons: `hello' is up to date.
+% edit other_file
+    [CHANGE THE CONTENTS OF other_file]
+% scons -Q hello
+cc -c hello.c -o hello.o
+cc -o hello hello.o
+</code></pre>
+<p>请注意，Depends 的依赖（即第二个参数）也可以是节点对象的列表：</p>
+<pre><code>hello = Program('hello.c')
+goodbye = Program('goodbye.c')
+Depends(hello, goodbye)
+</code></pre>
+<p>这样，依赖将先于目标文件生成：</p>
+<pre><code>% scons -Q hello
+cc -c goodbye.c -o goodbye.o
+cc -o goodbye goodbye.o
+cc -c hello.c -o hello.o
+cc -o hello hello.o
+</code></pre>
+<h2>来自外部文件的依赖：ParseDepends 方法</h2>
+<p>SCons 对不同语言有不同的内置扫描器。但由于扫描器实现的不足，有时候不能提取出特定的隐式依赖关系。</p>
+<p>下面是一个扫描 C 语言头文件失败的例子：</p>
+<pre><code>#define FOO_HEADER &lt;foo.h&gt;
+#include FOO_HEADER
+
+int main() {
+    return FOO;
+}
+
+% scons -Q
+cc -o hello.o -c -I. hello.c
+cc -o hello hello.o
+%    [CHANGE CONTENTS OF foo.h]
+% scons -Q
+scons: `.' is up to date.
+</code></pre>
+<p>很显然扫描器无法分析头文件的依赖。因为不是一个完整的 C 预处理器，扫描器无法展开宏。</p>
+<p>在这些情况下，你也许会求助编译器来提取隐式依赖关系。ParseDepends 方法能够解析编译器的 Make 风格的输出，并显式地建立起所有依赖项。</p>
+<p>下面这个例子使用 ParseDepends 来处理编译器产生的依赖文件，而这些依赖文件其实是编译时的副产物：</p>
+<pre><code>obj = Object('hello.c', CCFLAGS='-MD -MF hello.d', CPPPATH='.')
+SideEffect('hello.d', obj)
+ParseDepends('hello.d')
+Program('hello', obj)
+  
+% scons -Q
+cc -o hello.o -c -MD -MF hello.d -I. hello.c
+cc -o hello hello.o
+%    [CHANGE CONTENTS OF foo.h]
+% scons -Q
+cc -o hello.o -c -MD -MF hello.d -I. hello.c
+</code></pre>
+<p>解析编译器产生的 .d 依赖文件会导致鸡生蛋-蛋生鸡的问题。也就是不必要的重编译问题：</p>
+<pre><code>% scons -Q
+cc -o hello.o -c -MD -MF hello.d -I. hello.c
+cc -o hello hello.o
+% scons -Q --debug=explain
+scons: rebuilding `hello.o' because `foo.h' is a new dependency
+cc -o hello.o -c -MD -MF hello.d -I. hello.c
+% scons -Q
+scons: `.' is up to date.
+</code></pre>
+<p>在第一次运行时，依赖文件随二进制文件一起产生。因为此时 SCons 并不清楚目标文件依赖于 foo.h。在第二次运行的时候，二进制文件被重编译，因为此时 foo.h 被确认为一个新的依赖。</p>
+<p>ParseDepends 在启动时立即读入指定的文件，并判断出文件是否存在。而编译过程产生的依赖文件不会再被自动解析。因此，在同一次编译中，编译器提取的依赖关系不会被存入签名数据库中。这个不足导致 ParseDepends 会带来不必要的重编译行为。因此，应只在 SCons 的扫描器不足以应付时使用这个功能。</p>
+<h2>忽略依赖：Ignore 函数</h2>
+<p>有时候即使依赖改变也不想重编译程序，你就需要向 SCons 指定要忽略的文件：</p>
+<pre><code>hello_obj=Object('hello.c')
+hello = Program(hello_obj)
+Ignore(hello_obj, 'hello.h')
+
+% scons -Q hello
+cc -c -o hello.o hello.c
+cc -o hello hello.o
+% scons -Q hello
+scons: `hello' is up to date.
+% edit hello.h
+[CHANGE THE CONTENTS OF hello.h]
+% scons -Q hello
+scons: `hello' is up to date.
+</code></pre>
+<p>现在，上面的例子有点不自然，因为实际开发中很难想象在 hello.h 改变后，不需要重编译 hello。更现实的例子是，hello 所在的目录被不同系统所共享，但每个系统的 stdio.h 头文件都不相同。如果不作设置，那么在切换系统的时候，SCons 就会误以为头文件改变而触发重编译行为。为了避免此问题，可以作如下改动：</p>
+<pre><code>hello = Program('hello.c', CPPPATH=['/usr/include'])
+Ignore(hello, '/usr/include/stdio.h')
+</code></pre>
+<p>Ignore 方法还可以避免默认的编译行为。这是因为目录实际上依赖于其内部内容。如果想避免某个文件被默认编译，可以指定目录忽略特定文件。请注意，当用户在命令行指定需要目标文件时，还是会触发编译行为。或者其他依赖于此该文件的文件被要求编译时，也会编译该文件。</p>
+<pre><code>hello_obj=Object('hello.c')
+hello = Program(hello_obj)
+Ignore('.',[hello,hello_obj])
+
+% scons -Q
+scons: `.' is up to date.
+% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% scons -Q hello
+scons: `hello' is up to date.
+</code></pre>
+<h2>按序依赖：Requires 方法</h2>
+<p>偶尔的，你可能需要修改某些文件和目录，且它们被目标文件所依赖，但这些改变对目标文件来说没有影响，你不希望这些改变触发重编译行为。这种关系称为按序依赖，因为只有目标文件之前的依赖关系发生了改变。这样的依赖关系导致的改变并不一定需要传递到目标文件。</p>
+<p>举例来说，你需要在每次编译时产生一个文件来记录编译时长、版本信息等。很显然这个文件的内容每次都不同。如果你的 SCons 配置成普通的依赖决策，那么每次都会导致重编译行为。为了演示该行为，可以用 Python 生成一个 version.c 文件，然后让原程序链接此文件，最后在生成目标文件时打印其中的字符串：</p>
+<pre><code>import time
+
+version_c_text = &quot;&quot;&quot;
+char *date = &quot;%s&quot;;
+&quot;&quot;&quot; % time.ctime(time.time())
+open('version.c', 'w').write(version_c_text)
+
+hello = Program(['hello.c', 'version.c'])
+</code></pre>
+<p>如果 version.c 是一个实际的源文件那么显然每次 version.o 都会重编译，接着会导致 hello 每次也跟着重编译：</p>
+<pre><code>% scons -Q hello
+cc -o hello.o -c hello.c
+cc -o version.o -c version.c
+cc -o hello hello.o version.o
+% sleep 1
+% scons -Q hello
+cc -o version.o -c version.c
+cc -o hello hello.o version.o
+% sleep 1
+% scons -Q hello
+cc -o version.o -c version.c
+cc -o hello hello.o version.o
+</code></pre>
+<p>（请注意，需要 sleep 一秒钟来正确使用上述这个例子）</p>
+<p>一个解决方法是使用 Requires 方法，指定 version.o 的改变只有在目标程序需要链接时，才会导致重编译行为：</p>
+<pre><code>import time
+
+version_c_text = &quot;&quot;&quot;
+char *date = &quot;%s&quot;;
+&quot;&quot;&quot; % time.ctime(time.time())
+open('version.c', 'w').write(version_c_text)
+
+version_obj = Object('version.c')
+
+hello = Program('hello.c',
+                LINKFLAGS = str(version_obj[0]))
+
+Requires(hello, version_obj)
+</code></pre>
+<p>请注意，虽然我们不再将 version.c 作为源文件之一，我们还是需要提取文件名作为 $LINKFLAGS 变量，才会触发编译器链接行为。</p>
+<p>当做出上述改变后，hello 可执行程序只有在 hello.c 改变时才会重编译，而 version.o 的重编译（因为 SConstruct 每次都会改变 version.c 的内容）不会触发最终程序的重编译：</p>
+<pre><code>% scons -Q hello
+cc -o version.o -c version.c
+cc -o hello.o -c hello.c
+cc -o hello version.o hello.o
+% sleep 1
+% scons -Q hello
+cc -o version.o -c version.c
+scons: `hello' is up to date.
+% sleep 1
+%     [CHANGE THE CONTENTS OF hello.c]
+% scons -Q hello
+cc -o version.o -c version.c
+cc -o hello.o -c hello.c
+cc -o hello version.o hello.o
+% sleep 1
+% scons -Q hello
+cc -o version.o -c version.c
+scons: `hello' is up to date.
+</code></pre>
+<h2>AlwaysBuild 方法</h2>
+<p>最后，还可以通过 AlwaysBuild 方法来影响 SCons 处理依赖的行为。当一个文件被传入 AlwaysBuild 方法：</p>
+<pre><code>hello = Program('hello.c')
+AlwaysBuild(hello)
+</code></pre>
+<p>每次编译目标文件时，该源文件都会被认为是过时的，所有依赖路径上的文件都会被重编译：</p>
+<pre><code>% scons -Q
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% scons -Q
+cc -o hello hello.o
+</code></pre>
+<p>AlwaysBuild 这个名字有歧义，因为它并不意味着目标文件每次都会重编译。而是说每次在命令行指定该目标文件时，会触发重编译行为。所以假如在命令行指定其他的目标文件，那么它只有在真正过时时才会被重编译：</p>
+<pre><code>% scons -Q
+cc -o hello.o -c hello.c
+cc -o hello hello.o
+% scons -Q hello.o
+scons: `hello.o' is up to date.
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2016/01/03/scons5-node-objects/">
+          SCons 用户指南第五章 - 节点对象
+        </a>
+      
+
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

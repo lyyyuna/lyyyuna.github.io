@@ -1,0 +1,542 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Grafana k6 入门示例</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Grafana k6 入门示例
+    
+    <div class="subtitle">(<i><a href="/series/Grafana k6 登堂入室/">Grafana k6 登堂入室</a>, Part 2</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-03
+
+      </div>
+    </div>
+    
+    <h2>安装</h2>
+<p>k6 提供了适用于 Linux、Mac 和 Windows 的安装包。此外也可以使用 Docker 容器或独立的二进制文件，甚至是源码安装。</p>
+<h3>Linux</h3>
+<p>Debian/Ubuntu</p>
+<pre><code class="language-bash">sudo gpg -k
+sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+echo &quot;deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main&quot; | sudo tee /etc/apt/sources.list.d/k6.list
+sudo apt-get update
+sudo apt-get install k6
+</code></pre>
+<p>Fedora/Centos</p>
+<pre><code class="language-bash">sudo dnf install https://dl.k6.io/rpm/repo.rpm
+sudo dnf install k6
+</code></pre>
+<h3>MacOS</h3>
+<pre><code class="language-bash">brew install k6
+</code></pre>
+<h3>Windows</h3>
+<pre><code class="language-bash">choco install k6
+</code></pre>
+<h3>Docker</h3>
+<pre><code class="language-bash">docker pull grafana/k6
+</code></pre>
+<h3>二进制安装</h3>
+<p>可以在 <a href="https://github.com/grafana/k6/releases">GitHub Releases</a> 页面中看到预编译好的二进制文件，将对应系统的 k6 放入 <code>PATH</code> 目录中即可使用。</p>
+<h3>源码安装</h3>
+<p>源码安装其实是我推荐的方式，我们后续扩展 k6 时依赖于此。后续文章将详细介绍，这里按下不表。</p>
+<h2>写下你的第一个测试脚本</h2>
+<p>k6 是一款性能测试工具。它能帮助开发者模拟真实的用户行为，并测试系统在这些行为下的表现。通过使用 k6 编写测试脚本，可以在问题（如响应缓慢或系统故障）在生产环境中发生之前，提前发现潜在问题。</p>
+<p>大家的测试目标各不相同：性能、可靠性或可扩展性。基于此，脚本需要不同的配置，例如模拟大量用户或长时间运行。</p>
+<p>为了确保 k6 的通用性和灵活性，所有的测试脚本都遵循统一的结构设计。这种一致的结构不仅使脚本易于理解和维护，还能让开发者快速上手，轻松编写出高效的性能测试脚本，它有四个主要模块：</p>
+<ol>
+<li>默认函数：这是测试逻辑的核心部分。它定义了测试的内容以及测试在执行期间的行为。该函数需要在脚本中作为默认函数导出。</li>
+<li>导入模块：可以导入额外的 k6 模块或 JavaScript 库（jslibs）来扩展脚本的功能，例如发送 HTTP 请求或模拟浏览器交互。</li>
+<li>选项（这个模块本身也是可选的）：允许配置测试的执行方式，例如定义虚拟用户的数量、测试持续时间或设置性能阈值。</li>
+<li>生命周期操作（可选）：这些代码可以作为预定义函数或在特定的代码范围内执行，在测试执行的不同阶段运行（例如测试开始前从文件中解析数据或从 Amazon S3 下载文件）。</li>
+</ol>
+<p>现在有这样一个测试场景：向一个 URL 发送 10 次 <code>GET</code> HTTP 请求，并在每次请求之间等待 1 秒钟。</p>
+<p>首先创建一个名为 <code>script.js</code> 的 JavaScript 文件。</p>
+<p>为了发送 HTTP 请求，导入 <code>k6/http</code> 模块的 <code>http</code> 函数，为了模拟每个请求之间的延迟，导入 <code>k6</code> 模块的 <code>sleep</code> 函数：</p>
+<pre><code class="language-js">// script.js
+import http from 'k6/http';
+import { sleep } from 'k6';
+</code></pre>
+<p>我们不会在脚本中写一个 for 循环发送 10 次，来实现发送 10 次 <code>GET</code> HTTP 请求。而应该定义一个 <code>options</code> 代码块，将迭代次数设置为 10，让 k6 来自动控制循环次数：</p>
+<pre><code class="language-js">import http from 'k6/http';
+import { sleep } from 'k6';
+
+export const options = {
+  // 设置测试的迭代次数
+  iterations: 10,
+};
+</code></pre>
+<p>默认导出的函数就是测试脚本的入口点。本测试向一个 URL 发起 GET 请求，并在请求之间引入 1 秒的延迟：</p>
+<pre><code class="language-js">import http from 'k6/http';
+import { sleep } from 'k6';
+
+export const options = {
+  iterations: 10,
+};
+
+export default function () {
+  http.get('https://www.baidu.com');
+  sleep(1);
+}
+</code></pre>
+<h2>运行 k6</h2>
+<p>用以下命令运行上一节的脚本 <code>script.js</code>，：</p>
+<pre><code class="language-bash">$ k6 run script.js
+
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: script.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
+              * default: 10 iterations shared among 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+
+
+     data_received..................: 20 kB  1.8 kB/s
+     data_sent......................: 1.5 kB 138 B/s
+     http_req_blocked...............: avg=16.08ms  min=10.45µs med=13.3µs   max=160.72ms p(90)=16.09ms  p(95)=88.4ms  
+     http_req_connecting............: avg=4.42ms   min=0s      med=0s       max=44.22ms  p(90)=4.42ms   p(95)=24.32ms 
+     http_req_duration..............: avg=51.54ms  min=43.7ms  med=48.77ms  max=77.04ms  p(90)=57.23ms  p(95)=67.14ms 
+       { expected_response:true }...: avg=51.54ms  min=43.7ms  med=48.77ms  max=77.04ms  p(90)=57.23ms  p(95)=67.14ms 
+     http_req_failed................: 0.00%  0 out of 10
+     http_req_receiving.............: avg=179.21µs min=82.12µs med=170.89µs max=252.88µs p(90)=227.39µs p(95)=240.13µs
+     http_req_sending...............: avg=55.41µs  min=28.53µs med=40.17µs  max=185.76µs p(90)=83.54µs  p(95)=134.65µs
+     http_req_tls_handshaking.......: avg=10.22ms  min=0s      med=0s       max=102.23ms p(90)=10.22ms  p(95)=56.22ms 
+     http_req_waiting...............: avg=51.3ms   min=43.4ms  med=48.56ms  max=76.85ms  p(90)=57.06ms  p(95)=66.95ms 
+     http_reqs......................: 10     0.935633/s
+     iteration_duration.............: avg=1.06s    min=1.04s   med=1.04s    max=1.21s    p(90)=1.09s    p(95)=1.15s   
+     iterations.....................: 10     0.935633/s
+     vus............................: 1      min=1       max=1
+     vus_max........................: 1      min=1       max=1
+
+
+running (00m10.7s), 0/1 VUs, 10 complete and 0 interrupted iterations
+default ✓ [======================================] 1 VUs  00m10.7s/10m0s  10/10 shared iters
+</code></pre>
+<p>我们会得到一个聚合过的测试报告，包含各种 http 参数的：</p>
+<ol>
+<li>中位值和平均值</li>
+<li>最小值和最大值</li>
+<li>P90、P95 值</li>
+</ol>
+<p>除了这些统计指标外，我们还注意到，这次测试持续了 10秒，和脚本中的“10 个迭代，每次持续 1秒”能对应上。JMeter 有虚拟用户数（即用户并发数）的概念，在 k6 中等价的是 <code>VUs</code>，设置 VUs 就是设置并发数量：</p>
+<pre><code class="language-bash">$ k6 run script.js --vus 10
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: script.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 10 max VUs, 10m30s max duration (incl. graceful stop):
+              * default: 10 iterations shared among 10 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+
+...
+
+running (00m01.6s), 00/10 VUs, 10 complete and 0 interrupted iterations
+default ✓ [======================================] 10 VUs  00m01.6s/10m0s  10/10 shared iters
+</code></pre>
+<p>这次测试报告显示，并发为 10，但只花了 1s 就结束了，这意味着所有并发会共同消耗迭代次数。</p>
+<p>每次在启动命令中指定 VUs 略有不便，可以将其固化在脚本的选项中：</p>
+<pre><code class="language-js">import http from 'k6/http';
+import { sleep } from 'k6';
+export const options = {
+  vus: 10,
+  iterations: 10,
+};
+export default function () {
+  http.get('http://test.k6.io');
+  sleep(1);
+}
+</code></pre>
+<p>除了用迭代次数间接控制性能测试的时长，还可以直接指定测试时长：</p>
+<pre><code class="language-js">export const options = {
+  vus: 10,
+  durations: '10s',
+};
+</code></pre>
+<p>你可以通过配置 <code>options.stages</code> 属性来实现虚拟用户（VUs）数量的动态增减（ramping）。这种功能非常适合模拟真实场景中的用户行为，例如逐步增加负载以测试系统的性能极限，或者在测试结束后逐步减少负载。</p>
+<p>以下是一个典型的 ramping 配置示例，模拟负载逐步增加、保持峰值、然后逐步减少的过程：</p>
+<pre><code class="language-js">import http from 'k6/http';
+
+export const options = {
+  stages: [
+    // 第一阶段：30 秒内逐步增加到 50 个 VUs
+    { duration: '30s', target: 50 },
+    // 第二阶段：保持 50 个 VUs 持续运行 1 分钟
+    { duration: '1m', target: 50 },
+    // 第三阶段：30 秒内逐步减少到 0 个 VUs
+    { duration: '30s', target: 0 },
+  ],
+};
+
+export default function () {
+  http.get('https://test.k6.io');
+}
+</code></pre>
+<p>运行结果为：</p>
+<ol>
+<li>第一阶段：在 30 秒内，虚拟用户数从 0 逐步增加到 50。</li>
+<li>第二阶段：在 1 分钟内，保持 50 个虚拟用户持续运行。</li>
+<li>第三阶段：在 30 秒内，虚拟用户数从 50 逐步减少到 0。</li>
+</ol>
+<h2>结语</h2>
+<p>在本文中，我们简要浏览了 k6 的基本功能，并进行了初步尝试。可以发现，k6 使用起来非常简单，对于具备编程能力的开发者来说尤为友好。在接下来的文章中，我们将深入探讨 k6 的各个细节，帮助大家更好地掌握这一强大工具。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2025/02/18/grafana-k6-0/">
+          Grafana k6 是什么
+        </a>
+      
+
+      
+        <a class="next" href="/2025/04/08/grafana-k6-2/">
+          在 k6 中发送 HTTP 请求
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

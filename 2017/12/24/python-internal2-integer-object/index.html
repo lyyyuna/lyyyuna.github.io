@@ -1,0 +1,729 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Python 2.7 源码 - 整数对象</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Python 2.7 源码 - 整数对象
+    
+    <div class="subtitle">(<i><a href="/series/Python 源码之旅/">Python 源码之旅</a>, Part 2</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2017-12
+
+      </div>
+    </div>
+    
+    <h2>Python 的面向对象</h2>
+<p>面向对象编程中，对象是数据以及基于这些数据的操作的集合，实际上在计算机中这只是一堆内存逻辑上的集合，无论这段内存是连续的还是分开的。</p>
+<p>Python 是由 C 语言写成，描述一段逻辑上结合的内存，直接用结构体 <code>struct</code> 就可以了。但是 <code>struct</code> 并不是面向对象中类型的概念，对象还需要成员函数。所以还需要另外一个结构体 <code>struct</code> 来描述成员函数的集合。</p>
+<p>上述特点就导致了在 Python 中，实际的类型也是一个对象，这个类型对象的结构体如下：</p>
+<pre><code class="language-c">typedef struct _typeobject {
+    PyObject_VAR_HEAD
+    const char *tp_name; /* For printing, in format &quot;&lt;module&gt;.&lt;name&gt;&quot; */
+    Py_ssize_t tp_basicsize, tp_itemsize; /* For allocation */
+
+    /* Methods to implement standard operations */
+
+    destructor tp_dealloc;
+    printfunc tp_print;
+    getattrfunc tp_getattr;
+    setattrfunc tp_setattr;
+    cmpfunc tp_compare;
+    reprfunc tp_repr;
+
+    /* Method suites for standard classes */
+
+    PyNumberMethods *tp_as_number;
+    PySequenceMethods *tp_as_sequence;
+    PyMappingMethods *tp_as_mapping;
+
+    /* More standard operations (here for binary compatibility) */
+
+    hashfunc tp_hash;
+    ternaryfunc tp_call;
+    reprfunc tp_str;
+    getattrofunc tp_getattro;
+    setattrofunc tp_setattro;
+
+    /* Functions to access object as input/output buffer */
+    PyBufferProcs *tp_as_buffer;
+
+    /* Flags to define presence of optional/expanded features */
+    long tp_flags;
+
+    const char *tp_doc; /* Documentation string */
+
+    /* Assigned meaning in release 2.0 */
+    /* call function for all accessible objects */
+    traverseproc tp_traverse;
+
+    /* delete references to contained objects */
+    inquiry tp_clear;
+
+    /* Assigned meaning in release 2.1 */
+    /* rich comparisons */
+    richcmpfunc tp_richcompare;
+
+    /* weak reference enabler */
+    Py_ssize_t tp_weaklistoffset;
+
+    /* Added in release 2.2 */
+    /* Iterators */
+    getiterfunc tp_iter;
+    iternextfunc tp_iternext;
+
+    /* Attribute descriptor and subclassing stuff */
+    struct PyMethodDef *tp_methods;
+    struct PyMemberDef *tp_members;
+    struct PyGetSetDef *tp_getset;
+    struct _typeobject *tp_base;
+    PyObject *tp_dict;
+    descrgetfunc tp_descr_get;
+    descrsetfunc tp_descr_set;
+    Py_ssize_t tp_dictoffset;
+    initproc tp_init;
+    allocfunc tp_alloc;
+    newfunc tp_new;
+    freefunc tp_free; /* Low-level free-memory routine */
+    inquiry tp_is_gc; /* For PyObject_IS_GC */
+    PyObject *tp_bases;
+    PyObject *tp_mro; /* method resolution order */
+    PyObject *tp_cache;
+    PyObject *tp_subclasses;
+    PyObject *tp_weaklist;
+    destructor tp_del;
+
+    /* Type attribute cache version tag. Added in version 2.6 */
+    unsigned int tp_version_tag;
+
+#ifdef COUNT_ALLOCS
+    /* these must be last and never explicitly initialized */
+    Py_ssize_t tp_allocs;
+    Py_ssize_t tp_frees;
+    Py_ssize_t tp_maxalloc;
+    struct _typeobject *tp_prev;
+    struct _typeobject *tp_next;
+#endif
+} PyTypeObject;
+</code></pre>
+<p>所以在源码中，Python 最基础的对象表示如下：</p>
+<pre><code class="language-c">typedef struct _object 
+{
+    Py_ssize_t ob_refcnt;
+    struct _typeobject *ob_type;
+} PyObject;
+</code></pre>
+<p>每一个对象都有一个指针指向自己所属的类型对象，而类型对象则有关于这个对象支持的所有操作的信息。</p>
+<p>仔细看 <code>PyTypeObject</code> 的头部，<code>PyObject_VAR_HEAD</code> 即含有 <code>ob_type</code>，难道还有类型的类型这个概念？是的，这个终极的类型就是元类，即 <code>metaclass</code>。做个简单的实验。</p>
+<pre><code class="language-python">&gt;&gt;&gt; class A(object):
+...     pass
+...
+&gt;&gt;&gt;
+&gt;&gt;&gt;
+&gt;&gt;&gt; A.__class__
+&lt;type 'type'&gt;
+&gt;&gt;&gt; A.__class__.__class__
+&lt;type 'type'&gt;
+&gt;&gt;&gt; type.__class__
+&lt;type 'type'&gt;
+</code></pre>
+<p>在 Python 中类型是对象，所以类型对象也有类型，而元类的类型就是自己。</p>
+<h2>Python 的整数类型</h2>
+<p>整数类型没啥可说的，按照 <code>PyTypeObject</code> 结构去填充信息即可：</p>
+<pre><code class="language-c">PyTypeObject PyInt_Type = {
+    PyVarObject_HEAD_INIT(&amp;PyType_Type, 0)
+    &quot;int&quot;,
+    sizeof(PyIntObject),
+    0,
+    (destructor)int_dealloc,                    /* tp_dealloc */
+    (printfunc)int_print,                       /* tp_print */
+    0,                                          /* tp_getattr */
+    0,                                          /* tp_setattr */
+    (cmpfunc)int_compare,                       /* tp_compare */
+    (reprfunc)int_to_decimal_string,            /* tp_repr */
+    &amp;int_as_number,                             /* tp_as_number */
+    0,                                          /* tp_as_sequence */
+    0,                                          /* tp_as_mapping */
+    (hashfunc)int_hash,                         /* tp_hash */
+    0,                                          /* tp_call */
+    (reprfunc)int_to_decimal_string,            /* tp_str */
+    PyObject_GenericGetAttr,                    /* tp_getattro */
+    0,                                          /* tp_setattro */
+    0,                                          /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_CHECKTYPES |
+        Py_TPFLAGS_BASETYPE | Py_TPFLAGS_INT_SUBCLASS,          /* tp_flags */
+    int_doc,                                    /* tp_doc */
+    0,                                          /* tp_traverse */
+    0,                                          /* tp_clear */
+    0,                                          /* tp_richcompare */
+    0,                                          /* tp_weaklistoffset */
+    0,                                          /* tp_iter */
+    0,                                          /* tp_iternext */
+    int_methods,                                /* tp_methods */
+    0,                                          /* tp_members */
+    int_getset,                                 /* tp_getset */
+    0,                                          /* tp_base */
+    0,                                          /* tp_dict */
+    0,                                          /* tp_descr_get */
+    0,                                          /* tp_descr_set */
+    0,                                          /* tp_dictoffset */
+    0,                                          /* tp_init */
+    0,                                          /* tp_alloc */
+    int_new,                                    /* tp_new */
+};
+</code></pre>
+<h2>整数对象的内存</h2>
+<p>再看一眼 PyObject 对象，</p>
+<pre><code class="language-c">typedef struct _object 
+{
+    Py_ssize_t ob_refcnt;
+    struct _typeobject *ob_type;
+} PyObject;
+</code></pre>
+<p>我们看到了 <code>ob_refcnt</code> 引用计数对象，可以很容易地联想到 Python 虚拟机是以引用计数为基础构建垃圾回收机制。既然如此，那还有没有必要专门讨论整数对象的内存使用,而直接抽象成引用计数归零后释放内存？</p>
+<p>事实上，为了提高虚拟机的性能，整数对象使用了多种技术。</p>
+<h3>大整数创建</h3>
+<p>在 intobject.c 中定义有</p>
+<pre><code class="language-c">#define N_INTOBJECTS    ((BLOCK_SIZE - BHEAD_SIZE) / sizeof(PyIntObject))
+
+struct _intblock {
+    struct _intblock *next;
+    PyIntObject objects[N_INTOBJECTS];
+};
+
+typedef struct _intblock PyIntBlock;
+
+static PyIntBlock *block_list = NULL;
+static PyIntObject *free_list = NULL;
+</code></pre>
+<p><code>block_list</code> 是由一个个 <code>PyIntBlock</code> 串起来的链表，每一个 <code>PyIntBlock</code> 是一个整数数组。<code>free_list</code> 是由空闲的 <code>PyIntObject</code> 组成的链表，空闲是指这块内存虽然被划分为一个 <code>PyIntObject</code>，但并没有被用于表示一个真正的整数，即其所存储的信息是无用的。</p>
+<p>整数创建时，<code>PyObject * PyInt_FromLong(long ival)</code> 会被调用，</p>
+<pre><code class="language-c">PyObject *
+PyInt_FromLong(long ival)
+{
+    register PyIntObject *v;
+    ...
+    ...
+    if (free_list == NULL) {
+        if ((free_list = fill_free_list()) == NULL)
+            return NULL;
+    }
+    /* Inline PyObject_New */
+    v = free_list;
+    free_list = (PyIntObject *)Py_TYPE(v);
+    (void)PyObject_INIT(v, &amp;PyInt_Type);
+    v-&gt;ob_ival = ival;
+    return (PyObject *) v;
+}
+
+static PyIntObject *
+fill_free_list(void)
+{
+    PyIntObject *p, *q;
+    /* Python's object allocator isn't appropriate for large blocks. */
+    p = (PyIntObject *) PyMem_MALLOC(sizeof(PyIntBlock));
+    if (p == NULL)
+        return (PyIntObject *) PyErr_NoMemory();
+    ((PyIntBlock *)p)-&gt;next = block_list;
+    block_list = (PyIntBlock *)p;
+    /* Link the int objects together, from rear to front, then return
+       the address of the last int object in the block. */
+    p = &amp;((PyIntBlock *)p)-&gt;objects[0];
+    q = p + N_INTOBJECTS;
+    while (--q &gt; p)
+        Py_TYPE(q) = (struct _typeobject *)(q-1);
+    Py_TYPE(q) = NULL;
+    return p + N_INTOBJECTS - 1;
+}
+</code></pre>
+<p>当创建整数的时候，会先尝试从 <code>free_list</code> 中取，如果没有空闲的，就会尝试 <code>fill_free_list</code>。这个新的 <code>PyIntBlock</code> 中，每一个 <code>PyIntObject</code> 都借用 <code>ob_type</code> 来连接成链表。</p>
+<pre><code class="language-c">#define Py_TYPE(ob) (((PyObject*)(ob))-&gt;ob_type)
+</code></pre>
+<p>这里只是借用，初看源码的朋友不要被这里搞混了。因为此时这块内存并没有存放整数，它的成员自然可以借来他用。<code>free_list</code> 指向数组的末尾，从后往前链接到数组首部。</p>
+<h3>大整数销毁</h3>
+<p>当一个整数销毁时，便会进入 <code>int_dealloc</code> 函数内。</p>
+<pre><code class="language-c">static void
+int_dealloc(PyIntObject *v)
+{
+    if (PyInt_CheckExact(v)) {
+        Py_TYPE(v) = (struct _typeobject *)free_list;
+        free_list = v;
+    }
+    else
+        Py_TYPE(v)-&gt;tp_free((PyObject *)v);
+}
+</code></pre>
+<p>这个函数在正常情况下不会走到 <code>else</code> 分支，意味着所谓的销毁，只是把这个整数的 <code>PyIntObject</code> 重新放回 <code>free_list</code> 链表中，并不会释放这块内存。这岂不会造成内存泄漏？只能说，理论上会。整数对象所占用的内存空间，只和这个程序同时拥有的最多的整数数量有关。</p>
+<p>上述做法也是为了优化性能，虚拟机不再需要频繁的 <code>malloc</code> 和 <code>free</code>。</p>
+<h3>小整数</h3>
+<p>除了普通的整数外，Python 中还存在着一种小整数对象。在之前的 <code>PyInt_FromLong</code> 函数中，我们略了一部分，现在我们从另一个角度看。</p>
+<pre><code class="language-c">PyObject *
+PyInt_FromLong(long ival)
+{
+    register PyIntObject *v;
+
+    if (-NSMALLNEGINTS &lt;= ival &amp;&amp; ival &lt; NSMALLPOSINTS) {
+        v = small_ints[ival + NSMALLNEGINTS];
+        Py_INCREF(v);
+    ...
+    ...
+
+}
+</code></pre>
+<p>当想创建的整数在 <code>-NSMALLNEGINTS ~ NSMALLPOSINTS</code> 之间时，就会从 <code>small_ints</code> 数组中直接取出。这范围内的整数即为小整数。小整数使用广泛，循环的初始值，终结值，步进值等等，都是数值很小的整数。小整数从 Python 虚拟机运行之初就存在，使用它们既不需要 <code>malloc</code> 和 <code>free</code>，甚至连指针操作 <code>free_list</code> 也不要。效率比大整数更高。</p>
+<p>而小整数的范围可在编译 Python 时指定，默认为 <code>-5 ~ 257</code>。</p>
+<h2>实验</h2>
+<p>改造一下整数打印函数，反映出内存的变化。</p>
+<pre><code class="language-c">static int values[10];
+static int refcounts[10];
+/* ARGSUSED */
+static int
+int_print(PyIntObject *v, FILE *fp, int flags)
+     /* flags -- not used but required by interface */
+{
+    PyIntObject * intObjectPtr;
+    PyIntBlock * p = block_list;
+    PyIntBlock * last = NULL;
+    int count = 0;
+    int i = 0;
+
+    long int_val = v-&gt;ob_ival;
+    Py_BEGIN_ALLOW_THREADS
+    fprintf(fp, &quot;%ld&quot;, int_val);
+    Py_END_ALLOW_THREADS
+
+    while (p!=NULL)
+    {
+        ++count;
+        last = p;
+        p = p-&gt;next;
+    }
+    intObjectPtr = last-&gt;objects;
+    intObjectPtr += N_INTOBJECTS-1;
+    printf(&quot;\nvalue's address is @%p\n&quot;, v);
+
+    for (i = 0; i &lt; 10; i++, --intObjectPtr)
+    {
+        values[i] = intObjectPtr-&gt;ob_ival;
+        refcounts[i] = intObjectPtr-&gt;ob_refcnt;
+    }
+    printf(&quot;  value : &quot;);
+    for (i = 0; i &lt; 8; ++i)
+    {
+        printf(&quot;%d\t&quot;, values[i]);
+    }
+    printf(&quot;\n&quot;);
+    printf(&quot;  refcnt : &quot;);
+    for (i = 0; i &lt; 8; ++i)
+    {
+        printf(&quot;%d\t&quot;, refcounts[i]);
+    }
+    printf(&quot;\n&quot;);
+
+    printf(&quot; block_list count : %d\n&quot;, count);
+    printf(&quot; free_list address : %p\n&quot;, free_list);
+    return 0;
+}
+</code></pre>
+<p>运行重新编译后的 python 虚拟机。</p>
+<h3>大整数实验</h3>
+<p>首先是连续创建两个大整数。</p>
+<pre><code class="language-python">&gt;&gt;&gt; a=1111
+&gt;&gt;&gt; a
+1111
+value's address is @0x100303888
+  value : -5    -4      -3      -2      -1      0       1       2
+  refcnt : 1    1       1       1       54      389     587     84
+ block_list count : 9
+ free_list address : 0x1003038a0
+
+&gt;&gt;&gt; b=2222
+&gt;&gt;&gt; b
+2222
+value's address is @0x1003038a0
+  value : -5    -4      -3      -2      -1      0       1       2
+  refcnt : 1    1       1       1       54      389     587     84
+ block_list count : 9
+ free_list address : 0x1003038b8
+</code></pre>
+<p>第一次的 <code>free_list</code>，正好是第二次整数的地址。可以看到小整数都至少有一个引用，有些多于一次是因为 python 虚拟机内部使用的缘故。</p>
+<p>当尝试创建一个相同的大整数时。</p>
+<pre><code class="language-python">&gt;&gt;&gt; c=2222
+&gt;&gt;&gt; c
+2222
+value's address is @0x1003038b8
+  value : -5    -4      -3      -2      -1      0       1       2
+  refcnt : 1    1       1       1       54      389     587     84
+ block_list count : 9
+ free_list address : 0x1003038d0
+</code></pre>
+<p>可以看出，虽然值相同，但并不是同一个内存块。</p>
+<h3>小整数实验</h3>
+<p>创建两个相同的小整数。</p>
+<pre><code class="language-python">&gt;&gt;&gt; d=1
+&gt;&gt;&gt; d
+1
+value's address is @0x100604ce8
+  value : -5    -4      -3      -2      -1      0       1       2
+  refcnt : 1    1       1       1       54      389     591     84
+ block_list count : 9
+ free_list address : 0x1003038d0
+
+&gt;&gt;&gt; c=1
+&gt;&gt;&gt; c
+1
+value's address is @0x100604ce8
+  value : -5    -4      -3      -2      -1      0       1       2
+  refcnt : 1    1       1       1       54      389     592     84
+ block_list count : 9
+ free_list address : 0x100303828
+</code></pre>
+<p>可以看出，整数 1 只是增加了引用计数，内存块是同一个。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2017/12/19/python-internal1-begin/">
+          Python 2.7 源码 - 开始
+        </a>
+      
+
+      
+        <a class="next" href="/2017/12/28/python-internal3-string-object/">
+          Python 2.7 源码 - 字符串对象
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>
