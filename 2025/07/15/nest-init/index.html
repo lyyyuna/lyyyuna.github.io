@@ -1,0 +1,598 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Nest 初识</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Nest 初识
+    
+    <div class="subtitle">(<i><a href="/series/Nest 指北系列/">Nest 指北系列</a>, Part 1</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-07
+
+      </div>
+    </div>
+    
+    <h1>Nest 是啥？</h1>
+<p>Nest 是一个 nodejs 服务端应用程序开发框架，它有几个特点：</p>
+<ol>
+<li>内置支持 Typescript</li>
+<li>底层默认使用 Express 框架，也可以通过配置使用 Fastify</li>
+<li>核心思想是控制反转和依赖注入</li>
+</ol>
+<p>下面我们先创建一个简单的 Nest 项目，通过项目了解 Nest 中的一些基本概念，最后再聊一聊核心思想控制反转（IoC）和依赖注入（DI）是咋回事。</p>
+<h1>创建项目与基本概念</h1>
+<h2>创建与启动</h2>
+<ol>
+<li>全局安装 @nestjs/cli</li>
+</ol>
+<p><code>pnpm i -g @nestjs/cli</code></p>
+<ol start="2">
+<li>通过 cli 创建项目</li>
+</ol>
+<p><code>nest new &lt;project-name&gt;</code></p>
+<ol start="3">
+<li>启动项目</li>
+</ol>
+<p><code>cd &lt;project-name&gt;</code></p>
+<p><code>pnpm run start</code></p>
+<p>可以看到项目已经成功运行起来了。</p>
+<p>![image](/imgrrr/Nest 指北系列/1.webp)</p>
+<h2>项目结构与基本概念</h2>
+<p>项目的核心结构如下：</p>
+<pre><code class="language-js">src
+├── app.controller.spec.ts
+├── app.controller.ts
+├── app.module.ts
+├── app.service.ts
+├── main.ts
+</code></pre>
+<h3>main</h3>
+<p>main 文件是应用程序的入口文件，其中通过 NestFactory.create 创建应用实例，然后监听端口。</p>
+<pre><code class="language-js">import { NestFactory } from &quot;@nestjs/core&quot;;
+import { AppModule } from &quot;./app.module&quot;;
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(process.env.PORT ?? 3000);
+}
+bootstrap();
+</code></pre>
+<h3>module</h3>
+<ul>
+<li>module 是使用 @Module 装饰器声明的类，其中可以注册其他 module、controller、provider ，也可以导出。</li>
+<li>Nest 中用模块来组织应用程序，每个应用至少需要一个根模块。</li>
+</ul>
+<pre><code class="language-js">import { Module } from &quot;@nestjs/common&quot;;
+import { AppController } from &quot;./app.controller&quot;;
+import { AppService } from &quot;./app.service&quot;;
+
+@Module({
+  imports: [],
+  controllers: [AppController],
+  providers: [AppService],
+  exports: [],
+})
+export class AppModule {}
+</code></pre>
+<h3>controller</h3>
+<ul>
+<li>controller 是被 @Controller 装饰器声明的类。</li>
+<li>负责处理请求和响应，可以注入 provider，比如下面例子中创建了一个 Get 接口，其中依赖了 AppService。</li>
+</ul>
+<pre><code class="language-js">import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get(&quot;/hello&quot;)
+  getHello(): string {
+    return this.appService.getHello();
+  }
+}
+</code></pre>
+<h3>provider</h3>
+<ul>
+<li>provider 是被 @Injectable 装饰器声明的类。</li>
+<li>通常用于提供一些具体的功能实现，可以被注入到 controller 或者其他 provider 使用。</li>
+</ul>
+<pre><code class="language-js">import { Injectable } from &quot;@nestjs/common&quot;;
+
+@Injectable()
+export class AppService {
+  getHello(): string {
+    return &quot;Hello World!&quot;;
+  }
+}
+</code></pre>
+<p>至此，Nest 应用程序对外提供了一个 /hello 接口，返回 &quot;hello world!&quot;，尝试 curl 调用：</p>
+<p>![image.png](/imgrrr/Nest 指北系列/2.webp)</p>
+<h1>控制反转和依赖注入</h1>
+<p>控制反转和依赖注入是 Nest 的核心思想，怎么理解呢？我们来举个 🌰。</p>
+<h2>传统写法的问题</h2>
+<p>一个应用程序的组织，本质上就是很多的类，互相调用来实现整体的功能。比如有两个低层类 Dog 和 Cat，用于创建猫和狗；有一个高层 Animal 类，依赖低层类去创建小动物。下面的写法中，直接在 Animal 中实例化 Dog 类并创建了一只小狗。</p>
+<pre><code class="language-js">class Dog {
+    create() {
+        console.log(&quot;create a dog, wangwang～&quot;)
+    }
+}
+
+class Cat {
+    create() {
+        console.log(&quot;create a cat, miaomiao~&quot;)
+    }
+}
+
+class Animal {
+    private dog = new Dog()
+    create() {
+        this.dog.create()
+    }
+}
+</code></pre>
+<p>这个写法会有什么问题呢？思考一下：</p>
+<ol>
+<li>假如需求改变，不想让 Animal 创建一只小狗而是想创建一只小猫，那么需要改变 Animal 类的实现，如果想创建其他小动物就需要一次又一次的改变类的实现，<code>Animal 和它依赖的类产生了强耦合</code>。</li>
+</ol>
+<pre><code class="language-js">class Animal {
+    private cat = new Cat()
+    create() {
+        this.cat.create()
+    }
+}
+</code></pre>
+<ol start="2">
+<li>假如还有很多个 Animal2、Animal3 ......，它们都想要创建一只小狗，那么代码就变成下面这样，<code>Dog 需要被实例化很多次</code>。</li>
+</ol>
+<pre><code class="language-js">class Animal {
+    private dog = new Dog()
+    create() {
+        this.dog.create()
+    }
+}
+
+class Animal2 {
+    private dog = new Dog()
+    create() {
+        this.dog.create()
+    }
+}
+
+class Animal3 {
+    private dog = new Dog()
+    create() {
+        this.dog.create()
+    }
+}
+</code></pre>
+<p>当应用复杂度增加，类和类之间依赖关系复杂度也随之增加，这两个问题会变得越来越严重。</p>
+<h2>改进</h2>
+<p>那更好的写法是什么呢？当 Animal 类依赖 Dog 类时，可以不在 Animal 中直接创建 Dog 的实例，而是定义一套抽象接口，Animal 类和 Dog 类都依赖于这套抽象去实现，然后在外部工厂类中创建 Dog 实例传入 Animal。即: <code>Animal 不用关心实例如何创建，只需要按照抽象接口的规范去使用它即可</code>。</p>
+<pre><code class="language-js">class Animal {
+    private animal
+    constructor(animal) {
+        this.animal = animal
+    }
+    create() {
+        this.animal.create()
+    }
+}
+
+class Animal2 {
+    private animal
+    constructor(animal) {
+        this.animal = animal
+    }
+    create() {
+        this.animal.create()
+    }
+}
+
+class Factory {
+    create() {
+        // 先创建一只狗
+        const dog = new Dog()
+        const dogAnimal = new Animal(dog)
+        dogAnimal.create()
+        // 再创建一只猫
+        const cat = new Cat()
+        const catAnimal = new Animal(cat)
+        catAnimal.create()
+        // Animal2 复用同一个 Dog 实例创建一只狗
+        const animal2 = new Animal2(dog)
+        animal2.create()
+    }
+}
+
+</code></pre>
+<p>这样就解决了上面两个问题：</p>
+<ol>
+<li>当我们想从创建一只狗变为创建一只猫时，Animal 类的实现完全不需要改动。</li>
+<li>当多个 Animal 都想创建一只狗时，可以复用同一个实例。</li>
+</ol>
+<p>这个例子中，将类实例化的过程交给 IoC 容器（即 Factory 类）处理，就是<strong>控制反转（IoC）</strong>；在类之外创建依赖对象并提供给类，就是<strong>依赖注入（DI）</strong>。</p>
+<h2>Nest 中的 IoC</h2>
+<p>Nest 框架本身就是一个 IoC 容器，负责统一管理类的实例化以及注入，开发者不需要手动实例化，只需要向 IoC 容器拿实例化后的对象使用即可。这种将控制权交给框架的做法，有利于实现类和类之间的松耦合。</p>
+<h3>具体实现</h3>
+<ol>
+<li>
+<p>module 中通过 @Module 装饰器注册依赖。</p>
+</li>
+<li>
+<p>通过 @Injectable 装饰器定义 provider，声明这个类被 IoC 容器接管，即实例化过程委托给 IoC 容器。</p>
+</li>
+<li>
+<p>controller 和 provider 中都可以通过 constructor 注入依赖关系。</p>
+</li>
+</ol>
+<pre><code class="language-js">// test.module.ts
+@Module({
+    controllers: [TestController],
+    providers: [TestService],
+})
+export class TestModule {}
+
+// test.service.ts
+@Injectable()
+export class TestService {
+    constructor(private test2Service: Test2Service) {}
+
+    findAll() {}
+}
+
+// test.controller.ts
+@Controller('test')
+export class TestController {
+    // 注入对 TestService 的依赖
+    constructor(private testService: TestService) {}
+
+    @Get()
+    async findAll() {
+        return this.testService.findAll();
+    }
+}
+</code></pre>
+<h1>最后</h1>
+<p>至此，我们简单了解了 Nest 的几个基本概念 module、controller、provider，以及它的核心思想控制反转与依赖注入。此系列后续文章会更详细的介绍它的使用并对核心源码进行解析。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

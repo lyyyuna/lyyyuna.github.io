@@ -1,0 +1,455 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 向百度收录自动推送链接</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>向百度收录自动推送链接
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2015-12
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>相比较三个搜索引擎，必应对我站点的收录居然是最快的，而百度的抓取确实很慢，至今未收录。研究了下百度的站长工具，里面提到可以通过发送 POST http://data.zz.baidu.com/urls?site=www.lyyyuna.com&amp;token=XXXXXXXXXXXXX&amp;type=original 请求，提交希望百度抓取的链接。不过百度没有给 Python 的例子，于是我准备自己写一个。</p>
+<h2>自动推送设计思路</h2>
+<p>整个流程比较简单，毕竟只有一个 POST 请求。公司的电脑常年开机，上面跑了虚拟机，可以作为自动推送机。</p>
+<p>由于每天允许最大推送链接数只有 500 条，所以我计划每天定时推送一次，且每次只推送新产生的链接。</p>
+<p>定时任务可以直接使用 crontab 完成。</p>
+<p>对于如何找到新链接，一开始我想的是是用爬虫爬一遍，虽然我的网站是全静态的，但写爬虫真的麻烦。后来我想到，sitemap.xml 会随 hexo g 自动产生，我只需要去 sitemap.xml 找新链接即可。在我本地的自动推送机上，使用 Python 自带的 sqlite3 数据库保存已推送过的链接。</p>
+<h2>自动推送链接的实现</h2>
+<h3>crontab 定时触发脚本</h3>
+<p>crontab 设置成每天 1:10 AM 推送。如何设置可以谷歌或参照自带帮助说明。</p>
+<pre><code>10 1 * * * python /root/sitemap_auto_push/1.py &gt;/dev/null 2&gt;&amp;1
+</code></pre>
+<h3>sqlite3 数据库</h3>
+<p>更简单了，只需要一个表。</p>
+<pre><code>create table urls
+{
+    id integer primary key autoincrement,
+    url varchar(200)    
+}
+</code></pre>
+<h3>XML 解析</h3>
+<p>sitemap.xml 是 XML 标记的，可以直接使用 Python 的 xml 模块来解析。我个人主页的 sitemap.xml 树结构如下</p>
+<pre><code>&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;&gt;
+
+&lt;url&gt;
+    &lt;loc&gt;http://www.lyyyuna.com/2015/12/28/robotframework-quickstartguide/&lt;/loc&gt;
+    &lt;lastmod&gt;2015-12-28T15:06:00.354Z&lt;/lastmod&gt;
+&lt;/url&gt;
+&lt;url&gt;
+    &lt;loc&gt;http://www.lyyyuna.com/2015/12/25/scons4-building-and-linking-with-libraries/&lt;/loc&gt;
+    &lt;lastmod&gt;2015-12-25T13:30:14.968Z&lt;/lastmod&gt;
+&lt;/url&gt;    
+...
+...
+...
+&lt;/urlset&gt;
+</code></pre>
+<p>所以简单遍历一下就可以取出所有链接，再与数据库中的内容比较即可</p>
+<pre><code>loc_string = '{http://www.sitemaps.org/schemas/sitemap/0.9}loc'
+for url in root:
+    for attr in url:
+        if attr.tag == loc_string:
+            if not check_if_exist(attr.text):
+</code></pre>
+<h3>POST 请求</h3>
+<p>每行一个链接 POST 即可，没有键-值，不需要 urlencode。</p>
+<pre><code>baidu_zhanzhang_url = 'http://data.zz.baidu.com/urls?site=www.lyyyuna.com&amp;token=XXXXXXXXXXXXX&amp;type=original'
+# values = 'http://www.lyyyuna.com/2015/12/28/robotframework-quickstartguide/'
+
+req = urllib2.Request(baidu_zhanzhang_url, values)
+response = urllib2.urlopen(req)
+the_page = response.read()      
+</code></pre>
+<h3>完整源代码</h3>
+<pre><code># -*- coding: utf-8 -*-
+
+import urllib
+import urllib2
+
+def check_if_exist(url):
+    for cached_url in all_urls:
+        ascii_cached_url = cached_url[1].encode('ascii')
+        # print ascii_cached_url
+        if url == ascii_cached_url:
+            return True
+    return False
+    
+sitemap_url = 'http://www.lyyyuna.com/sitemap.xml'
+get = urllib2.urlopen(sitemap_url)
+xml_string = get.read()
+
+import sqlite3
+import xml.etree.ElementTree as ET
+root = ET.fromstring(xml_string)
+
+cx = sqlite3.connect('sitemap.db3')
+cur = cx.cursor()
+cur.execute('select * from urls')
+all_urls = cur.fetchall()
+# print all_urls[0][1]
+
+values = ''
+loc_string = '{http://www.sitemaps.org/schemas/sitemap/0.9}loc'
+for url in root:
+    for attr in url:
+        if attr.tag == loc_string:
+            if not check_if_exist(attr.text):
+                # print attr.text
+                cur.execute(&quot;insert into urls (url) values ('&quot; + attr.text + &quot;')&quot;)
+                values = values + attr.text + '\n'
+
+cx.commit()
+
+print values
+
+baidu_zhanzhang_url = 'http://data.zz.baidu.com/urls?site=www.lyyyuna.com&amp;token=XXXXXXXXXXXXX&amp;type=original'
+# values = 'http://www.lyyyuna.com/2015/12/28/robotframework-quickstartguide/'
+
+req = urllib2.Request(baidu_zhanzhang_url, values)
+response = urllib2.urlopen(req)
+the_page = response.read()
+
+print the_page
+</code></pre>
+<p>若看到</p>
+<pre><code>{&quot;remain&quot;:496,&quot;success&quot;:2}
+</code></pre>
+<p>你就成功了。</p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,587 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: k6 测试生命周期</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>k6 测试生命周期
+    
+    <div class="subtitle">(<i><a href="/series/Grafana k6 登堂入室/">Grafana k6 登堂入室</a>, Part 8</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-06
+
+      </div>
+    </div>
+    
+    <h2>概览</h2>
+<p>在 k6 测试的生命周期中，脚本总是按照以下固定顺序依次执行各个阶段：</p>
+<ol>
+<li><code>init</code> 上下文中的代码准备脚本、加载文件、导入模块并定义测试生命周期函数。<strong>必须阶段</strong></li>
+<li><code>setup</code> 函数执行阶段，设置测试环境并生成测试数据。<strong>可选阶段</strong></li>
+<li>VU 代码执行阶段，在 <code>default</code> 或 <code>scenario</code> 函数中运行，根据测试配置执行指定时长和次数。<strong>必选阶段</strong></li>
+<li><code>teardown</code> 函数执行阶段，进行数据后处理并关闭测试环境。<strong>可选阶段</strong></li>
+</ol>
+<pre><code class="language-js">// 1. init code
+
+export function setup() {
+  // 2. setup code
+}
+
+export default function (data) {
+  // 3. VU code
+}
+
+export function teardown(data) {
+  // 4. teardown code
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th><strong>测试阶段</strong></th>
+<th><strong>目的</strong></th>
+<th><strong>示例</strong></th>
+<th><strong>调用规则</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. init</td>
+<td>加载本地文件、导入模块、声明生命周期函数</td>
+<td>打开 JSON 文件、导入模块</td>
+<td>每个 VU 执行一次</td>
+</tr>
+<tr>
+<td>2. Setup</td>
+<td>准备测试数据，在 VU 间共享数据</td>
+<td>调用 API 启动测试环境</td>
+<td>整个测试执行一次</td>
+</tr>
+<tr>
+<td>3. VU 代码</td>
+<td>执行测试函数（通常为 <code>default</code> 函数）</td>
+<td>发送 HTTPS 请求、验证响应</td>
+<td>每次迭代执行一次，次数由测试配置决定</td>
+</tr>
+<tr>
+<td>4. Teardown</td>
+<td>处理 Setup 阶段的结果数据，停止测试环境</td>
+<td>验证 Setup 结果、发送测试完成 Webhook 通知</td>
+<td>整个测试执行一次</td>
+</tr>
+</tbody>
+</table>
+<h2>init 阶段</h2>
+<p><code>init</code> 阶段是必选的。在测试运行前，k6 需要初始化测试环境。为准备测试，<code>init</code> 上下文中的代码会为每个 VU 执行一次。</p>
+<p>在 <code>init</code> 阶段可能进行的操作包括：</p>
+<ul>
+<li>导入模块</li>
+<li>从本地文件系统加载文件</li>
+<li>为所有测试选项进行配置</li>
+<li>为 VU、<code>setup</code> 和 <code>teardown</code> 阶段定义生命周期函数（也包括自定义函数或 <code>handleSummary()</code> 函数）</li>
+</ul>
+<p>所有未包含在生命周期函数内的代码都属于 <code>init</code> 上下文。<code>init</code> 上下文中的代码总是最先执行。</p>
+<pre><code class="language-js">// init context: importing modules
+import http from 'k6/http';
+import { Trend } from 'k6/metrics';
+
+// init context: define k6 options
+export const options = {
+  vus: 10,
+  duration: '30s',
+};
+
+// init context: global variables
+const customTrend = new Trend('oneCustomMetric');
+
+// init context: define custom function
+function myCustomFunction() {
+  // ...
+}
+</code></pre>
+<p>将 <code>init</code> 阶段 与 VU 阶段分离，可以避免在 VU 代码中执行无关的计算，从而提升 k6 的性能并确保测试结果更加可靠。不过，<code>init</code> 代码有一个限制：它不能发起 HTTP 请求。这一限制是为了确保 <code>init</code> 阶段在不同测试中具有可复现性（因为协议请求的响应是动态且不可预测的）。</p>
+<h2>VU 阶段</h2>
+<p>脚本必须至少包含一个场景函数（scenario function），用于定义虚拟用户（VU）的执行逻辑。该函数内部的代码即为 VU 代码。通常情况下，VU 代码位于 <code>default</code> 函数中，但也可以定义在场景配置指定的函数内（具体示例请参阅后续章节）。</p>
+<pre><code class="language-js">export default function () {
+  // do things here...
+}
+</code></pre>
+<p>VU 代码会在整个测试期间循环执行。它可以发起 HTTP 请求、输出指标数据，基本上能完成负载测试所需的所有操作——唯独那些属于 <code>init</code> 上下文的操作除外。</p>
+<p>具体限制包括：</p>
+<ul>
+<li>无法读取本地文件系统的文件</li>
+<li>无法导入其他模块</li>
+</ul>
+<p>这些功能必须由 <code>init</code> 代码来实现，而非 VU 代码。</p>
+<h3>默认函数的生命周期</h3>
+<ol>
+<li>顺序执行机制。VU 会从头到尾顺序执行 <code>default()</code> 函数。当执行到函数末尾时，会自动跳转回起始位置重新执行，形成循环测试。</li>
+<li>重启重置机制。每次循环开始时，k6 会对 VU 执行重置操作：
+<ol>
+<li>自动清除所有 cookies</li>
+<li>根据测试配置决定是否断开TCP连接（连接保持行为可通过测试参数配置）</li>
+</ol>
+</li>
+</ol>
+<h2>setup 和 teardown 阶段</h2>
+<p>与 <code>default</code> 函数类似，<code>setup</code> 和 <code>teardown</code> 也必须是导出函数。但与 <code>default</code> 函数不同的是，k6 在整个测试过程中只会调用 <code>setup</code> 和 <code>teardown</code> 各一次。具体调用时机如下：</p>
+<ol>
+<li><code>setup</code>：在测试开始时调用，位于 <code>init</code> 阶段之后、VU 阶段之前</li>
+<li><code>teardown</code>：在测试结束时调用，位于 VU 阶段（即 <code>default</code> 函数执行）之后</li>
+</ol>
+<p>与 <code>init</code> 阶段不同，在 <code>setup</code> 和 <code>teardown</code> 阶段可以调用完整的 k6 API。例如，你可以执行以下操作：</p>
+<ul>
+<li>发起 HTTP 请求</li>
+<li>使用所有 k6 模块功能</li>
+<li>访问完整的运行时指标系统</li>
+</ul>
+<pre><code class="language-js">import http from 'k6/http';
+
+export function setup() {
+  const res = http.get('https://quickpizza.grafana.com/api/json');
+  return { data: res.json() };
+}
+
+export function teardown(data) {
+  console.log(JSON.stringify(data));
+}
+
+export default function (data) {
+  console.log(JSON.stringify(data));
+}
+</code></pre>
+<h3>忽略 setup 和 teardown 的执行</h3>
+<p>你可以通过命令行选项 <code>--no-setup</code> 和 <code>--no-teardown</code> 来跳过 <code>setup</code> 和 <code>teardown</code> 阶段的执行。</p>
+<pre><code class="language-bash">k6 run --no-setup --no-teardown ...
+</code></pre>
+<h3>在 default 和 teardown 中使用 setup 中的数据</h3>
+<pre><code class="language-js">// 1. init code
+
+export function setup() {
+  // 2. setup code
+}
+
+export default function (data) {
+  // 3. VU code
+}
+
+export function teardown(data) {
+  // 4. teardown code
+}
+</code></pre>
+<p>你可能已经注意到，<code>default()</code> 和 <code>teardown()</code> 函数的签名都接收一个参数（本文中称为 <code>data</code>）。</p>
+<p>以下示例演示了如何将数据从 <code>setup</code> 代码传递到 VU 和 <code>teardown</code> 阶段：</p>
+<pre><code class="language-js">export function setup() {
+  return { v: 1 };
+}
+
+export default function (data) {
+  console.log(JSON.stringify(data));
+}
+
+export function teardown(data) {
+  if (data.v != 1) {
+    throw new Error('incorrect data: ' + JSON.stringify(data));
+  }
+}
+</code></pre>
+<p>例如，利用 <code>setup()</code> 函数返回的数据，你可以实现以下功能：</p>
+<ul>
+<li>统一数据分发：为每个 VU（虚拟用户）提供数据的相同副本</li>
+<li>结果后处理：在 <code>teardown</code> 代码中对数据进行最终处理</li>
+</ul>
+<p>但需注意以下限制事项：</p>
+<ul>
+<li>数据类型限制
+<ul>
+<li>仅支持传递 JSON 格式的数据（不可传递函数）</li>
+<li>无法在 <code>default()</code> 中修改数据后传递给 <code>teardown()</code></li>
+</ul>
+</li>
+<li>内存消耗警告
+<ul>
+<li>当 <code>setup()</code> 返回大数据量时会显著增加内存占用</li>
+</ul>
+</li>
+<li>数据隔离特性
+<ul>
+<li>每个阶段和每个 VU 访问的都是 <code>setup()</code> 返回数据的独立副本</li>
+<li>修改副本不会影响其他 VU 或阶段的数据</li>
+</ul>
+</li>
+</ul>
+<p>在分布式测试场景中，若要在所有虚拟用户(VU)之间传递可变数据并最终移交至 teardown 阶段，其实现将异常复杂且计算资源消耗巨大。这种设计会直接违背 k6 的核心设计原则：确保同一测试脚本可跨多种执行模式运行。</p>
+<h2>额外的生命周期</h2>
+<p>k6 还提供了其他几种使用生命周期函数的方式：</p>
+<ol>
+<li><code>handleSummary()</code>，若需生成自定义测试报告，k6 会在测试完全结束时额外调用此生命周期函数。</li>
+<li>场景函数 (Scenario Functions)，除了默认的 <code>default</code> 函数外，你也可以在场景函数中运行 VU 代码。</li>
+</ol>
+<pre><code class="language-js">import http from 'k6/http';
+import { sleep } from 'k6';
+
+export const options = {
+  scenarios: {
+    my_web_test: {
+      // the function this scenario will execute
+      exec: 'webtest',
+      executor: 'constant-vus',
+      vus: 50,
+      duration: '1m',
+    },
+  },
+};
+
+export function webtest() {
+  http.get('https://test.k6.io/contacts.php');
+  sleep(Math.random() * 2);
+}
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2025/06/10/grafana-k6-6/">
+          k6 选项的使用
+        </a>
+      
+
+      
+        <a class="next" href="/2025/07/07/grafana-k6-8/">
+          k6 模块
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

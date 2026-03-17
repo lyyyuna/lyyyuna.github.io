@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 在 k6 中发送 HTTP 请求</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>在 k6 中发送 HTTP 请求
+    
+    <div class="subtitle">(<i><a href="/series/Grafana k6 登堂入室/">Grafana k6 登堂入室</a>, Part 3</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-04
+
+      </div>
+    </div>
+    
+    <h2>发送 HTTP 请求</h2>
+<p><code>k6/http</code> 模块可处理各种类型的 HTTP 请求和方法。比如最常见的 GET 请求可以通过下面的方式发送：</p>
+<pre><code class="language-js">import http from 'k6/http';
+
+export default function () {
+  http.get('http://test.k6.io');
+}
+</code></pre>
+<p>比如发送 POST 请求，带上请求体，并加上特定的 HTTP header：</p>
+<pre><code class="language-js">import http from 'k6/http';
+
+export default function () {
+  const url = 'http://test.k6.io/login';
+  const payload = JSON.stringify({
+    email: 'aaa',
+    password: 'bbb',
+  });
+
+  const params = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'abced',
+    },
+  };
+
+  http.post(url, payload, params);
+}
+</code></pre>
+<h2>跟随重定向</h2>
+<p>默认情况下，k6 会在停止并返回最后一个响应之前自动跟随一定数量的重定向。你可以通过以下方式自定义设置：</p>
+<ul>
+<li>使用 <code>maxRedirects</code> 选项全局设置重定向次数上限。</li>
+<li>使用 <code>Params.redirects</code> 属性为特定请求设置重定向次数，该属性会覆盖 <code>maxRedirects</code> 选项。</li>
+</ul>
+<h2>HTTP 请求的标签</h2>
+<p>k6 会自动给 HTTP 请求添加标签。你可以使用这些标签来过滤测试结果，并对分析内容进行分类整理：</p>
+<ol>
+<li><code>expected_response</code>，默认情况下，状态响应码在 200～399 之间的话，为 <code>true</code>。默认行为可以通过 <code>setResponseCallback</code> 来改变。</li>
+<li><code>group</code>，请求可以分组，这里为组名。默认组为空。</li>
+<li><code>name</code>，默认为请求的 URL。</li>
+<li><code>method</code>，请求的类型。</li>
+<li><code>scenario</code>，当请求属于某个场景时，这里为场景的名字。默认值为 <code>default</code>。</li>
+<li><code>status</code>，响应状态码。</li>
+<li><code>url</code>，默认为请求的 URL。</li>
+</ol>
+<p>以下 JSON 示例展示了测试结果数据点的日志记录方式。可以看到，标签是通过 <code>tags</code> 来组织数据的。</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;Point&quot;,
+  &quot;metric&quot;: &quot;http_req_duration&quot;,
+  &quot;data&quot;: {
+    &quot;time&quot;: &quot;2017-06-02T23:10:29.52444541+02:00&quot;,
+    &quot;value&quot;: 586.831127,
+    &quot;tags&quot;: {
+      &quot;expected_response&quot;: &quot;true&quot;,
+      &quot;group&quot;: &quot;&quot;,
+      &quot;method&quot;: &quot;GET&quot;,
+      &quot;name&quot;: &quot;http://test.k6.io&quot;,
+      &quot;scenario&quot;: &quot;default&quot;,
+      &quot;status&quot;: &quot;200&quot;,
+      &quot;url&quot;: &quot;http://test.k6.io&quot;
+    }
+  }
+}
+</code></pre>
+<p>读者可能对上面提到的 <code>group</code> 和 <code>scenario</code> 不太熟悉，这里介绍一下。</p>
+<p>group 可以将相关的测试步骤分组，方便在测试结果中按组分析性能数据（如响应时间内、错误率等）。如按下面的方式分组：</p>
+<pre><code class="language-js">import http from 'k6/http';
+
+export default function() {
+  // 登录相关的操作分组
+  const loginGroup = group('用户登录', () =&gt; {
+    http.get('https://api.example.com/login');
+  });
+
+  // 数据查询操作分组
+  group('数据查询', () =&gt; {
+    http.get('https://api.example.com/data');
+  });
+}
+</code></pre>
+<p>scenario 则是定义虚拟用户（VU）的行为模式、负载策略和资源分配，模拟不同用户角色或负载场景。场景就定义在<a href="https://www.lyyyuna.com/2025/03/12/grafana-k6-1/">Grafana k6 入门示例</a>中介绍的配置项中：</p>
+<pre><code class="language-js">export let options = {
+  scenarios: {
+    // 场景1：模拟 100 个恒定并发用户执行登录操作
+    login_scenario: {
+      executor: 'constant-vus',
+      vus: 100,
+      duration: '30s',
+      exec: 'login',
+    },
+
+    // 场景2：模拟注册用户行为，逐步增加并发
+    register_scenario: {
+      executor: 'ramping-vus',
+      startVUs: 10,
+      stages: [
+        { target: 50, duration: '20s' },
+        { target: 100, duration: '30s' },
+      ],
+      exec: 'register',
+    },
+  },
+};
+
+// 定义场景执行的函数
+export function login() {
+  http.get('https://api.example.com/login');
+}
+
+export function register() {
+  http.post('https://api.example.com/register', { username: 'test' });
+}
+</code></pre>
+<h3>合并标签</h3>
+<p>上文提到，<code>name</code> 标签默认是完整的请求 URL。以下代码会访问 100 个不同的 URL：</p>
+<pre><code class="language-js">import http from 'k6/http';
+
+export default function() {
+  // 生成并访问100个不同路径的URL
+  for (let i = 1; i &lt;= 100; i++) {
+    http.get(`https://api.example.com/data/${i}`);
+  }
+}
+</code></pre>
+<p>测试结果会产生一大批唯一的 URL。每次请求的 name 标签都会记录完整的URL（如 /data/1、/data/2 等），这会导致：</p>
+<ol>
+<li><strong>数据分散</strong>：指标会被分散到100个不同的标签组中，难以聚合分析整体性能。</li>
+<li><strong>存储压力</strong>：大量唯一标签会增加指标存储的负担。</li>
+</ol>
+<p>这个问题可以通过自定义标签覆盖默认行为，例如将 name 赋值为固定值：</p>
+<pre><code class="language-js">import http from 'k6/http';
+
+export default function () {
+  for (let id = 1; id &lt;= 100; id++) {
+    http.get(`http://example.com/posts/${id}`, {
+      tags: { name: 'PostsItemURL' },
+    });
+  }
+}
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2025/03/12/grafana-k6-1/">
+          Grafana k6 入门示例
+        </a>
+      
+
+      
+        <a class="next" href="/2025/04/09/grafana-k6-3/">
+          k6 指标的使用
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,466 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 使用 Python 实现一个简单的 HTTP 代理 - GET</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>使用 Python 实现一个简单的 HTTP 代理 - GET
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2016-01
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>HTTP 代理是位于服务器与客户端之间的中间实体，在各个端点之间来回传送 HTTP 报文。</p>
+<p>按照用途分类，HTTP proxy 可以分为</p>
+<ul>
+<li>内容过滤。</li>
+<li>科学上网。</li>
+<li>Web 缓存。维护服务器常用文档的一个副本，增加客户端的访问速度。</li>
+<li>反向代理。反向代理可以接收发给服务器的真实请求，然后按需交给真实的服务器。类似于路由的功能。</li>
+<li>...</li>
+</ul>
+<p>按照代理对客户端的可见性又可以分为</p>
+<ul>
+<li>透明代理</li>
+<li>非透明代理</li>
+</ul>
+<p>本文要实现一个简单的 HTTP 非透明代理，暂时只支持 GET 请求的转发，且不追求性能和错误处理。</p>
+<h2>HTTP 非透明代理下 GET 请求的不同</h2>
+<p>除了部分请求头和 URL 之外，在非透明代理下，浏览器发给服务器和发给代理的报文是完全一样的。</p>
+<ol>
+<li>首先浏览器会向非透明代理发送完整的绝对路径 URL。而在普通情况下只会发送相对路径，不需要主机名。</li>
+<li>浏览器会用 Proxy-Connection 头部代替 Connection 头部。</li>
+</ol>
+<h3>为何要用绝对路径</h3>
+<p>早期的 HTTP 设计中，客户端只会与单个服务器进行通信，所以一旦 TCP 连接建立起来以后，只需要相对路径。</p>
+<p>但代理就有问题，客户端首先和代理建立 TCP 连接，但由于传递的请求头中使用相对路径，代理就不知道使用什么 IP 和 端口来向远端的服务器建立 TCP 连接。所以，对于早期的 HTTP 1.0，强制客户端发给代理时使用完整路径，如</p>
+<pre><code>GET http://www.douban.com/ HTTP /1.0
+</code></pre>
+<p>较新的 HTTP 1.1 则规定了必须包含 Host 头部。所以对于 HTTP 1.1 的代理来说，完整 URL 不是必须的。但由于网络上还有大量旧版代理，Host 头部代理或许根本不识别，所以现在浏览器在使用代理时，还是会使用完整 URL。</p>
+<p>以下是用 nc 监听 8888 端口，火狐配置 nc 8888 为代理时，所发送 GET 请求</p>
+<pre><code>root@yan:~# nc -lvp 8888
+listening on [any] 8888 ...
+Warning: forward host lookup failed for promote.cache-dns.local: Unknown host
+connect to [192.168.27.128] from promote.cache-dns.local [192.168.27.1] 29798
+GET http://www.douban.com/ HTTP/1.1
+Host: www.douban.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate
+Cookie: bid=&quot;UwoBYPAPsOE&quot;; ll=&quot;118159&quot;; __utma=30149280.478845192.1452777657.1452777657.1452777657.1; __utmz=30149280.1452777657.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _pk_id.100001.8cb4=d15426da1038582e.1452777681.1.1452777681.1452777681.
+Connection: keep-alive
+Cache-Control: max-age=0
+</code></pre>
+<p>可以看出使用的是完整路径。</p>
+<h3>为什么要用 Proxy-Connection 头部</h3>
+<p>Connection 头部是为了减少建立 TCP 连接的次数，复用连接产生的。默认 HTTP 1.1 是 Keepalive，但 1.0 的代理则不识别此头部。对于不认识的头部，代理会直接转发，以保持向后兼容性。</p>
+<p>假如 Connection: Keep-alive 发给了代理，代理不识别转发给了服务器，而恰巧服务器识别此头部，便会出现严重问题。服务器和浏览器都保持连接，而代理则中断了连接。</p>
+<p>为解决这个问题，出现了一个新的头部 Proxy-Connection。如果 1.1 的代理，代理会改写为 Connection 头部。如果 1.0 的代理，那么会直接转发此头部，服务器发现 Proxy-Connection 后，就会采用非长连接的方式。</p>
+<p>Proxy-Connection 头部我实际实验的时候，并不是每个浏览器都会发送。同样是火狐，家里电脑直接发送了 Connection，而单位电脑则是 Proxy-Connection。</p>
+<h2>实现</h2>
+<p>我们要做的有</p>
+<ul>
+<li>替换完整路径为相对路径</li>
+<li>去掉 Proxy-Connection</li>
+<li>将 Connection 头部改为 close （为了简单起见）</li>
+</ul>
+<p>我采用 BaseHTTPServer 和 BaseHTTPRequestHandler 来处理浏览器发送的 GET 请求，原始套接字 socket 来转发请求给远端服务器，既没有多线程也没有 IO 复用。采用 urllib 库来解析完整路径 URL，并取出相对路径。</p>
+<p>代码如下</p>
+<pre><code class="language-python">    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+    import socket
+    import urllib
+
+    class MyHandler(BaseHTTPRequestHandler):
+
+        def do_GET(self):
+            uri = self.path
+            # print uri
+            proto, rest = urllib.splittype(uri)
+            host, rest = urllib.splithost(rest)
+            # print host
+            path = rest        
+            host, port = urllib.splitnport(host)
+            if port &lt; 0:
+                port = 80
+            # print host
+            host_ip = socket.gethostbyname(host)
+            # print port
+
+            del self.headers['Proxy-Connection']
+            self.headers['Connection'] = 'close'
+
+            send_data = 'GET ' + path + ' ' + self.protocol_version + '\r\n'
+            head = ''
+            for key, val in self.headers.items():
+                head = head + &quot;%s: %s\r\n&quot; % (key, val)
+            send_data = send_data + head + '\r\n'
+            # print send_data
+            so = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            so.connect((host_ip, port))
+            so.sendall(send_data)
+
+            # 因为采用非长连接，所以会关闭连接， recv 会退出
+            data = ''
+            while True:
+                tmp = so.recv(4096)
+                if not tmp:
+                    break
+                data = data + tmp
+
+            # socprint data
+            so.close()
+
+            self.wfile.write(data)
+
+
+        # do_CONNECT = do_GET
+
+    def main():
+        try:
+            server = HTTPServer(('', 8888), MyHandler)
+            print 'Welcome to the machine...'
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print '^C received, shutting down server'
+            server.socket.close()
+
+    if __name__ == '__main__':
+        main()
+</code></pre>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>
