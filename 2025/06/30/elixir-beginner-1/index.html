@@ -1,0 +1,669 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 使用 GenServer 的客户端-服务器通信</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>使用 GenServer 的客户端-服务器通信
+    
+    <div class="subtitle">(<i><a href="/series/用 Elixir 实现一个 KV 存储服务/">用 Elixir 实现一个 KV 存储服务</a>, Part 2</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-06
+
+      </div>
+    </div>
+    
+    <p>由于 agent 本身就是进程，每个 bucket 都有一个进程标识符(PID)，但这些 bucket 并没有名称，可以通过 atoms 在 Elixir 中注册进程：</p>
+<pre><code class="language-bash">iex&gt; Agent.start_link(fn -&gt; %{} end, name: :shopping)
+{:ok, #PID&lt;0.43.0&gt;}
+iex&gt; KV.Bucket.put(:shopping, &quot;milk&quot;, 1)
+:ok
+iex&gt; KV.Bucket.get(:shopping, &quot;milk&quot;)
+1
+</code></pre>
+<p>然而，使用 atoms 来命名动态进程是个糟糕的主意！如果采用 atoms 命名方式，我们就需要将 bucket 名称（通常来自外部客户端输入）转换为 atoms，而<strong>绝对不应该将用户输入直接转换为 atoms</strong>。这是因为 atoms 不会被垃圾回收机制处理——一旦 atoms 被创建就永远存在。若根据用户输入动态生成 atoms，意味着用户可以注入大量不同的名称，最终耗尽系统内存！</p>
+<p>实际上，在内存耗尽之前，你更有可能先达到 Erlang 虚拟机对 atoms 数量的上限限制，无论如何这都会导致你的系统崩溃。</p>
+<p>与其滥用内置的命名机制，我们将创建自己的进程注册表，将 bucket 名称与对应的 bucket 进程关联起来。</p>
+<p>注册表必须保证始终处于最新状态。例如，当某个 bucket 进程因故障崩溃时，注册表必须感知这一变更，避免提供过期的进程信息。在 Elixir 中，这种机制称为&quot;注册表需要监控（monitor）每个 bucket 进程&quot;。由于注册表需要能够接收并处理系统发送的即时消息，仅靠 <code>Agent</code> API 已无法满足需求。</p>
+<p>我们将使用 <code>GenServer</code> 来创建一个能够监控 bucket 进程的注册表进程。<code>GenServer</code> 为 Elixir 和 OTP 提供了工业级强度的服务器构建功能。</p>
+<h2>GenServer 回调</h2>
+<p>GenServer 是一种进程，它会在特定条件下调用一组有限的函数。当我们使用 Agent 时，客户端代码和服务器端代码通常是并列编写的，如下所示：</p>
+<pre><code class="language-elixir">def put(bucket, key, value) do
+  Agent.update(bucket, &amp;Map.put(&amp;1, key, value))
+end
+</code></pre>
+<p>让我们来稍微拆解一下这段代码：</p>
+<pre><code class="language-elixir">def put(bucket, key, value) do
+  # 这里是客户端代码
+  Agent.update(bucket, fn state -&gt;
+    # 这里是服务端代码
+    Map.put(state, key, value)
+  end)
+  # 回到客户端代码
+end
+</code></pre>
+<p>在上面这段代码中，我们有一个进程（称为&quot;客户端&quot;）向一个 Agent 进程（称为&quot;服务端&quot;）发送请求。该请求包含一个匿名函数，这个函数必须在服务端执行。</p>
+<p>而在 GenServer 的实现中，上述代码会被拆分成两个独立的函数，大致如下：</p>
+<pre><code class="language-elixir">def put(bucket, key, value) do
+  # 发送给服务器 :put 指令
+  GenServer.call(bucket, {:put, key, value})
+end
+
+# 服务器回调
+
+def handle_call({:put, key, value}, _from, state) do
+  {:reply, :ok, Map.put(state, key, value)}
+end
+</code></pre>
+<p>GenServer 的代码确实需要更多的规范步骤，但正如我们将要看到的，这也带来了一些优势。</p>
+<p>目前，我们暂时只为 bucket 注册逻辑编写服务器回调函数，稍后再提供完整的 API 接口。</p>
+<p>新建一个文件 <code>lib/kv/registry.ex</code>，内容如下：</p>
+<pre><code class="language-elixir">defmodule KV.Registry do
+  use GenServer
+
+  ## Missing Client API - will add this later
+
+  ## Defining GenServer Callbacks
+
+  @impl true
+  def init(:ok) do
+    {:ok, %{}}
+  end
+
+  @impl true
+  def handle_call({:lookup, name}, _from, names) do
+    {:reply, Map.fetch(names, name), names}
+  end
+
+  @impl true
+  def handle_cast({:create, name}, names) do
+    if Map.has_key?(names, name) do
+      {:noreply, names}
+    else
+      {:ok, bucket} = KV.Bucket.start_link([])
+      {:noreply, Map.put(names, name, bucket)}
+    end
+  end
+end
+</code></pre>
+<p>在 GenServer 中，您可以发送两种类型的请求：call（同步调用）和 cast（异步调用）。call 是同步请求，服务器必须返回响应，在服务器计算响应期间客户端会保持等待。cast 是异步请求，服务器不会返回响应，因此客户端也不会等待响应。这两种请求都是以消息形式发送给服务器的，并且会按顺序依次处理。</p>
+<p>在上述实现中，我们通过模式匹配来区分不同消息：</p>
+<ul>
+<li>处理 <code>:create</code> 消息时采用 cast（异步调用）</li>
+<li>处理 <code>:lookup</code> 消息时采用 call（同步调用）</li>
+</ul>
+<p>要触发上述回调函数，我们需要通过相应的 GenServer 函数来操作。让我们启动一个注册表进程，创建一个具名 bucket，然后进行查询：</p>
+<pre><code class="language-bash">iex&gt; {:ok, registry} = GenServer.start_link(KV.Registry, :ok)
+{:ok, #PID&lt;0.136.0&gt;}
+iex&gt; GenServer.cast(registry, {:create, &quot;shopping&quot;})
+:ok
+iex&gt; {:ok, bucket} = GenServer.call(registry, {:lookup, &quot;shopping&quot;})
+{:ok, #PID&lt;0.174.0&gt;}
+</code></pre>
+<p>我们的 <code>KV.Registry</code> 进程依次接收到了两条消息：首先是 cast 方式的 <code>{:create, &quot;shopping&quot;}</code> 请求，随后是 call 方式的 <code>{:lookup, &quot;shopping&quot;}</code> 请求。<code>GenServer.cast </code>在消息发送给注册表后会立即返回，而 <code>GenServer.call</code> 则会等待来自 <code>KV.Registry.handle_call</code> 回调函数提供的响应结果。</p>
+<p>你可能已经注意到，我们在每个回调函数前都添加了 <code>@impl true</code> 注解。<code>@impl true</code> 会告知编译器：我们接下来要定义的函数是一个回调实现。这样，如果我们不小心写错了函数名或参数数量（比如错误地定义了一个 <code>handle_call/2</code> 函数），编译器就会警告我们并不存在需要实现的 <code>handle_call/2</code> 回调，同时还会列出 GenServer 模块所有已知的回调函数清单。</p>
+<p>虽然目前实现得不错，但我们还需要为用户提供一个 API 接口层，这样就能隐藏具体的实现细节。</p>
+<h2>客户端 API</h2>
+<p>GenServer 的实现包含两个部分：客户端 API 和服务器回调。你可以选择将这两部分合并到单个模块中，也可以将它们分别放在客户端模块和服务器模块中。客户端是指调用客户端函数的任何进程，而服务器始终是进程标识符(PID)或进程名称，我们会将其作为参数显式传递给客户端 API。在本文中，我们将使用单个模块来同时包含服务器回调和客户端 API。</p>
+<p>编辑 <code>lib/kv/registry.ex</code> 文件，补全客户端 API 的空缺部分：</p>
+<pre><code class="language-elixir">  ## Client API
+
+  @doc &quot;&quot;&quot;
+  启动注册中心
+  &quot;&quot;&quot;
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, :ok, opts)
+  end
+
+  @doc &quot;&quot;&quot;
+  查找存储在 server 中与 name 对应的 bucket 进程 pid
+
+  如果 bucket 存在则返回 {:ok, pid}，否则返回 :error
+  &quot;&quot;&quot;
+  def lookup(server, name) do
+    GenServer.call(server, {:lookup, name})
+  end
+
+  @doc &quot;&quot;&quot;
+  确保在 server 中存在与指定 name 关联的 bucket
+  &quot;&quot;&quot;
+  def create(server, name) do
+    GenServer.cast(server, {:create, name})
+  end
+</code></pre>
+<p>第一个函数是 <code>start_link/1</code>，它会启动一个新的 GenServer 进程并传入一个选项列表。<code>start_link/1</code> 内部调用了 <code>GenServer.start_link/3</code> 函数，后者接收三个参数：</p>
+<ol>
+<li>实现服务器回调的模块（此处使用 <code>__MODULE__</code> 宏表示当前模块）</li>
+<li>初始化参数（此处使用原子 <code>:ok</code> 作为参数）</li>
+<li>选项列表（可用于配置服务器名称等参数）。目前，我们将 <code>start_link/1</code> 接收到的选项列表直接透传给 <code>GenServer.start_link/3</code></li>
+</ol>
+<p>接下来的两个函数 <code>lookup/2</code> 和 <code>create/2</code> 负责向服务器发送请求。这里我们分别使用了 <code>{:lookup, name}</code> 和 <code>{:create, name}</code> 这样的元组结构。通常会将请求动作指定为元组的第一个元素，而将相关参数放在后续元素中，这样就能在第一个参数槽位传递多个&quot;参数&quot;。需要注意的是，这些请求必须与 <code>handle_call/3</code> 或 <code>handle_cast/2</code> 的第一个参数模式相匹配。</p>
+<p>客户端 API 部分就介绍到这里。在服务器端，我们可以实现多种回调函数来确保服务器的初始化、终止和请求处理。这些回调都是可选的，目前我们只实现了所需的部分。下面做个简要回顾：</p>
+<p>首先是 <code>init/1</code> 回调函数，它接收传给 <code>GenServer.start_link/3</code> 的第二个参数，并返回 <code>{:ok, state}</code>（其中 state 是一个新建的映射）。从这里我们就能看出 <code>GenServer</code> 的 API 设计如何清晰地区分了客户端和服务端逻辑：<code>start_link/3</code> 在客户端执行，而 <code>init/1</code> 则是对应在服务端运行的回调。</p>
+<p>对于 <code>call/2</code> 请求，我们通过实现 <code>handle_call/3</code> 回调来处理，该回调接收三个参数：</p>
+<ol>
+<li>请求内容（<code>request</code>）</li>
+<li>请求来源进程（<code>_from</code>，使用下划线表示未使用变量）</li>
+<li>当前服务器状态（<code>names</code>）</li>
+</ol>
+<p>该回调需要返回 <code>{:reply, reply, new_state}</code> 格式的元组，其中：</p>
+<ol>
+<li>元组首元素 <code>:reply</code> 表示服务器需要向客户端返回响应</li>
+<li>第二个元素 <code>reply</code> 是将发送给客户端的实际响应数据</li>
+<li>第三个元素 <code>new_state</code> 是更新后的服务器状态</li>
+</ol>
+<p>针对 <code>cast/2</code> 请求，我们通过实现 <code>handle_cast/2</code> 回调函数来处理，该函数接收两个参数：</p>
+<ol>
+<li>请求内容（<code>request</code>）</li>
+<li>当前服务器状态（<code>names</code>）</li>
+</ol>
+<p>回调函数需返回 <code>{:noreply, new_state}</code> 格式的元组。值得注意的是，在实际生产应用中，我们通常会使用同步调用（call）而非异步请求（cast）来实现 <code>:create</code> 操作。这里之所以采用 cast 方式，是为了演示如何实现异步回调处理。</p>
+<p><code>handle_call/3</code> 和 <code>handle_cast/2</code> 回调函数还可以返回其他格式的元组响应。此外，我们还可以实现像 <code>terminate/2</code> 和 <code>code_change/3</code> 这样的回调函数。</p>
+<p>现在，让我们编写一些测试来验证 GenServer 是否按预期工作。</p>
+<h2>测试 GenServer</h2>
+<p>测试 GenServer 与测试 Agent 并无太大差异。我们会在测试的 setup 回调中启动服务器进程，并在所有测试用例中复用该进程。创建 <code>test/kv/registry_test.exs</code> 文件，内容如下：</p>
+<pre><code class="language-elixir">defmodule KV.RegistryTest do
+  use ExUnit.Case, async: true
+
+  setup do
+    registry = start_supervised!(KV.Registry)
+    %{registry: registry}
+  end
+
+  test &quot;spawns buckets&quot;, %{registry: registry} do
+    assert KV.Registry.lookup(registry, &quot;shopping&quot;) == :error
+
+    KV.Registry.create(registry, &quot;shopping&quot;)
+    assert {:ok, bucket} = KV.Registry.lookup(registry, &quot;shopping&quot;)
+
+    KV.Bucket.put(bucket, &quot;milk&quot;, 1)
+    assert KV.Bucket.get(bucket, &quot;milk&quot;) == 1
+  end
+end
+</code></pre>
+<p>测试用例的执行流程如下：</p>
+<ol>
+<li>首先验证注册表中不存在任何 bucket</li>
+<li>创建一个具名 bucket</li>
+<li>查询该 bucket</li>
+<li>最终验证其确为可用的 bucket 实例</li>
+</ol>
+<p>我们为 <code>KV.Registry</code> 编写的 <code>setup</code> 代码块与之前 <code>KV.Bucket</code> 的 <code>setup</code> 有一个重要区别：不再手动调用 <code>KV.Registry.start_link/1</code> 来启动注册表，而是改用 <code>ExUnit.Callbacks.start_supervised!/2</code> 函数并传入 <code>KV.Registry</code> 模块来启动。</p>
+<p><code>start_supervised!</code> 函数通过 <code>use ExUnit.Case</code> 被注入到我们的测试模块中。它的工作原理是通过调用 <code>KV.Registry.start_link/1</code> 来启动注册表进程。使用 <code>start_supervised!</code> 的优势在于：</p>
+<ol>
+<li><strong>进程生命周期管理</strong>：ExUnit 会确保注册表进程在下个测试开始前被关闭</li>
+<li><strong>测试隔离保障</strong>：防止依赖共享资源的测试用例之间产生状态干扰</li>
+<li><strong>自动清理机制</strong>：即使测试失败也会执行进程终止操作</li>
+</ol>
+<p>在测试中启动进程时，我们应当始终优先使用 <code>start_supervised!</code>。</p>
+<h2>监控的必要性</h2>
+<p>截至目前，我们实现的所有功能其实都可以通过 Agent 来完成。而在本节中，我们将展示 GenServer 相比 Agent 的独特优势——它能实现许多 Agent 无法完成的功能。</p>
+<p>让我们从一个测试用例开始，该用例描述了当 bucket 进程停止或崩溃时期望注册表表现的行为：</p>
+<pre><code class="language-elixir">test &quot;removes buckets on exit&quot;, %{registry: registry} do
+  KV.Registry.create(registry, &quot;shopping&quot;)
+  {:ok, bucket} = KV.Registry.lookup(registry, &quot;shopping&quot;)
+  Agent.stop(bucket)
+  assert KV.Registry.lookup(registry, &quot;shopping&quot;) == :error
+end
+</code></pre>
+<p>上述测试会在最后一个断言处失败，因为即使 bucket 进程停止后，其名称仍会保留在注册表中。</p>
+<p>要修复这个问题，我们需要让注册表监控其创建的每个 bucket 进程。建立监控后，每当 bucket 进程退出时，注册表都会收到通知，从而使我们能够清理注册表。</p>
+<p>首先让我们通过 <code>iex -S mix</code> 启动新控制台来实践监控机制：</p>
+<pre><code class="language-bash">iex&gt; {:ok, pid} = KV.Bucket.start_link([])
+{:ok, #PID&lt;0.66.0&gt;}
+iex&gt; Process.monitor(pid)
+#Reference&lt;0.0.0.551&gt;
+iex&gt; Agent.stop(pid)
+:ok
+iex&gt; flush()
+{:DOWN, #Reference&lt;0.0.0.551&gt;, :process, #PID&lt;0.66.0&gt;, :normal}
+</code></pre>
+<p>请注意，<code>Process.monitor(pid)</code> 会返回一个唯一的监控引用（reference），这个引用允许我们将后续收到的消息与对应的监控请求相匹配。当我们停止 Agent 进程后，可以通过 <code>flush/0</code> 查看所有消息，此时会观察到一条 <code>:DOWN</code> 消息 —— 其中包含与监控引用完全匹配的应用，通知我们 bucket 进程已以 <code>:normal</code> 原因退出。</p>
+<p>让我们重新实现服务器回调函数来修复这个错误并使测试通过。具体需要以下修改步骤：</p>
+<ol>
+<li>状态结构调整：
+<ul>
+<li>将 GenServer 状态改为包含两个映射表：
+<ul>
+<li><code>name_to_pid</code>：存储 名称 -&gt; 进程ID 的映射</li>
+<li><code>ref_to_name</code>：存储 监控引用 -&gt; 名称 的映射</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>监控机制实现：
+<ul>
+<li>在 <code>handle_cast/2</code> 回调中为每个新创建的 bucket 进程设置监控</li>
+<li>新增 <code>handle_info/2</code> 回调处理监控消息：
+<ul>
+<li>匹配 <code>:DOWN</code> 消息</li>
+<li>清理已终止进程的注册信息</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>下面是修改后的服务器回调完整实现：</p>
+<pre><code class="language-elixir">## Server callbacks
+
+@impl true
+def init(:ok) do
+  names = %{}
+  refs = %{}
+  {:ok, {names, refs}}
+end
+
+@impl true
+def handle_call({:lookup, name}, _from, state) do
+  {names, _} = state
+  {:reply, Map.fetch(names, name), state}
+end
+
+@impl true
+def handle_cast({:create, name}, {names, refs}) do
+  if Map.has_key?(names, name) do
+    {:noreply, {names, refs}}
+  else
+    {:ok, bucket} = KV.Bucket.start_link([])
+    ref = Process.monitor(bucket)
+    refs = Map.put(refs, ref, name)
+    names = Map.put(names, name, bucket)
+    {:noreply, {names, refs}}
+  end
+end
+
+@impl true
+def handle_info({:DOWN, ref, :process, _pid, _reason}, {names, refs}) do
+  {name, refs} = Map.pop(refs, ref)
+  names = Map.delete(names, name)
+  {:noreply, {names, refs}}
+end
+
+@impl true
+def handle_info(msg, state) do
+  require Logger
+  Logger.debug(&quot;Unexpected message in KV.Registry: #{inspect(msg)}&quot;)
+  {:noreply, state}
+end
+</code></pre>
+<p>可以看到，我们在完全不修改客户端 API 的情况下，就完成了服务端实现的重大调整——这正是明确分离客户端与服务端架构带来的核心优势之一。</p>
+<p>特别需要注意的是，与其他回调不同，我们为 <code>handle_info/2</code> 定义了一个&quot;全捕获&quot;（catch-all）处理分支，该分支会记录并丢弃所有未知消息。要理解这样设计的原因，让我们继续下一章节的探讨。</p>
+<h2>call, cast 还是 info？</h2>
+<p>截至目前，我们已经使用了三种回调函数：<code>handle_call/3</code>、<code>handle_cast/2</code> 和 <code>handle_info/2</code>。以下是各回调函数的使用场景指南：</p>
+<ol>
+<li>同步请求处理 - <code>handle_call/3</code>
+<ul>
+<li>必须用于同步请求</li>
+<li>应作为默认选择，因为等待服务端响应本身就是一种有效的背压(back-pressure)机制</li>
+<li>示例：本应在本章 <code>create/2</code> 函数中使用（当前为教学目的使用了 cast）</li>
+</ul>
+</li>
+<li>异步请求处理 - <code>handle_cast/2</code>
+<ul>
+<li>必须用于不需要回复的异步请求</li>
+<li>不保证服务端必定收到消息，故应谨慎使用</li>
+<li>典型场景：无需确认的广播类操作</li>
+</ul>
+</li>
+<li>系统消息处理 - <code>handle_info/2</code>
+<ul>
+<li>必须处理所有非 GenServer 标准调用消息</li>
+<li>包括：
+<ul>
+<li>原生 <code>send/2</code> 发送的消息</li>
+<li>系统监控消息（如 <code>:DOWN</code> 通知）</li>
+<li>其他意外消息（需实现兜底处理）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>由于所有消息（包括通过 <code>send/2</code> 发送的消息）都会交由 <code>handle_info/2</code> 处理，因此服务端很可能会收到预期之外的消息。如果不定义&quot;全捕获&quot;（catch-all）处理分支，这些消息就会因无法匹配任何模式而导致注册表进程崩溃。不过对于 <code>handle_call/3</code> 和 <code>handle_cast/2</code> 则无需此类担忧——因为 call/cast 操作只能通过 <code>GenServer</code> API 发起，未知消息通常意味着开发者的编码错误。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2025/06/27/elixir-beginner-0/">
+          Agent 实现简单的状态管理
+        </a>
+      
+
+      
+        <a class="next" href="/2025/07/25/elixir-beginner-2/">
+          监督树和应用程序
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

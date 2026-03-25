@@ -1,0 +1,552 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 用 Python 实现一个 ORM</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>用 Python 实现一个 ORM
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2018-04
+
+      </div>
+    </div>
+    <div class="post-summary">如何用元类控制类的生成？</div>
+    <h2>前言</h2>
+<p>本文实现一个非常简单的 ORM 初稿：</p>
+<ol>
+<li>完成 Python 类（模型）与数据库表的映射</li>
+<li>完成类实例与表每行记录的映射</li>
+<li>完成实例操作与增删改查的 SQL 语句的映射</li>
+</ol>
+<p>这个初稿不涉及数据库的真正操作，只是在 <code>user.save()</code> 的时候打印类似 <code>insert into user ...</code> 的 SQL 语句。本文所有代码基于 Python2。</p>
+<h2>ORM 为什么需要元类</h2>
+<p>假设有如下的类：</p>
+<pre><code class="language-python">class User():
+    __table__ = 'User_table'
+    student_id = IntegerField('studentid', primaryKey=True)
+</code></pre>
+<p>回想 Django 的 ORM，每个模型都继承了一个 <code>Model</code> 类，我们也如法炮制。而所谓类与表的映射，就是在 Python 虚拟机启动后，自动寻找类属性，并将 <code>__table__</code> 转化为表名， <code>student_id</code> 转化为列名。这种需求类似于运行时自省，而普通类的 <code>__new__</code> <code>__init__</code> 都是实例化类时被调用，在这两个方法上做文章没有用处。</p>
+<p>这时候就该用元类 <code>metaclass</code> 了。</p>
+<p>在 <a href="http://www.lyyyuna.com/2017/12/24/python-internal2-integer-object/">Python2.7 源码 - 整数对象</a> 中已经有过介绍，元类 <code>metaclass</code> 是类的类。除了整数这种内置类型，用户自定义类型也有元类的概念。</p>
+<ul>
+<li>内置类定义在 C 源码中，故虚拟机运行后，就立即存在。</li>
+<li>而用 <code>class</code> 语法定义的类，则需要根据元类 <code>metaclass</code> 来创建。</li>
+<li>内置类也有元类，最终两者在虚拟机中拥有相同的结构。</li>
+</ul>
+<p>元类 <code>metaclass</code> 实例化的结果就是我们的普通类，由虚拟机启动时自动执行。在元类实例化的过程中，便可以扫描类定义属性，实现类与表的映射。自定义类默认继承自 <code>object</code>，获得的元类为 <code>type</code>。</p>
+<p>Python2.x 中，用以下语法</p>
+<pre><code class="language-python">class C():
+    __metaclass__ = Meta
+</code></pre>
+<p>可以将类 <code>C</code> 对应的元类替换为 <code>Meta</code>。这么一看，只要设计自己的元类，并在模型中添加进去就可以了：</p>
+<pre><code class="language-python">class User():
+    __metaclass__ = Meta
+    __table__ = 'User_table'
+    student_id = IntegerField('studentid', primaryKey=True)
+</code></pre>
+<p>但这么做，会在产品业务代码中暴露太多复杂的概念。我们可以设计一个公共的父类，并修改此父类的元类，这样所有继承的子类都能获得新的元类：</p>
+<pre><code class="language-python">class ModelType(type):
+    def __new__(cls, name, bases, attrs):
+        return type.__new__(cls, name, bases, attrs)
+
+class Model():
+    __metaclass__ = ModelType
+
+# Application
+class User(Model):
+    __table__ = 'User_table'
+
+class Teacher(Model):
+    __table__ = 'Teacher_table'
+</code></pre>
+<p>现在当 <code>User</code> <code>Teacher</code> 类在虚拟机中创建时，其行为就由 <code>ModelType</code> 控制。</p>
+<p><code>ModelType</code> 需实现 <code>__new__</code> 函数，接受 <code>name, bases, attrs</code> 三个参数，<code>attrs</code> 是类属性构成的字典。该 <code>__new__</code> 函数最终需返回 <code>type.__new__(cls, name, bases, attrs)</code> 的结果，即类在虚拟机中的表示。</p>
+<p>其中，<code>attrs</code> 字典由 Python 虚拟机创建类时填入。</p>
+<h2>扫描表名</h2>
+<p>由上可知，可在元类的 <code>__new__</code> 函数中获取 <code>__table__</code>：</p>
+<pre><code class="language-python">class ModelType(type):
+    def __new__(cls, name, bases, attrs):
+        tablename = attrs.get('__table__', None) or name
+        print 'Get table name', tablename
+        return type.__new__(cls, name, bases, attrs)
+
+class Model():
+    __metaclass__ = ModelType
+
+class User(Model):
+    __table__ = 'User_table'
+</code></pre>
+<p>输出</p>
+<pre><code>Get table name Model
+Get table name User_table
+</code></pre>
+<p>为什么会输出两行？因为父类 <code>Model</code> 也会被元类 <code>ModelType</code> 扫描，所以应将父类自身排除出扫描：</p>
+<pre><code class="language-python">class ModelMeta(type):
+    def __new__(cls, name, bases, attrs):
+        if name=='Model':
+            return type.__new__(cls, name, bases, attrs)
+
+        tablename = attrs.get('__table__', None) or name
+        print 'Get table name', tablename
+</code></pre>
+<p>这次输出没有 <code>Model</code> ：</p>
+<pre><code>Get table name User_table
+</code></pre>
+<h2>扫描字段</h2>
+<p>字段的扫描是类似的，我们先完成字段类型的定义，让所有字段继承自 <code>Field</code> 类。</p>
+<pre><code class="language-python">class Field(object):
+    def __init__(self, name, sqlType, primaryKey, default):
+        self.name = name
+        self.sqlType = sqlType
+        self.primaryKey = primaryKey
+        self.default = default
+
+    def __str__(self):
+        return '&lt;%s, %s:%s&gt;' % (self.__class__, self.sqlType, self.name)
+
+
+class StringField(Field):
+    def __init__(self, name=None, sqlType='character varying(100)', primaryKey=False, default=''):
+        super(StringField, self).__init__(name, sqlType, primaryKey, default)
+
+
+class IntegerField(Field):
+    def __init__(self, name=None, sqlType='integer', primaryKey=False, default=0):
+        super(IntegerField, self).__init__(name, sqlType, primaryKey, default)
+</code></pre>
+<p>由于所有表字段类有一个相同的父类，所以可以通过 <code>isinstance(v, Field)</code> 识别一个类属性是否属于表字段。以下代码在类属性 <code>attrs</code> 中遍历，找出字段并存储在 <code>mappings</code> 字典和 <code>fields</code> 列表中。</p>
+<pre><code class="language-python">mappings = {}
+fields = []
+primary = None
+for k, v in attrs.iteritems():
+    if isinstance(v, Field):
+        print 'Found one field', k
+        mappings[k] = v
+        if v.primaryKey == True:
+            if primary == None:
+                primary = k
+            else:
+                raise RuntimeError(&quot;Duplicate primary key: %s&quot;, k)
+        else:
+            fields.append(k)
+if primary == None:
+    raise RuntimeError(&quot;No primary key given.&quot;)
+</code></pre>
+<p>将上述代码应用于 <code>User</code>：</p>
+<pre><code class="language-python">class User(Model):
+    __table__ = 'User_table'
+    student_id = IntegerField('studentid', primaryKey=True)
+    name = StringField('username')
+    age = IntegerField('age')
+</code></pre>
+<p>输出：</p>
+<pre><code>Get table name User_table
+Found one field age
+Found one field name
+Found one field student_id
+</code></pre>
+<h2>实例属性</h2>
+<p>在类中需要移除所有的字段属性 <code>attrs.pop(k)</code>。</p>
+<pre><code class="language-python">for k in mappings.keys():
+    attrs.pop(k)
+</code></pre>
+<p>因为业务代码不需要类属性，每个实例需要访问的是实例属性。比如</p>
+<pre><code class="language-python">u2 = User(student_id=3, name='blue', age=123)
+print(u2.name)
+</code></pre>
+<p>这里，让父类 <code>Model</code> 继承 <code>dict</code> 类，并添加 <code>__getattr__</code> 和 <code>__setattr__</code> 方法：</p>
+<pre><code class="language-python">class Model(dict):
+    __metaclass__ = ModelMeta
+    __table__ = 'Should not show'
+
+    def __init__(self, **kw):
+        super(Model, self).__init__(**kw)
+
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except:
+            raise AttributeError(r&quot;'Dict' object has no attribute '%s'&quot; % key)
+
+    def __setattr__(self, key, value):
+        self[key] = value
+</code></pre>
+<p>访问 <code>u2.name</code> 便等价于 <code>u2[name]</code>，而 <code>User</code> 间接继承自字典，<code>User(student_id=3, name='blue', age=123)</code>初始化后，便能访问字典元素<code>u2[name]</code>。</p>
+<h2>与 SQL 语句的映射</h2>
+<p>我们可以在元类 <code>ModelMeta</code> 中预先定义一些 SQL 语句的模板，并存储在类属性 <code>attrs</code> 中：</p>
+<pre><code class="language-python">    attrs['__select__'] = &quot;select '%s', %s from '%s'&quot; % (primary, ','.join(escaped_fields), tablename)
+    attrs['__insert__'] = &quot;insert into '%s' (%s, '%s') values (%s)&quot; % (tablename, ','.join(escaped_fields), primary, create_args_string(len(escaped_fields)+1))
+    attrs['__update__'] = &quot;update '%s' set %s where '%s' =?&quot; % (tablename, ','.join(map(lambda x: &quot;'%s'=?&quot; % (mappings.get(x).name), fields)), primary)
+    attrs['__delete__'] = &quot;delete from '%s' where '%s' = ?&quot; % (tablename, primary)
+</code></pre>
+<p>接着在 <code>Model</code> 中添加 <code>select</code> 和 <code>save</code> 方法。</p>
+<pre><code class="language-python">    @classmethod
+    def select(cls, id):
+        print &quot;%s where '%s' = %s;&quot; % (cls.__select__, cls.__primarykey__, id)
+
+    def getValue(self, k):
+        value = getattr(self, k, None)
+        if value is None:
+            field = self.__mappings__[k]
+            if field.default is not None:
+                value = field.default
+                setattr(self, k, value)
+        return value
+
+    def save(self):
+        args = map(self.getValue, self.__fields__)
+        args.append(self.getValue(self.__primarykey__))
+        print self.__insert__, args
+</code></pre>
+<p>这两个方法对应于 SQL 中的 <code>SELECT</code> 和 <code>INSERT</code> 语句。逻辑也比较简单，从之前存储在 <code>mappings</code> 和 <code>fields</code> 的字段名，再结合实例属性，拼接出 SQL 语句。</p>
+<pre><code class="language-python">print 'Test select sql command:'
+User.select(id=1)
+print
+
+print 'Test insert sql command:'
+u2 = User(student_id=3, name='blue', age=123)
+u2.save()
+</code></pre>
+<p>输出：</p>
+<pre><code class="language-sql">Test select sql command:
+select 'student_id', 'age','name' from 'User_table' where 'student_id' = 1;
+
+Test insert sql command:
+insert into 'User_table' ('age','name', 'student_id') values (?, ?, ?) [123, 'blue', 3]
+</code></pre>
+<h2>小结</h2>
+<p>至此，一个简单的 ORM 原型就完成了。详细代码可见：<a href="https://github.com/lyyyuna/script_collection/tree/master/orm_draft">https://github.com/lyyyuna/script_collection/tree/master/orm_draft</a></p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>
