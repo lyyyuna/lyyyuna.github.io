@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Grafana k6 是什么</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Grafana k6 是什么
+    
+    <div class="subtitle">(<i><a href="/series/Grafana k6 登堂入室/">Grafana k6 登堂入室</a>, Part 1</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2025-02
+
+      </div>
+    </div>
+    
+    <p>Grafana k6 是一款现代的开源性能测试工具。什么样的特性才能叫现代，为什么又要学习一款新的工具？让我们先分析一下传统的性能测试工具：JMeter 和 Locust。</p>
+<p>JMeter 历史悠久，由 Java 开发，是 Apacahe 软件基金会的一部分。从设计角度来看，它主要面向手工测试人员 - 测试脚本是在 UI 上按模块填写的（对使用者的开发能力要求不高）。它自创了许多概念：元件、监听器、定时器、前置后置处理器等，这使得它的曲线不低，要配置出复杂的测试场景可能有一定难度。即使是纯开发人员面对这些概念也会有一定的挫败感，他们更习惯用代码来组织出复杂的场景。JMeter 有一个无可比拟的优势：社区庞大，你想要测试的协议几乎都能在社区中找到。阿里云、腾讯云的云压测产品，可以直接解析 JMeter 脚本，对于有历史测试脚本沉淀的公司来说非常方便。</p>
+<p>Locust 则相对年轻。它没有选择自创一套 DSL，而是直接使用 Python 来编写测试脚本，测试、测开、开发都愿意参与其中，可以编写出一定复杂逻辑的测试流程。</p>
+<p>JMeter 和 Locust 都支持分布式来提高并发量，但各有一些缺点：</p>
+<ol>
+<li>JMeter 因为 JVM 虚拟机和线程实现并发的原因，单机的资源消耗较高。</li>
+<li>JMeter 是主从架构，添加从节点需要修改主节点配置，水平扩展不便。</li>
+<li>Locust 使用 Python，同样有单机性能问题。</li>
+<li>Locust 使用内置的 ZeroMQ 来实现主从架构，水平扩展方便，但内置的消息队列会成为性能瓶颈。</li>
+</ol>
+<p>JMeter 和 Locust 的监控报告都是内置的，满足小团队快速验证，但大企业多是在 Grafana 之类的平台上观测及分析历史数据，需要额外的开发来适配。</p>
+<p>Grafana k6 是如何解决上面这些不足呢？</p>
+<ol>
+<li>开发者优先
+<ol>
+<li>使用 JavaScript 作为脚本语言，对开发友好。</li>
+<li>代码即测试，方便版本控制和持续集成。</li>
+</ol>
+</li>
+<li>轻量性能高，JavaScript 解释器是由 Go 编写，底层由 goroutine 轻松支持高并发负载。</li>
+<li>测试场景丰富
+<ol>
+<li>多种复杂负载类型（逐步加压、峰值测试）</li>
+<li>支持统计响应时间、错误率等指标。</li>
+</ol>
+</li>
+<li>扩展方便，可以用 JavaScript 和 Go 扩展协议。</li>
+<li>直接对接 Grafana，通过 Grafana 查看和分析性能数据。</li>
+<li>云原生友好，通过 k6 operater 直接在 k8s 上水平伸缩。
+<ol>
+<li>非主从架构，因为直接由 Grafana 收集性能数据，不需要主节点来协调和通信。</li>
+</ol>
+</li>
+</ol>
+<p>还有一个大优势，k6 有 <a href="https://grafana.com/">Grafana</a> 在背后做支持。</p>
+<p>总的来说，Grafana k6 的核心理念是 “性能测试即代码”，通过现代化的技术栈和开发者友好的设计，填补了传统工具在自动化、云原生集成和易用性上的不足。对于追求敏捷和自动化的团队，k6 是更符合现代软件工程实践的解决方案。</p>
+<p>下面，就跟着本系列一起，从入门到精通 Grafana k6 吧。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+
+      
+        <a class="next" href="/2025/03/12/grafana-k6-1/">
+          Grafana k6 入门示例
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

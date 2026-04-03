@@ -1,0 +1,557 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Golang 并发模式 - Context</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Golang 并发模式 - Context
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2020-05
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>本文翻译+删选+理解自 <a href="https://blog.golang.org/context">Go Concurrency Patterns: Context</a></p>
+<p>在使用 Go 编写的服务器程序中，每个请求都由一个 goroutine 来处理，通常这些请求又会启动额外的 goroutines 来访问后台数据库或者调用 RPC 服务。这些与同一个请求相关的 goroutines，常常需要访问同一个特定的资源，比如用户标识，认证 token 等等。当请求取消或者超时时，所有相关的 goroutines 都应该快速退出，这样系统才能回收不用的资源。</p>
+<p>为此，Google 公司开发了<a href="https://golang.org/pkg/context">context</a>包。该库可以跨越 API 边界，给所有 goroutines 传递请求相关的值、取消信号和超时时间。这篇文章会介绍如何使用<a href="https://golang.org/pkg/context">context</a>库，并给出一个完整的例子。</p>
+<h2>Context</h2>
+<p><code>context</code>包的核心是<code>Context</code>结构体：</p>
+<pre><code class="language-go">// A Context carries a deadline, cancelation signal, and request-scoped values
+// across API boundaries. Its methods are safe for simultaneous use by multiple
+// goroutines.
+type Context interface {
+    // Done returns a channel that is closed when this Context is canceled
+    // or times out.
+    Done() &lt;-chan struct{}
+
+    // Err indicates why this context was canceled, after the Done channel
+    // is closed.
+    Err() error
+
+    // Deadline returns the time when this Context will be canceled, if any.
+    Deadline() (deadline time.Time, ok bool)
+
+    // Value returns the value associated with key or nil if none.
+    Value(key interface{}) interface{}
+}
+</code></pre>
+<p><code>Done</code>方法返回一个 channel，它会给<code>Context</code>上所有的函数发送取消信号，当 channel 关闭时，这些函数应该终止剩余流程立即返回。<code>Err</code>方法返回的错误指出了<code>Context</code>为什么取消。<a href="https://blog.golang.org/pipelines">Pipelines and Cancelation</a>中讨论了<code>Done</code>的具体用法。</p>
+<p>由于接收和发送信号的通常不是同一个函数，<code>Context</code>并没有提供<code>Cancel</code>方法，基于相同的理由，<code>Done</code>channel 只负责接收。尤其当父操作开启 goroutines 执行子操作时，子操作肯定不能取消父操作。作为替代，<code>WithCancel</code>函数可以用来取消<code>Context</code>。</p>
+<p><code>Context</code>对 goroutines 来说是并发安全的，你可以将单个<code>Context</code>传递给任意数量的 goroutines，然后取消该<code>Context</code>给这些 goroutines 同时发送信号。</p>
+<p><code>Deadline</code>方法用于判断函数究竟要不要运行，比如截止时间将近时，运行也就没必要了。代码可依此为 I/O 操作设置超时时间。</p>
+<p><code>Value</code>方法则为<code>Context</code>存储了请求所有的数据，访问这些数据必须是并发安全的。</p>
+<h2>Context 派生</h2>
+<p>使用<code>Context</code>包提供的方法可以从已有的<code>Context</code>值派生出新值。这些派生出的值逻辑上构成了一棵树：当根<code>Context</code>取消，其派生出的子<code>Context</code>也会跟着取消。</p>
+<p><code>Background</code>是所有<code>Context</code>树的根，它永远不会被取消：</p>
+<pre><code class="language-go">// Background returns an empty Context. It is never canceled, has no deadline,
+// and has no values. Background is typically used in main, init, and tests,
+// and as the top-level Context for incoming requests.
+func Background() Context
+</code></pre>
+<p><code>WithCancel</code>和<code>WithTimeout</code>函数返回的派生<code>Context</code>值，可以先于父值取消。当请求的回调函数返回后，与请求相关的<code>Context</code>即可被取消。当有多个备份后台程序同时提供服务时，<code>WithCancel</code>可用于去除多余的请求。<code>WithTimeout</code>则可用于为请求设置超时时间。</p>
+<pre><code class="language-go">// WithCancel returns a copy of parent whose Done channel is closed as soon as
+// parent.Done is closed or cancel is called.
+func WithCancel(parent Context) (ctx Context, cancel CancelFunc)
+
+// A CancelFunc cancels a Context.
+type CancelFunc func()
+
+// WithTimeout returns a copy of parent whose Done channel is closed as soon as
+// parent.Done is closed, cancel is called, or timeout elapses. The new
+// Context's Deadline is the sooner of now+timeout and the parent's deadline, if
+// any. If the timer is still running, the cancel function releases its
+// resources.
+func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)
+</code></pre>
+<p><code>WithValue</code>则在<code>Context</code>上存储了请求相关的值：</p>
+<pre><code class="language-go">// WithValue returns a copy of parent whose Value method returns val for key.
+func WithValue(parent Context, key interface{}, val interface{}) Context
+</code></pre>
+<h2>例子：谷歌网页搜索</h2>
+<p>本例子提供一个 HTTP 服务器，接收类似<code>/search?q=golang&amp;timeout=1s</code>的 GET 请求，并把查询参数值&quot;golang&quot;转推到<a href="https://developers.google.com/web-search/docs/">谷歌网页搜索API</a>。参数<code>timeout</code>告诉服务器如果谷歌 API 超时就取消请求。</p>
+<p>代码分为三个包：</p>
+<ul>
+<li><a href="https://blog.golang.org/context/server/server.go">server</a>提供 main 函数，处理<code>/search</code>来的请求。</li>
+<li><a href="https://blog.golang.org/context/userip/userip.go">userip</a>提供的函数将用户 IP 地址绑定到一个<code>Context</code>值上。</li>
+<li><a href="https://blog.golang.org/context/google/google.go">google</a>提供 Search 函数将请求转发到谷歌。</li>
+</ul>
+<h2>server 程序</h2>
+<p><a href="https://blog.golang.org/context/server/server.go">server</a>中，请求回调创建了一个名为<code>ctx</code>的<code>Context</code>值，当回调退出时，延迟函数<code>defer cancel()</code>即执行取消操作。如果请求的 URL 带有 timeout 参数，那超时后<code>Context</code>会自动取消：</p>
+<pre><code class="language-go">func handleSearch(w http.ResponseWriter, req *http.Request) {
+    // ctx is the Context for this handler. Calling cancel closes the
+    // ctx.Done channel, which is the cancellation signal for requests
+    // started by this handler.
+    var (
+        ctx    context.Context
+        cancel context.CancelFunc
+    )
+    timeout, err := time.ParseDuration(req.FormValue(&quot;timeout&quot;))
+    if err == nil {
+        // The request has a timeout, so create a context that is
+        // canceled automatically when the timeout expires.
+        ctx, cancel = context.WithTimeout(context.Background(), timeout)
+    } else {
+        ctx, cancel = context.WithCancel(context.Background())
+    }
+    defer cancel() // Cancel ctx as soon as handleSearch returns.
+</code></pre>
+<p>回调函数从请求中获取参数信息，并调用<code>userip</code>包获取客户端 IP 地址。由于后台服务中会使用到客户端 IP 地址，故需要将此存储于<code>ctx</code>中：</p>
+<pre><code class="language-go">    // Check the search query.
+    query := req.FormValue(&quot;q&quot;)
+    if query == &quot;&quot; {
+        http.Error(w, &quot;no query&quot;, http.StatusBadRequest)
+        return
+    }
+
+    // Store the user IP in ctx for use by code in other packages.
+    userIP, err := userip.FromRequest(req)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+    ctx = userip.NewContext(ctx, userIP)
+</code></pre>
+<p>传入<code>ctx</code>和<code>query</code>参数调用<code>google.Search</code>：</p>
+<pre><code class="language-go">    // Run the Google search and print the results.
+    start := time.Now()
+    results, err := google.Search(ctx, query)
+    elapsed := time.Since(start)
+</code></pre>
+<p>如果搜索成功，会渲染出结果：</p>
+<pre><code class="language-go">    if err := resultsTemplate.Execute(w, struct {
+        Results          google.Results
+        Timeout, Elapsed time.Duration
+    }{
+        Results: results,
+        Timeout: timeout,
+        Elapsed: elapsed,
+    }); err != nil {
+        log.Print(err)
+        return
+    }
+</code></pre>
+<h2>userip 包</h2>
+<p><a href="https://blog.golang.org/context/userip/userip.go">userip</a>包提供了解析用户 IP 地址函数的包，同时会将 IP 地址存储于一个<code>Context</code>值中。<code>Context</code>提供了键值对存储，键值都是<code>interface{}</code>类型，键必须可比较，值必须是并发安全。<code>userip</code>包屏蔽了实现上的细节，并以强类型方式访问<code>Context</code>值。</p>
+<p>为了避免键冲突，<code>userip</code>包首先定义一个非导出类型<code>key</code>，然后用该类型定义的值作为<code>Context</code>的键：</p>
+<pre><code class="language-go">// The key type is unexported to prevent collisions with context keys defined in
+// other packages.
+type key int
+
+// userIPkey is the context key for the user IP address.  Its value of zero is
+// arbitrary.  If this package defined other context keys, they would have
+// different integer values.
+const userIPKey key = 0
+</code></pre>
+<p><code>FromRequest</code>从<code>http.Request</code>解析出客户端 IP 地址<code>userIP</code>：</p>
+<pre><code class="language-go">func FromRequest(req *http.Request) (net.IP, error) {
+    ip, _, err := net.SplitHostPort(req.RemoteAddr)
+    if err != nil {
+        return nil, fmt.Errorf(&quot;userip: %q is not IP:port&quot;, req.RemoteAddr)
+    }
+</code></pre>
+<p><code>NewContext</code>将<code>userIP</code>存储于新建的<code>Context</code>中：</p>
+<pre><code class="language-go">func NewContext(ctx context.Context, userIP net.IP) context.Context {
+    return context.WithValue(ctx, userIPKey, userIP)
+}
+</code></pre>
+<p><code>FromContext</code>则相反，从<code>Context</code>取出 IP 地址：</p>
+<pre><code class="language-go">func FromContext(ctx context.Context) (net.IP, bool) {
+    // ctx.Value returns nil if ctx has no value for the key;
+    // the net.IP type assertion returns ok=false for nil.
+    userIP, ok := ctx.Value(userIPKey).(net.IP)
+    return userIP, ok
+}
+</code></pre>
+<h2>google 包</h2>
+<p><code>google.Search</code>函数对谷歌 API 发起 HTTP 请求，并解析 JSON 结果。该函数同时接收一个<code>Context</code>参数<code>ctx</code>，如果请求处理时，<code>ctx.Done</code>关闭了，则立即退出。</p>
+<p>谷歌 API 会将搜索内容和用户 IP 地址<code>userIP</code>作为请求参数：</p>
+<pre><code class="language-go">func Search(ctx context.Context, query string) (Results, error) {
+    // Prepare the Google Search API request.
+    req, err := http.NewRequest(&quot;GET&quot;, &quot;https://ajax.googleapis.com/ajax/services/search/web?v=1.0&quot;, nil)
+    if err != nil {
+        return nil, err
+    }
+    q := req.URL.Query()
+    q.Set(&quot;q&quot;, query)
+
+    // If ctx is carrying the user IP address, forward it to the server.
+    // Google APIs use the user IP to distinguish server-initiated requests
+    // from end-user requests.
+    if userIP, ok := userip.FromContext(ctx); ok {
+        q.Set(&quot;userip&quot;, userIP.String())
+    }
+    req.URL.RawQuery = q.Encode()
+</code></pre>
+<p><code>Search</code>使用了辅助函数<code>httpDo</code>来发起和取消 HTTP 请求，辅助函数参数有一个是处理 HTTP 响应的闭包：</p>
+<pre><code class="language-go">    var results Results
+    err = httpDo(ctx, req, func(resp *http.Response, err error) error {
+        if err != nil {
+            return err
+        }
+        defer resp.Body.Close()
+
+        // Parse the JSON search result.
+        // https://developers.google.com/web-search/docs/#fonje
+        var data struct {
+            ResponseData struct {
+                Results []struct {
+                    TitleNoFormatting string
+                    URL               string
+                }
+            }
+        }
+        if err := json.NewDecoder(resp.Body).Decode(&amp;data); err != nil {
+            return err
+        }
+        for _, res := range data.ResponseData.Results {
+            results = append(results, Result{Title: res.TitleNoFormatting, URL: res.URL})
+        }
+        return nil
+    })
+    // httpDo waits for the closure we provided to return, so it's safe to
+    // read results here.
+    return results, err
+</code></pre>
+<p><code>httpDo</code>函数会在新的 goroutine 中处理 HTTP 请求和响应，同时如果<code>ctx.Done</code>提前关闭，函数会直接退出。</p>
+<h2>为 Context 作代码适配</h2>
+<p>许多服务器框架已经存储了请求相关值，我们可以实现<code>Context</code>接口的所有方法，来为<code>Context</code>参数适配这些现有框架。而框架的使用者在调用代码时则需要多传入一个<code>Context</code>。</p>
+<p>参考实现：</p>
+<ol>
+<li><a href="https://blog.golang.org/context/gorilla/gorilla.go">gorilla.go</a>适配了 Gorilla 的<a href="http://www.gorillatoolkit.org/pkg/context">github.com/gorilla/context</a></li>
+<li><a href="https://blog.golang.org/context/tomb/tomb.go">tomb.go</a>适配了<a href="https://godoc.org/gopkg.in/tomb.v2">Tomb</a></li>
+</ol>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

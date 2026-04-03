@@ -1,0 +1,482 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 教程 - 一个完整的例子（译）</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 教程 - 一个完整的例子（译）
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 教程/">Robot Framework 教程</a>, Part 2</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2016-04
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>用 <a href="http://code.google.com/p/robotframework/">Robot Framework</a> 时有太多的选择：</p>
+<ul>
+<li>使用 Python, Jython 还是 Java？</li>
+<li>测试用例使用哪种输入格式（HTML, Text, BDD）？</li>
+<li>要使用 <a href="http://www.lyyyuna.com/2016/01/07/robotframework-tutorial-overview/">Robot IDE(RIDE)</a> 吗？</li>
+<li>如何在本地和持续集成环境中运行相同的测试？</li>
+<li>如何运行所有的测试 (scripting, ANT, Maven)？</li>
+</ul>
+<p>那什么是最好的选择呢？我见过的世面太多了。当然，在 Eclipse 中用 Maven 做 Robot 测试非常酷。BDD 相比较 HTML 更适合敏捷开发。</p>
+<p>所有这些有着相同的共性：简单！这不仅意味着设置和运行简单，还意味着更容易排错。在不同技术背景的团队合作间，这尤其重要。</p>
+<p>接下来我们用一个完整的例子展示 Robot Framework 的使用方法。</p>
+<h2>测试准备</h2>
+<p>开始测试工程前，首先要想好被测系统需要哪些测试库：</p>
+<ul>
+<li>是测 web 应用？那你可能需要 SeleniumLibrary 或者 Selenium2Library。</li>
+<li>是测数据库？Python 和 Java 都有相应的数据库测试库。</li>
+<li>是测试 SSH/SFTP？那你可能需要 SSHLibrary。</li>
+</ul>
+<p>这个列表可以继续列下去，直到没有可用的测试库为止。这时候你就需要自己写啦（需要单独写一篇文章来阐述）。</p>
+<p>为什么如此重要？测试库的选择直接影响到了是使用 Python, Jython 还是 Java 版的 Robot Framework。某些测试库只有 Java 的实现，如果要用纯 Python 来调用此库，则要求其实现 <strong>Remote Library 接口</strong>。因此，在测之前，需要好好想想。</p>
+<blockquote>
+<p>本文的代码在 <a href="https://github.com/lyyyuna/Robot-Framework-Sample-Project">GitHub</a></p>
+</blockquote>
+<p>我们假设被测系统是一个利用 MySQL 数据库做存储的 web 应用（非常普遍）。浏览器使用 Python 的 SeleniumLibrary，数据库使用 Java 版本的 DatabaseLibrary，并用 <strong>Remote Library 接口</strong>。</p>
+<h2>测试框架</h2>
+<p>下图是测试框架的概览：</p>
+<p><img src="/img/blog/201604/Sample_Overview1.png" alt="测试框架概览"></p>
+<p>Selenium 需要 Selenium Server。这可以是 Robot Framework 所在的同一台机器，也可以是另一台可通过 TCP/IP 连接的服务器。Database Library Server 同理。虽然 DatabaseLibrary 可以本地使用，但那就意味着必须使用 Jython 来测试了。当然也可以在同一台机器上运行多个服务器。在一些正式的测试环境中，Robot Framework 和 CI (持续集成) 服务器经常部署在一起。然后，Selenium Server 通常跑在 Windows 服务器上，因为需要尽量模拟用户的使用场景。DatabaseLibrary Server 也可以部署在 CI 服务器上。</p>
+<h2>测试实现和管理</h2>
+<p>最后让我们来实现该测试。不是每一个细节都会 cover，具体可以看 <a href="https://github.com/lyyyuna/Robot-Framework-Sample-Project">GitHub</a>。</p>
+<p>但在此之前，让我们再多做一些常规性考虑。比如用哪种格式来组织测试用例，是否使用 RIDE。而 RIDE 的使用又会直接影响到测试用例的格式。团队成员的技术背景，以及不同团队合作潜在的维护成本，对上述选择都有影响。</p>
+<blockquote>
+<p>Tips: 如果你已经使用 Excel 来管理则是用例，你可以直接复制粘贴进 RIDE。</p>
+</blockquote>
+<p>要我在本文的例子中选择，我会选择 HTML 格式和 RIDE，理由如下：</p>
+<ul>
+<li>RIDE 相比较于最初版本已经有了十足的进步，支持关键字自动补全，实现 Test Suites 和 Resource Files 也十分便利。</li>
+<li>使用 RIDE 不用特意考虑 BDD 风格。但其中有一些我不喜欢的语法元素。而且，非技术团队成员编写和维护测试用例比较困难，因为现在机器还不能完全看懂人类语言。并且我认为，如果 BDD 是唯一或者最重要的需求，其他那些只支持 BDD 的测试框架才会有优势。</li>
+<li>HTML 格式有着简单粗暴的优点。你可以直接在浏览器中可视化这些测试用例，尤其是那些熟悉 Excel 的非技术团队成员，看到这些会感到非常亲切。</li>
+<li>HTML 格式也有着缺点，在版本管理时，HTML 会带来各种各样的问题。</li>
+</ul>
+<p>在实现测试时最重要的就是能够同时在本地和正式测试环境（CI 服务器）中运行。幸运的是，Robot Framework 支持向关键字传入参数，这样便能轻松切换环境：</p>
+<ul>
+<li>参数为 web 应用的 URL</li>
+<li>Selenium 服务器的 IP 地址与端口</li>
+<li>Database Library 所使用的 JDBC 连接字符串</li>
+</ul>
+<p>这些参数可以存储在变量文件中。这些变量文件可以在命令行中传入 Robot Framework。由于在本地测试和 CI 服务器中有不同启动脚本，这样便能实现不同环境的快速切换。</p>
+<p>这意味着最好以如下的目录树来组织你的测试工程。</p>
+<p><img src="/img/blog/201604/Sample_DirectoryStructure2.png" alt="测试工程目录树"></p>
+<p>定义一个通用的目录树结构有助于工程的复用。上述的目录结构对我来说工作的不错，我很早就开始用啦。</p>
+<blockquote>
+<p>Tips: 所有路径都应该用相对路径。</p>
+</blockquote>
+<p>首先，我们将所有文件放于顶层文件 robot 中。然后将测试的实现和执行分开存放。在实现这边，testsuites 和 resource 分开存放。当然在一些大型工程中，还需要额外的子目录来更好的组织测试用例。更重要的是，最好用相对路径来引用这些文件。使用相对路径能够更好的在不同系统间移植，项目成员间通过版本管理系统也能更好地共享工程。</p>
+<p>执行分支这边必须处理不同运行目标环境的问题，比如本地开发环境和正式的 CI 环境。若还有其他的部署环境需要在此目录中实现。scripts 目录用于保存执行用的脚本（robot 本身，Selenium Server, Database Library Remote Server），setting 目录放置特殊的变量文件。请注意，这些脚本写完之后就不应该频繁改动，对于配置文件亦是如此，除非执行环境有变化。</p>
+<p>最后是 lib 文件夹，这取决于项目是否需要自己编写库文件。</p>
+<h2>执行测试</h2>
+<p>当执行测试时，我坚持使用 shell 脚本。易于理解，历史悠久且不出问题，在 CI 环境中使用方便。当然，我们很可能需要两套不同的启动脚本，因为本地测试通常在 Windows 电脑上，而正式的 CI 环境是一些 bash 或者 csh 脚本。但需注意，这些写了“写了一遍就忘记”的脚本，其实并不复杂。</p>
+<p>在最初，我们需要三个脚本：</p>
+<ol>
+<li>robot 测试的启动脚本</li>
+<li>Selenium Server 的启动脚本</li>
+<li>Database Library Remote Server 的启动脚本</li>
+</ol>
+<p>我们也可以把三个脚本合并成一个，但为什么不这么做呢，因为其实后两个服务器只需启动一次，只有测试才需要重复执行。</p>
+<h2>整合</h2>
+<p>首先我们需要在开发机器上安装 Robot Framework 和库。我们假设平台是 Windows，在 Unix 上安装也不会太复杂。</p>
+<blockquote>
+<p>Robot Framework 同时支持 2.x 和 3.x。</p>
+</blockquote>
+<p>安装如下的工具包：</p>
+<ul>
+<li>Python 2.7</li>
+<li>Robot Framwork</li>
+<li>wxPython</li>
+<li>RIDE</li>
+<li>Selenium2Library</li>
+<li>Database Library Server</li>
+</ul>
+<p>按顺序安装，然后配置 PATH 目录为  “C:\Python27;C:\Python27\Scripts”。现在你可以用</p>
+<pre><code>pybot
+</code></pre>
+<p>来运行 Robot Framework，用</p>
+<pre><code>ride
+</code></pre>
+<p>来启动 RIDE。示意图如下，</p>
+<p><img src="/img/blog/201604/RF_Ride.png" alt="测试工程目录树"></p>
+<p>Selenium Library 通常会包含一个对应的 Selenium Server JAR 包。为了独立使用不同目录下的 Selenium Server（比如其他小组成员安装的），你需要指定一个新的环境变量 RF_HOME，该变量指向 Python 的安装目录。该变量用于 selenium 服务器的本地启动脚本。</p>
+<p>对于本地的 MySQL 数据库，其配置<a href="https://github.com/ThomasJaspers/robotframework-dblibrary/tree/master/sample">在此</a>。然后安装 MySQL，创建测试 schema 和相应的用户：</p>
+<pre><code>C:\xampp\mysql\bin&gt;mysql -u root -p
+mysql&gt; create database databaselibrarydemo;
+mysql&gt; create user ‘dblib’@’localhost’ identified by ‘dblib’;
+mysql&gt; grant all privileges on databaselibrarydemo.* to ‘dblib’;
+</code></pre>
+<p>这里是工程的源码 <a href="https://github.com/lyyyuna/Robot-Framework-Sample-Project">GitHub</a>。</p>
+<p>在 robot/execution/local/scripts 是执行测试前所有需要运行的脚本。测试的实现在 robot/implementation/testsuites 目录中。测试用例可以直接用 RIDE 打开 implementation 目录，然后直接查看和修改。</p>
+<p>为了运行测试，必须先启动 Selenium 服务器和 DBLibrary 服务器。然后运行 Testsuite。Windows 的批处理脚本在 robot\execution\local\scripts 目录中。因为都使用相对路径，一切应该按计划顺利运行。这里虽然在被测服务器上部署文件，但本地可以很容易地适配。</p>
+<h2>结论和感想</h2>
+<p>我们已经看到，Robot Framework 提供了众多功能和可能，即使同一件事也能用不同方法来完成。所以，在正式开始测试前做些基本分析是很有意义的。</p>
+<p><img src="/img/blog/201604/impression_ride1.png" alt="在 RIDE 中编辑 Testsuites 和 Resource 文件"></p>
+<p>使用 RIDE 使得实现测试功能更简单，尤其是那些非技术团队。简单意味着好维护（不只是 Robot Framework 测试哦 ;-)）。</p>
+<p><img src="/img/blog/201604/impression_seleniumserver.png" alt="Selenium Server 启动和运行"></p>
+<p>顺便说一下，我还没有明确指出过，Robot Framework 的 <strong>报表</strong> 和 logging 非常棒，在 troubleshooting 时非常有用。</p>
+<p><img src="/img/blog/201604/impression_logfile.png" alt="Robot Framework 的 log 文件，其中含有浏览器屏幕截图"></p>
+<p>Robot Framework 在各种不同的测试库中提供大量的测试功能。一旦决定哪个测试库最好用时，大大加速了写测试的过程，提高了生产力。</p>
+<p><img src="/img/blog/201604/impression_dbserver.png" alt="Database Library Server 运行"></p>
+<p>尤其是在许多不同工程工作时，一个通用的工程结构和工具非常有用。在一些公共的资源文件中也需要实现一些产品相关的关键字。</p>
+<p>希望本文有助于你开始使用 Robot Framework，并有效地组织你的测试工程结构。当然，本例还有许多增强的地方，希望这是一个良好的起点。</p>
+<h2>Robot Framework 教程目录</h2>
+<p><a href="https://blog.codecentric.de/en/2012/04/robot-framework-tutorial-a-complete-example/">原文链接</a></p>
+<ol>
+<li><a href="http://www.lyyyuna.com/2016/01/07/robotframework-tutorial-overview/">Robot Framework 教程 - 概览（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/04/09/robotframework-tutorial-a-complete-example/">Robot Framework 教程 - 一个完整的例子（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/04/30/robotframework-ide-ride-overview/">Robot Framework 教程 - 集成开发环境 RIDE 概览 (译)</a></li>
+<li><a href="http://www.lyyyuna.com/2016/05/15/robotframework-tutorial-how-to-structure-a-scalable-and-maintainable-acceptance-test-suite/">Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）</a></li>
+<li><a href="http://www.lyyyuna.com/2016/05/28/robotframework-tutorial-loops-conditional-execution-and-more/">Robot Framework 教程 - 循环，条件判断，字符串和列表（译）</a></li>
+</ol>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2016/01/07/robotframework-tutorial-overview/">
+          Robot Framework 教程 - 概览（译）
+        </a>
+      
+
+      
+        <a class="next" href="/2016/05/15/robotframework-tutorial-how-to-structure-a-scalable-and-maintainable-acceptance-test-suite/">
+          Robot Framework 教程 - 如何组织一个可伸缩可维护的验收测试套件（译）
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

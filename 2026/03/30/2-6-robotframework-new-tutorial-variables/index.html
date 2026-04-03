@@ -1,0 +1,1466 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 变量</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 变量
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 7</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-03
+
+      </div>
+    </div>
+    
+    <h2>变量</h2>
+<h3>介绍</h3>
+<p>变量是 Robot Framework 的核心特性，可以在测试数据的大多数地方使用。最常见的用法是在 Test Case 和 Keywords 节中作为关键字的参数，同时所有设置项的值也允许使用变量。普通的关键字名称<em>不能</em>通过变量来指定，但可以使用 BuiltIn 库的 <code>Run Keyword</code> 关键字来达到相同的效果。</p>
+<p>Robot Framework 拥有自己的变量体系，可以分别使用 <code>${SCALAR}</code>、<code>@{LIST}</code> 和 <code>&amp;{DICT}</code> 语法作为标量、列表或字典使用。除此之外，还可以直接使用 <code>%{ENV_VAR}</code> 语法访问环境变量。</p>
+<p>变量在以下场景中很有用：</p>
+<ul>
+<li>
+<p>当多处使用的值经常变化时。使用变量后，只需要在变量定义的地方修改即可。</p>
+</li>
+<li>
+<p>创建与系统无关、与操作系统无关的测试数据时。使用变量代替硬编码值可以大大简化这一过程（例如，用 <code>${RESOURCES}</code> 代替 <code>c:\resources</code>，用 <code>${HOST}</code> 代替 <code>10.0.0.1:8080</code>）。因为变量可以在启动测试时通过命令行设置，修改系统相关的变量非常方便（例如，<code>--variable RESOURCES:/opt/resources --variable HOST:10.0.0.2:1234</code>）。这也有利于本地化测试，通常需要使用不同的本地化字符串运行相同的测试。</p>
+</li>
+<li>
+<p>当关键字参数需要非字符串对象时。如果关键字本身不支持参数转换，那么没有变量就无法实现这一点。</p>
+</li>
+<li>
+<p>当不同的关键字（甚至在不同的测试库中）需要相互通信时。你可以将一个关键字的返回值赋给变量，然后将其作为参数传递给另一个关键字。</p>
+</li>
+<li>
+<p>当测试数据中的值很长或过于复杂时。例如，使用 <code>${URL}</code> 比使用 <code>http://long.domain.name:8080/path/to/service?foo=1&amp;bar=2&amp;zap=42</code> 更方便。</p>
+</li>
+</ul>
+<p>如果在测试数据中使用了不存在的变量，使用该变量的关键字会失败。如果需要将变量语法本身作为字面字符串使用，则必须用反斜杠转义，如 <code>\${NAME}</code>。</p>
+<h3>使用变量</h3>
+<p>本节介绍如何使用普通的标量变量语法 <code>${var}</code>，如何分别使用 <code>@{var}</code> 和 <code>&amp;{var}</code> 展开列表和字典，以及如何使用 <code>%{var}</code> 语法访问环境变量。创建变量的不同方式将在下一节讨论。</p>
+<p>Robot Framework 的变量与关键字类似，不区分大小写，空格和下划线也会被忽略。不过，建议全局变量使用大写字母（例如 <code>${PATH}</code> 或 <code>${TWO WORDS}</code>），而仅在特定测试用例或用户关键字中可用的局部变量使用小写字母（例如 <code>${my var}</code>）。更重要的是，大小写的使用应保持一致。</p>
+<p>变量名（如 <code>${example}</code>）由变量标识符（<code>$</code>、<code>@</code>、<code>&amp;</code>、<code>%</code>）、花括号（<code>{</code>、<code>}</code>）和括号之间的基本名称组成。创建变量时，基本名称后面还可以跟一个变量类型定义，如 <code>${example: int}</code>。</p>
+<p>变量的基本名称可以包含任意字符。但强烈建议仅使用字母、数字、下划线和空格。这是使用扩展变量语法的当前要求，未来可能会成为所有变量的要求。</p>
+<h4>标量变量语法</h4>
+<p>在 Robot Framework 测试数据中使用变量最常见的方式是标量变量语法，如 <code>${var}</code>。使用该语法时，变量名会被其值原样替换。大多数情况下变量值是字符串，但变量可以包含任何对象，包括数字、列表、字典，甚至自定义对象。</p>
+<p>下面的示例演示了标量变量的用法。假设变量 <code>${GREET}</code> 和 <code>${NAME}</code> 已经可用，并分别被赋值为字符串 <code>Hello</code> 和 <code>world</code>，那么以下两个测试用例是等价的：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Constants
+    Log    Hello
+    Log    Hello, world!!
+
+Variables
+    Log    ${GREET}
+    Log    ${GREET}, ${NAME}!!
+</code></pre>
+<p>当标量变量单独使用时（周围没有其他文本或变量），如上面的 <code>${GREET}</code>，变量会被其值原样替换，值可以是任何对象。如果变量不是单独使用的，如上面的 <code>${GREER}, ${NAME}!!</code>，其值会先被转换为字符串，然后与其他数据拼接。</p>
+<blockquote>
+<p>当使用命名参数语法（如 <code>argname=${var}</code>）传递关键字参数时，变量值同样是原样使用而不进行字符串转换。</p>
+</blockquote>
+<p>下面的示例演示了变量单独使用和与其他内容一起使用时的区别。首先，假设变量 <code>${STR}</code> 被设置为字符串 <code>Hello, world!</code>，<code>${OBJ}</code> 被设置为以下 Python 对象的实例：</p>
+<pre><code class="language-py">class MyObj:
+
+    def __str__(self):
+        return &quot;Hi, terra!&quot;
+</code></pre>
+<p>设置好这两个变量后，有如下测试数据：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Objects
+    KW 1    ${STR}
+    KW 2    ${OBJ}
+    KW 3    I said &quot;${STR}&quot;
+    KW 4    You said &quot;${OBJ}&quot;
+</code></pre>
+<p>执行该测试数据时，各关键字接收的参数如下：</p>
+<ul>
+<li><code>KW 1</code> 获得字符串 <code>Hello, world!</code></li>
+<li><code>KW 2</code> 获得存储在变量 <code>${OBJ}</code> 中的对象</li>
+<li><code>KW 3</code> 获得字符串 <code>I said &quot;Hello, world!&quot;</code></li>
+<li><code>KW 4</code> 获得字符串 <code>You said &quot;Hi, terra!&quot;</code></li>
+</ul>
+<h5>包含字节的标量变量</h5>
+<p>包含 <a href="https://docs.python.org/3/library/stdtypes.html#bytes-objects">bytes</a> 或 <a href="https://docs.python.org/3/library/stdtypes.html#bytearray-objects">bytearrays</a> 的变量在处理方式上与其他包含非字符串值的变量略有不同：</p>
+<ul>
+<li>
+<p>如果单独使用，行为与其他对象完全相同，其值会原样传递给关键字。</p>
+</li>
+<li>
+<p>如果仅与其他同样包含 bytes 或 bytearrays 的变量拼接，结果是 bytes 而非字符串。</p>
+</li>
+<li>
+<p>如果与字符串或包含 bytes/bytearrays 以外类型的变量拼接，它们会像其他对象一样被转换为字符串，但字符串表示与 Python 中的正常表示不同。在 Python 中，字符串表示包含引号和 <code>b</code> 前缀（如 <code>b'\x00'</code>），但在 Robot Framework 中，引号和前缀被省略，每个字节被映射到具有相同序数的 Unicode 码点。实际上这等同于使用 Latin-1 编码将 bytes 转换为字符串。这种格式的一大好处是生成的字符串可以被转换回 bytes，例如使用 BuiltIn 库的 <code>Convert To Bytes</code> 关键字或通过自动参数转换。</p>
+</li>
+</ul>
+<p>以下示例演示了 bytes 的用法（bytearrays 的工作方式完全相同）。变量 <code>${a}</code> 预期包含字节 <code>\x00\x01</code>，变量 <code>${b}</code> 包含字节 <code>a\xe4</code>。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Bytes alone
+    [Documentation]    Keyword gets bytes '\x00\x01'.
+    Keyword    ${a}
+
+Bytes concatenated with bytes
+    [Documentation]    Keyword gets bytes '\x00\x01a\xe4'.
+    Keyword    ${a}${b}
+
+Bytes concatenated with others
+    [Documentation]    Keyword gets string '=\x00\x01a\xe4='.
+    Keyword    =${a}${b}=
+</code></pre>
+<blockquote>
+<p>拼接包含 bytes 的变量时得到 bytes 结果是 Robot Framework 7.2 中的新特性。在更早的版本中，结果是字符串。</p>
+</blockquote>
+<blockquote>
+<p>所有字节在字符串表示中映射到对应的 Unicode 码点是 Robot Framework 7.2 中的新特性。在更早的版本中，只有 ASCII 范围内的字节直接映射到码点，其他字节使用转义格式表示。</p>
+</blockquote>
+<h4>列表变量语法</h4>
+<p>当变量以标量形式使用（如 <code>${EXAMPLE}</code>）时，其值会被原样使用。如果变量值是列表或类列表对象，也可以将其作为列表变量使用（如 <code>@{EXAMPLE}</code>）。在这种情况下，列表会被展开，各个元素作为独立的参数分别传递。</p>
+<p>用一个示例来解释最为直观。假设变量 <code>${USER}</code> 包含一个有两个元素 <code>robot</code> 和 <code>secret</code> 的列表，那么以下前两个测试是等价的：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Constants
+    Login    robot    secret
+
+List variable
+    Login    @{USER}
+
+List as scalar
+    Keyword    ${USER}
+</code></pre>
+<p>上面的第三个测试说明，包含列表的变量也可以作为标量使用。在该测试中，关键字获得整个列表作为单个参数。</p>
+<p>从 Robot Framework 4.0 开始，列表展开可以与列表元素访问结合使用：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Nested container
+    ${nested} =    Evaluate    [['a', 'b', 'c'], {'key': ['x', 'y']}]
+    Log Many    @{nested}[0]         # 输出 'a'、'b' 和 'c'。
+    Log Many    @{nested}[1][key]    # 输出 'x' 和 'y'。
+
+Slice
+    ${items} =    Create List    first    second    third
+    Log Many    @{items}[1:]         # 输出 'second' 和 'third'。
+</code></pre>
+<h5>列表变量与其他数据一起使用</h5>
+<p>列表变量可以与其他参数一起使用，包括其他列表变量。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Keyword    @{LIST}    more    args
+    Keyword    ${SCALAR}    @{LIST}    constant
+    Keyword    @{LIST}    @{ANOTHER}    @{ONE MORE}
+</code></pre>
+<h5>列表变量与设置项一起使用</h5>
+<p>列表变量只能用于部分设置项。它们可以用于导入库和变量文件时的参数，但库和变量文件的名称本身不能是列表变量。同样，在 setup 和 teardown 中，列表变量不能用作关键字名称，但可以用于参数。在 tag 相关的设置项中可以自由使用。在不支持列表变量的地方，可以使用标量变量。</p>
+<pre><code class="language-markdown">*** Settings ***
+Library         ExampleLibrary      @{LIB ARGS}    # 可以使用
+Library         ${LIBRARY}          @{LIB ARGS}    # 可以使用
+Library         @{LIBRARY AND ARGS}                # 不可以使用
+Suite Setup     Some Keyword        @{KW ARGS}     # 可以使用
+Suite Setup     ${KEYWORD}          @{KW ARGS}     # 可以使用
+Suite Setup     @{KEYWORD AND ARGS}                # 不可以使用
+Test Tags       @{TAGS}                            # 可以使用
+</code></pre>
+<h4>字典变量语法</h4>
+<p>如前所述，包含列表的变量可以作为列表变量使用，将列表元素作为独立参数传递给关键字。类似地，包含 Python 字典或类字典对象的变量可以作为字典变量使用（如 <code>&amp;{EXAMPLE}</code>）。实际上，这意味着字典被展开，各个键值对作为命名参数传递给关键字。假设变量 <code>&amp;{USER}</code> 的值为 <code>{'name': 'robot', 'password': 'secret'}</code>，那么以下前两个测试用例是等价的：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Constants
+    Login    name=robot    password=secret
+
+Dictionary variable
+    Login    &amp;{USER}
+
+Dictionary as scalar
+    Keyword    ${USER}
+</code></pre>
+<p>上面的第三个测试说明，包含字典的变量也可以作为标量使用。在该测试中，关键字获得整个字典作为单个参数。</p>
+<p>从 Robot Framework 4.0 开始，字典展开可以与字典元素访问结合使用，使得 <code>&amp;{nested}[key]</code> 这样的用法成为可能。</p>
+<h5>字典变量与其他数据一起使用</h5>
+<p>字典变量可以与其他参数一起使用，包括其他字典变量。因为命名参数语法要求位置参数在命名参数之前，字典后面只能跟命名参数或其他字典。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Keyword    &amp;{DICT}    named=arg
+    Keyword    positional    @{LIST}    &amp;{DICT}
+    Keyword    &amp;{DICT}    &amp;{ANOTHER}    &amp;{ONE MORE}
+</code></pre>
+<h5>字典变量与设置项一起使用</h5>
+<p>字典变量通常不能用于设置项。唯一的例外是导入、setup 和 teardown，在这些场景中字典可以用作参数。</p>
+<pre><code class="language-markdown">*** Settings ***
+Library        ExampleLibrary    &amp;{LIB ARGS}
+Suite Setup    Some Keyword      &amp;{KW ARGS}     named=arg
+</code></pre>
+<h4>访问列表和字典元素</h4>
+<p>可以使用特殊语法（如 <code>${var}[item]</code> 或 <code>${var}[nested][item]</code>）访问可下标变量（例如列表和字典）的元素。从 Robot Framework 4.0 开始，还可以将元素访问与列表展开和字典展开结合使用，分别使用 <code>@{var}[item]</code> 和 <code>&amp;{var}[item]</code> 语法。</p>
+<blockquote>
+<p>在 Robot Framework 3.1 之前，列表的正常元素访问语法是 <code>@{var}[item]</code>，字典的是 <code>&amp;{var}[item]</code>。Robot Framework 3.1 引入了通用的 <code>${var}[item]</code> 语法以及一些其他改进，旧的元素访问语法在 Robot Framework 3.2 中被弃用。</p>
+</blockquote>
+<h5>访问序列元素</h5>
+<p>可以使用 <code>${var}[index]</code> 语法访问包含<a href="https://docs.python.org/3/glossary.html#term-sequence">序列</a>（如列表、字符串或 bytes）的变量的某个元素，其中 <code>index</code> 是所选值的索引。索引从零开始，可以使用负索引从末尾访问元素，使用过大的索引会导致错误。索引会自动转换为整数，也可以使用变量作为索引。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Positive index
+    Login    ${USER}[0]    ${USER}[1]
+    Title Should Be    Welcome ${USER}[0]!
+
+Negative index
+    Keyword    ${SEQUENCE}[-1]
+
+Index defined as variable
+    Keyword    ${SEQUENCE}[${INDEX}]
+</code></pre>
+<p>序列元素访问也支持与 <a href="https://docs.python.org/glossary.html#term-slice">Python 相同的&quot;切片&quot;功能</a>，使用 <code>${var}[1:]</code> 这样的语法。使用该语法时，你获得的不是单个元素，而是原始序列的一个<em>切片</em>。与 Python 一样，你可以指定起始索引、结束索引和步长：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Start index
+    Keyword    ${SEQUENCE}[1:]
+
+End index
+    Keyword    ${SEQUENCE}[:4]
+
+Start and end
+    Keyword    ${SEQUENCE}[2:-1]
+
+Step
+    Keyword    ${SEQUENCE}[::2]
+    Keyword    ${SEQUENCE}[1:-1:10]
+</code></pre>
+<blockquote>
+<p>在 Robot Framework 3.2 之前，元素和切片访问仅支持包含列表、元组或其他被视为类列表对象的变量。现在所有序列（包括字符串和 bytes）都支持。</p>
+</blockquote>
+<h5>访问字典单个元素</h5>
+<p>可以使用 <code>${NAME}[key]</code> 语法访问字典变量的某个值，其中 <code>key</code> 是所选值的键名。键被视为字符串，但可以使用变量来表示非字符串键。以这种方式访问的字典值可以像标量变量一样使用。</p>
+<p>如果字典是在 Robot Framework 数据中创建的，也可以使用属性访问语法（如 <code>${NAME.key}</code>）来访问值。更多关于该语法的详细信息请参见创建字典一节。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Dictionary variable item
+    Login    ${USER}[name]    ${USER}[password]
+    Title Should Be    Welcome ${USER}[name]!
+
+Key defined as variable
+    Log Many    ${DICT}[${KEY}]    ${DICT}[${42}]
+
+Attribute access
+    Login    ${USER.name}    ${USER.password}
+    Title Should Be    Welcome ${USER.name}!
+</code></pre>
+<h5>嵌套元素访问</h5>
+<p>嵌套的可下标变量也可以使用相同的元素访问语法（如 <code>${var}[item1][item2]</code>）来访问。这在处理 REST 服务常返回的 JSON 数据时特别有用。例如，如果变量 <code>${DATA}</code> 包含 <code>[{'id': 1, 'name': 'Robot'}, {'id': 2, 'name': 'Mr. X'}]</code>，以下测试会通过：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Nested item access
+    Should Be Equal    ${DATA}[0][name]    Robot
+    Should Be Equal    ${DATA}[1][id]      ${2}
+</code></pre>
+<h4>环境变量</h4>
+<p>Robot Framework 允许在测试数据中使用 <code>%{ENV_VAR_NAME}</code> 语法访问环境变量。环境变量只能是字符串值。可以通过用等号分隔变量名和默认值来指定默认值（如 <code>%{ENV_VAR_NAME=default value}</code>），当环境变量不存在时使用默认值。</p>
+<p>在测试执行前在操作系统中设置的环境变量在执行期间都可用，也可以使用 OperatingSystem 库的 <code>Set Environment Variable</code> 关键字创建新的环境变量，或使用 <code>Delete Environment Variable</code> 关键字删除现有的环境变量。因为环境变量是全局的，在一个测试用例中设置的环境变量可以在其后执行的其他测试用例中使用。但是，对环境变量的修改在测试执行结束后不再有效。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Environment variables
+    Log    Current user: %{USER}
+    Run    %{JAVA_HOME}${/}javac
+
+Environment variable with default
+    Set Port    %{APPLICATION_PORT=8080}
+</code></pre>
+<blockquote>
+<p>支持指定默认值是 Robot Framework 3.2 中的新特性。</p>
+</blockquote>
+<h3>创建变量</h3>
+<p>变量可以通过本节讨论的不同方式创建：</p>
+<ul>
+<li>在 Variable 节中</li>
+<li>使用变量文件</li>
+<li>通过命令行</li>
+<li>基于关键字的返回值</li>
+<li>使用 <code>VAR</code> 语法</li>
+<li>使用 <code>Set Test/Suite/Global Variable</code> 关键字</li>
+</ul>
+<p>除此之外，还有各种自动可用的内置变量，用户关键字参数和 <code>FOR</code> 循环也会创建变量。在大多数创建变量的地方，可以使用变量类型转换来方便地创建非字符串值的变量。类型转换的一个重要应用是创建秘密变量。</p>
+<h4>Variable 节</h4>
+<p>变量最常见的来源是套件文件和资源文件中的 Variables 节。Variables 节很方便，因为它允许在与其他测试数据相同的地方创建变量，而且所需的语法非常简单。其主要缺点是无法动态创建变量。如果这是个问题，可以使用变量文件代替。</p>
+<h5>创建标量值</h5>
+<p>最简单的变量赋值是将字符串设置到标量变量中。只需在 Variables 节的第一列给出变量名（包括 <code>${}</code>），在第二列给出值。如果第二列为空，则设置为空字符串。已定义的变量也可以用在值中。</p>
+<pre><code class="language-markdown">*** Variables ***
+${NAME}         Robot Framework
+${VERSION}      2.0
+${ROBOT}        ${NAME} ${VERSION}
+</code></pre>
+<p>也可以（但不是必须）在变量名后面使用等号 <code>=</code>，使赋值更加明确。</p>
+<pre><code class="language-markdown">*** Variables ***
+${NAME} =       Robot Framework
+${VERSION} =    2.0
+</code></pre>
+<p>如果标量变量的值很长，可以使用 <code>...</code> 语法将其拆分到多行。默认情况下各行使用空格连接，但可以使用 <code>separator</code> 配置选项来更改：</p>
+<pre><code class="language-markdown">*** Variables ***
+${EXAMPLE}      This value is joined
+...             together with a space.
+${MULTILINE}    First line.
+...             Second line.
+...             Third line.
+...             separator=\n
+</code></pre>
+<p><code>separator</code> 选项是 Robot Framework 7.0 中新增的，但更早的版本也支持配置分隔符。在旧版本中，第一个值可以包含特殊的 <code>SEPARATOR</code> 标记：</p>
+<pre><code class="language-markdown">*** Variables ***
+${MULTILINE}    SEPARATOR=\n
+...             First line.
+...             Second line.
+...             Third line.
+</code></pre>
+<p><code>separator</code> 选项和 <code>SEPARATOR</code> 标记都是大小写敏感的。推荐使用 <code>separator</code> 选项，除非需要同时支持旧版本。</p>
+<h5>创建列表</h5>
+<p>创建列表和创建标量值一样简单。变量名同样在 Variables 节的第一列，值在后续列中，但这次变量名必须以 <code>@</code> 开头而不是 <code>$</code>。列表可以有任意数量的元素（包括零个），如果需要可以拆分到多行。</p>
+<pre><code class="language-markdown">*** Variables ***
+@{NAMES}        Matti       Teppo
+@{NAMES2}       @{NAMES}    Seppo
+@{NOTHING}
+@{MANY}         one         two      three      four
+...             five        six      seven
+</code></pre>
+<blockquote>
+<p>如列表变量语法一节中所述，包含列表的变量可以作为标量使用（如 <code>${NAMES}</code>），也可以使用列表展开语法使用（如 <code>@{NAMES}</code>）。</p>
+</blockquote>
+<h5>创建字典</h5>
+<p>字典可以在 Variables 节中以类似列表的方式创建。区别是名称必须以 <code>&amp;</code> 开头，并且元素需要使用 <code>name=value</code> 语法或基于已有的字典变量来创建。如果有多个同名元素，最后一个值优先。如果名称中包含字面等号，可以使用反斜杠转义（如 <code>\=</code>）。</p>
+<pre><code class="language-markdown">*** Variables ***
+&amp;{USER 1}       name=Matti    address=xxx         phone=123
+&amp;{USER 2}       name=Teppo    address=yyy         phone=456
+&amp;{MANY}         first=1       second=${2}         ${3}=third
+&amp;{EVEN MORE}    &amp;{MANY}       first=override      empty=
+...             =empty        key\=here=value
+</code></pre>
+<blockquote>
+<p>如字典变量语法一节中所述，包含字典的变量可以作为标量使用（如 <code>${USER 1}</code>），也可以使用字典展开语法使用（如 <code>&amp;{USER 1}</code>）。</p>
+</blockquote>
+<p>与普通的 Python 字典不同，使用这种语法创建的字典的值可以通过属性访问，这意味着可以使用扩展变量语法（如 <code>${VAR.key}</code>）。不过，这仅在键是有效的属性名称且不与 Python 字典的正常属性冲突时才有效。例如，单个值 <code>${USER}[name]</code> 也可以通过 <code>${USER.name}</code> 访问，但使用 <code>${MANY.3}</code> 是不可行的。</p>
+<blockquote>
+<p>对于嵌套字典，键可以通过 <code>${DATA.nested.key}</code> 的方式访问。</p>
+</blockquote>
+<p>字典也是有序的。这意味着迭代时，元素总是按照定义顺序排列。这在字典作为列表变量与 <code>FOR</code> 循环或其他场景配合使用时很有用。当字典作为列表变量使用时，实际值包含字典的键。例如，<code>@{MANY}</code> 变量的值为 <code>['first', 'second', 3]</code>。</p>
+<h5>基于另一个变量创建变量名</h5>
+<p>从 Robot Framework 7.0 开始，可以基于另一个变量动态创建变量名：</p>
+<pre><code class="language-markdown">*** Variables ***
+${X}        Y
+${${X}}     Z    # 名称基于 '${X}' 创建。
+
+*** Test Cases ***
+Dynamically created name
+    Should Be Equal    ${Y}    Z
+</code></pre>
+<h4>使用变量文件</h4>
+<p>变量文件是创建各种变量的最强大机制。它可以将变量赋值给任何对象，还支持动态创建变量。变量文件的语法和使用方法在资源文件和变量文件一节中介绍。</p>
+<h4>命令行变量</h4>
+<p>变量可以通过命令行设置，既可以使用 <code>--variable (-v)</code> 选项逐个设置，也可以使用 <code>--variablefile (-V)</code> 选项通过变量文件设置。从命令行设置的变量对所有执行的测试数据文件全局可用，并且会覆盖 Variables 节和 Settings 节中导入的变量文件中同名的变量。</p>
+<p>逐个设置变量的语法是 <code>--variable name:value</code>，其中 <code>name</code> 是不含 <code>${}</code> 修饰的变量名，<code>value</code> 是其值。可以多次使用此选项设置多个变量。</p>
+<pre><code class="language-bash">--variable EXAMPLE:value
+--variable HOST:localhost:7272 --variable USER:robot
+</code></pre>
+<p>在上面的示例中，变量设置如下：</p>
+<ul>
+<li><code>${EXAMPLE}</code> 获得值 <code>value</code></li>
+<li><code>${HOST}</code> 和 <code>${USER}</code> 分别获得值 <code>localhost:7272</code> 和 <code>robot</code></li>
+</ul>
+<p>通过命令行使用变量文件的基本语法是 <code>--variablefile path/to/variables.py</code>，&quot;使用变量文件&quot;一节有更详细的说明。实际创建哪些变量取决于引用的变量文件中有哪些变量。</p>
+<p>如果同时从命令行指定了变量文件和单独的变量，后者具有更高的优先级。</p>
+<h4>关键字的返回值</h4>
+<p>关键字的返回值也可以赋给变量。这允许不同关键字之间进行通信，即使它们来自不同的库——通过将创建的变量作为参数传递给其他关键字。</p>
+<p>以这种方式设置的变量在其他方面与任何其他变量类似，但它们仅在创建它们的局部作用域中可用。因此，不可能在一个测试用例中这样设置变量并在另一个测试用例中使用。这是因为，一般来说，自动化测试用例不应该相互依赖，意外设置一个在其他地方使用的变量可能会导致难以调试的错误。如果确实需要在一个测试用例中设置变量并在另一个中使用，可以使用 <code>VAR</code> 语法或 <code>Set Test/Suite/Global Variable</code> 关键字，具体在后续章节中介绍。</p>
+<h5>赋值标量变量</h5>
+<p>关键字返回的任何值都可以赋给标量变量。如下面的示例所示，所需的语法非常简单：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Returning
+    ${x} =    Get X    an argument
+    Log    We got ${x}!
+</code></pre>
+<p>在上面的示例中，<code>Get X</code> 关键字返回的值先被设置到变量 <code>${x}</code> 中，然后被 <code>Log</code> 关键字使用。在被赋值变量名后面加等号 <code>=</code> 不是必须的，但可以使赋值更加明确。像这样创建局部变量在测试用例和用户关键字层级都适用。</p>
+<p>注意，虽然值被赋给了标量变量，但如果它具有类列表的值，可以作为列表变量使用；如果它具有类字典的值，可以作为字典变量使用。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+List assigned to scalar variable
+    ${list} =    Create List    first    second    third
+    Length Should Be    ${list}    3
+    Log Many    @{list}
+</code></pre>
+<h5>赋值变量元素</h5>
+<p>从 Robot Framework 6.1 开始，对于支持元素赋值的变量（如列表或字典），可以使用 <code>${var}[item]</code> 语法来设置它们的值，其中 <code>item</code> 部分本身可以包含变量：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+List item assignment
+    ${list} =          Create List      one    two    three    four
+    ${list}[0] =       Set Variable     first
+    ${list}[${1}] =    Set Variable     second
+    ${list}[2:3] =     Create List      third
+    ${list}[-1] =      Set Variable     last
+    Log Many           @{list}          # 输出 'first'、'second'、'third' 和 'last'
+
+Dictionary item assignment
+    ${dict} =                Create Dictionary    first_name=unknown
+    ${dict}[first_name] =    Set Variable         John
+    ${dict}[last_name] =     Set Variable         Doe
+    Log                      ${dictionary}        # 输出 {'first_name': 'John', 'last_name': 'Doe'}
+</code></pre>
+<h5>基于另一个变量创建变量名</h5>
+<p>从 Robot Framework 7.0 开始，可以基于另一个变量动态创建被赋值变量的名称：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Dynamically created name
+    ${x} =    Set Variable    y
+    ${${x}} =    Set Variable    z    # 名称基于 '${x}' 创建。
+    Should Be Equal    ${y}    z
+</code></pre>
+<h5>赋值列表变量</h5>
+<p>如果关键字返回一个列表或任何类列表对象，可以将其赋给列表变量：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Assign to list variable
+    @{list} =    Create List    first    second    third
+    Length Should Be    ${list}    3
+    Log Many    @{list}
+</code></pre>
+<p>因为所有 Robot Framework 变量都存储在同一个命名空间中，将值赋给标量变量和列表变量之间没有太大区别。将上面的示例与前面的 <code>List assigned to scalar variable</code> 测试用例做比较即可看出。主要区别是，创建列表变量时，Robot Framework 会自动验证该值是列表或类列表对象，并且存储的变量值将是根据返回值创建的新列表。赋给标量变量时，不会验证返回值，存储的值就是返回的那个对象。</p>
+<h5>赋值字典变量</h5>
+<p>如果关键字返回一个字典或任何类字典对象，可以将其赋给字典变量：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Assign to dictionary variable
+    &amp;{dict} =    Create Dictionary    first=1    second=${2}    ${3}=third
+    Length Should Be    ${dict}    3
+    Do Something    &amp;{dict}
+    Log    ${dict.first}
+</code></pre>
+<p>因为所有 Robot Framework 变量都存储在同一个命名空间中，也可以将字典赋给标量变量，在需要时再作为字典使用。但是，显式创建字典变量有一些具体的好处。首先，Robot Framework 会验证返回值是字典或类字典对象，就像验证列表变量只能获得类列表值一样。</p>
+<p>更大的好处是，值会被转换为一种特殊字典，这种字典在 Variables 节中创建字典时也会使用。这些字典中的值可以使用属性访问方式访问，如上面示例中的 <code>${dict.first}</code>。</p>
+<h5>多变量赋值</h5>
+<p>如果关键字返回一个列表或类列表对象，可以将各个值赋给多个标量变量，或者赋给标量变量和一个列表变量。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Assign multiple
+    ${a}    ${b}    ${c} =    Get Three
+    ${first}    @{rest} =    Get Three
+    @{before}    ${last} =    Get Three
+    ${begin}    @{middle}    ${end} =    Get Three
+</code></pre>
+<p>假设 <code>Get Three</code> 关键字返回列表 <code>[1, 2, 3]</code>，则创建以下变量：</p>
+<ul>
+<li><code>${a}</code>、<code>${b}</code> 和 <code>${c}</code> 分别获得值 <code>1</code>、<code>2</code> 和 <code>3</code>。</li>
+<li><code>${first}</code> 获得值 <code>1</code>，<code>@{rest}</code> 获得值 <code>[2, 3]</code>。</li>
+<li><code>@{before}</code> 获得值 <code>[1, 2]</code>，<code>${last}</code> 获得值 <code>3</code>。</li>
+<li><code>${begin}</code> 获得值 <code>1</code>，<code>@{middle}</code> 获得值 <code>[2]</code>，<code>${end}</code> 获得值 <code>3</code>。</li>
+</ul>
+<p>如果返回的列表值数量多于或少于可赋值的标量变量，则会报错。此外，只允许有一个列表变量，字典变量只能单独赋值。</p>
+<h5>自动记录被赋值变量的值</h5>
+<p>为了更容易理解执行过程中发生了什么，被赋值的值的开头部分会自动记录到日志中。默认显示前 200 个字符，但可以在运行测试时使用 <code>--maxassignlength</code> 命令行选项来更改。如果值为零或负数，则整个被赋值的值会被隐藏。</p>
+<pre><code class="language-bash">--maxassignlength 1000
+--maxassignlength 0
+</code></pre>
+<p>值不被完整记录的原因是它可能非常大。如果你总是想完整查看某个值，可以在赋值后使用 BuiltIn 库的 <code>Log</code> 关键字来记录它。</p>
+<blockquote>
+<p><code>--maxassignlength</code> 选项是 Robot Framework 5.0 中新增的。</p>
+</blockquote>
+<h4><code>VAR</code> 语法</h4>
+<p>从 Robot Framework 7.0 开始，可以在测试和用户关键字内部使用 <code>VAR</code> 语法创建变量。<code>VAR</code> 标记是大小写敏感的，后面必须跟变量名和值。除了必须的 <code>VAR</code> 之外，整体语法与在 Variables 节中创建变量基本相同。</p>
+<p>这种新语法旨在使创建变量更简单、更统一。它特别用于替代 BuiltIn 库的 <code>Set Variable</code>、<code>Set Local Variable</code>、<code>Set Test Variable</code>、<code>Set Suite Variable</code> 和 <code>Set Global Variable</code> 关键字，但也可以用于替代 <code>Catenate</code>、<code>Create List</code> 和 <code>Create Dictionary</code>。</p>
+<h5>创建标量变量</h5>
+<p>在简单情况下，只需给出变量名及其值即可创建标量变量。值可以是硬编码的字符串，也可以包含变量。如果值很长，可以将其拆分到多列和多行。在这种情况下，各部分默认使用空格连接，但可以通过 <code>separator</code> 配置选项指定分隔符。变量名后面可以有可选的 <code>=</code>，与基于关键字返回值创建变量以及在 Variables 节中创建变量的方式相同。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Scalar examples
+     VAR    ${simple}       variable
+     VAR    ${equals} =     this works too
+     VAR    ${variable}     value contains ${simple}
+     VAR    ${sentence}     This is a bit longer variable value
+     ...                    that is split into multiple rows.
+     ...                    These parts are joined with a space.
+     VAR    ${multiline}    This is another longer value.
+     ...                    This time there is a custom separator.
+     ...                    As the result this becomes a multiline string.
+     ...                    separator=\n
+</code></pre>
+<h5>创建列表和字典</h5>
+<p>列表和字典变量的创建方式与标量变量类似，但变量名必须分别以 <code>@</code> 和 <code>&amp;</code> 开头。创建字典时，元素必须使用 <code>name=value</code> 语法。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+List examples
+     VAR    @{two items}     Robot    Framework
+     VAR    @{empty list}
+     VAR    @{lot of stuff}
+     ...    first item
+     ...    second item
+     ...    third item
+     ...    fourth item
+     ...    last item
+
+Dictionary examples
+     VAR    &amp;{two items}     name=Robot Framework    url=http://robotframework.org
+     VAR    &amp;{empty dict}
+     VAR    &amp;{lot of stuff}
+     ...    first=1
+     ...    second=2
+     ...    third=3
+     ...    fourth=4
+     ...    last=5
+</code></pre>
+<h5>作用域</h5>
+<p>使用 <code>VAR</code> 语法创建的变量默认仅在创建它们的测试或用户关键字中可用。不过，可以通过 <code>scope</code> 配置选项来更改。支持的值如下：</p>
+<p><code>LOCAL</code>：使变量在当前局部作用域中可用。这是默认值。</p>
+<p><code>TEST</code>：使变量在当前测试中可用，包括测试调用的所有关键字。如果在套件级别使用，使变量在 suite setup 和 teardown 中可用，但不在测试或可能的子套件中可用。在 Robot Framework 7.2 之前，在套件级别使用此作用域会报错。</p>
+<p><code>TASK</code>：<code>TEST</code> 的别名，可在创建任务时使用。</p>
+<p><code>SUITE</code>：使变量在当前测试套件中可用，包括该套件中所有后续的测试，但不包括可能的子套件中的测试。</p>
+<p><code>SUITES</code>：使变量在当前测试套件及其子套件中可用。这是 Robot Framework 7.1 中新增的。</p>
+<p><code>GLOBAL</code>：使变量全局可用，包括所有后续的关键字和测试。</p>
+<p>虽然 Robot Framework 变量不区分大小写，但建议非局部变量名使用大写字母。</p>
+<pre><code class="language-markdown">*** Variables ***
+${SUITE}         this value is overridden
+
+*** Test Cases ***
+Scope example
+    VAR    ${local}     local value
+    VAR    ${TEST}      test value            scope=TEST
+    VAR    ${SUITE}     suite value           scope=SUITE
+    VAR    ${SUITES}    nested suite value    scope=SUITES
+    VAR    ${GLOBAL}    global value          scope=GLOBAL
+    Should Be Equal    ${local}     local value
+    Should Be Equal    ${TEST}      test value
+    Should Be Equal    ${SUITE}     suite value
+    Should Be Equal    ${SUITES}    nested suite value
+    Should Be Equal    ${GLOBAL}    global value
+    Keyword
+    Should Be Equal    ${TEST}      new test value
+    Should Be Equal    ${SUITE}     new suite value
+    Should Be Equal    ${SUITES}    new nested suite value
+    Should Be Equal    ${GLOBAL}    new global value
+
+Scope example, part 2
+    Should Be Equal    ${SUITE}     new suite value
+    Should Be Equal    ${SUITES}    new nested suite value
+    Should Be Equal    ${GLOBAL}    new global value
+
+*** Keywords ***
+Keyword
+    Should Be Equal    ${TEST}      test value
+    Should Be Equal    ${SUITE}     suite value
+    Should Be Equal    ${SUITES}    nested suite value
+    Should Be Equal    ${GLOBAL}    global value
+    VAR    ${TEST}      new ${TEST}      scope=TEST
+    VAR    ${SUITE}     new ${SUITE}     scope=SUITE
+    VAR    ${SUITES}    new ${SUITES}    scope=SUITES
+    VAR    ${GLOBAL}    new ${GLOBAL}    scope=GLOBAL
+    Should Be Equal    ${TEST}      new test value
+    Should Be Equal    ${SUITE}     new suite value
+    Should Be Equal    ${SUITES}    new nested suite value
+    Should Be Equal    ${GLOBAL}    new global value
+</code></pre>
+<h5>条件创建变量</h5>
+<p><code>VAR</code> 语法与 <code>IF/ELSE</code> 结构配合使用，可以方便地条件性创建变量。在简单情况下，使用内联 <code>IF</code> 会很方便。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+IF/ELSE example
+    IF    &quot;${ENV}&quot; == &quot;devel&quot;
+        VAR    ${address}    127.0.0.1
+        VAR    ${name}       demo
+    ELSE
+        VAR    ${address}    192.168.1.42
+        VAR    ${name}       robot
+    END
+
+Inline IF
+    IF    &quot;${ENV}&quot; == &quot;devel&quot;    VAR    ${name}    demo    ELSE    VAR    ${name}    robot
+</code></pre>
+<h5>基于另一个变量创建变量名</h5>
+<p>如有需要，也可以基于另一个变量动态创建变量名。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Dynamic name
+    VAR    ${x}       y    # 普通赋值。
+    VAR    ${${x}}    z    # 名称动态创建。
+    Should Be Equal    ${y}    z
+</code></pre>
+<h4><code>Set Test/Suite/Global Variable</code> 关键字</h4>
+<blockquote>
+<p>在 Robot Framework 7.0 或更新版本中，推荐使用 <code>VAR</code> 语法代替这些关键字。</p>
+</blockquote>
+<p>BuiltIn 库有 <code>Set Test Variable</code>、<code>Set Suite Variable</code> 和 <code>Set Global Variable</code> 关键字，可用于在测试执行期间动态设置变量。如果变量已经存在于新的作用域中，其值将被覆盖，否则会创建新变量。</p>
+<p>使用 <code>Set Test Variable</code> 关键字设置的变量在当前执行的测试用例的整个作用域中都可用。例如，如果你在用户关键字中设置了一个变量，它在测试用例级别和当前测试中使用的所有其他用户关键字中都可用。其他测试用例看不到用此关键字设置的变量。在测试作用域之外调用 <code>Set Test Variable</code> 会报错（例如在 Suite Setup 或 Teardown 中）。</p>
+<p>使用 <code>Set Suite Variable</code> 关键字设置的变量在当前执行的测试套件的整个作用域中都可用。用此关键字设置变量与在测试数据文件中使用 Variables 节创建变量或从变量文件中导入变量效果相同。其他测试套件（包括可能的子测试套件）看不到用此关键字设置的变量。</p>
+<p>使用 <code>Set Global Variable</code> 关键字设置的变量在设置后执行的所有测试用例和测试套件中全局可用。用此关键字设置变量与通过命令行使用 <code>--variable</code> 和 <code>--variablefile</code> 选项创建变量效果相同。因为此关键字可以在任何地方改变变量，应谨慎使用。</p>
+<blockquote>
+<p><code>Set Test/Suite/Global Variable</code> 关键字直接将命名变量设置到测试、套件或全局变量作用域中，不返回任何值。而另一个 BuiltIn 库关键字 <code>Set Variable</code> 使用返回值设置局部变量。</p>
+</blockquote>
+<h4>变量类型转换</h4>
+<p>变量值通常是字符串，但也经常需要非字符串值。前面已经讨论了创建非字符串值变量的各种方法：</p>
+<ul>
+<li>变量文件允许创建任意类型的对象。</li>
+<li>关键字的返回值可以包含任何对象。</li>
+<li>变量可以基于包含非字符串值的已有变量来创建。</li>
+<li><code>@{list}</code> 和 <code>&amp;{dict}</code> 语法允许原生创建列表和字典。</li>
+</ul>
+<p>除了以上方法，还可以在创建变量时指定变量类型（如 <code>${name: int}</code>），值会自动转换为指定的类型。这称为<em>变量类型转换</em>，其工作方式将在本节讨论。</p>
+<blockquote>
+<p>变量类型转换是 Robot Framework 7.3 中的新特性。</p>
+</blockquote>
+<h5>变量类型语法</h5>
+<p>通用的变量类型语法在数据中是 <code>${name: type}</code>，在命令行上是 <code>name: type:value</code>。冒号后面的空格在两种情况下都是必须的。虽然在某些上下文中变量名可以基于另一个变量动态创建，但类型和类型分隔符必须始终指定为字面值。</p>
+<p>变量类型转换支持与库关键字的参数转换相同的基本类型。例如，<code>${number: int}</code> 表示变量 <code>${number}</code> 的值会被转换为整数。</p>
+<p>变量类型转换还支持使用联合语法指定多种可能的类型。例如，<code>${number: int | float}</code> 表示值先尝试转换为整数，如果失败则转换为浮点数。</p>
+<p>参数化类型也受支持。例如，<code>${numbers: list[int]}</code> 表示值被转换为整数列表。</p>
+<p>与库关键字的参数转换相比，最大的限制是不支持 <code>Enum</code> 和 <code>TypedDict</code> 转换，也不能使用自定义转换器。这些限制可能会在未来版本中解除。</p>
+<blockquote>
+<p>变量转换仅在创建变量时支持，在使用变量时不支持。</p>
+</blockquote>
+<h5>数据中的变量转换</h5>
+<p>在数据中，变量转换在以下场景中工作：在 Variables 节创建变量时、使用 <code>VAR</code> 语法时，以及基于关键字返回值创建变量时：</p>
+<pre><code class="language-markdown">*** Variables ***
+${VERSION: float}         7.3
+${CRITICAL: list[int]}    [3278, 5368, 5417]
+
+*** Test Cases ***
+Variables section
+    Should Be Equal    ${VERSION}       ${7.3}
+    Should Be Equal    ${CRITICAL}      ${{[3278, 5368, 5417]}}
+
+VAR syntax
+    VAR    ${number: int}      42
+    Should Be Equal    ${number}    ${42}
+
+Assignment
+    # 在简单情况下，VAR 语法更方便。
+    ${number: int} =    Set Variable    42
+    Should Be Equal    ${number}    ${42}
+    # 在这种情况下，类型转换更有用。
+    ${match}    ${version: float} =    Should Match Regexp    RF 7.3    ^RF (\\d+\\.\\d+)$
+    Should Be Equal    ${match}      RF 7.3
+    Should Be Equal    ${version}    ${7.3}
+</code></pre>
+<blockquote>
+<p>除上述之外，变量类型转换还可用于用户关键字参数和 <code>FOR</code> 循环。更多详情请参阅它们的文档。</p>
+</blockquote>
+<blockquote>
+<p>变量类型转换<em>不</em>适用于 <code>Set Test/Suite/Global Variable</code> 关键字。需要使用 <code>VAR</code> 语法替代。</p>
+</blockquote>
+<h5><code>@{list}</code> 和 <code>&amp;{dict}</code> 变量的类型转换</h5>
+<p>类型转换在使用 <code>@{list}</code> 和 <code>&amp;{dict}</code> 语法创建列表和字典时也适用。对于列表，类型指定为 <code>@{name: type}</code>，类型表示列表元素的类型。对于字典，字典值的类型可以指定为 <code>&amp;{name: type}</code>。如果还需要指定键的类型，可以使用 <code>&amp;{name: ktype=vtype}</code> 语法。</p>
+<pre><code class="language-markdown">*** Variables ***
+@{NUMBERS: int}           1    2    3    4    5
+&amp;{DATES: date}            rc1=2025-05-08    final=2025-05-30
+&amp;{PRIORITIES: int=str}    3278=Critical    4173=High    5334=High
+</code></pre>
+<p>创建列表和字典的另一种方式是创建 <code>${scalar}</code> 变量，使用 <code>list</code> 和 <code>dict</code> 类型（可以参数化），并以 Python 列表和字典字面量形式给出值：</p>
+<pre><code class="language-markdown">*** Variables ***
+${NUMBERS: list[int]}            [1, 2, 3, 4, 5]
+${DATES: list[date]}             {'rc1': '2025-05-08', 'final': '2025-05-30'}
+${PRIORITIES: dict[int, str]}    {3278: 'Critical', 4173: 'High', 5334: 'High'}
+</code></pre>
+<p>使用 Python 列表和字典字面量可能有些复杂，尤其对于非程序员来说。这种方式的主要好处是它支持嵌套结构而无需使用临时值。以下示例使用不同方法创建相同的 <code>${PAYLOAD}</code> 变量：</p>
+<pre><code class="language-markdown">*** Variables ***
+@{CHILDREN: int}            2    13    15
+&amp;{PAYLOAD: dict}            id=${1}    name=Robot    children=${CHILDREN}
+</code></pre>
+<pre><code class="language-markdown">*** Variables ***
+${PAYLOAD: dict}            {'id': 1, 'name': 'Robot', 'children': [2, 13, 15]}
+</code></pre>
+<h5>命令行上的变量转换</h5>
+<p>变量转换也适用于使用 <code>--variable</code> 选项创建的命令行变量。语法是 <code>name: type:value</code>，由于空格是必须的，整个选项值通常需要用引号括起来。以下示例演示了此功能的一些可能用法：</p>
+<pre><code>--variable &quot;ITERATIONS: int:99&quot;
+--variable &quot;PAYLOAD: dict:{'id': 1, 'name': 'Robot', 'children': [2, 13, 15]}&quot;
+--variable &quot;START_TIME: datetime:now&quot;
+</code></pre>
+<h5>转换失败</h5>
+<p>如果类型转换失败，会产生错误且变量不会被创建。当值无法转换为指定类型或类型本身不受支持时，转换会失败：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Invalid value
+    VAR    ${example: int}    invalid
+
+Invalid type
+    VAR    ${example: invalid}    123
+</code></pre>
+<h4>秘密变量</h4>
+<p>变量类型转换的一个重要用途是创建所谓的<em>秘密变量</em>。这些变量封装了它们的值，使得在变量作为参数和返回值在关键字之间传递时，即使在 trace 级别也不会记录真实值。</p>
+<p>秘密变量的实际值可以通过 <code>value</code> 属性访问。它主要供接受秘密值的库关键字使用，但也可以在数据中使用扩展变量语法（如 <code>${secret.value}</code>）来访问。在数据中访问值会使其像普通变量一样出现在日志文件中，因此应仅用于调试或测试目的。</p>
+<blockquote>
+<p>秘密变量不会隐藏或加密它们的值。因此，所有能直接或间接通过 Robot Framework API 访问这些变量的代码都可以获取真实值。</p>
+</blockquote>
+<blockquote>
+<p>秘密变量是 Robot Framework 7.4 中的新特性。</p>
+</blockquote>
+<h5>在数据中创建秘密变量</h5>
+<p>在数据中，秘密变量可以在 Variables 节中创建，也可以使用 <code>VAR</code> 语法创建。为避免秘密值对所有能访问数据的人可见，不能使用字面值创建秘密变量。相反，值必须使用已有的秘密变量或环境变量（如 <code>%{NAME}</code>）来创建。在两种情况下，将秘密值与字面值拼接（如 <code>%{SECRET}123</code>）也是允许的。</p>
+<p>如果在数据中显示秘密变量不是问题，可以使用环境变量的默认值（如 <code>%{NAME=default}</code>）。名称甚至可以留空（如 <code>%{=secret}</code>），这样总是使用默认值。</p>
+<pre><code class="language-markdown">*** Variables ***
+${NORMAL: Secret}     ${XXX}          # ${XXX} 本身必须是秘密变量。
+${ENVIRON: Secret}    %{EXAMPLE}      # 直接支持环境变量。
+${DEFAULT: Secret}    %{=robot123}    # 环境变量默认值也适用。
+${JOIN: Secret}       ${XXX}-123      # 将秘密值与字面量拼接是可以的。
+${LITERAL: Secret}    robot123        # 这会失败。
+</code></pre>
+<p>列表和字典变量也支持秘密值：</p>
+<pre><code class="language-markdown">*** Variables ***
+@{LIST: Secret}     ${XXX}    %{EXAMPLE}    %{=robot123}    ${XXX}-123
+&amp;{DICT: Secret}     normal=${XXX}    env=%{EXAMPLE}    env_default=%{=robot123}    join=${XXX}-123
+</code></pre>
+<blockquote>
+<p>上面的示例使用了 Variables 节，但使用 <code>VAR</code> 语法创建秘密变量的语法完全相同。</p>
+</blockquote>
+<h5>在命令行上创建秘密变量</h5>
+<p>命令行变量转换直接支持秘密值：</p>
+<pre><code>--variable &quot;PASSWORD: Secret:robot123&quot;
+</code></pre>
+<p>在命令行历史记录或持续集成系统日志中直接显示秘密值可能存在安全风险。一种缓解方式是使用环境变量：</p>
+<pre><code>--variable &quot;PASSWORD: Secret:$PASSWORD&quot;
+</code></pre>
+<p>许多运行测试或任务的系统也支持隐藏命令行中使用的秘密值。</p>
+<h5>以编程方式创建秘密变量</h5>
+<p>可以使用 <code>robot.api.types.Secret</code> 类以编程方式创建秘密变量。这通常由库和变量文件完成，但 pre-run modifiers 和 listeners 也可以在需要时使用秘密变量。</p>
+<p>最简单的编程用法示例是变量文件：</p>
+<pre><code class="language-py">from robot.api.types import Secret
+
+
+USERNAME = &quot;robot&quot;
+PASSWORD = Secret(&quot;robot123&quot;)
+</code></pre>
+<p>创建一个返回秘密值的关键字也不复杂：</p>
+<pre><code class="language-py">from robot.api.types import Secret
+
+
+def get_token():
+    return Secret(&quot;e5805f56-92e1-11f0-a798-8782a78eb4b5&quot;)
+</code></pre>
+<blockquote>
+<p>上面两个示例中的实际秘密值在代码中是可见的。在处理真正的秘密值时，通常更好的做法是从环境变量中读取秘密值、从外部系统获取或随机生成。</p>
+</blockquote>
+<h3>内置变量</h3>
+<p>Robot Framework 提供了一些自动可用的内置变量。</p>
+<h4>操作系统变量</h4>
+<p>与操作系统相关的内置变量有助于使测试数据与操作系统无关。</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>${CURDIR}</code></td>
+<td>测试数据文件所在目录的绝对路径。此变量区分大小写。</td>
+</tr>
+<tr>
+<td><code>${TEMPDIR}</code></td>
+<td>系统临时目录的绝对路径。在类 UNIX 系统中通常是 <code>/tmp</code>，在 Windows 中是 <code>c:\Documents and Settings\&lt;user&gt;\Local Settings\Temp</code>。</td>
+</tr>
+<tr>
+<td><code>${EXECDIR}</code></td>
+<td>测试执行启动所在目录的绝对路径。</td>
+</tr>
+<tr>
+<td><code>${/}</code></td>
+<td>系统目录路径分隔符。在类 UNIX 系统中是 <code>/</code>，在 Windows 中是 <code>\</code>。</td>
+</tr>
+<tr>
+<td><code>${:}</code></td>
+<td>系统路径元素分隔符。在类 UNIX 系统中是 <code>:</code>，在 Windows 中是 <code>;</code>。</td>
+</tr>
+<tr>
+<td><code>${\n}</code></td>
+<td>系统换行符。在类 UNIX 系统中是 <code>\n</code>，在 Windows 中是 <code>\r\n</code>。</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Create Binary File    ${CURDIR}${/}input.data    Some text here${\n}on two lines
+    Set Environment Variable    CLASSPATH    ${TEMPDIR}${:}${CURDIR}${/}foo.jar
+</code></pre>
+<h4>数字变量</h4>
+<p>变量语法可用于创建整数和浮点数，如下面的示例所示。当关键字期望获得实际的数字而不是看起来像数字的字符串作为参数时，这很有用。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example 1A
+    Connect    example.com    80       # Connect 获得两个字符串参数
+
+Example 1B
+    Connect    example.com    ${80}    # Connect 获得一个字符串和一个整数
+
+Example 2
+    Do X    ${3.14}    ${-1e-4}        # Do X 获得浮点数 3.14 和 -0.0001
+</code></pre>
+<p>也可以使用 <code>0b</code>、<code>0o</code> 和 <code>0x</code> 前缀分别从二进制、八进制和十六进制值创建整数。语法不区分大小写。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Should Be Equal    ${0b1011}    ${11}
+    Should Be Equal    ${0o10}      ${8}
+    Should Be Equal    ${0xff}      ${255}
+    Should Be Equal    ${0B1010}    ${0XA}
+</code></pre>
+<h4>布尔值和 None/null 变量</h4>
+<p>布尔值和 Python <code>None</code> 也可以使用类似数字的变量语法创建。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Boolean
+    Set Status    ${true}               # Set Status 获得布尔值 true 作为参数
+    Create Y    something   ${false}    # Create Y 获得一个字符串和布尔值 false
+
+None
+    Do XYZ    ${None}                   # Do XYZ 获得 Python None 作为参数
+</code></pre>
+<p>这些变量不区分大小写，因此 <code>${True}</code> 和 <code>${true}</code> 是等价的。接受布尔值的关键字通常会进行自动参数转换，按预期处理 <code>True</code> 和 <code>false</code> 这样的字符串值。在这种情况下不需要使用变量语法。</p>
+<h4>空格和空值变量</h4>
+<p>可以分别使用 <code>${SPACE}</code> 和 <code>${EMPTY}</code> 变量来创建空格和空字符串。这些变量很有用，例如当需要用反斜杠转义空格或空单元格时。如果需要多个空格，可以使用扩展变量语法（如 <code>${SPACE * 5}</code>）。在下面的示例中，<code>Should Be Equal</code> 关键字接收的参数相同，但使用变量的方式比使用反斜杠更容易理解。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+One space
+    Should Be Equal    ${SPACE}          \ \
+
+Four spaces
+    Should Be Equal    ${SPACE * 4}      \ \ \ \ \
+
+Ten spaces
+    Should Be Equal    ${SPACE * 10}     \ \ \ \ \ \ \ \ \ \ \
+
+Quoted space
+    Should Be Equal    &quot;${SPACE}&quot;        &quot; &quot;
+
+Quoted spaces
+    Should Be Equal    &quot;${SPACE * 2}&quot;    &quot; \ &quot;
+
+Empty
+    Should Be Equal    ${EMPTY}          \
+</code></pre>
+<p>还有空的列表变量 <code>@{EMPTY}</code> 和空的字典变量 <code>&amp;{EMPTY}</code>。因为它们没有内容，在测试数据中使用时基本上会消失。它们很有用，例如在使用测试模板时模板关键字不需要参数，或者在不同作用域中覆盖列表或字典变量时。修改 <code>@{EMPTY}</code> 或 <code>&amp;{EMPTY}</code> 的值是不可能的。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Template
+    [Template]    Some keyword
+    @{EMPTY}
+
+Override
+    Set Global Variable    @{LIST}    @{EMPTY}
+    Set Suite Variable     &amp;{DICT}    &amp;{EMPTY}
+</code></pre>
+<blockquote>
+<p><code>${SPACE}</code> 代表 ASCII 空格（<code>\x20</code>），其他空格应使用转义序列指定，如 <code>\xA0</code>（NO-BREAK SPACE）和 <code>\u3000</code>（IDEOGRAPHIC SPACE）。</p>
+</blockquote>
+<h4>自动变量</h4>
+<p>一些自动变量也可以在测试数据中使用。这些变量在测试执行期间可能有不同的值，有些甚至不是始终可用的。修改这些变量的值不会影响原始值，但有些值可以使用 BuiltIn 库的关键字动态更改。</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>说明</th>
+<th>可用范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>${TEST NAME}</code></td>
+<td>当前测试用例的名称。</td>
+<td>测试用例</td>
+</tr>
+<tr>
+<td><code>@{TEST TAGS}</code></td>
+<td>当前测试用例的 tag，按字母顺序排列。可以使用 <code>Set Tags</code> 和 <code>Remove Tags</code> 关键字动态修改。</td>
+<td>测试用例</td>
+</tr>
+<tr>
+<td><code>${TEST DOCUMENTATION}</code></td>
+<td>当前测试用例的文档。可以使用 <code>Set Test Documentation</code> 关键字动态设置。</td>
+<td>测试用例</td>
+</tr>
+<tr>
+<td><code>${TEST STATUS}</code></td>
+<td>当前测试用例的状态，PASS 或 FAIL。</td>
+<td>Test teardown</td>
+</tr>
+<tr>
+<td><code>${TEST MESSAGE}</code></td>
+<td>当前测试用例的消息。</td>
+<td>Test teardown</td>
+</tr>
+<tr>
+<td><code>${PREV TEST NAME}</code></td>
+<td>上一个测试用例的名称，如果尚未执行任何测试则为空字符串。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${PREV TEST STATUS}</code></td>
+<td>上一个测试用例的状态：PASS、FAIL 或空字符串（尚未执行任何测试时）。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${PREV TEST MESSAGE}</code></td>
+<td>上一个测试用例的可能错误消息。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${SUITE NAME}</code></td>
+<td>当前测试套件的完整名称。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${SUITE SOURCE}</code></td>
+<td>套件文件或目录的绝对路径。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${SUITE DOCUMENTATION}</code></td>
+<td>当前测试套件的文档。可以使用 <code>Set Suite Documentation</code> 关键字动态设置。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>&amp;{SUITE METADATA}</code></td>
+<td>当前测试套件的自由元数据。可以使用 <code>Set Suite Metadata</code> 关键字设置。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${SUITE STATUS}</code></td>
+<td>当前测试套件的状态，PASS 或 FAIL。</td>
+<td>Suite teardown</td>
+</tr>
+<tr>
+<td><code>${SUITE MESSAGE}</code></td>
+<td>当前测试套件的完整消息，包括统计信息。</td>
+<td>Suite teardown</td>
+</tr>
+<tr>
+<td><code>${KEYWORD STATUS}</code></td>
+<td>当前关键字的状态，PASS 或 FAIL。</td>
+<td>用户关键字 teardown</td>
+</tr>
+<tr>
+<td><code>${KEYWORD MESSAGE}</code></td>
+<td>当前关键字的可能错误消息。</td>
+<td>用户关键字 teardown</td>
+</tr>
+<tr>
+<td><code>${LOG LEVEL}</code></td>
+<td>当前日志级别。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${OUTPUT DIR}</code></td>
+<td>输出目录的绝对路径（字符串）。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${OUTPUT FILE}</code></td>
+<td>输出文件的绝对路径（字符串），如果未创建输出文件则为字符串 <code>NONE</code>。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${LOG FILE}</code></td>
+<td>日志文件的绝对路径（字符串），如果未创建日志文件则为字符串 <code>NONE</code>。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${REPORT FILE}</code></td>
+<td>报告文件的绝对路径（字符串），如果未创建报告文件则为字符串 <code>NONE</code>。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>${DEBUG FILE}</code></td>
+<td>调试文件的绝对路径（字符串），如果未创建调试文件则为字符串 <code>NONE</code>。</td>
+<td>全局</td>
+</tr>
+<tr>
+<td><code>&amp;{OPTIONS}</code></td>
+<td>暴露命令行选项的字典。字典键对应命令行选项，可以使用 <code>${OPTIONS}[key]</code> 和 <code>${OPTIONS.key}</code> 两种方式访问。可用的选项包括：<code>${OPTIONS.exclude}</code>（<code>--exclude</code>）、<code>${OPTIONS.include}</code>（<code>--include</code>）、<code>${OPTIONS.skip}</code>（<code>--skip</code>）、<code>${OPTIONS.skip_on_failure}</code>（<code>--skip-on-failure</code>）、<code>${OPTIONS.console_width}</code>（整数，<code>--console-width</code>）、<code>${OPTIONS.rpa}</code>（布尔值，<code>--rpa</code>）。<code>${OPTIONS}</code> 本身是 RF 5.0 中新增的，<code>${OPTIONS.console_width}</code> 是 RF 7.1 中新增的，<code>${OPTIONS.rpa}</code> 是 RF 7.3 中新增的。后续可能会暴露更多选项。</td>
+<td>全局</td>
+</tr>
+</tbody>
+</table>
+<p>与套件相关的变量 <code>${SUITE SOURCE}</code>、<code>${SUITE NAME}</code>、<code>${SUITE DOCUMENTATION}</code> 和 <code>&amp;{SUITE METADATA}</code> 以及与命令行选项相关的变量（如 <code>${LOG FILE}</code> 和 <code>&amp;{OPTIONS}</code>）在导入库和变量文件时就已经可用。不过，这些自动变量中可能包含的变量在导入时尚未解析。</p>
+<h3>变量优先级和作用域</h3>
+<p>来自不同来源的变量具有不同的优先级，并且在不同的作用域中可用。</p>
+<h4>变量优先级</h4>
+<p><em>来自命令行的变量</em></p>
+<p>在命令行上设置的变量在实际测试执行开始前，具有所有可设置变量中的最高优先级。它们会覆盖在测试用例文件的 Variables 节中创建的变量，以及在测试数据中导入的资源文件和变量文件中的变量。</p>
+<p>单独设置的变量（<code>--variable</code> 选项）会覆盖通过变量文件（<code>--variablefile</code> 选项）设置的变量。如果多次指定同一个变量，最后指定的那个会覆盖之前的。这允许在启动脚本中为变量设置默认值，然后从命令行覆盖。不过要注意，如果多个变量文件包含相同的变量，先指定的文件中的变量具有最高优先级。</p>
+<p><em>测试用例文件中的 Variables 节</em></p>
+<p>在测试用例文件中使用 Variables 节创建的变量对该文件中的所有测试用例可用。这些变量会覆盖导入的资源文件和变量文件中的同名变量。</p>
+<p>Variables 节中创建的变量在文件的所有其他节中都可用。这意味着它们也可以在 Settings 节中使用，例如用于从资源文件和变量文件中导入更多变量。</p>
+<p><em>导入的资源文件和变量文件</em></p>
+<p>从资源文件和变量文件导入的变量在测试数据中创建的所有变量中具有最低优先级。资源文件和变量文件中的变量具有相同的优先级。如果多个资源文件和/或变量文件包含相同的变量，先导入的文件中的变量会被使用。</p>
+<p>如果资源文件导入了其他资源文件或变量文件，其自身 Variables 节中的变量比它导入的变量具有更高的优先级。所有这些变量对导入该资源文件的文件都可用。</p>
+<p>注意，从资源文件和变量文件导入的变量在导入它们的文件的 Variables 节中不可用。这是因为 Variables 节在 Settings 节（资源文件和变量文件在此导入）之前被处理。</p>
+<p><em>在测试执行期间设置的变量</em></p>
+<p>在测试执行期间使用关键字返回值、<code>VAR</code> 语法或 <code>Set Test/Suite/Global Variable</code> 关键字设置的变量总是覆盖其设置作用域中可能存在的变量。在某种意义上，它们具有最高优先级，但另一方面，它们不会影响其定义作用域之外的变量。</p>
+<p><em>内置变量</em></p>
+<p><code>${TEMPDIR}</code> 和 <code>${TEST_NAME}</code> 等内置变量具有所有变量中的最高优先级。它们不能通过 Variables 节或命令行覆盖，但即使它们也可以在测试执行期间被重新设置。此规则的例外是数字变量，它们在没有找到其他匹配变量时会被动态解析。因此数字变量可以被覆盖，但这通常不是个好主意。此外，<code>${CURDIR}</code> 比较特殊，因为它在测试数据处理阶段就已经被替换了。</p>
+<h4>变量作用域</h4>
+<p>变量根据创建的位置和方式，可以具有全局、测试套件、测试用例或局部作用域。</p>
+<h5>全局作用域</h5>
+<p>全局变量在测试数据中的任何位置都可用。这些变量通常通过命令行使用 <code>--variable</code> 和 <code>--variablefile</code> 选项设置，但也可以在测试数据中的任何位置使用 <code>VAR</code> 语法或 <code>Set Global Variable</code> 关键字创建新的全局变量或更改已有的全局变量。内置变量也是全局的。</p>
+<p>建议全局变量使用大写字母。</p>
+<h5>测试套件作用域</h5>
+<p>具有测试套件作用域的变量在定义或导入它们的测试套件中的任何位置都可用。它们可以在 Variables 节中创建，从资源文件和变量文件导入，或者在测试执行期间使用 <code>VAR</code> 语法或 <code>Set Suite Variable</code> 关键字设置。</p>
+<p>测试套件作用域<em>不是递归的</em>，这意味着在更高级别测试套件中可用的变量在低级别套件中<em>不可用</em>。如有需要，可以使用资源文件和变量文件来共享变量。</p>
+<p>由于这些变量可以被视为其所在测试套件中的全局变量，建议也使用大写字母。</p>
+<h5>测试用例作用域</h5>
+<p>具有测试用例作用域的变量在测试用例及其使用的所有用户关键字中可见。初始时此作用域中没有变量，但可以在测试用例的任何位置使用 <code>VAR</code> 语法或 <code>Set Test Variable</code> 关键字来创建。</p>
+<p>如果在 suite setup 中创建了具有测试作用域的变量，该变量在整个 suite setup 以及对应的 suite teardown 中都可用，但测试或可能的子套件看不到它。如果在 suite teardown 中创建了这样的变量，该变量仅在该 teardown 中可用。</p>
+<p>具有测试用例作用域的变量在某种程度上也是全局的。因此通常也建议使用大写字母。</p>
+<blockquote>
+<p>在 Robot Framework 7.2 之前，在 suite setup 或 teardown 中创建测试作用域的变量会导致错误。</p>
+</blockquote>
+<h5>局部作用域</h5>
+<p>测试用例和用户关键字有一个局部变量作用域，其他测试或关键字看不到。局部变量可以通过执行关键字的返回值和 <code>VAR</code> 语法创建，用户关键字还会将参数作为局部变量获得。</p>
+<p>建议局部变量使用小写字母。</p>
+<h3>高级变量特性</h3>
+<h4>扩展变量语法</h4>
+<p>扩展变量语法允许访问赋值给变量的对象的属性（例如 <code>${object.attribute}</code>），甚至调用其方法（例如 <code>${obj.get_name()}</code>）。</p>
+<p>扩展变量语法是一个强大的特性，但应谨慎使用。访问属性通常不是问题，相反，一个包含多个属性的对象的变量往往比多个变量更好。另一方面，调用方法（尤其是带参数时）会使测试数据变得难以理解。如果出现这种情况，建议将代码移到库中。</p>
+<p>下面的示例展示了扩展变量语法的最常见用法。首先假设我们有以下变量文件和测试用例：</p>
+<pre><code class="language-py">class MyObject:
+
+    def __init__(self, name):
+        self.name = name
+
+    def eat(self, what):
+        return f'{self.name} eats {what}'
+
+    def __str__(self):
+        return self.name
+
+
+OBJECT = MyObject('Robot')
+DICTIONARY = {1: 'one', 2: 'two', 3: 'three'}
+</code></pre>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    KW 1    ${OBJECT.name}
+    KW 2    ${OBJECT.eat('Cucumber')}
+    KW 3    ${DICTIONARY[2]}
+</code></pre>
+<p>执行该测试数据时，关键字获得的参数如下：</p>
+<ul>
+<li><code>KW 1</code> 获得字符串 <code>Robot</code></li>
+<li><code>KW 2</code> 获得字符串 <code>Robot eats Cucumber</code></li>
+<li><code>KW 3</code> 获得字符串 <code>two</code></li>
+</ul>
+<p>扩展变量语法按以下顺序求值：</p>
+<ol>
+<li>
+<p>使用完整变量名搜索变量。仅当找不到匹配变量时才会对扩展变量语法求值。</p>
+</li>
+<li>
+<p>创建基本变量名。名称的主体由开花括号 <code>{</code> 后的所有字符组成，直到第一个非字母数字字符、下划线或空格为止。例如，<code>${OBJECT.name}</code> 和 <code>${DICTIONARY[2]}</code> 的基本变量分别是 <code>OBJECT</code> 和 <code>DICTIONARY</code>。</p>
+</li>
+<li>
+<p>搜索与基本名称匹配的变量。如果没有匹配，则抛出异常，测试用例失败。</p>
+</li>
+<li>
+<p>花括号内的表达式作为 Python 表达式求值，基本变量名被替换为其值。如果由于语法无效或查询的属性不存在而导致求值失败，则抛出异常，测试失败。</p>
+</li>
+<li>
+<p>整个扩展变量被替换为求值返回的值。</p>
+</li>
+</ol>
+<p>许多标准 Python 对象（包括字符串和数字）都有可以通过扩展变量语法显式或隐式使用的方法。有时这非常有用，可以减少设置临时变量的需要，但也容易过度使用而创建出难以理解的测试数据。以下示例展示了一些不错的用法。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+String
+    VAR    ${string}    abc
+    Log    ${string.upper()}      # 输出 'ABC'
+    Log    ${string * 2}          # 输出 'abcabc'
+
+Number
+    VAR    ${number}    ${-2}
+    Log    ${number * 10}         # 输出 -20
+    Log    ${number.__abs__()}    # 输出 2
+</code></pre>
+<p>注意，虽然在正常 Python 代码中推荐使用 <code>abs(number)</code> 而不是 <code>number.__abs__()</code>，但 <code>${abs(number)}</code> 不可行。这是因为变量名必须在扩展语法的开头。在测试数据中使用 <code>__xxx__</code> 方法已经有些值得商榷了，通常更好的做法是将这类逻辑移到测试库中。</p>
+<p>扩展变量语法也适用于列表变量和字典变量的上下文。例如，如果赋值给变量 <code>${EXTENDED}</code> 的对象有一个属性 <code>attribute</code>，其值包含一个列表，则可以将其作为列表变量 <code>@{EXTENDED.attribute}</code> 使用。</p>
+<h4>扩展变量赋值</h4>
+<p>可以使用关键字返回值和扩展变量语法的变体来设置存储在标量变量中的对象的属性。假设我们有前面示例中的变量 <code>${OBJECT}</code>，可以像下面的示例一样设置属性。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    ${OBJECT.name} =    Set Variable    New name
+    ${OBJECT.new_attr} =    Set Variable    New attribute
+</code></pre>
+<p>扩展变量赋值语法按以下规则求值：</p>
+<ol>
+<li>
+<p>被赋值的变量必须是标量变量且至少包含一个点。否则不使用扩展赋值语法，变量正常赋值。</p>
+</li>
+<li>
+<p>如果存在一个具有完整名称的变量（例如上面示例中的 <code>${OBJECT.name}</code>），该变量将被赋新值，不使用扩展语法。</p>
+</li>
+<li>
+<p>创建基本变量名。名称的主体由 <code>${</code> 和最后一个点之间的所有字符组成，例如 <code>${OBJECT.name}</code> 中的 <code>OBJECT</code> 和 <code>${foo.bar.zap}</code> 中的 <code>foo.bar</code>。如第二个示例所示，基本名称可能包含普通的扩展变量语法。</p>
+</li>
+<li>
+<p>要设置的属性名称由最后一个点和结束的 <code>}</code> 之间的所有字符创建，例如 <code>${OBJECT.name}</code> 中的 <code>name</code>。如果名称不以字母或下划线开头且仅包含这些字符和数字，则该属性被视为无效，不使用扩展语法。而是使用完整名称创建新变量。</p>
+</li>
+<li>
+<p>搜索与基本名称匹配的变量。如果找不到变量，则不使用扩展语法，而是使用完整变量名创建新变量。</p>
+</li>
+<li>
+<p>如果找到的变量是字符串或数字，则忽略扩展语法并使用完整名称创建新变量。这是因为你不能给 Python 字符串或数字添加新属性，而且这种方式也减少了向后兼容性问题。</p>
+</li>
+<li>
+<p>如果所有前面的规则都匹配，则在基本变量上设置属性。如果设置因任何原因失败，则抛出异常，测试失败。</p>
+</li>
+</ol>
+<blockquote>
+<p>与使用关键字返回值正常赋值变量不同，使用扩展赋值语法所做的更改不限于当前作用域。因为没有创建新变量，而是更改了现有变量的状态，所有能看到该变量的测试和关键字也会看到这些更改。</p>
+</blockquote>
+<h4>嵌套变量</h4>
+<p>变量内部也允许使用变量，使用这种语法时，变量从内向外解析。例如，如果有变量 <code>${var${x}}</code>，则 <code>${x}</code> 先被解析。如果它的值是 <code>name</code>，最终值就是变量 <code>${varname}</code> 的值。可以有多层嵌套变量，但如果其中任何一个不存在，则最外层变量的解析会失败。</p>
+<p>在下面的示例中，<code>Do X</code> 获得 <code>${JOHN HOME}</code> 或 <code>${JANE HOME}</code> 的值，取决于 <code>Get Name</code> 返回 <code>john</code> 还是 <code>jane</code>。如果返回其他值，解析 <code>${${name} HOME}</code> 会失败。</p>
+<pre><code class="language-markdown">*** Variables ***
+${JOHN HOME}    /home/john
+${JANE HOME}    /home/jane
+
+*** Test Cases ***
+Example
+    ${name} =    Get Name
+    Do X    ${${name} HOME}
+</code></pre>
+<h4>内联 Python 求值</h4>
+<p>变量语法也可以用于求值 Python 表达式。基本语法是 <code>${{expression}}</code>，即表达式外面有双花括号。<code>expression</code> 可以是任何有效的 Python 表达式，如 <code>${{1 + 2}}</code> 或 <code>${{['a', 'list']}}</code>。表达式周围允许有空格，因此 <code>${{ 1 + 2 }}</code> 和 <code>${{ ['a', 'list'] }}</code> 也是有效的。除了使用普通的标量变量外，列表变量和字典变量也分别支持 <code>@{{expression}}</code> 和 <code>&amp;{{expression}}</code> 语法。</p>
+<p>此高级功能的主要用途包括：</p>
+<ul>
+<li>
+<p>求值涉及 Robot Framework 变量的 Python 表达式（<code>${{len('${var}') &gt; 3}}</code>、<code>${{$var[0] if $var is not None else None}}</code>）。</p>
+</li>
+<li>
+<p>创建非 Python 基本类型的值（<code>${{decimal.Decimal('0.11')}}</code>、<code>${{datetime.date(2019, 11, 5)}}</code>）。</p>
+</li>
+<li>
+<p>动态创建值（<code>${{random.randint(0, 100)}}</code>、<code>${{datetime.date.today()}}</code>）。</p>
+</li>
+<li>
+<p>构造集合，尤其是嵌套集合（<code>${{[1, 2, 3, 4]}}</code>、<code>${{ {'id': 1, 'name': 'Example', 'children': [7, 9]} }}</code>）。</p>
+</li>
+<li>
+<p>访问 Python 模块中的常量和其他有用属性（<code>${{math.pi}}</code>、<code>${{platform.system()}}</code>）。</p>
+</li>
+</ul>
+<p>这与前面讨论的扩展变量语法有些类似。如上面的示例所示，这种语法更加强大，因为它可以访问 Python 内置函数（如 <code>len()</code>）和模块（如 <code>math</code>）。除了能在表达式中使用 <code>${var}</code> 形式的变量（它们在求值前被替换）外，在求值期间还可以使用特殊的 <code>$var</code> 语法访问变量。完整的表达式语法在&quot;求值表达式&quot;附录中介绍。</p>
+<blockquote>
+<p>与其创建复杂的表达式，通常更好的做法是将逻辑移到自定义库中。这样更便于维护，使测试数据更容易理解，还可能提高执行速度。</p>
+</blockquote>
+<blockquote>
+<p>内联 Python 求值语法是 Robot Framework 3.2 中的新特性。</p>
+</blockquote>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/03/29/robotframework-new-tutorial-using-test-libraries/">
+          Robot Framework 新版教程 - 使用测试库
+        </a>
+      
+
+      
+        <a class="next" href="/2026/03/31/2-7-robotframework-new-tutorial-create-user-keywords/">
+          Robot Framework 新版教程 - 创建用户关键字
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>
