@@ -1,0 +1,514 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: exec.Command 中一个有趣的多进程死锁例子</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>exec.Command 中一个有趣的多进程死锁例子
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2021-08
+
+      </div>
+    </div>
+    <div class="post-summary">什么情况会在不经意间造成多进程死锁？</div>
+    <h2>前言</h2>
+<p>前几天，公司开发的一个工具在某个工程中总是卡死，进入容器中再次运行，又能顺利运行，感觉挺有意思，于是便 debug 了一下。</p>
+<p>这个工具使用 Golang 编写，暂未开源，所以本文只展示部分代码。</p>
+<h2>问题描述</h2>
+<p>这个工具大致流程是</p>
+<ol>
+<li>使用 <code>exec.Command</code> 调用 <code>go list -json all</code> 命令</li>
+<li>读取 <code>stdout</code> / <code>stderr</code>，再使用 <code>json.NewDecoder</code> 解析</li>
+</ol>
+<p>代码大致为</p>
+<pre><code class="language-go">cmd := exec.Command(&quot;go&quot;, &quot;list&quot;, &quot;-json&quot;, &quot;all&quot;)
+stdouIn, _ := cmd.StdoutPipe()
+stderrIn, _ := cmd.StderrPipe()
+
+var stderrBuf bytes.Buffer
+
+cmd.Start()
+
+dec := json.NewDecoder(stdouIn)
+dg = &amp;DepGraph{}
+for {
+    var di DepInfo
+    dec.Decode(&amp;di)
+}
+
+_, errStderr := io.Copy(&amp;stderrBuf, stderrIn)
+if errStderr != nil {
+    panic(err)
+}
+
+cmd.Wait()
+
+fmt.Println(&quot;done&quot;)
+</code></pre>
+<p>问题：</p>
+<ol>
+<li>程序未 <code>panic</code> 异常退出</li>
+<li>程序未输出 <code>done</code>，即未正常退出，卡死</li>
+<li>命令后手动执行 <code>go list -json all</code> 可正常快速退出</li>
+</ol>
+<p>好吧-_-，粗看程序一点问题没有，但就是卡了～</p>
+<h2>调试记录</h2>
+<h3>怀疑 1，go list 有 bug？</h3>
+<p>使用 dlv 挂载 go list 进程 <code>dlv attach [pid]</code>。</p>
+<p>查看所有 goroutine 的状态：</p>
+<pre><code>(dlv) grs
+  Goroutine 836 - User: /usr/local/go/src/runtime/sema.go:61 internal/poll.runtime_Semacquire (0x447782) [semacquire 450776h20m59.570725376s]
+  Goroutine 837 - User: /usr/local/go/src/runtime/sema.go:61 internal/poll.runtime_Semacquire (0x447782) [semacquire 450776h21m0.466524491s]
+  Goroutine 838 - User: /usr/local/go/src/runtime/proc.go:310 sync.runtime_notifyListWait (0x4489c8) [sync.Cond.Wait 450776h20m57.704548061s]
+  Goroutine 839 - User: /usr/local/go/src/syscall/asm_linux_amd64.s:24 syscall.Syscall (0x4b2efb) (thread 65) [GC assist marking 450776h21m0.664929027s]
+  Goroutine 840 - User: /usr/local/go/src/runtime/sema.go:61 internal/poll.runtime_Semacquire (0x447782) [semacquire 450776h20m59.617378098s]
+</code></pre>
+<p><code>839 goroutine</code> 停在了 <code>syscall.Syscall</code> 系统调用上，看起来比较可疑，详细查看该 goroutine 的调用栈：</p>
+<pre><code>(dlv) gr 839
+Switched from 0 to 839 (thread 65)
+(dlv) bt
+...
+4 0x00000000004d1267 in os.(*File).write
+at /usr/local/go/src/os/file_unix.go:280
+5 0x00000000004d1267 in os.(*File).Write
+at /usr/local/go/src/os/file.go:153
+6 0x00000000004dc125 in fmt.Fprintf
+at /usr/local/go/src/fmt/print.go:205
+7 0x00000000008bae71 in cmd/go/internal/modfetch.DownloadZip.func1
+at /usr/local/go/src/cmd/go/internal/modfetch/fetch.go:176
+8 0x0000000000791043 in cmd/go/internal/par.(*Cache).Do
+at /usr/local/go/src/cmd/go/internal/par/work.go:128
+9 0x00000000008ae283 in cmd/go/internal/modfetch.DownloadZip
+at /usr/local/go/src/cmd/go/internal/modfetch/fetch.go:163
+10 0x00000000008ad8be in cmd/go/internal/modfetch.download
+...
+</code></pre>
+<p>查看对应 Golang 版本的 <code>go/src/cmd/go/internal/modfetch/fetch.go:176</code> <a href="https://github.com/golang/go/blob/d571a77846dfee8efd076223a882915cd6cb52f4/src/cmd/go/internal/modfetch/fetch.go#L176">源码</a>：</p>
+<pre><code>if cfg.CmdName != &quot;mod download&quot; {
+	fmt.Fprintf(os.Stderr, &quot;go: downloading %s %s\n&quot;, mod.Path, mod.Version)
+}
+</code></pre>
+<p>大致浏览一下上下文，可以知道目前 <code>go list -json all</code> 正在下载 <code>go mod</code> 依赖，并把下载结果打印到 <code>os.Stderr</code>。</p>
+<p>而现在输出正卡死在 <code>os.Stderr</code> 上。这和我们的直觉相违，<code>stdout</code> / <code>stderr</code> 这两个应该不会阻塞的呀。</p>
+<h3>怀疑 2，卡死在工具上？</h3>
+<p>按照怀疑 1 的调试步骤，查看工具本身的调用栈：</p>
+<pre><code>(dlv) gr 1
+Switched from 0 to 1 (thread 25)
+(dlv) bt
+8 0x00000000004f8aeb in encoding/json.(*Decoder).refill
+at /usr/local/go/src/encoding/json/stream.go:165
+9 0x00000000004f887f in encoding/json.(*Decoder).readValue
+at /usr/local/go/src/encoding/json/stream.go:140
+10 0x00000000004f843c in encoding/json.(*Decoder).Decode
+at /usr/local/go/src/encoding/json/stream.go:63
+11 0x000000000067555e in github.com/ma6174/go_dep_search/depgraph.LoadDeps
+at /Users/xxxxx/go/pkg/mod/github.com/ma6174/go_dep_search@v0.0.0-20200721060312-bfd635bcc992/depgraph/depgraph.go:195
+12 0x00000000006a73ef in main.listAndSearch
+</code></pre>
+<p>确认，卡死在 <code>dec.Decode(&amp;di)</code> 上，即卡死在 <code>di io.Reader</code> 上。</p>
+<h3>阶段结论</h3>
+<ol>
+<li><code>go list -json all</code> 卡死在输出 <code>stderr</code></li>
+<li>工具卡死在读 <code>stdin</code></li>
+</ol>
+<p>那很明显了，工具进程和 <code>go list</code> 进程出现了某种死锁。</p>
+<h2>分析</h2>
+<p>首先，Golang 中 <code>exec.Command</code> 会创建一个子进程，在 Linux 系统上，<code>cmd.StderrPipe</code> 会调用 pipe(管道) 来作为父子进程间通信的方式：</p>
+<pre><code class="language-go">StderrPipe() -&gt; os.Pipe() -&gt; syscall.Pipe2(p[0:], syscall.O_CLOEXEC)
+</code></pre>
+<p>然后，<code>go list</code> 会先使用 <code>go mod download</code> 下载依赖的包，当一个包下载完成，便会输出一行 <code>go: downloading xxx</code> 到 <code>stderr</code> 上。在所有包下载完毕后，才会开始包依赖分析，最后才将分析结果输出到 <code>stdout</code>。</p>
+<p>回看工具的代码，可以看到父子进程间其实是如下的关系：</p>
+<pre><code>父进程(工具) -&gt; 读取 stdout pipe  -&gt; 读取 stderr pipe 
+子进程(go list) -&gt; 写到 stderr pipe  -&gt; 写到 stdout pipe 
+</code></pre>
+<p>两者读写的 pipe 交错了起来，<code>go list</code> 写完 <code>stderr pipe</code> 才会写 <code>stdout pipe</code>，而工具读完 <code>stdout pipe</code> 才会读 <code>stderr pipe</code>。</p>
+<p>在 Linux 上，pipe 大小是有限的，普通情况下，上面的逻辑并没有暴露问题。但如果下载的依赖包特别多，导致 <code>stderr pipe</code> 被塞满，<code>go list</code> 便会阻塞在写 <code>stderr pipe</code> 上，后续的 <code>stdout pipe</code> 也就走不到了，而父进程一直在等待 <code>stdout pipe</code> 输出的数据。。形成一个死锁。</p>
+<h2>解决方案</h2>
+<p>解决方案很简单，直接使用标准库提供的 <code>func (c *Cmd) Output() ([]byte, error)</code> 或 <code>func (c *Cmd) CombinedOutput() ([]byte, error)</code> 来获取子进程输出。</p>
+<p>如非必要，不要直接操作 pipe。</p>
+<h2>联想</h2>
+<p>pipe 的死锁问题让我联想到另一个经典的 socket 编程死锁案例。socket 编程也是一种多进程/跨机多进程通信方式。</p>
+<p>创建一个 TCP 链接，一端往另一端发送数据，会死锁吗？答案是会的。看下面的例子：</p>
+<pre><code class="language-go">// 接收端
+func main() {
+	ln, err := net.Listen(&quot;tcp&quot;, &quot;:12345&quot;)
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+		_, err := ln.Accept()
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+// 发送端
+func main() {
+	conn, err := net.Dial(&quot;tcp&quot;, os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+	i := 0
+	for {
+		_, err := conn.Write([]byte(&quot;1&quot;))
+		if err != nil {
+			panic(err)
+		}
+		i++
+		fmt.Println(i)
+	}
+}
+</code></pre>
+<p>在我的电脑上，发送端输出如下：</p>
+<pre><code>1
+2
+...
+2616001
+2616002
+2616003
+</code></pre>
+<p>打印到 <code>2616003</code> 便停止输出卡住了，阻塞在了 <code>conn.Write([]byte(&quot;1&quot;))</code>。表象和上文 pipe 的例子非常相似。</p>
+<p>分析一下发送端程序，当调用 <code>conn.Write([]byte(&quot;1&quot;))</code> 后，函数成功返回，从程序员角度看，似乎接收端这时候应该是已经收到了 <code>1</code>。但其实接收端调用 <code>ln.Accept()</code> 之后，并没有去读取连接上的数据。收到的数据去哪了？使用 <code>netstat</code> 命令看一下：</p>
+<pre><code>$ netstat -anp
+Proto Recv-Q Send-Q  Local Address           Foreign Address         State       PID/Program name
+tcp        0 2548608 127.0.0.1:46196         127.0.0.1:12345         ESTABLISHED 70072/main
+tcp6   67395       0 127.0.0.1:12345         127.0.0.1:46196         ESTABLISHED 69896/main
+</code></pre>
+<p>可以看到，数据都堆积在了接收队列 <code>Recv-Q</code> 和发送队列 <code>Send-Q</code>，而且正好 <code>2548608+67395=2616003</code>。</p>
+<p>P.S. TCP 协议的可靠性，只是保证双方的协议栈能可靠收发数据，应用程序的可靠性需要应用层协议来保证。</p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

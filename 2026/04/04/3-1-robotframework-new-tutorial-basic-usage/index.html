@@ -1,0 +1,681 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 基本用法</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 基本用法
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 12</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>基本用法</h2>
+<p>Robot Framework 测试用例（test case）从命令行执行，默认的最终结果是一个 XML 格式的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#output-file">输出文件</a>、一个 HTML <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#report-file">报告</a>和一个<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-file">日志</a>。执行之后，输出文件可以使用 Rebot 工具进行合并和其他<a href="#%E5%90%8E%E5%A4%84%E7%90%86%E8%BE%93%E5%87%BA">后处理</a>。</p>
+<h2>启动测试执行</h2>
+<h3>概要</h3>
+<pre><code class="language-bash">robot [options] data
+python -m robot [options] data
+python path/to/robot/ [options] data
+</code></pre>
+<p>执行通常使用<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#installation-instructions">安装</a>过程中创建的 <code>robot</code> 命令来启动。也可以使用所选的 Python 解释器执行已安装的 <code>robot</code> 模块。当 Robot Framework 被安装在多个 Python 版本下时，这种方式尤其方便。如果你知道已安装的 <code>robot</code> 目录所在的位置，也可以用 Python 来执行它。</p>
+<p>无论使用哪种执行方式，待执行的测试数据的路径作为命令之后的参数给出。此外，还可以使用各种命令行选项来改变测试执行或生成的输出。</p>
+<h3>指定待执行的测试数据</h3>
+<p>Robot Framework 测试用例创建在<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#suite-files">文件</a>和<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#suite-directories">目录</a>中，通过将文件或目录的路径提供给所选的运行脚本来执行。路径可以是绝对路径，也可以是相对于测试执行目录的相对路径（更常见）。给定的文件或目录会创建顶层测试套件（test suite），默认情况下其名称来自<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#suite-name">文件或目录名</a>。下面的示例展示了不同的执行方式。注意，在这些示例以及本节的其他示例中，只使用了 <code>robot</code> 脚本，但其他执行方式也可以类似使用。</p>
+<pre><code class="language-bash">robot tests.robot
+robot path/to/my_tests/
+robot c:\robot\tests.robot
+</code></pre>
+<blockquote>
+<p>当执行一个<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#suite-directories">目录</a>时，所有以点（<code>.</code>）或下划线（<code>_</code>）开头的文件和目录都会被忽略，并且默认只执行扩展名为 <code>.robot</code> 的文件。更多细节参见<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#selecting-files-to-parse">选择待解析的文件</a>一节。</p>
+</blockquote>
+<p>也可以一次给出多个测试用例文件或目录的路径，用空格分隔。这种情况下，Robot Framework 会自动创建顶层测试套件，指定的文件和目录成为其子测试套件。创建的测试套件名称由子套件名称用 &amp; 符号和空格连接而成。例如，下面第一个示例中的顶层套件名称是 <code>My Tests &amp; Your Tests</code>。这种自动创建的名称通常很长且复杂。在大多数情况下，最好使用 <code>--name</code> 选项来覆盖它，如下面第二个示例所示：</p>
+<pre><code class="language-bash">robot my_tests.robot your_tests.robot
+robot --name Example path/to/tests/pattern_*.robot
+</code></pre>
+<p>从 Robot Framework 6.1 开始，也可以为自动创建的顶层套件定义一个<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#suite-initialization-files">测试套件初始化文件</a>。初始化文件的路径与测试用例文件的给出方式类似：</p>
+<pre><code class="language-bash">robot __init__.robot my_tests.robot other_tests.robot
+</code></pre>
+<h2>使用命令行选项</h2>
+<p>Robot Framework 提供了许多命令行选项，可用于控制测试用例的执行方式和生成的输出。本节解释选项语法以及实际存在的选项。它们的使用方式在本章的其他部分讨论。</p>
+<h3>使用选项</h3>
+<p>使用选项时，它们必须始终放在运行脚本和数据源之间。例如：</p>
+<pre><code class="language-bash">robot -L debug my_tests.robot
+robot --include smoke --variable HOST:10.0.0.42 path/to/tests/
+</code></pre>
+<h3>短选项和长选项</h3>
+<p>选项总是有一个长名称，如 <code>--name</code>，最常用的选项也有一个短名称，如 <code>-N</code>。此外，长选项可以缩写，只要缩写后仍然是唯一的。例如，<code>--logle DEBUG</code> 可以工作，而 <code>--lo log.html</code> 不行，因为前者只匹配 <code>--loglevel</code>，但后者匹配多个选项。短选项和缩写选项在手动执行测试用例时很实用，但在<a href="#%E5%88%9B%E5%BB%BA%E5%90%AF%E5%8A%A8%E8%84%9A%E6%9C%AC">启动脚本</a>中建议使用长选项，因为它们更容易理解。</p>
+<p>长选项名称是大小写不敏感和连字符不敏感的，这方便以易读的格式书写选项名称。例如，<code>--SuiteStatLevel</code> 和 <code>--suite-stat-level</code> 等价于 <code>--suitestatlevel</code>，但更易读。</p>
+<blockquote>
+<p>长选项连字符不敏感是 Robot Framework 6.1 的新特性。</p>
+</blockquote>
+<h3>设置选项值</h3>
+<p>大多数选项需要一个值，该值在选项名称之后给出。短选项和长选项都接受用空格分隔的值，如 <code>--include tag</code> 或 <code>-i tag</code>。对于长选项，分隔符也可以是等号，例如 <code>--include=tag</code>，对于短选项，分隔符可以省略，如 <code>-itag</code>。</p>
+<p>某些选项可以指定多次。例如，<code>--variable VAR1:value --variable VAR2:another</code> 设置两个变量。如果只接受一个值的选项被使用了多次，则最后给出的值生效。</p>
+<h3>禁用不接受值的选项</h3>
+<p>不接受值的选项可以通过再次使用相同选项并添加或去掉 <code>no</code> 前缀来禁用。最后一个选项优先，无论选项被使用了多少次。例如，<code>--dryrun --dryrun --nodryrun --nostatusrc --statusrc</code> 不会激活 dry-run 模式，并且会返回正常的状态返回码。</p>
+<h3>简单模式</h3>
+<p>许多命令行选项接受<em>简单模式</em>作为参数。这些<a href="http://en.wikipedia.org/wiki/Glob_(programming)">类 glob 模式</a>按照以下规则匹配：</p>
+<ul>
+<li><code>*</code> 匹配任意字符串，包括空字符串。</li>
+<li><code>?</code> 匹配任意单个字符。</li>
+<li><code>[abc]</code> 匹配括号中的一个字符。</li>
+<li><code>[!abc]</code> 匹配不在括号中的一个字符。</li>
+<li><code>[a-z]</code> 匹配括号中范围内的一个字符。</li>
+<li><code>[!a-z]</code> 匹配不在括号中范围内的一个字符。</li>
+<li>与通常的 glob 模式不同，路径分隔符 <code>/</code> 和 <code>\</code> 以及换行符 <code>\n</code> 可以被上述通配符匹配。</li>
+<li>除非另有说明，模式匹配是大小写、空格和下划线不敏感的。</li>
+</ul>
+<p>示例：</p>
+<pre><code class="language-bash">--test Example*        # 匹配名称以 'Example' 开头的测试。
+--test Example[1-2]    # 匹配测试 'Example1' 和 'Example2'。
+--include f??          # 匹配带有以 'f' 开头且长度为三个字符的 tag 的测试。
+</code></pre>
+<p>上面所有示例中的匹配都是大小写、空格和下划线不敏感的。例如，第二个示例也会匹配名为 <code>example 1</code> 的测试。</p>
+<p>如果被匹配的文本恰好包含某些通配符字符，且需要按字面意思匹配它们，可以使用 <code>[...]</code> 语法。模式 <code>[*]</code> 匹配字面量 <code>*</code> 字符，<code>[?]</code> 匹配 <code>?</code>，<code>[[]</code> 匹配 <code>[</code>。单独的 <code>[</code> 和 <code>]</code> 不需要转义。</p>
+<blockquote>
+<p>对 <code>[abc]</code> 和 <code>[!a-z]</code> 等括号的支持是 Robot Framework 3.1 的新特性。</p>
+</blockquote>
+<h3>Tag 模式</h3>
+<p>大多数与 tag 相关的选项接受 <em>tag 模式</em>作为参数。它们支持与<a href="#%E7%AE%80%E5%8D%95%E6%A8%A1%E5%BC%8F">简单模式</a>相同的通配符（如 <code>examp??</code>、<code>ex*le</code>），但它们还支持下面介绍的 <code>AND</code>、<code>OR</code> 和 <code>NOT</code> 运算符。这些运算符可用于将两个或更多单独的 tag 或模式组合在一起。</p>
+<p><strong><code>AND</code> 或 <code>&amp;</code></strong></p>
+<p>当所有单独的模式都匹配时，整个模式匹配。<code>AND</code> 和 <code>&amp;</code> 等价：</p>
+<pre><code class="language-bash">--include fooANDbar     # 匹配包含 tag 'foo' 和 'bar' 的测试。
+--exclude xx&amp;yy&amp;zz      # 匹配包含 tag 'xx'、'yy' 和 'zz' 的测试。
+</code></pre>
+<p><strong><code>OR</code></strong></p>
+<p>当任意单独的模式匹配时，整个模式匹配：</p>
+<pre><code class="language-bash">--include fooORbar      # 匹配包含 tag 'foo' 或 tag 'bar' 的测试。
+--exclude xxORyyORzz    # 匹配包含 tag 'xx'、'yy' 或 'zz' 中任意一个的测试。
+</code></pre>
+<p><strong><code>NOT</code></strong></p>
+<p>当左侧的模式匹配但右侧的不匹配时，整个模式匹配。如果使用多次，第一个 <code>NOT</code> 之后的所有模式都不能匹配：</p>
+<pre><code class="language-bash">--include fooNOTbar     # 匹配包含 tag 'foo' 但不包含 tag 'bar' 的测试。
+--exclude xxNOTyyNOTzz  # 匹配包含 tag 'xx' 但不包含 tag 'yy' 或 tag 'zz' 的测试。
+</code></pre>
+<p>模式也可以以 <code>NOT</code> 开头，此时如果 <code>NOT</code> 之后的模式不匹配，则整个模式匹配：</p>
+<pre><code class="language-bash">--include NOTfoo        # 匹配不包含 tag 'foo' 的测试
+--include NOTfooANDbar  # 匹配不同时包含 tag 'foo' 和 'bar' 的测试
+</code></pre>
+<p>上述运算符也可以一起使用。运算符优先级从高到低为 <code>AND</code>、<code>OR</code> 和 <code>NOT</code>：</p>
+<pre><code class="language-bash">--include xANDyORz      # 匹配包含 tag 'x' 和 'y' 的测试，或包含 tag 'z' 的测试。
+--include xORyNOTz      # 匹配包含 tag 'x' 或 'y' 但不包含 tag 'z' 的测试。
+--include xNOTyANDz     # 匹配包含 tag 'x' 但不同时包含 tag 'y' 和 'z' 的测试。
+</code></pre>
+<p>虽然 tag 匹配本身是大小写不敏感的，但所有运算符都是大小写敏感的，必须用大写字母书写。如果 tag 本身恰好包含大写的 <code>AND</code>、<code>OR</code> 或 <code>NOT</code>，需要使用小写字母来指定，以避免意外的运算符用法：</p>
+<pre><code class="language-bash">--include port          # 大小写不敏感地匹配包含 tag 'port' 的测试
+--include PORT          # 大小写不敏感地匹配包含 tag 'P' 或 'T' 的测试
+--exclude handoverORportNOTnotification
+</code></pre>
+<h3><code>ROBOT_OPTIONS</code> 和 <code>REBOT_OPTIONS</code> 环境变量</h3>
+<p>环境变量 <code>ROBOT_OPTIONS</code> 和 <code>REBOT_OPTIONS</code> 可分别用于为<a href="#%E5%90%AF%E5%8A%A8%E6%B5%8B%E8%AF%95%E6%89%A7%E8%A1%8C">测试执行</a>和<a href="#%E5%90%8E%E5%A4%84%E7%90%86%E8%BE%93%E5%87%BA">结果后处理</a>指定默认选项。选项及其值必须定义为以空格分隔的列表，它们被放置在命令行上任何显式选项之前。这些环境变量的主要用途是为某些选项设置全局默认值，以避免每次运行测试或使用 Rebot 时重复指定。</p>
+<pre><code class="language-bash">export ROBOT_OPTIONS=&quot;--outputdir results --tagdoc 'mytag:Example doc with spaces'&quot;
+robot tests.robot
+export REBOT_OPTIONS=&quot;--reportbackground blue:red:yellow&quot;
+rebot --name example output.xml
+</code></pre>
+<h2>测试结果</h2>
+<h3>命令行输出</h3>
+<p>测试执行中最直观的输出是在命令行中显示的内容。所有已执行的测试套件和测试用例及其状态都会实时显示在那里。下面的示例展示了执行一个只有两个测试用例的简单测试套件的输出：</p>
+<pre><code class="language-bash">==============================================================================
+Example test suite
+==============================================================================
+First test :: Possible test documentation                             | PASS |
+------------------------------------------------------------------------------
+Second test                                                           | FAIL |
+Error message is displayed here
+==============================================================================
+Example test suite                                                    | FAIL |
+2 tests, 1 passed, 1 failed
+==============================================================================
+Output:  /path/to/output.xml
+Report:  /path/to/report.html
+Log:     /path/to/log.html
+</code></pre>
+<p>每当测试用例中的一个顶层关键字（keyword）结束时，控制台上也会显示一个通知。如果关键字通过则显示绿色的点，如果失败则显示红色的 F。这些标记写在行尾，当测试本身结束时会被测试状态覆盖。如果控制台输出被重定向到文件，则禁用写入标记。</p>
+<h3>生成的输出文件</h3>
+<p>命令行输出非常有限，通常需要单独的输出文件来查看测试结果。如上面的示例所示，默认生成三个输出文件。第一个是 XML 格式的，包含关于测试执行的所有信息。第二个是更高层次的报告，第三个是更详细的日志文件。这些文件和其他可能的输出文件在<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#different-output-files">不同的输出文件</a>一节中有更详细的讨论。</p>
+<h3>返回码</h3>
+<p>运行脚本使用返回码向运行它们的系统传达整体执行状态。当执行成功启动且没有测试失败时，返回码为零。所有可能的返回码在下表中说明。</p>
+<table>
+<thead>
+<tr>
+<th>返回码</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>所有测试通过。</td>
+</tr>
+<tr>
+<td>1-249</td>
+<td>返回失败的测试数量。</td>
+</tr>
+<tr>
+<td>250</td>
+<td>250 个或更多失败。</td>
+</tr>
+<tr>
+<td>251</td>
+<td>打印了帮助或版本信息。</td>
+</tr>
+<tr>
+<td>252</td>
+<td>无效的数据或命令行选项。</td>
+</tr>
+<tr>
+<td>253</td>
+<td>执行被用户停止。</td>
+</tr>
+<tr>
+<td>255</td>
+<td>意外的内部错误。</td>
+</tr>
+</tbody>
+</table>
+<p>返回码在执行后应始终容易获取，这使得自动确定整体执行状态变得简单。例如，在 Bash shell 中返回码保存在 <code>$?</code> 变量中，在 Windows 中保存在 <code>%ERRORLEVEL%</code> 变量中。如果你使用某些外部工具来运行测试，请查阅其文档了解如何获取返回码。</p>
+<p>可以使用 <code>--nostatusrc</code> 命令行选项将返回码设置为零，无论执行状态如何。这在某些场景下可能很有用，例如在持续集成服务器中，在确定整体执行状态之前需要对结果进行后处理。</p>
+<blockquote>
+<p>相同的返回码也适用于 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#post-processing-outputs">Rebot</a>。</p>
+</blockquote>
+<blockquote>
+<p>在<a href="#%E8%8E%B7%E5%8F%96%E5%B8%AE%E5%8A%A9%E5%92%8C%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF">获取帮助和版本信息</a>时，<code>--nostatusrc</code> 选项仅在 Robot Framework 7.4 及更新版本中生效。</p>
+</blockquote>
+<h3>执行过程中的错误和警告</h3>
+<p>在测试执行过程中，可能会出现意外问题，如导入库（library）或资源文件（resource file）失败，或者关键字被<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#deprecating-keywords">标记为废弃</a>。根据严重程度，这些问题被分类为错误或警告，并写入控制台（使用标准错误流），在日志文件中单独的 <em>Test Execution Errors</em> 区域显示，也写入 Robot Framework 自己的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#system-log">系统日志</a>。通常这些错误和警告由 Robot Framework 自身生成，但库也可以记录<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#errors-and-warnings">错误和警告</a>。下面的示例展示了错误和警告在日志文件中的样子。</p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>级别</th>
+<th>消息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20090322 19:58:42.528</td>
+<td>ERROR</td>
+<td>Error in file '/home/robot/tests.robot' in table 'Setting' in element on row 2: Resource file 'resource.robot' does not exist</td>
+</tr>
+<tr>
+<td>20090322 19:58:43.931</td>
+<td>WARN</td>
+<td>Keyword 'SomeLibrary.Example Keyword' is deprecated. Use keyword <code>Other Keyword</code> instead.</td>
+</tr>
+</tbody>
+</table>
+<h2>参数文件</h2>
+<p>参数文件（argument file）允许将所有或部分命令行选项和参数放入外部文件中读取。这避免了命令行上某些字符的问题。如果需要大量选项或参数，参数文件也能防止命令行上使用的命令变得过长。</p>
+<p>参数文件通过 <code>--argumentfile (-A)</code> 选项启用，可以和其他命令行选项一起使用。</p>
+<blockquote>
+<p>与其他<a href="#%E7%9F%AD%E9%80%89%E9%A1%B9%E5%92%8C%E9%95%BF%E9%80%89%E9%A1%B9">长命令行选项</a>不同，<code>--argumentfile</code> 不能以缩写形式给出，如 <code>--argumentf</code>。</p>
+</blockquote>
+<h3>参数文件语法</h3>
+<p>参数文件可以包含命令行选项和待执行数据的路径，每行一个选项或数据源。短选项和长选项都受支持，但在此场景下建议使用长选项，因为它们更容易理解。参数文件可以包含任何字符而无需转义（escape），但行首和行尾的空格会被忽略。此外，空行和以井号（<code>#</code>）开头的行会被忽略：</p>
+<pre><code class="language-bash">--doc This is an example (where &quot;special characters&quot; are ok!)
+--metadata X:Value with spaces
+--variable NAME:Hello, world!
+# 这是一条注释
+path/to/my/tests
+</code></pre>
+<p>在上面的示例中，选项和其值之间的分隔符（separator）是一个空格。也可以使用等号（=）或任意数量的空格。例如，以下三行是等价的：</p>
+<pre><code class="language-bash">--name An Example
+--name=An Example
+--name       An Example
+</code></pre>
+<p>如果参数文件包含非 ASCII 字符，必须使用 UTF-8 编码保存。参数文件可以使用任何扩展名。通常 <code>.txt</code> 就够用了，但也可以使用自定义扩展名如 <code>.args</code> 来区分参数文件和普通文本文件。</p>
+<h3>展开环境变量</h3>
+<p>从 Robot Framework 7.4 开始，可以在参数文件中使用环境变量，并在文件被处理之前进行替换。出于向后兼容的原因，此功能默认未启用，但可以通过在参数文件的第一行添加 <code># expandvars: true</code> 来轻松启用。该功能将来可能会默认启用，目前也可以通过 <code># expandvars: false</code> 来显式禁用。</p>
+<p>环境变量可以使用 <code>$NAME</code> 和 <code>${NAME}</code> 格式。此外还支持默认值，如 <code>${NAME=default}</code>。如果需要字面量的美元符号，可以通过双写来转义，如 <code>$$not_var</code>：</p>
+<pre><code class="language-bash"># expandvars: true
+--name $NAME
+--doc ${NAME}v${VERSION}
+--metadata Default:${META=default value}
+--metadata Escape:$$100
+</code></pre>
+<p>环境变量不仅限于选项值。它们也可以包含选项名称、同时包含名称和值，利用注释字符甚至可以实现条件选项：</p>
+<pre><code class="language-bash"># expandvars: true
+--${NAME} ${VALUE}
+${NAME_AND_VALUE}
+${COND1=}  --metadata COND1:This is enabled by default. Set 'COND1' to '#' to disable.
+${COND2=#} --metadata COND2:This is disabled by default. Set 'COND2' to '' to enable.
+</code></pre>
+<p>环境变量名称是大小写敏感的，只能包含 ASCII 字母、数字和下划线，且不能以数字开头。使用不存在的变量或无效的变量名会导致错误。</p>
+<h3>使用参数文件</h3>
+<p>参数文件可以单独使用（包含所有选项和测试数据路径），也可以与其他选项和路径一起使用。当参数文件与其他参数一起使用时，其内容被放置到原始参数列表中参数文件选项所在的位置。这意味着参数文件中的选项可以覆盖它之前的选项，而它的选项也可以被它之后的选项覆盖。可以多次使用 <code>--argumentfile</code> 选项，甚至可以递归使用：</p>
+<pre><code class="language-bash">robot --argumentfile all_options_and_arguments.txt
+robot --argumentfile defaults.args --name Example tests.robot
+robot -A first.txt -A second.txt -A third.txt tests.robot
+</code></pre>
+<h3>从标准输入读取参数文件</h3>
+<p>特殊的参数文件名 <code>STDIN</code> 可用于从标准输入流而非文件中读取参数。这在使用脚本生成参数时很有用：</p>
+<pre><code class="language-bash">generate_arguments.sh | robot --argumentfile STDIN
+generate_arguments.sh | robot --name Example --argumentfile STDIN tests.robot
+</code></pre>
+<h2>获取帮助和版本信息</h2>
+<p>无论是执行测试还是后处理输出，都可以使用 <code>--help (-h)</code> 选项获取命令行帮助。此帮助文本提供版本信息、简短的概述以及可用命令行选项的说明。</p>
+<p>也可以使用 <code>--version</code> 选项只获取版本信息。此信息还包含 Python 版本和平台类型：</p>
+<pre><code class="language-bash">$ robot --version
+Robot Framework 7.4 (Python 3.14.0 on linux)
+
+C:\&gt;rebot --version
+Rebot 7.3.1 (Python 3.13.7 on win32)
+</code></pre>
+<p>当帮助或版本信息被打印到控制台时，执行默认以特殊的<a href="#%E8%BF%94%E5%9B%9E%E7%A0%81">返回码</a> 251 退出。从 Robot Framework 7.4 开始，可以通过使用 <code>--nostatusrc</code> 选项将返回码改为零，如 <code>robot --version --nostatusrc</code>。</p>
+<h2>创建启动脚本</h2>
+<p>测试用例通常由持续集成系统或其他某种机制自动执行。在这种情况下，需要一个脚本来启动测试执行，可能还需要对输出进行某种后处理。在手动运行测试时，类似的脚本也很有用，特别是当需要大量命令行选项或设置测试环境比较复杂时。</p>
+<p>在类 UNIX 环境中，shell 脚本提供了一种简单但强大的机制来创建自定义启动脚本。Windows 批处理文件也可以使用，但功能更有限，通常也更复杂。一种跨平台的替代方案是使用 Python 或其他高级编程语言。无论使用哪种语言，建议使用长选项名称，因为它们比短名称更容易理解。</p>
+<h3>Shell 脚本示例</h3>
+<p>在此示例中，<code>login</code> 目录中的相同 web 测试使用不同的浏览器执行，之后使用 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#post-processing-outputs">Rebot</a> 合并结果。脚本也接受命令行选项本身，并使用便捷的 <code>$*</code> 变量将它们转发给 <code>robot</code> 命令：</p>
+<pre><code class="language-bash">#!/bin/bash
+robot --name Firefox --variable BROWSER:Firefox --output out/fx.xml --log none --report none $* login
+robot --name IE --variable BROWSER:IE --output out/ie.xml --log none --report none  $* login
+rebot --name Login --outputdir out --output login.xml out/fx.xml out/ie.xml
+</code></pre>
+<h3>批处理文件示例</h3>
+<p>用批处理文件实现上面的 shell 脚本示例也不太复杂。注意，批处理文件的参数可以使用 <code>%*</code> 转发给执行的命令：</p>
+<pre><code class="language-bash">@echo off
+robot --name Firefox --variable BROWSER:Firefox --output out\fx.xml --log none --report none %* login
+robot --name IE --variable BROWSER:IE --log none --output out\ie.xml --report none %* login
+rebot --name Login --outputdir out --output login.xml out\fx.xml out\ie.xml
+</code></pre>
+<blockquote>
+<p>在 Robot Framework 3.1 之前，<code>robot</code> 和 <code>rebot</code> 命令在 Windows 上是以批处理文件实现的，在另一个批处理文件中使用它们需要在整个命令前加上 <code>call</code>。</p>
+</blockquote>
+<h3>Python 示例</h3>
+<p>当启动脚本变得更复杂时，使用 shell 脚本或批处理文件实现就不那么方便了。当需要两种变体且相同的逻辑需要实现两次时尤其如此。在这种情况下，切换到 Python 通常更好。可以使用 <a href="https://docs.python.org/library/subprocess.html">subprocess 模块</a>从 Python 执行 Robot Framework，但使用 Robot Framework 自己的<a href="https://robot-framework.readthedocs.io">编程 API</a> 通常更方便。最容易使用的 API 是 <code>robot.run_cli</code> 和 <code>robot.rebot_cli</code>，它们接受与 <code>robot</code> 和 <code>rebot</code> 命令相同的命令行参数。</p>
+<p>以下示例实现了与之前 shell 脚本和批处理文件示例相同的逻辑。在 Python 中，脚本本身的参数可以通过 <code>sys.argv</code> 获取：</p>
+<pre><code class="language-python">#!/usr/bin/env python
+import sys
+from robot import run_cli, rebot_cli
+
+common = ['--log', 'none', '--report', 'none'] + sys.argv[1:] + ['login']
+run_cli(['--name', 'Firefox', '--variable', 'BROWSER:Firefox', '--output', 'out/fx.xml'] + common, exit=False)
+run_cli(['--name', 'IE', '--variable', 'BROWSER:IE', '--output', 'out/ie.xml'] + common, exit=False)
+rebot_cli(['--name', 'Login', '--outputdir', 'out', 'out/fx.xml', 'out/ie.xml'])
+</code></pre>
+<blockquote>
+<p><code>exit=False</code> 是必需的，因为默认情况下 <code>run_cli</code> 会以正确的<a href="#%E8%BF%94%E5%9B%9E%E7%A0%81">返回码</a>退出系统。<code>rebot_cli</code> 也会这样做，但在上面的示例中这是可以接受的。</p>
+</blockquote>
+<h2>使 <code>.robot</code> 文件可执行</h2>
+<p>在类 UNIX 操作系统上，可以通过给 <code>.robot</code> 文件赋予执行权限并添加 <a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a> 来使其可执行，如下例所示：</p>
+<pre><code class="language-markdown">#!/usr/bin/env robot
+
+*** Test Cases ***
+Example
+    Log to console    Executing!
+</code></pre>
+<p>如果上述内容在 <code>example.robot</code> 文件中，并且该文件是可执行的，则可以像下面这样从命令行执行它。从 Robot Framework 3.2 开始，单独执行的文件可以有任何扩展名或没有扩展名，因此如果文件仅命名为 <code>example</code> 也同样有效。</p>
+<pre><code class="language-bash">./example.robot
+</code></pre>
+<p>这个技巧在执行目录时不起作用，但在执行单个文件时可能很方便。它在<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#creating-tasks">自动化任务</a>时可能比自动化测试更常用。</p>
+<h2>调试问题</h2>
+<p>测试用例可能因为被测系统工作不正确而失败（此时测试发现了一个 bug），或者因为测试本身有问题。解释失败原因的错误消息显示在<a href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%BE%93%E5%87%BA">命令行输出</a>和<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#report-file">报告文件</a>中，有时仅靠错误消息就足以定位问题。然而更多情况下，需要<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-file">日志文件</a>，因为它们还包含其他日志消息并显示哪个关键字实际失败了。</p>
+<p>当失败由被测应用引起时，错误消息和日志消息应该足以理解原因。如果不够，说明测试库没有提供<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#communicating-with-robot-framework">足够的信息</a>，需要增强。在这种情况下，如果可能的话，手动运行相同的测试也可能揭示更多关于问题的信息。</p>
+<p>由测试用例本身或其使用的关键字引起的失败有时可能难以调试。如果错误消息告诉你关键字使用了错误数量的参数，修复问题显然很容易，但如果关键字缺失或以意外方式失败，找到根本原因可能更困难。查找更多信息的第一个地方是日志文件中的<a href="#%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E5%92%8C%E8%AD%A6%E5%91%8A">执行错误</a>区域。例如，关于测试库导入失败的错误可能很好地解释了为什么测试因缺少关键字而失败。</p>
+<p>如果日志文件默认没有提供足够的信息，可以使用更低的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-levels">日志级别</a>来执行测试。例如，显示代码中失败位置的回溯信息使用 <code>DEBUG</code> 级别记录，当问题出在某个库关键字中时，这些信息非常有价值。</p>
+<p>记录的回溯信息不包含 Robot Framework 自身内部方法的信息。如果你怀疑错误是由框架中的 bug 引起的，可以通过将环境变量 <code>ROBOT_INTERNAL_TRACES</code> 设置为任何非空值来启用显示内部跟踪。</p>
+<p>如果日志文件仍然没有足够的信息，启用<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#system-log">系统日志</a>并查看它提供的信息是个好主意。也可以在测试用例中添加一些关键字来查看正在发生什么。<a href="https://robotframework.org/robotframework/latest/libraries/BuiltIn.html">BuiltIn</a> 库的 <code>Log</code> 和 <code>Log Variables</code> 关键字特别有用。如果其他方法都不行，总是可以从<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#support-and-contact">邮件列表</a>或其他地方寻求帮助。</p>
+<h3>使用 Python 调试器（pdb）</h3>
+<p>也可以使用 Python 标准库中的 <a href="http://docs.python.org/library/pdb.html">pdb</a> 模块来设置断点并交互式调试正在运行的测试。通常通过插入以下代码来调用 pdb：</p>
+<pre><code class="language-python">import pdb; pdb.set_trace()
+</code></pre>
+<p>在你想要进入调试器的位置，但这在 Robot Framework 中无法正常工作，因为标准输出流在关键字执行期间被重定向了。可以在 Python 库中使用以下代码替代：</p>
+<pre><code class="language-python">import sys, pdb; pdb.Pdb(stdout=sys.__stdout__).set_trace()
+</code></pre>
+<p>或者直接在测试用例中使用：</p>
+<pre><code class="language-markdown">Evaluate    pdb.Pdb(stdout=sys.__stdout__).set_trace()    modules=sys, pdb
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/03/2-10-robotframework-new-tutorial-advanced-features/">
+          Robot Framework 新版教程 - 高级功能
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/05/3-2-robotframework-new-tutorial-test-execution/">
+          Robot Framework 新版教程 - 测试执行
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

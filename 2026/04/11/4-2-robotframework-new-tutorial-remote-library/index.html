@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 远程库接口</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 远程库接口
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 19</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>远程库接口</h2>
+<p>远程库接口（Remote library interface）提供了一种方式，使得测试库可以运行在与 Robot Framework 不同的机器上，也可以使用 Python 之外的其他语言来实现测试库。对于测试用例来说，远程库看起来和其他测试库几乎没有区别，使用远程库接口来开发测试库也与创建<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#creating-test-libraries">普通测试库</a>非常相似。</p>
+<h2>简介</h2>
+<p>使用远程库 API 有两个主要原因：</p>
+<ul>
+<li>
+<p>实际的测试库可以部署在与 Robot Framework 运行环境不同的机器上。这为分布式测试提供了很多可能性。</p>
+</li>
+<li>
+<p>测试库可以使用任何支持 <a href="http://www.xmlrpc.com">XML-RPC</a> 协议的语言来实现。针对 Python、Java、Ruby、.NET 等各种语言，已经有现成的<a href="https://github.com/robotframework/RemoteInterface#available-remote-servers">通用远程服务器</a>可用。</p>
+</li>
+</ul>
+<p>远程库接口由 Remote 库提供，它是<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#standard-libraries">标准库</a>之一。这个库本身没有任何关键字，但它充当核心框架与其他地方实现的关键字之间的代理。Remote 库通过远程服务器与实际的库实现交互，Remote 库和服务器之间使用基于 XML-RPC 通道的简单<a href="#%E8%BF%9C%E7%A8%8B%E5%8D%8F%E8%AE%AE">远程协议</a>进行通信。整体的高层架构如下图所示：</p>
+<p><img src="https://robotframework.org/robotframework/latest/images/remote.png" alt="Robot Framework 使用 Remote 库的架构"></p>
+<blockquote>
+<p>Remote 客户端使用 Python 标准的 <a href="https://docs.python.org/library/xmlrpc.client.html">XML-RPC 模块</a>。它不支持某些 XML-RPC 服务器实现的自定义 XML-RPC 扩展。</p>
+</blockquote>
+<h2>使用 Remote 库</h2>
+<h3>导入 Remote 库</h3>
+<p>Remote 库需要知道远程服务器的地址，除此之外，导入它和使用它提供的关键字与使用其他库没有任何不同。如果需要在同一个测试套件中多次使用 Remote 库，或者想给它一个更具描述性的名字，可以在导入时<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#setting-custom-name-to-library">给它设置别名</a>。</p>
+<pre><code class="language-markdown">*** Settings ***
+Library    Remote    http://127.0.0.1:8270       AS    Example1
+Library    Remote    http://example.com:8080/    AS    Example2
+Library    Remote    http://10.0.0.2/example    1 minute    AS    Example3
+</code></pre>
+<p>上面第一个例子使用的 URL 也是 Remote 库在未指定地址时使用的默认地址。</p>
+<p>上面最后一个例子展示了如何通过可选的第二个参数为 Remote 库设置自定义超时时间。这个超时时间在初始连接服务器时以及连接意外断开时使用。超时时间可以使用 Robot Framework 的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#time-format">时间格式</a>来指定，如 <code>60s</code> 或 <code>2 minutes 10 seconds</code>。默认超时时间通常是几分钟，但具体取决于操作系统及其配置。注意，如果设置的超时时间比关键字执行时间短，会导致关键字被中断。</p>
+<blockquote>
+<p>端口 <code>8270</code> 是远程服务器预期使用的默认端口，它已经被 <a href="http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml?search=8270">IANA 注册</a>用于此目的。选择这个端口号是因为 82 和 70 分别是字母 <code>R</code> 和 <code>F</code> 的 ASCII 码。</p>
+</blockquote>
+<blockquote>
+<p>连接本地机器时，建议使用 IP 地址 <code>127.0.0.1</code> 而不是机器名 <code>localhost</code>。这可以避免地址解析，地址解析<a href="http://stackoverflow.com/questions/14504450/pythons-xmlrpc-extremely-slow-one-second-per-call">至少在 Windows 上</a>可能会非常慢。</p>
+</blockquote>
+<blockquote>
+<p>如果 URI 在服务器地址之后没有包含路径，Remote 库使用的 <a href="https://docs.python.org/library/xmlrpc.client.html">XML-RPC 模块</a>默认会使用 <code>/RPC2</code> 路径。实际上使用 <code>http://127.0.0.1:8270</code> 和使用 <code>http://127.0.0.1:8270/RPC2</code> 是完全相同的。根据远程服务器的不同，这可能会也可能不会成为问题。如果地址包含路径，即使路径只是 <code>/</code>，也不会附加额外的路径。例如，<code>http://127.0.0.1:8270/</code> 和 <code>http://127.0.0.1:8270/my/path</code> 都不会被修改。</p>
+</blockquote>
+<h3>启动和停止远程服务器</h3>
+<p>在导入 Remote 库之前，提供实际关键字的远程服务器必须先启动。如果服务器在启动测试执行之前就已经运行，可以像上面的例子那样使用普通的 <code>Library</code> 设置。也可以使用其他关键字来启动服务器，例如使用 <a href="https://robotframework.org/robotframework/latest/libraries/Process.html">Process</a> 库或 <a href="https://github.com/robotframework/SSHLibrary">SSH</a> 库中的关键字，但这种情况下可能需要使用 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#using-import-library-keyword">Import Library 关键字</a>，因为在测试执行开始时该库尚不可用。</p>
+<p>如何停止远程服务器取决于它的实现方式。通常服务器支持以下几种方法：</p>
+<ul>
+<li>无论使用什么库，远程服务器都应该提供 <code>Stop Remote Server</code> 关键字，可以方便地在执行的测试中使用。</li>
+<li>远程服务器应该在其 XML-RPC 接口中有 <code>stop_remote_server</code> 方法。</li>
+<li>在服务器运行的控制台中按 <code>Ctrl-C</code> 应该可以停止服务器。</li>
+<li>可以使用操作系统提供的工具终止服务器进程（例如 <code>kill</code>）。</li>
+</ul>
+<blockquote>
+<p>服务器可以被配置为用户无法通过 <code>Stop Remote Server</code> 关键字或 <code>stop_remote_server</code> 方法来停止它。</p>
+</blockquote>
+<h2>支持的参数和返回值类型</h2>
+<p>因为 XML-RPC 协议不支持所有可能的对象类型，在 Remote 库和远程服务器之间传输的值必须转换为兼容的类型。这既适用于 Remote 库传递给远程服务器的关键字参数，也适用于服务器返回给 Remote 库的返回值。</p>
+<p>Remote 库和 Python 远程服务器按照以下规则处理 Python 值。其他远程服务器也应该有类似的行为。</p>
+<ul>
+<li>
+<p>字符串、数字和布尔值不做修改直接传递。</p>
+</li>
+<li>
+<p>Python 的 <code>None</code> 被转换为空字符串。</p>
+</li>
+<li>
+<p>所有列表、元组和其他可迭代对象（字符串和字典除外）都作为列表传递，其内容会被递归转换。</p>
+</li>
+<li>
+<p>字典和其他映射类型作为 dict 传递，其键被转换为字符串，值被递归转换为支持的类型。</p>
+</li>
+<li>
+<p>返回的字典会被转换为所谓的<em>点访问字典</em>（dot-accessible dicts），允许使用<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#extended-variable-syntax">扩展变量语法</a>通过 <code>${result.key}</code> 的形式以属性方式访问键。这对嵌套字典也有效，如 <code>${root.child.leaf}</code>。</p>
+</li>
+<li>
+<p>包含 ASCII 范围内无法在 XML 中表示的字节的字符串（例如空字节）会作为 <a href="http://docs.python.org/library/xmlrpc.client.html#binary-objects">Binary 对象</a>发送，内部使用 XML-RPC base64 数据类型。接收到的 Binary 对象会自动转换为字节字符串。</p>
+</li>
+<li>
+<p>其他类型被转换为字符串。</p>
+</li>
+</ul>
+<h2>远程协议</h2>
+<p>本节解释 Remote 库与远程服务器之间使用的协议。这些信息主要面向想要创建新远程服务器的开发者。</p>
+<p>远程协议基于 <a href="http://www.xmlrpc.com">XML-RPC</a> 实现，XML-RPC 是一种使用 XML over HTTP 的简单远程过程调用协议。大多数主流语言（Python、Java、C、Ruby、Perl、Javascript、PHP 等）都内置或通过扩展支持 XML-RPC。</p>
+<p><a href="https://github.com/robotframework/PythonRemoteServer">Python 远程服务器</a>可以作为参考实现。</p>
+<h3>必需的方法</h3>
+<p>远程服务器有两种方式来提供关于其包含的关键字的信息。下面简要说明这两种方式，后续章节会有更详细的文档。</p>
+<ol>
+<li>
+<p>远程服务器可以实现与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#dynamic-library-api">动态库 API</a> 相同的方法。即 <code>get_keyword_names</code> 方法以及可选的 <code>get_keyword_arguments</code>、<code>get_keyword_types</code>、<code>get_keyword_tags</code> 和 <code>get_keyword_documentation</code> 方法。注意，不能像普通动态 API 那样使用驼峰命名风格（如 <code>getKeywordNames</code>）。</p>
+</li>
+<li>
+<p>从 Robot Framework 4.0 开始，远程服务器可以有一个单独的 <code>get_library_information</code> 方法，以单个字典的形式返回所有库和关键字信息。如果远程服务器有这个方法，其他 getter 方法如 <code>get_keyword_names</code> 将完全不被使用。这种方式的好处是只需要一次 XML-RPC 调用就能获取所有信息，而上述第一种方式每个关键字都需要多次调用。对于较大的库，这个差异可能非常显著。</p>
+</li>
+</ol>
+<p>无论远程服务器如何提供关键字信息，它们都必须有 <code>run_keyword</code> 方法，在关键字执行时被调用。实际关键字如何实现与 Remote 库无关。远程服务器既可以像现有的<a href="https://github.com/robotframework/RemoteInterface#available-remote-servers">通用远程服务器</a>那样作为真实测试库的包装器，也可以自己实现关键字。</p>
+<p>远程服务器还应该在其公共接口中有 <code>stop_remote_server</code> 方法，以便于停止服务器。它们还应该自动将该方法公开为 <code>Stop Remote Server</code> 关键字，以便在测试数据中使用，无论测试库是什么。允许用户停止服务器并不总是合适的，服务器可以通过某种方式支持禁用此功能。该方法和公开的关键字应该根据是否允许停止返回 <code>True</code> 或 <code>False</code>。这使得外部工具可以知道停止服务器是否成功。</p>
+<h3>使用 <code>get_keyword_names</code> 和关键字特定的 getter 方法</h3>
+<p>本节解释当服务器实现了 <code>get_keyword_names</code> 时，Remote 库如何获取关键字名称和其他信息。下一节介绍使用较新的 <code>get_library_info</code> 方法。</p>
+<p><code>get_keyword_names</code> 方法必须以字符串列表的形式返回服务器包含的关键字名称。远程服务器还可以（也应该）实现 <code>get_keyword_arguments</code>、<code>get_keyword_types</code>、<code>get_keyword_tags</code> 和 <code>get_keyword_documentation</code> 方法来提供关于关键字的更多信息。所有这些方法都接受关键字名称作为参数，它们必须返回的内容在下表中说明。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_keyword_arguments</code></td>
+<td>以字符串列表形式返回参数，格式与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#getting-keyword-arguments">动态库相同</a>。</td>
+</tr>
+<tr>
+<td><code>get_keyword_types</code></td>
+<td>以字符串列表或字典形式返回类型信息。详见下文。</td>
+</tr>
+<tr>
+<td><code>get_keyword_documentation</code></td>
+<td>以字符串形式返回文档。</td>
+</tr>
+<tr>
+<td><code>get_keyword_tags</code></td>
+<td>以字符串列表形式返回 tag。</td>
+</tr>
+</tbody>
+</table>
+<p>用于<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#argument-conversion">参数转换</a>的类型信息可以作为列表返回（按位置将类型名称映射到参数），也可以作为字典返回（直接将参数名称映射到类型名称）。实际上，这与在普通库中<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#specifying-argument-types-using-keyword-decorator">使用 @keyword 装饰器指定类型</a>的工作方式相同。区别在于，由于 XML-RPC 协议不支持任意值，类型信息需要使用类型名称或别名来指定，如 <code>'int'</code> 或 <code>'integer'</code>，而不是使用实际类型如 <code>int</code>。此外，XML-RPC 服务器可能不允许 <code>None</code> 或 <code>null</code> 值，但可以使用空字符串来表示某个参数没有类型信息。</p>
+<p>基于默认值的参数转换也受支持，使用与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#implicit-argument-types-based-on-default-values">普通库相同的逻辑</a>。要使其正常工作，带有默认值的参数必须以元组而非字符串的形式返回，这与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#getting-keyword-arguments">动态库的方式相同</a>。例如，如果参数信息以 <code>[('count', 1), ('caseless', True)]</code> 的形式返回，参数转换可以正常工作，但如果是 <code>['count=1', 'caseless=True']</code> 则不行。</p>
+<p>远程服务器还可以提供<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#getting-general-library-documentation">通用库文档</a>，供 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#libdoc">Libdoc</a> 工具生成文档时使用。这些信息通过使用特殊值 <code>__intro__</code> 和 <code>__init__</code> 调用 <code>get_keyword_documentation</code> 来获取。</p>
+<blockquote>
+<p><code>get_keyword_types</code> 是 Robot Framework 3.1 中新增的，基于默认值的参数转换支持是 Robot Framework 4.0 中新增的。</p>
+</blockquote>
+<h3>使用 <code>get_library_information</code></h3>
+<p><code>get_library_information</code> 方法允许在一次 XML-RPC 调用中返回整个库的信息。信息必须以字典的形式返回，其中键是关键字名称，值是包含关键字信息的嵌套字典。字典还可以包含通用库信息的单独条目。</p>
+<p>关键字信息字典可以包含关键字参数、文档、tag 和类型，对应的键分别是 <code>args</code>、<code>doc</code>、<code>tags</code> 和 <code>types</code>。信息必须使用与上一节讨论的 <code>get_keyword_arguments</code>、<code>get_keyword_documentation</code>、<code>get_keyword_tags</code> 和 <code>get_keyword_types</code> 相同的语义来提供。如果某些信息不可用，可以从信息字典中完全省略。</p>
+<p><code>get_library_information</code> 还支持返回通用库文档，供 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#libdoc">Libdoc</a> 使用。方法是在返回的库信息字典中包含特殊的 <code>__intro__</code> 和 <code>__init__</code> 条目。</p>
+<p>例如，如下 Python 库：</p>
+<pre><code class="language-py">&quot;&quot;&quot;Library documentation.&quot;&quot;&quot;
+
+from robot.api.deco import keyword
+
+@keyword(tags=['x', 'y'])
+def example(a: int, b=True):
+    &quot;&quot;&quot;Keyword documentation.&quot;&quot;&quot;
+    pass
+
+def another():
+    pass
+</code></pre>
+<p>可以映射为如下库信息字典：</p>
+<pre><code class="language-py">{
+    '__intro__': {'doc': 'Library documentation'}
+    'example': {'args': ['a', 'b=True'],
+                'types': ['int'],
+                'doc': 'Keyword documentation.',
+                'tags': ['x', 'y']}
+    'another': {'args': []}
+}
+</code></pre>
+<blockquote>
+<p><code>get_library_information</code> 是 Robot Framework 4.0 中新增的。</p>
+</blockquote>
+<h3>执行远程关键字</h3>
+<p>当 Remote 库需要服务器执行某个关键字时，它会调用远程服务器的 <code>run_keyword</code> 方法，并传递关键字名称、参数列表，以及可能的<a href="#%E4%B8%8D%E5%90%8C%E7%9A%84%E5%8F%82%E6%95%B0%E8%AF%AD%E6%B3%95">自由命名参数</a>字典。基本类型可以直接作为参数使用，但更复杂的类型会被<a href="#%E6%94%AF%E6%8C%81%E7%9A%84%E5%8F%82%E6%95%B0%E5%92%8C%E8%BF%94%E5%9B%9E%E5%80%BC%E7%B1%BB%E5%9E%8B">转换为支持的类型</a>。</p>
+<p>服务器必须在结果字典（或映射，取决于术语）中返回执行结果，其中包含下表中说明的条目。注意只有 <code>status</code> 条目是必需的，其他条目在不适用时可以省略。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>status</td>
+<td>必需的执行状态。值为 PASS 或 FAIL。</td>
+</tr>
+<tr>
+<td>output</td>
+<td>可能需要写入日志文件的输出。必须以单个字符串给出，但可以包含多条消息和不同的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#logging-information">日志级别</a>，格式为 <code>*INFO* First message\n*HTML* &lt;b&gt;2nd&lt;/b&gt;\n*WARN* Another message</code>。也可以在日志消息中嵌入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#timestamps">时间戳</a>，如 <code>*INFO:1308435758660* Message with timestamp</code>。</td>
+</tr>
+<tr>
+<td>return</td>
+<td>可能的返回值。必须是<a href="#%E6%94%AF%E6%8C%81%E7%9A%84%E5%8F%82%E6%95%B0%E5%92%8C%E8%BF%94%E5%9B%9E%E5%80%BC%E7%B1%BB%E5%9E%8B">支持的类型</a>之一。</td>
+</tr>
+<tr>
+<td>error</td>
+<td>可能的错误信息。仅在执行失败时使用。</td>
+</tr>
+<tr>
+<td>traceback</td>
+<td>可能的堆栈跟踪，在执行失败时以 DEBUG 级别<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#reporting-keyword-status">写入日志文件</a>。</td>
+</tr>
+<tr>
+<td>continuable</td>
+<td>设置为 <code>True</code> 或任何在 Python 中被视为 <code>True</code> 的值时，发生的失败被视为<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#continue-on-failure">可继续的</a>。</td>
+</tr>
+<tr>
+<td>fatal</td>
+<td>与 <code>continuable</code> 类似，但表示发生的失败是<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#stopping-test-execution-gracefully">致命的</a>。</td>
+</tr>
+</tbody>
+</table>
+<h3>不同的参数语法</h3>
+<p>Remote 库是一个<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#dynamic-library-api">动态库</a>，一般来说它按照与其他动态库<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#getting-keyword-arguments">相同的规则</a>处理不同的参数语法。这包括必需参数、默认值、可变参数（varargs），以及<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#named-argument-syntax-with-dynamic-libraries">命名参数语法</a>。</p>
+<p>自由命名参数（<code>**kwargs</code>）的工作方式也与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#free-named-arguments-with-dynamic-libraries">其他动态库</a>基本相同。首先，<code>get_keyword_arguments</code> 必须返回一个包含 <code>**kwargs</code> 的参数规范，与其他动态库完全一样。主要的区别在于，远程服务器的 <code>run_keyword</code> 方法必须有一个<strong>可选的</strong>第三个参数来接收用户指定的 kwargs。第三个参数必须是可选的，因为出于向后兼容的原因，Remote 库只在测试数据中使用了 kwargs 时才将其传递给 <code>run_keyword</code> 方法。</p>
+<p>实际上 <code>run_keyword</code> 应该类似于以下 Python 和 Java 示例，具体取决于语言如何处理可选参数。</p>
+<pre><code class="language-py">def run_keyword(name, args, kwargs=None):
+    # ...
+</code></pre>
+<pre><code class="language-java">public Map run_keyword(String name, List args) {
+    // ...
+}
+
+public Map run_keyword(String name, List args, Map kwargs) {
+    // ...
+}
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/10/4-1-robotframework-new-tutorial-creating-test-libraries/">
+          Robot Framework 新版教程 - 创建测试库
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/12/4-3-robotframework-new-tutorial-listener-interface/">
+          Robot Framework 新版教程 - 监听器接口
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

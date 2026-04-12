@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 高级功能</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 高级功能
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 11</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>处理同名关键字</h2>
+<p>Robot Framework 中使用的关键字要么是库关键字，要么是用户关键字。前者来自标准库或外部库，后者要么在使用它们的同一文件中创建，要么从资源文件导入。当使用大量关键字时，其中一些可能会同名，本节描述如何处理这种情况下的冲突。</p>
+<h3>关键字作用域</h3>
+<p>当只使用关键字名称且存在多个同名关键字时，Robot Framework 会根据关键字的作用域来确定优先级。关键字的作用域取决于它的创建方式：</p>
+<ol>
+<li>在当前执行的套件文件中创建的用户关键字。这些关键字具有最高优先级，始终会被使用，即使其他地方存在同名关键字。</li>
+<li>在资源文件中创建，并直接或间接从另一个资源文件导入。这是第二高优先级。</li>
+<li>在外部测试库中创建。如果不存在同名的用户关键字，则使用这些关键字。但如果标准库中存在同名关键字，会显示警告。</li>
+<li>在标准库中创建。这些关键字具有最低优先级。</li>
+</ol>
+<h3>显式指定关键字</h3>
+<p>当两个不同库或两个不同资源文件中存在同名关键字时，作用域无法帮助解决冲突。此外，如果需要使用库中的关键字而非资源文件中的同名关键字，作用域也帮不上忙。在这些情况下，可以使用关键字的全名，即在关键字名称前加上库名或资源名，并用点号分隔。</p>
+<p>对于库关键字，全名格式为 <code>LibraryName.Keyword Name</code>。例如，OperatingSystem 库中的 <code>Get File</code> 关键字可以用 <code>OperatingSystem.Get File</code> 来使用，即使其他地方存在另一个 <code>Get File</code> 关键字。如果库实现在嵌套模块中，全名必须包含完整的模块名，如 <code>root.sub.Library.Keyword</code>。如果导入库时设置了自定义名称，全名中也必须使用该自定义名称。</p>
+<p>对于资源文件中的用户关键字，全名的构建方式与库关键字相同。资源名取自资源文件的基本名称（不含文件扩展名）。例如，资源文件 <code>example.resource</code> 中的关键字 <code>Some Keyword</code> 可以用 <code>example.Some Keyword</code> 来使用。注意，如果多个资源文件具有相同的基本名称，此语法将不起作用，这种情况下必须重命名资源文件或关键字。</p>
+<p>对于套件文件中的用户关键字，全名仅包含关键字名称本身，不需要任何前缀。</p>
+<p>比较全名时，库/资源部分不区分大小写和空格，关键字部分不区分大小写、空格和下划线。</p>
+<h3>指定库和资源之间的显式优先级</h3>
+<p>当存在多个关键字冲突时，以完整格式指定所有关键字可能需要大量工作。使用完整格式还会使创建动态测试用例或根据可用库/资源不同而表现不同的用户关键字变得不可能。解决这两个问题的方案是使用 BuiltIn 库中的 <code>Set Library Search Order</code> 关键字显式指定关键字的优先级。</p>
+<blockquote>
+<p>虽然该关键字名称中包含 <em>library</em> 一词，但它同样适用于资源文件。不过如前所述，资源中的关键字始终比库中的关键字具有更高的优先级。</p>
+</blockquote>
+<p><code>Set Library Search Order</code> 接受一个有序的库和资源列表作为参数。当测试数据中的关键字名称匹配多个关键字时，将选择列表中第一个包含该关键字的库或资源，并使用其实现。如果在任何指定的库或资源中都找不到该关键字，执行将因冲突而失败，与未设置搜索顺序时的行为相同。</p>
+<p>更多信息和示例请参阅该关键字的文档。</p>
+<h2>超时</h2>
+<p>有时关键字可能执行时间异常长或永远挂起。Robot Framework 允许为测试用例和用户关键字设置超时，如果测试或关键字未在指定时间内完成，当前执行的关键字将被强制停止。</p>
+<p>以这种方式停止关键字可能会使库、测试环境或被测系统处于不稳定状态，因此仅在没有更安全的替代方案时才推荐使用超时。通常，库的实现应确保关键字不会挂起，或者库应有自己的超时机制。</p>
+<h3>测试用例超时</h3>
+<p>测试用例超时可以通过 Settings section 中的 <code>Test Timeout</code> 设置或为单个测试用例使用 <code>[Timeout]</code> 设置来指定。<code>Test Timeout</code> 为该套件中的所有测试用例定义默认超时，而 <code>[Timeout]</code> 为特定测试用例设置超时并覆盖可能的默认值。</p>
+<p>使用空的 <code>[Timeout]</code> 表示即使设置了 <code>Test Timeout</code>，该测试也没有超时。也可以使用显式的 <code>NONE</code> 值达到相同目的。如果超时值为零或负数，超时也会被忽略。</p>
+<p>无论在哪里定义测试超时，其值都包含超时的持续时间。持续时间必须以 Robot Framework 的时间格式给出，即直接以秒为单位（如 <code>10</code>）或使用 <code>1 minute 30 seconds</code> 这样的格式。超时也可以指定为变量，从而可以从命令行传入。</p>
+<p>如果设置了超时且已过期，当前运行的关键字将被停止，测试用例将失败。但在测试 teardown 中执行的关键字不会因测试超时而被中断，不过测试仍会被标记为失败。如果 teardown 中的关键字可能挂起，可以使用用户关键字超时来停止它。</p>
+<pre><code class="language-markdown">*** Settings ***
+Test Timeout       2 minutes
+
+*** Test Cases ***
+Default timeout
+    [Documentation]    使用 Settings 中的默认超时。
+    Some Keyword    argument
+
+Override
+    [Documentation]    覆盖默认值，使用 10 秒超时。
+    [Timeout]    10
+    Some Keyword    argument
+
+Variables
+    [Documentation]    也可以使用变量。
+    [Timeout]    ${TIMEOUT}
+    Some Keyword    argument
+
+No timeout
+    [Documentation]    空超时表示即使设置了 Test Timeout 也没有超时。
+    [Timeout]
+    Some Keyword    argument
+
+No timeout 2
+    [Documentation]    使用 NONE 禁用超时也可以，而且更明确。
+    [Timeout]    NONE
+    Some Keyword    argument
+</code></pre>
+<h3>用户关键字超时</h3>
+<p>可以使用 <code>[Timeout]</code> 设置为用户关键字设置超时。语法与测试用例超时完全相同，但用户关键字超时没有默认值。如果用户关键字超时使用变量指定，其值也可以作为关键字参数传入。</p>
+<pre><code class="language-markdown">*** Keywords ***
+Hardcoded
+    [Arguments]    ${arg}
+    [Timeout]    1 minute 42 seconds
+    Some Keyword    ${arg}
+
+Configurable
+    [Arguments]    ${arg}    ${timeout}
+    [Timeout]    ${timeout}
+    Some Keyword    ${arg}
+
+Run Keyword with Timeout
+    [Arguments]    ${keyword}    @{args}    &amp;{kwargs}    ${timeout}=1 minute
+    [Documentation]    封装关键字，以可配置的超时运行另一个关键字。
+    [Timeout]    ${timeout}
+    Run Keyword    ${keyword}    @{args}    &amp;{kwargs}
+</code></pre>
+<p>用户关键字超时在该用户关键字执行期间生效。如果关键字的总执行时间超过超时值，当前执行的关键字将被停止。用户关键字超时在测试用例 teardown 期间也适用，而测试超时不适用。</p>
+<p>如果测试用例和其某些关键字（或多个嵌套关键字）都设置了超时，生效的超时是剩余时间最少的那个。</p>
+<blockquote>
+<p>在早期 Robot Framework 版本中，可以指定超时过期时使用的自定义错误消息。此功能在 Robot Framework 3.0.1 中弃用，在 Robot Framework 3.2 中移除。</p>
+</blockquote>
+<h2>关键字的并行执行</h2>
+<p>当需要并行执行时，必须在测试库层面实现，使库在后台执行代码。通常这意味着库需要一个类似 <code>Start Something</code> 的关键字来启动执行并立即返回，以及另一个类似 <code>Get Results From Something</code> 的关键字来等待结果可用并返回结果。参考 Process 库的 <code>Start Process</code> 和 <code>Wait For Process</code> 关键字作为示例。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/02/2-9-robotframework-new-tutorial-control-structures/">
+          Robot Framework 新版教程 - 控制结构
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/04/3-1-robotframework-new-tutorial-basic-usage/">
+          Robot Framework 新版教程 - 基本用法
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

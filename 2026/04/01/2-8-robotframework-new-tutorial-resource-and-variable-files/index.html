@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 资源文件和变量文件</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 资源文件和变量文件
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 9</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <p>套件文件和套件初始化文件中的用户关键字和变量只能在创建它们的文件中使用，而资源文件（resource files）提供了一种共享它们的机制。创建资源文件的高层语法与创建套件文件完全相同，支持的文件格式也一样。主要区别在于资源文件不能包含测试。</p>
+<p>变量文件（variable files）提供了一种强大的创建和共享变量的机制。例如，它们允许使用字符串以外的值类型，并支持动态创建变量。由于变量文件使用 Python 或 YAML 创建，它们的灵活性也使其比 Variables section 稍微复杂一些。</p>
+<h2>资源文件</h2>
+<p>资源文件通常使用纯文本格式创建，但也支持 reStructuredText 格式和 JSON 格式。</p>
+<h3>引入资源文件</h3>
+<p>资源文件通过 Settings section 中的 <code>Resource</code> 设置导入，资源文件的路径作为该设置的参数。推荐的资源文件扩展名是 <code>.resource</code>。出于向后兼容的原因，<code>.robot</code>、<code>.txt</code> 和 <code>.tsv</code> 也可以使用，但未来可能会强制要求使用 <code>.resource</code>。</p>
+<p>如果资源文件路径是绝对路径，则直接使用。否则，首先相对于导入文件所在目录搜索资源文件。如果未找到，则从 Python 模块搜索路径中的目录搜索。从模块搜索路径搜索资源文件使得可以将它们作为包数据打包到 Python 包中，并像 <code>package/example.resource</code> 这样导入。</p>
+<p>资源文件路径可以包含变量，建议使用变量使路径与系统无关（例如 <code>${RESOURCES}/login.resource</code> 或 <code>${RESOURCE_PATH}</code>）。此外，路径中的正斜杠（<code>/</code>）在 Windows 上会自动转换为反斜杠。</p>
+<pre><code class="language-markdown">*** Settings ***
+Resource    example.resource
+Resource    ../resources/login.resource
+Resource    package/example.resource
+Resource    ${RESOURCES}/common.resource
+</code></pre>
+<p>资源文件中定义的用户关键字和变量在引入该资源文件的文件中可用。同样可用的还有该资源文件所导入的库、资源文件和变量文件中的所有关键字和变量。</p>
+<blockquote>
+<p><code>.resource</code> 扩展名是 Robot Framework 3.1 的新功能。</p>
+</blockquote>
+<h3>资源文件结构</h3>
+<p>资源文件的高层结构与套件文件相同，但不能包含测试或任务。此外，资源文件的 Settings section 只能包含导入项（<code>Library</code>、<code>Resource</code>、<code>Variables</code>）、<code>Documentation</code> 和 <code>Keyword Tags</code>。Variables section 和 Keywords section 的使用方式与套件文件完全相同。</p>
+<p>如果多个资源文件中存在同名的用户关键字，使用时必须在关键字名前加上不含扩展名的资源文件名作为前缀（例如 <code>myresources.Some Keyword</code> 和 <code>common.Some Keyword</code>）。此外，如果多个资源文件包含同名变量，最先导入的文件中的变量会被使用。</p>
+<h3>为资源文件添加文档</h3>
+<p>资源文件中创建的关键字可以使用 <code>[Documentation]</code> 设置添加文档。资源文件本身也可以在 Settings section 中添加 <code>Documentation</code>，与套件类似。</p>
+<p>Libdoc 和各种编辑器会使用这些文档，打开资源文件的人也自然可以查看。关键字文档的第一个逻辑行（直到第一个空行）会在关键字运行时被记录到日志中，但资源文件的文档在测试执行期间会被忽略。</p>
+<h3>资源文件示例</h3>
+<pre><code class="language-markdown">*** Settings ***
+Documentation     An example resource file
+Library           SeleniumLibrary
+Resource          ${RESOURCES}/common.resource
+
+*** Variables ***
+${HOST}           localhost:7272
+${LOGIN URL}      http://${HOST}/
+${WELCOME URL}    http://${HOST}/welcome.html
+${BROWSER}        Firefox
+
+*** Keywords ***
+Open Login Page
+    [Documentation]    Opens browser to login page
+    Open Browser    ${LOGIN URL}    ${BROWSER}
+    Title Should Be    Login Page
+
+Input Name
+    [Arguments]    ${name}
+    Input Text    username_field    ${name}
+
+Input Password
+    [Arguments]    ${password}
+    Input Text    password_field    ${password}
+</code></pre>
+<h3>使用 reStructuredText 格式的资源文件</h3>
+<p>可用于套件文件的 reStructuredText 格式同样适用于资源文件。此类资源文件可以使用 <code>.rst</code> 或 <code>.rest</code> 扩展名，导入方式与普通资源文件完全相同：</p>
+<pre><code class="language-markdown">*** Settings ***
+Resource         example.rst
+</code></pre>
+<p>解析 reStructuredText 格式的资源文件时，Robot Framework 会忽略代码块之外的所有数据，与解析 reStructuredText 套件文件的方式完全相同。例如，以下资源文件导入了 OperatingSystem 库，定义了 <code>${MESSAGE}</code> 变量，并创建了 <code>My Keyword</code> 关键字：</p>
+<pre><code class="language-rest">Resource file using reStructuredText
+------------------------------------
+
+This text is outside code blocks and thus ignored.
+
+.. code:: robotframework
+
+   *** Settings ***
+   Library          OperatingSystem
+
+   *** Variables ***
+   ${MESSAGE}       Hello, world!
+
+Also this text is outside code blocks and ignored. Code blocks not
+containing Robot Framework data are ignored as well.
+
+.. code:: robotframework
+
+   # Both space and pipe separated formats are supported.
+
+   | *** Keywords ***  |                        |         |
+   | My Keyword        | [Arguments]            | ${path} |
+   |                   | Directory Should Exist | ${path} |
+</code></pre>
+<h3>使用 JSON 格式的资源文件</h3>
+<p>资源文件也可以使用 JSON 格式创建，方式与套件文件相同。JSON 资源文件必须使用标准的 <code>.json</code> 扩展名或自定义的 <code>.rsrc</code> 扩展名，导入方式与普通资源文件完全相同：</p>
+<pre><code class="language-markdown">*** Settings ***
+Resource         example.rsrc
+</code></pre>
+<p>资源文件可以通过 <code>ResourceFile.to_json</code> 转换为 JSON 格式，也可以通过 <code>ResourceFile.from_json</code> 重建：</p>
+<pre><code class="language-py">from robot.running import ResourceFile
+
+
+# 基于文件系统中的数据创建资源文件
+resource = ResourceFile.from_file_system('example.resource')
+
+# 保存 JSON 数据到文件
+resource.to_json('example.rsrc')
+
+# 从 JSON 数据重建资源文件
+resource = ResourceFile.from_json('example.rsrc')
+</code></pre>
+<h2>变量文件</h2>
+<p>变量文件包含可在测试数据中使用的变量。变量也可以通过 Variables section 创建或从命令行设置，但变量文件允许动态创建变量，也便于创建字符串以外的变量值。</p>
+<p>变量文件通常实现为模块，有两种创建变量的方式：</p>
+<p><strong>直接从模块获取变量</strong>：变量指定为模块属性。在简单场景中，语法非常简单，几乎不需要编程。例如，<code>MY_VAR = 'my value'</code> 会以指定文本为值创建变量 <code>${MY_VAR}</code>。此方式的一个限制是不允许使用参数。</p>
+<p><strong>从特殊函数获取变量</strong>：变量文件可以有一个特殊的 <code>get_variables</code>（或 <code>getVariables</code>）方法，以映射形式返回变量。由于该方法可以接受参数，这种方式非常灵活。</p>
+<p>变量文件还可以实现为类，框架会实例化该类。在这种情况下也可以将变量定义为属性或从 <code>get_variables</code> 方法动态获取。变量文件还可以创建为 YAML 和 JSON 格式。</p>
+<h3>引入变量文件</h3>
+<h4>Settings section</h4>
+<p>所有测试数据文件都可以在 Settings section 中使用 <code>Variables</code> 设置导入变量文件。变量文件通常使用文件路径导入，方式与通过 <code>Resource</code> 设置导入资源文件类似。变量文件的路径被视为相对于导入文件所在目录的路径，如果未找到，则从模块搜索路径中搜索。路径也可以包含变量，斜杠在 Windows 上会转换为反斜杠。</p>
+<pre><code class="language-markdown">*** Settings ***
+Variables    myvariables.py
+Variables    ../data/variables.py
+Variables    ${RESOURCES}/common.yaml
+</code></pre>
+<p>从 Robot Framework 5.0 开始，使用 Python 实现的变量文件也可以使用模块名导入，与库的导入方式类似。使用此方式时，模块需要在模块搜索路径中。</p>
+<pre><code class="language-markdown">*** Settings ***
+Variables    myvariables
+Variables    rootmodule.Variables
+</code></pre>
+<p>如果变量文件接受参数，参数在变量文件的路径或名称之后指定：</p>
+<pre><code class="language-markdown">*** Settings ***
+Variables    arguments.py    arg1    ${ARG2}
+Variables    arguments    argument
+</code></pre>
+<p>变量文件中的所有变量在导入它的测试数据文件中可用。如果导入了多个变量文件且包含同名变量，最先导入的文件中的变量会被使用。此外，Variables section 中创建的变量和从命令行设置的变量会覆盖变量文件中的变量。</p>
+<h4>命令行</h4>
+<p>引入变量文件的另一种方式是使用命令行选项 <code>--variablefile</code>。变量文件通过路径或模块名引用，与在 Settings section 中导入的方式类似。可能的参数用冒号（<code>:</code>）与路径连接：</p>
+<pre><code>--variablefile myvariables.py
+--variablefile path/variables.py
+--variablefile /absolute/path/common.py
+--variablefile variablemodule
+--variablefile arguments.py:arg1:arg2
+--variablefile rootmodule.Variables:arg1:arg2
+</code></pre>
+<p>从命令行引入的变量文件同样会从模块搜索路径中搜索。相对路径被视为相对于执行开始的目录。</p>
+<p>如果变量文件使用 Windows 绝对路径，驱动器号后面的冒号不被视为分隔符：</p>
+<pre><code>--variablefile C:\path\variables.py
+</code></pre>
+<p>也可以使用分号（<code>;</code>）作为参数分隔符。当变量文件参数本身包含冒号时这很有用，但在类 UNIX 操作系统上需要用引号包围整个值：</p>
+<pre><code>--variablefile C:\path\variables.py;D:\data.xls
+--variablefile &quot;myvariables.py;argument:with:colons&quot;
+</code></pre>
+<p>从命令行引入的变量文件中的变量在所有测试数据文件中全局可用，与通过 <code>--variable</code> 选项设置的单个变量类似。如果同时使用了 <code>--variablefile</code> 和 <code>--variable</code> 选项且存在同名变量，通过 <code>--variable</code> 选项单独设置的变量优先。</p>
+<h3>直接从模块获取变量</h3>
+<h4>基本语法</h4>
+<p>引入变量文件时，它们作为 Python 模块被导入，所有模块级别的、不以下划线（<code>_</code>）开头的属性默认被视为变量。由于变量名不区分大小写，大小写名称都可以使用，但通常推荐全局变量和属性使用大写字母。</p>
+<pre><code class="language-py">VARIABLE = &quot;An example string&quot;
+ANOTHER_VARIABLE = &quot;This is pretty easy!&quot;
+INTEGER = 42
+STRINGS = [&quot;one&quot;, &quot;two&quot;, &quot;kolme&quot;, &quot;four&quot;]
+NUMBERS = [1, INTEGER, 3.14]
+MAPPING = {&quot;one&quot;: 1, &quot;two&quot;: 2, &quot;three&quot;: 3}
+</code></pre>
+<p>上面的示例中会创建 <code>${VARIABLE}</code>、<code>${ANOTHER VARIABLE}</code> 等变量。前两个是字符串，第三个是整数，然后有两个列表，最后一个是字典。所有这些变量都可以作为标量变量使用，列表和字典也可以分别作为列表变量（如 <code>@{STRINGS}</code>，字典的列表变量只包含键）和字典变量（如 <code>&amp;{MAPPING}</code>）使用。</p>
+<p>为了更明确地创建列表变量或字典变量，可以在变量名前添加 <code>LIST__</code> 或 <code>DICT__</code> 前缀：</p>
+<pre><code class="language-py">from collections import OrderedDict
+
+LIST__ANIMALS = [&quot;cat&quot;, &quot;dog&quot;]
+DICT__FINNISH = OrderedDict([(&quot;cat&quot;, &quot;kissa&quot;), (&quot;dog&quot;, &quot;koira&quot;)])
+</code></pre>
+<p>这些前缀不会成为最终变量名的一部分，但它们会使 Robot Framework 验证值是否确实是列表型或字典型。对于字典，实际存储的值也会被转换为 Variables section 中创建字典时使用的特殊字典。这些字典的值可以通过属性访问，如 <code>${FINNISH.cat}</code>。这些字典也是有序的，但保留源顺序要求原始字典也是有序的。</p>
+<p>上面两个示例中的变量也可以使用以下 Variables section 创建：</p>
+<pre><code class="language-markdown">*** Variables ***
+${VARIABLE}            An example string
+${ANOTHER VARIABLE}    This is pretty easy!
+${INTEGER}             ${42}
+@{STRINGS}             one          two           kolme         four
+@{NUMBERS}             ${1}         ${INTEGER}    ${3.14}
+&amp;{MAPPING}             one=${1}     two=${2}      three=${3}
+@{ANIMALS}             cat          dog
+&amp;{FINNISH}             cat=kissa    dog=koira
+</code></pre>
+<blockquote>
+<p>变量文件中获取的字符串不会进行变量替换。例如，<code>VAR = &quot;an ${example}&quot;</code> 会创建一个值为字面字符串 <code>an ${example}</code> 的变量 <code>${VAR}</code>，无论变量 <code>${example}</code> 是否存在。</p>
+</blockquote>
+<h4>使用对象作为值</h4>
+<p>变量文件中的变量不像 Variables section 那样仅限于字符串或其他基本类型。它们的变量可以包含任何对象。下面的示例中，变量 <code>${MAPPING}</code> 包含一个 Python 字典，还有两个从同一文件中实现的自定义对象创建的变量。</p>
+<pre><code class="language-py">MAPPING = {'one': 1, 'two': 2}
+
+class MyObject:
+    def __init__(self, name):
+        self.name = name
+
+OBJ1 = MyObject('John')
+OBJ2 = MyObject('Jane')
+</code></pre>
+<h4>动态创建变量</h4>
+<p>由于变量文件使用真正的编程语言创建，它们可以包含设置变量的动态逻辑。</p>
+<pre><code class="language-py">import os
+import random
+import time
+
+USER = os.getlogin()                # 当前登录用户名
+RANDOM_INT = random.randint(0, 10)  # [0,10] 范围内的随机整数
+CURRENT_TIME = time.asctime()       # 时间戳，如 'Thu Apr  6 12:45:21 2006'
+if time.localtime()[3] &gt; 12:
+    AFTERNOON = True
+else:
+    AFTERNOON = False
+</code></pre>
+<p>上面的示例使用标准 Python 库设置不同的变量，但你也可以使用自己的代码来构造值。下面的示例展示了这个概念，类似地，你的代码可以从数据库、外部文件读取数据，甚至向用户询问。</p>
+<pre><code class="language-py">import math
+
+def get_area(diameter):
+    radius = diameter / 2
+    area = math.pi * radius * radius
+    return area
+
+AREA1 = get_area(1)
+AREA2 = get_area(2)
+</code></pre>
+<h4>选择要包含的变量</h4>
+<p>Robot Framework 处理变量文件时，所有不以下划线开头的属性都被视为变量。这意味着变量文件中创建的函数、类，或从其他地方导入的内容也会被视为变量。例如，上一个示例除了 <code>${AREA1}</code> 和 <code>${AREA2}</code> 外，还会包含 <code>${math}</code> 和 <code>${get_area}</code> 变量。</p>
+<p>通常额外的变量不会造成问题，但它们可能覆盖其他变量并导致难以调试的错误。一种忽略其他属性的方式是为它们添加下划线前缀：</p>
+<pre><code class="language-py">import math as _math
+
+def _get_area(diameter):
+    radius = diameter / 2.0
+    area = _math.pi * radius * radius
+    return area
+
+AREA1 = _get_area(1)
+AREA2 = _get_area(2)
+</code></pre>
+<p>如果有大量其他属性，与其为每个都添加前缀，不如使用特殊属性 <code>__all__</code>，给它一个要作为变量处理的属性名列表：</p>
+<pre><code class="language-py">import math
+
+__all__ = ['AREA1', 'AREA2']
+
+def get_area(diameter):
+    radius = diameter / 2.0
+    area = math.pi * radius * radius
+    return area
+
+AREA1 = get_area(1)
+AREA2 = get_area(2)
+</code></pre>
+<blockquote>
+<p><code>__all__</code> 属性最初也被 Python 用于在使用 <code>from modulename import *</code> 语法时决定导入哪些属性。</p>
+</blockquote>
+<p>选择实际创建哪些变量的第三种方式是使用下面讨论的特殊 <code>get_variables</code> 函数。</p>
+<h3>从特殊函数获取变量</h3>
+<p>获取变量的另一种方式是在变量文件中定义一个特殊的 <code>get_variables</code> 函数（也支持驼峰式 <code>getVariables</code>）。如果存在这样的函数，Robot Framework 会调用它，并期望收到一个 Python 字典，其中变量名作为键，变量值作为值。创建的变量可以作为标量、列表和字典使用，与直接从模块获取变量完全相同，也可以使用 <code>LIST__</code> 和 <code>DICT__</code> 前缀使列表和字典变量的创建更明确。下面的示例在功能上与直接从模块获取变量的第一个示例完全相同。</p>
+<pre><code class="language-py">def get_variables():
+    variables = {&quot;VARIABLE &quot;: &quot;An example string&quot;,
+                 &quot;ANOTHER VARIABLE&quot;: &quot;This is pretty easy!&quot;,
+                 &quot;INTEGER&quot;: 42,
+                 &quot;STRINGS&quot;: [&quot;one&quot;, &quot;two&quot;, &quot;kolme&quot;, &quot;four&quot;],
+                 &quot;NUMBERS&quot;: [1, 42, 3.14],
+                 &quot;MAPPING&quot;: {&quot;one&quot;: 1, &quot;two&quot;: 2, &quot;three&quot;: 3}}
+    return variables
+</code></pre>
+<p><code>get_variables</code> 也可以接受参数，这使得可以改变实际创建哪些变量。函数的参数设置方式与其他 Python 函数的参数相同。引入变量文件时，参数在变量文件路径之后指定；在命令行中，参数与路径之间用冒号或分号分隔。</p>
+<p>下面的简单示例展示了如何在变量文件中使用参数。在更实际的场景中，参数可以是外部文本文件或数据库的路径，用于从中读取变量。</p>
+<pre><code class="language-py">variables1 = {'scalar': 'Scalar variable',
+              'LIST__list': ['List','variable']}
+variables2 = {'scalar' : 'Some other value',
+              'LIST__list': ['Some','other','value'],
+              'extra': 'variables1 does not have this at all'}
+
+def get_variables(arg):
+    if arg == 'one':
+        return variables1
+    else:
+        return variables2
+</code></pre>
+<p>从 Robot Framework 7.0 开始，变量文件的参数支持自动类型转换和命名参数语法。例如，有 <code>get_variables(first: int = 0, second: str = '')</code> 的变量文件可以这样导入：</p>
+<pre><code class="language-markdown">*** Settings ***
+Variables    example.py    42              # 转换为整数
+Variables    example.py    second=value    # 命名参数语法
+</code></pre>
+<h3>将变量文件实现为类</h3>
+<p>变量文件也可以实现为类。</p>
+<h4>实现</h4>
+<p>由于变量文件始终使用文件系统路径导入，类名必须与其所在模块名相同。</p>
+<p>框架会使用无参数创建类的实例，变量从实例中获取。与模块类似，变量可以直接定义为实例的属性，也可以从特殊的 <code>get_variables</code> 方法获取。</p>
+<p>当变量直接定义在实例中时，所有包含可调用值的属性会被忽略，以避免从实例可能拥有的方法中创建变量。如果确实需要可调用的变量，需要使用其他方式创建变量文件。</p>
+<h4>示例</h4>
+<p>第一个示例从属性创建变量。它从类属性创建 <code>${VARIABLE}</code> 和 <code>@{LIST}</code>，从实例属性创建 <code>${ANOTHER VARIABLE}</code>：</p>
+<pre><code class="language-py">class StaticExample:
+    variable = 'value'
+    LIST__list = [1, 2, 3]
+    _not_variable = 'starts with an underscore'
+
+    def __init__(self):
+        self.another_variable = 'another value'
+</code></pre>
+<p>第二个示例使用动态方式获取变量。它只创建一个变量 <code>${DYNAMIC VARIABLE}</code>：</p>
+<pre><code class="language-py">class DynamicExample:
+
+    def get_variables(self, *args):
+        return {'dynamic variable': ' '.join(args)}
+</code></pre>
+<h3>YAML 变量文件</h3>
+<p>变量文件也可以实现为 <a href="https://yaml.org">YAML</a> 文件。YAML 是一种数据序列化语言，语法简单且对人类友好，同时也易于机器解析。以下示例展示了一个简单的 YAML 文件：</p>
+<pre><code class="language-yaml">string:   Hello, world!
+integer:  42
+list:
+  - one
+  - two
+dict:
+  one: yksi
+  two: kaksi
+  with spaces: kolme
+</code></pre>
+<p>YAML 变量文件可以与普通变量文件完全相同地使用：通过命令行的 <code>--variablefile</code> 选项、Settings section 中的 <code>Variables</code> 设置，以及 <code>Import Variables</code> 关键字动态导入。它们通过扩展名自动识别，扩展名必须是 <code>.yaml</code> 或 <code>.yml</code>。如果导入上面的 YAML 文件，它将创建与以下 Variables section 完全相同的变量：</p>
+<pre><code class="language-markdown">*** Variables ***
+${STRING}     Hello, world!
+${INTEGER}    ${42}
+@{LIST}       one         two
+&amp;{DICT}       one=yksi    two=kaksi    with spaces=kolme
+</code></pre>
+<p>用作变量文件的 YAML 文件在顶层必须始终是映射。如上例所示，映射中的键和值分别成为变量名和值。变量值可以是 YAML 语法支持的任何数据类型。如果名称或值包含非 ASCII 字符，YAML 变量文件必须使用 UTF-8 编码。</p>
+<p>用作值的映射会自动转换为 Variables section 中创建字典时使用的特殊字典。这些字典的值可以通过属性访问，如 <code>${DICT.one}</code>（前提是名称作为 Python 属性名是合法的）。如果名称包含空格或不是合法的属性名，始终可以使用 <code>${DICT}[with spaces]</code> 语法访问字典值。</p>
+<blockquote>
+<p>在 Robot Framework 中使用 YAML 文件需要安装 <a href="http://pyyaml.org">PyYAML</a> 模块。通常可以通过 pip 安装：<code>pip install pyyaml</code>。</p>
+</blockquote>
+<h3>JSON 变量文件</h3>
+<p>变量文件也可以实现为 <a href="https://json.org">JSON</a> 文件。与上一节讨论的 YAML 类似，JSON 也是一种面向人类和机器的数据序列化格式。它基于 JavaScript 语法，虽然不如 YAML 对人类友好，但仍然相对容易理解和修改。以下示例包含与前面 YAML 示例完全相同的数据：</p>
+<pre><code class="language-json">{
+    &quot;string&quot;: &quot;Hello, world!&quot;,
+    &quot;integer&quot;: 42,
+    &quot;list&quot;: [
+        &quot;one&quot;,
+        &quot;two&quot;
+    ],
+    &quot;dict&quot;: {
+        &quot;one&quot;: &quot;yksi&quot;,
+        &quot;two&quot;: &quot;kaksi&quot;,
+        &quot;with spaces&quot;: &quot;kolme&quot;
+    }
+}
+</code></pre>
+<p>JSON 变量文件通过 <code>.json</code> 扩展名自动识别，使用方式与 YAML 变量文件完全相同。它们在结构、编码等方面也有完全相同的要求。与 YAML 不同的是，Python 原生支持 JSON，因此不需要安装额外的模块。</p>
+<blockquote>
+<p>JSON 变量文件支持是 Robot Framework 6.1 的新功能。</p>
+</blockquote>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/03/31/2-7-robotframework-new-tutorial-create-user-keywords/">
+          Robot Framework 新版教程 - 创建用户关键字
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/02/2-9-robotframework-new-tutorial-control-structures/">
+          Robot Framework 新版教程 - 控制结构
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>
