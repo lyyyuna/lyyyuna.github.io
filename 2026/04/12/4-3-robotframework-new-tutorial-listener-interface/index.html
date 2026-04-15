@@ -1,0 +1,914 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 监听器接口</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 监听器接口
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 20</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>监听器接口</h2>
+<p>Robot Framework 的监听器接口（Listener interface）提供了一种强大的机制，用于在执行过程中获取通知、检查和修改数据及结果。监听器在例如测试套件、测试用例和关键字开始和结束时被调用，在输出文件准备就绪时被调用，以及在整个执行结束时被调用。典型的使用场景包括：与外部测试管理系统通信、在测试失败时发送消息，以及在执行过程中修改测试。</p>
+<p>监听器以类或模块的形式实现，其中包含特定的方法。监听器可以<a href="#%E4%BB%8E%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%B3%A8%E5%86%8C%E7%9B%91%E5%90%AC%E5%99%A8">从命令行启用</a>，也可以<a href="#%E5%BA%93%E4%BD%9C%E4%B8%BA%E7%9B%91%E5%90%AC%E5%99%A8">由库注册</a>。前者在整个执行过程中处于活动状态，而后者仅在执行导入了注册它们的库的测试套件时才处于活动状态。</p>
+<p>目前有两个受支持的监听器接口版本：<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-2">监听器版本 2</a> 和<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-3">监听器版本 3</a>。它们大部分方法相同，但这些方法被调用时传入的参数不同。较新的监听器版本 3 更强大，通常推荐使用。</p>
+<h2>监听器结构</h2>
+<p>监听器以模块或类的形式实现，与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#creating-test-library-class-or-module">创建测试库</a>类似。监听器可以实现特定名称的钩子方法，具体取决于它们对哪些事件感兴趣。例如，如果监听器想在测试开始时获取通知，可以实现 <code>start_test</code> 方法。如后续章节所述，不同的监听器版本拥有略有不同的可用方法集合，并且调用时传入的参数也不同。</p>
+<pre><code class="language-py"># 以模块形式实现的监听器，使用监听器 API 版本 3。
+
+def start_suite(data, result):
+    print(f&quot;Suite '{data.name}' starting.&quot;)
+
+def end_test(data, result):
+    print(f&quot;Test '{result.name}' ended with status {result.status}.&quot;)
+</code></pre>
+<p>监听器不需要实现任何显式接口，只需实现所需的方法即可自动识别。不过，可以使用基类 <a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.api.interfaces.html#robot.api.interfaces.ListenerV2">robot.api.interfaces.ListenerV2</a> 和 <a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.api.interfaces.html#robot.api.interfaces.ListenerV3">robot.api.interfaces.ListenerV3</a> 来在编辑器中获得方法名补全、类型提示等功能。</p>
+<pre><code class="language-py"># 与上面的例子相同，但使用了可选的基类和类型提示。
+
+from robot import result, running
+from robot.api.interfaces import ListenerV3
+
+
+class Example(ListenerV3):
+
+    def start_suite(self, data: running.TestSuite, result: result.TestSuite):
+        print(f&quot;Suite '{data.name}' starting.&quot;)
+
+    def end_test(self, data: running.TestCase, result: result.TestCase):
+        print(f&quot;Test '{result.name}' ended with status {result.status}.&quot;)
+</code></pre>
+<blockquote>
+<p>可选的监听器基类是 Robot Framework 6.1 中新增的。</p>
+</blockquote>
+<p>除了使用 &quot;snake case&quot;（如 <code>start_test</code>）来命名监听器方法外，还可以使用 &quot;camel case&quot;（如 <code>startTest</code>）。这种支持是在 Robot Framework 可以运行在 Jython 上并使用 Java 实现监听器时添加的。为了向后兼容而保留了这种方式，但不推荐在新的监听器中使用。</p>
+<h2>监听器接口版本</h2>
+<p>目前有两个受支持的监听器接口版本，版本号分别为 2 和 3。监听器可以通过设置 <code>ROBOT_LISTENER_API_VERSION</code> 属性的值为 2 或 3 来指定使用哪个版本。从 Robot Framework 7.0 开始，如果未指定版本，默认使用监听器版本 3。</p>
+<p><a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-2">监听器版本 2</a> 和<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-3">监听器版本 3</a> 大部分方法相同，但传递给这些方法的参数不同。传递给监听器版本 2 方法的参数是包含执行信息的字符串和字典。这些信息可以被检查和转发，但无法直接修改。监听器版本 3 的方法获取的是 Robot Framework 自身使用的模型对象，这些模型对象既可以被检查也可以被修改。</p>
+<p>监听器版本 3 比旧版的监听器版本 2 更强大，通常推荐使用。</p>
+<h3>监听器版本 2</h3>
+<p>使用监听器 API 版本 2 的监听器在执行过程中会收到各种事件的通知，但它们无法访问实际执行的测试，因此不能直接影响执行或创建的结果。</p>
+<p>监听器 API 版本 2 中的方法列在下面的表格中，也列在可选基类 <a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.api.interfaces.html#robot.api.interfaces.ListenerV2">ListenerV2</a> 的 API 文档中。所有与测试执行进度相关的方法都具有相同的签名 <code>method(name, attributes)</code>，其中 <code>attributes</code> 是一个包含事件详细信息的字典。监听器方法可以自由处理接收到的信息，但无法直接修改它。如果需要修改，可以改用<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-3">监听器版本 3</a>。</p>
+<p><strong>监听器 API 2 中的方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start_suite</td>
+<td>name, attributes</td>
+<td>当测试套件开始时调用。属性字典的内容：<code>id</code>：套件 id。顶层套件为 <code>s1</code>，其第一个子套件为 <code>s1-s1</code>，第二个子套件为 <code>s1-s2</code>，依此类推。<code>longname</code>：包含父套件的套件名称。<code>doc</code>：套件文档。<code>metadata</code>：<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#free-suite-metadata">自由套件元数据</a>，以字典形式提供。<code>source</code>：创建该套件的文件/目录的绝对路径。<code>suites</code>：该套件直接子套件的名称列表。<code>tests</code>：该套件中测试用例的名称列表，不包括子套件中的测试用例。<code>totaltests</code>：该套件及其所有子套件中测试用例的总数，以整数形式提供。<code>starttime</code>：套件执行开始时间。</td>
+</tr>
+<tr>
+<td>end_suite</td>
+<td>name, attributes</td>
+<td>当测试套件结束时调用。属性字典的内容：<code>id</code>：同 <code>start_suite</code>。<code>longname</code>：同 <code>start_suite</code>。<code>doc</code>：同 <code>start_suite</code>。<code>metadata</code>：同 <code>start_suite</code>。<code>source</code>：同 <code>start_suite</code>。<code>starttime</code>：同 <code>start_suite</code>。<code>endtime</code>：套件执行结束时间。<code>elapsedtime</code>：总执行时间（毫秒），以整数形式提供。<code>status</code>：套件状态，字符串 <code>PASS</code>、<code>FAIL</code> 或 <code>SKIP</code>。<code>statistics</code>：套件统计信息（套件中通过和失败的测试数量），以字符串形式提供。<code>message</code>：如果套件的 setup 或 teardown 失败则为错误消息，否则为空。</td>
+</tr>
+<tr>
+<td>start_test</td>
+<td>name, attributes</td>
+<td>当测试用例开始时调用。属性字典的内容：<code>id</code>：测试 id，格式如 <code>s1-s2-t2</code>，开头部分为父套件 id，最后部分表示该套件中的测试索引。<code>longname</code>：包含父套件的测试名称。<code>originalname</code>：测试名称，其中可能的变量未解析。RF 3.2 中新增。<code>doc</code>：测试文档。<code>tags</code>：测试 tag，以字符串列表形式提供。<code>template</code>：用于测试的模板名称。如果测试未使用模板，则为空字符串。<code>source</code>：测试用例源文件的绝对路径。RF 4.0 中新增。<code>lineno</code>：测试在源文件中的起始行号。RF 3.2 中新增。<code>starttime</code>：测试执行开始时间。</td>
+</tr>
+<tr>
+<td>end_test</td>
+<td>name, attributes</td>
+<td>当测试用例结束时调用。属性字典的内容：<code>id</code>：同 <code>start_test</code>。<code>longname</code>：同 <code>start_test</code>。<code>originalname</code>：同 <code>start_test</code>。<code>doc</code>：同 <code>start_test</code>。<code>tags</code>：同 <code>start_test</code>。<code>template</code>：同 <code>start_test</code>。<code>source</code>：同 <code>start_test</code>。<code>lineno</code>：同 <code>start_test</code>。<code>starttime</code>：同 <code>start_test</code>。<code>endtime</code>：测试执行结束时间。<code>elapsedtime</code>：总执行时间（毫秒），以整数形式提供。<code>status</code>：测试状态，字符串 <code>PASS</code>、<code>FAIL</code> 或 <code>SKIP</code>。<code>message</code>：状态消息，通常为错误消息或空字符串。</td>
+</tr>
+<tr>
+<td>start_keyword</td>
+<td>name, attributes</td>
+<td>当关键字或控制结构（如 <code>IF/ELSE</code> 或 <code>TRY/EXCEPT</code>）开始时调用。对于关键字，<code>name</code> 是包含可能的库或资源名称前缀的完整关键字名称，如 <code>MyLibrary.Example Keyword</code>。对于控制结构，<code>name</code> 包含参数的字符串表示。关键字和控制结构共享大部分属性，但控制结构可能根据其 <code>type</code> 有额外的属性。<strong>共享属性：</strong> <code>type</code>：指定开始项类型的字符串。可能的值为：<code>KEYWORD</code>、<code>SETUP</code>、<code>TEARDOWN</code>、<code>FOR</code>、<code>WHILE</code>、<code>ITERATION</code>、<code>IF</code>、<code>ELSE IF</code>、<code>ELSE</code>、<code>TRY</code>、<code>EXCEPT</code>、<code>FINALLY</code>、<code>VAR</code>、<code>RETURN</code>、<code>BREAK</code>、<code>CONTINUE</code> 和 <code>ERROR</code>。所有类型值在 RF 4.0 中发生了变化，RF 5.0 中 <code>FOR ITERATION</code> 更改为 <code>ITERATION</code>。<code>kwname</code>：不带库或资源前缀的关键字名称。对于控制结构是参数的字符串表示。<code>libname</code>：关键字所属的库或资源文件名称。对于测试用例文件中的用户关键字和控制结构，为空字符串。<code>doc</code>：关键字文档。<code>args</code>：关键字参数，以字符串列表形式提供。<code>assign</code>：关键字返回值赋值的变量名列表。<code>tags</code>：<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#keyword-tags">关键字 tag</a>，以字符串列表形式提供。<code>source</code>：使用该关键字的文件的绝对路径。RF 4.0 中新增。<code>lineno</code>：使用该关键字的行号。通常为整数，但如果关键字由监听器执行，则可能为 <code>None</code>。RF 4.0 中新增。<code>status</code>：关键字初始状态。如果关键字不执行（例如由于先前的失败），则为 <code>NOT RUN</code>，否则为 <code>NOT SET</code>。RF 4.0 中新增。<code>starttime</code>：关键字执行开始时间。<strong><code>FOR</code> 类型的额外属性：</strong> <code>variables</code>：每次循环迭代的赋值变量，以字符串列表形式提供。<code>flavor</code>：循环类型（例如 <code>IN RANGE</code>）。<code>values</code>：被遍历的值列表，以字符串列表形式提供。<code>start</code>：起始配置。仅用于 <code>IN ENUMERATE</code> 循环。RF 6.1 中新增。<code>mode</code>：模式配置。仅用于 <code>IN ZIP</code> 循环。RF 6.1 中新增。<code>fill</code>：填充值配置。仅用于 <code>IN ZIP</code> 循环。RF 6.1 中新增。<strong><code>FOR</code> 循环的 <code>ITERATION</code> 类型的额外属性：</strong> <code>variables</code>：一次 <code>FOR</code> 循环迭代中变量及其内容的字符串表示，以字典形式提供。<strong><code>WHILE</code> 类型的额外属性：</strong> <code>condition</code>：循环条件。<code>limit</code>：最大迭代限制。<code>on_limit</code>：超过限制时的行为。有效值为 <code>pass</code> 和 <code>fail</code>。RF 7.0 中新增。<code>on_limit_message</code>：达到 WHILE 循环限制时引发的自定义错误。RF 6.1 中新增。<strong><code>IF</code> 和 <code>ELSE IF</code> 类型的额外属性：</strong> <code>condition</code>：正在求值的条件表达式。<code>ELSE IF</code> 的支持在 RF 6.1 中新增。<strong><code>EXCEPT</code> 类型的额外属性：</strong> <code>patterns</code>：正在匹配的异常模式，以字符串列表形式提供。<code>pattern_type</code>：模式匹配的类型（例如 <code>GLOB</code>）。<code>variable</code>：包含捕获异常的变量。<strong><code>RETURN</code> 类型的额外属性：</strong> <code>values</code>：从关键字返回的值，以字符串列表形式提供。<strong><code>VAR</code> 类型的额外属性：</strong> <code>name</code>：变量名。<code>value</code>：变量值。标量变量为字符串，其他情况为列表。<code>scope</code>：变量作用域（例如 <code>GLOBAL</code>），以字符串形式提供。控制结构的额外属性通常在 RF 6.0 中新增。<code>VAR</code> 在 RF 7.0 中新增。</td>
+</tr>
+<tr>
+<td>end_keyword</td>
+<td>name, attributes</td>
+<td>当关键字或控制结构结束时调用。<code>name</code> 是包含可能的库或资源名称前缀的完整关键字名称，例如 <code>MyLibrary.Example Keyword</code>。控制结构有额外的属性，这些属性根据 <code>type</code> 属性而变化。所有可能属性的描述请参阅 <code>start_keyword</code> 部分。属性字典的内容：<code>type</code>：同 <code>start_keyword</code>。<code>kwname</code>：同 <code>start_keyword</code>。<code>libname</code>：同 <code>start_keyword</code>。<code>doc</code>：同 <code>start_keyword</code>。<code>args</code>：同 <code>start_keyword</code>。<code>assign</code>：同 <code>start_keyword</code>。<code>tags</code>：同 <code>start_keyword</code>。<code>source</code>：同 <code>start_keyword</code>。<code>lineno</code>：同 <code>start_keyword</code>。<code>starttime</code>：同 <code>start_keyword</code>。<code>endtime</code>：关键字执行结束时间。<code>elapsedtime</code>：总执行时间（毫秒），以整数形式提供。<code>status</code>：关键字状态，字符串 <code>PASS</code>、<code>FAIL</code>、<code>SKIP</code> 或 <code>NOT RUN</code>。<code>SKIP</code> 和 <code>NOT RUN</code> 在 RF 4.0 中新增。</td>
+</tr>
+<tr>
+<td>log_message</td>
+<td>message</td>
+<td>当执行的关键字写入日志消息时调用。<code>message</code> 是一个字典，包含以下内容：<code>message</code>：消息内容。<code>level</code>：记录消息时使用的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-levels">日志级别</a>。<code>timestamp</code>：消息创建时间，格式为 <code>YYYY-MM-DD hh:mm:ss.mil</code>。<code>html</code>：字符串 <code>yes</code> 或 <code>no</code>，表示是否应将消息解释为 HTML。如果消息级别低于当前的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-levels">阈值级别</a>，则不会调用此方法。</td>
+</tr>
+<tr>
+<td>message</td>
+<td>message</td>
+<td>当框架自身写入 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#syslog">syslog</a> 消息时调用。<code>message</code> 是与 <code>log_message</code> 方法中内容相同的字典。</td>
+</tr>
+<tr>
+<td>library_import</td>
+<td>name, attributes</td>
+<td>当库被导入时调用。<code>name</code> 是导入的库的名称。如果在使用 <code>AS</code> 导入时给库指定了自定义名称，则 <code>name</code> 是指定的别名。属性字典的内容：<code>args</code>：传递给库的参数，以列表形式提供。<code>originalname</code>：如果使用 <code>AS</code> 给库设置了别名，则为原始库名称，否则同 <code>name</code>。<code>source</code>：库源文件的绝对路径。如果获取库的源文件失败，则为空字符串。<code>importer</code>：导入该库的文件的绝对路径。导入 <a href="https://robotframework.org/robotframework/latest/libraries/BuiltIn.html">BuiltIn</a> 以及使用 <code>Import Library</code> 关键字时为 <code>None</code>。</td>
+</tr>
+<tr>
+<td>resource_import</td>
+<td>name, attributes</td>
+<td>当资源文件被导入时调用。<code>name</code> 是导入的资源文件名称（不含文件扩展名）。属性字典的内容：<code>source</code>：导入的资源文件的绝对路径。<code>importer</code>：导入该资源文件的文件的绝对路径。使用 <code>Import Resource</code> 关键字时为 <code>None</code>。</td>
+</tr>
+<tr>
+<td>variables_import</td>
+<td>name, attributes</td>
+<td>当变量文件被导入时调用。<code>name</code> 是导入的变量文件名称（含文件扩展名）。属性字典的内容：<code>args</code>：传递给变量文件的参数，以列表形式提供。<code>source</code>：导入的变量文件的绝对路径。<code>importer</code>：导入该变量文件的文件的绝对路径。使用 <code>Import Variables</code> 关键字时为 <code>None</code>。</td>
+</tr>
+<tr>
+<td>output_file</td>
+<td>path</td>
+<td>当写入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#output-file">输出文件</a>完成时调用。<code>path</code> 是文件的绝对路径（字符串形式），如果禁用了创建输出文件，则为字符串 <code>None</code>。</td>
+</tr>
+<tr>
+<td>log_file</td>
+<td>path</td>
+<td>当写入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-file">日志文件</a>完成时调用。<code>path</code> 是文件的绝对路径（字符串形式）。如果禁用了创建日志文件，则不调用此方法。</td>
+</tr>
+<tr>
+<td>report_file</td>
+<td>path</td>
+<td>当写入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#report-file">报告文件</a>完成时调用。<code>path</code> 是文件的绝对路径（字符串形式）。如果禁用了创建报告文件，则不调用此方法。</td>
+</tr>
+<tr>
+<td>xunit_file</td>
+<td>path</td>
+<td>当写入 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#xunit-file">xunit 文件</a>完成时调用。<code>path</code> 是文件的绝对路径（字符串形式）。仅在启用了创建 xunit 文件时才调用。</td>
+</tr>
+<tr>
+<td>debug_file</td>
+<td>path</td>
+<td>当写入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#debug-file">调试文件</a>完成时调用。<code>path</code> 是文件的绝对路径（字符串形式）。仅在启用了创建调试文件时才调用。</td>
+</tr>
+<tr>
+<td>close</td>
+<td></td>
+<td>当整个测试执行结束时调用。对于<a href="#%E5%BA%93%E4%BD%9C%E4%B8%BA%E7%9B%91%E5%90%AC%E5%99%A8">库监听器</a>，当库超出作用域时调用。</td>
+</tr>
+</tbody>
+</table>
+<h3>监听器版本 3</h3>
+<p>监听器版本 3 与<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-2">监听器版本 2</a> 大部分方法相同，但与测试执行相关的方法参数不同。这些方法获取的是 Robot Framework 自身使用的实际运行和结果模型对象，监听器既可以查询所需信息，也可以即时修改模型对象。</p>
+<blockquote>
+<p>对数据的修改也可以通过<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#pre-run-modifier">预执行修改器</a>来完成。使用监听器的主要好处是可以根据执行过程中发生的情况动态地进行修改。另一个区别是，与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#selecting-test-cases">选择测试用例</a>相关的命令行选项会影响预执行修改器添加的测试，但不影响监听器添加的测试。</p>
+</blockquote>
+<p>监听器版本 3 在 Robot Framework 7.0 中得到了大幅增强，增加了与关键字和控制结构相关的方法。在 Robot Framework 7.1 中进一步增强，增加了与库、资源文件和变量文件导入相关的方法。</p>
+<p>监听器版本 3 对库关键字、用户关键字和所有控制结构有单独的方法。如果需要监听所有与关键字相关的事件，可以实现 <code>start_keyword</code> 和 <code>end_keyword</code>。除此之外，还可以实现 <code>start_body_item</code> 和 <code>end_body_item</code> 来获取所有关键字和控制结构相关的通知。如果实现了更具体的方法（如 <code>start_library_keyword</code> 或 <code>end_if</code>），则不会调用这些更高层级的监听器方法。</p>
+<p>监听器 API 版本 3 中的方法列在下面的表格中，也列在可选基类 <a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.api.interfaces.html#robot.api.interfaces.ListenerV3">ListenerV3</a> 的 API 文档中。</p>
+<p><strong>监听器 API 3 中的方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start_suite</td>
+<td>data, result</td>
+<td>当测试套件开始时调用。<code>data</code> 和 <code>result</code> 分别是代表<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.TestSuite">被执行的测试套件</a>和<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.result.html#robot.result.model.TestSuite">其执行结果</a>的模型对象。</td>
+</tr>
+<tr>
+<td>end_suite</td>
+<td>data, result</td>
+<td>当测试套件结束时调用。参数同 <code>start_suite</code>。</td>
+</tr>
+<tr>
+<td>start_test</td>
+<td>data, result</td>
+<td>当测试用例开始时调用。<code>data</code> 和 <code>result</code> 分别是代表<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.TestCase">被执行的测试用例</a>和<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.result.html#robot.result.model.TestCase">其执行结果</a>的模型对象。</td>
+</tr>
+<tr>
+<td>end_test</td>
+<td>data, result</td>
+<td>当测试用例结束时调用。参数同 <code>start_test</code>。</td>
+</tr>
+<tr>
+<td>start_keyword</td>
+<td>data, result</td>
+<td>当关键字开始时调用。<code>data</code> 和 <code>result</code> 分别是代表<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.Keyword">被执行的关键字调用</a>和<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.result.html#robot.result.model.Keyword">其执行结果</a>的模型对象。默认情况下，此方法在用户关键字、库关键字和无效关键字调用时被调用。如果实现了更具体的 <code>start_user_keyword</code>、<code>start_library_keyword</code> 或 <code>start_invalid_keyword</code> 方法，则不会调用此方法。</td>
+</tr>
+<tr>
+<td>end_keyword</td>
+<td>data, result</td>
+<td>当关键字结束时调用。参数和其他语义同 <code>start_keyword</code>。</td>
+</tr>
+<tr>
+<td>start_user_keyword</td>
+<td>data, implementation, result</td>
+<td>当用户关键字开始时调用。<code>data</code> 和 <code>result</code> 同 <code>start_keyword</code>，<code>implementation</code> 是实际执行的<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.UserKeyword">用户关键字</a>。如果实现了此方法，则用户关键字不会调用 <code>start_keyword</code>。</td>
+</tr>
+<tr>
+<td>end_user_keyword</td>
+<td>data, implementation, result</td>
+<td>当用户关键字结束时调用。参数和其他语义同 <code>start_user_keyword</code>。</td>
+</tr>
+<tr>
+<td>start_library_keyword</td>
+<td>data, implementation, result</td>
+<td>当库关键字开始时调用。<code>data</code> 和 <code>result</code> 同 <code>start_keyword</code>，<code>implementation</code> 代表执行的<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.LibraryKeyword">库关键字</a>。如果实现了此方法，则库关键字不会调用 <code>start_keyword</code>。</td>
+</tr>
+<tr>
+<td>end_library_keyword</td>
+<td>data, implementation, result</td>
+<td>当库关键字结束时调用。参数和其他语义同 <code>start_library_keyword</code>。</td>
+</tr>
+<tr>
+<td>start_invalid_keyword</td>
+<td>data, implementation, result</td>
+<td>当无效的关键字调用开始时调用。<code>data</code> 和 <code>result</code> 同 <code>start_keyword</code>，<code>implementation</code> 代表<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.InvalidKeyword">无效的关键字调用</a>。可能是关键字未找到、有多个匹配，或者关键字调用本身无效。如果实现了此方法，则无效的关键字调用不会调用 <code>start_keyword</code>。</td>
+</tr>
+<tr>
+<td>end_invalid_keyword</td>
+<td>data, implementation, result</td>
+<td>当无效的关键字调用结束时调用。参数和其他语义同 <code>start_invalid_keyword</code>。</td>
+</tr>
+<tr>
+<td>start_for, start_for_iteration, start_while, start_while_iteration, start_if, start_if_branch, start_try, start_try_branch, start_group, start_var, start_continue, start_break, start_return</td>
+<td>data, result</td>
+<td>当控制结构开始时调用。更多信息请参阅可选基类 <a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.api.interfaces.html#robot.api.interfaces.ListenerV3">ListenerV3</a> 的文档和类型提示。</td>
+</tr>
+<tr>
+<td>end_for, end_for_iteration, end_while, end_while_iteration, end_if, end_if_branch, end_try, end_try_branch, end_group, end_var, end_continue, end_break, end_return</td>
+<td>data, result</td>
+<td>当控制结构结束时调用。更多信息请参阅可选基类 <a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.api.interfaces.html#robot.api.interfaces.ListenerV3">ListenerV3</a> 的文档和类型提示。</td>
+</tr>
+<tr>
+<td>start_error</td>
+<td>data, result</td>
+<td>当无效语法开始时调用。</td>
+</tr>
+<tr>
+<td>end_error</td>
+<td>data, result</td>
+<td>当无效语法结束时调用。</td>
+</tr>
+<tr>
+<td>start_body_item</td>
+<td>data, result</td>
+<td>当关键字或控制结构开始时调用，除非实现了更具体的方法（如 <code>start_keyword</code> 或 <code>start_if</code>）。</td>
+</tr>
+<tr>
+<td>end_body_item</td>
+<td>data, result</td>
+<td>当关键字或控制结构结束时调用，除非实现了更具体的方法（如 <code>end_keyword</code> 或 <code>end_if</code>）。</td>
+</tr>
+<tr>
+<td>log_message</td>
+<td>message</td>
+<td>当执行的关键字写入日志消息时调用。<code>message</code> 是代表<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.result.html#robot.result.model.Message">已记录消息</a>的模型对象。如果消息级别低于当前的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-levels">阈值级别</a>，则不会调用此方法。</td>
+</tr>
+<tr>
+<td>message</td>
+<td>message</td>
+<td>当框架自身写入 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#syslog">syslog</a> 消息时调用。<code>message</code> 与 <code>log_message</code> 中的对象相同。</td>
+</tr>
+<tr>
+<td>library_import</td>
+<td>library, importer</td>
+<td>当库被导入后调用。<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.TestLibrary">library</a> 代表导入的库，可以被检查和修改。<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.Import">importer</a> 包含库被导入位置的信息。</td>
+</tr>
+<tr>
+<td>resource_import</td>
+<td>resource, importer</td>
+<td>当资源文件被导入后调用。<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.ResourceFile">resource</a> 代表导入的资源文件，可以被检查和修改。<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.Import">importer</a> 包含资源文件被导入位置的信息。</td>
+</tr>
+<tr>
+<td>variables_import</td>
+<td>attrs, importer</td>
+<td>当变量文件被导入后调用。<code>attrs</code> 以字典形式包含导入的变量文件的信息，可以被检查，但修改不会产生效果。<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.Import">importer</a> 包含变量文件被导入位置的信息。此方法将来会被修改，<code>attrs</code> 字典将被替换为代表导入的变量文件的对象。</td>
+</tr>
+<tr>
+<td>output_file</td>
+<td>path</td>
+<td>当写入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#output-file">输出文件</a>完成时调用。<code>path</code> 是文件的绝对路径（<code>pathlib.Path</code> 对象），如果禁用了创建输出文件，则为 <code>None</code> 对象。</td>
+</tr>
+<tr>
+<td>log_file</td>
+<td>path</td>
+<td>当写入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-file">日志文件</a>完成时调用。<code>path</code> 是文件的绝对路径（<code>pathlib.Path</code> 对象）。如果禁用了创建日志文件，则不调用此方法。</td>
+</tr>
+<tr>
+<td>report_file</td>
+<td>path</td>
+<td>当写入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#report-file">报告文件</a>完成时调用。<code>path</code> 是文件的绝对路径（<code>pathlib.Path</code> 对象）。如果禁用了创建报告文件，则不调用此方法。</td>
+</tr>
+<tr>
+<td>xunit_file</td>
+<td>path</td>
+<td>当写入 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#xunit-file">xunit 文件</a>完成时调用。<code>path</code> 是文件的绝对路径（<code>pathlib.Path</code> 对象）。仅在启用了创建 xunit 文件时才调用。</td>
+</tr>
+<tr>
+<td>debug_file</td>
+<td>path</td>
+<td>当写入<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#debug-file">调试文件</a>完成时调用。<code>path</code> 是文件的绝对路径（<code>pathlib.Path</code> 对象）。仅在启用了创建调试文件时才调用。</td>
+</tr>
+<tr>
+<td>close</td>
+<td></td>
+<td>当整个测试执行结束时调用。对于<a href="#%E5%BA%93%E4%BD%9C%E4%B8%BA%E7%9B%91%E5%90%AC%E5%99%A8">库监听器</a>，当库超出作用域时调用。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>与关键字和控制结构相关的方法在 Robot Framework 7.0 中新增。</p>
+</blockquote>
+<blockquote>
+<p>与库、资源文件和变量文件导入相关的方法在 Robot Framework 7.1 中新增。</p>
+</blockquote>
+<blockquote>
+<p>在 Robot Framework 7.0 之前，传递给结果文件相关的监听器版本 3 方法的路径是字符串。</p>
+</blockquote>
+<h2>启用监听器</h2>
+<h3>从命令行注册监听器</h3>
+<p>需要在整个执行过程中处于活动状态的监听器必须从命令行启用。这通过 <code>--listener</code> 选项完成，将监听器的名称作为参数传递给它。监听器名称取自实现监听器的类或模块的名称，与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#library-name">库名称</a>取自实现库的类或模块的方式相同。指定的监听器必须位于导入测试库时搜索的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#module-search-path">模块搜索路径</a>中。除了通过名称注册监听器外，还可以提供监听器文件的绝对路径或相对路径，与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#using-physical-path-to-library">测试库</a>的方式类似。可以通过多次使用此选项来启用多个监听器：</p>
+<pre><code class="language-bash">robot --listener MyListener tests.robot
+robot --listener path/to/MyListener.py tests.robot
+robot --listener module.Listener --listener AnotherListener tests.robot
+</code></pre>
+<p>也可以从命令行向监听器类传递参数。参数在监听器名称（或路径）之后使用冒号（<code>:</code>）作为分隔符指定。如果监听器以 Windows 绝对路径形式给出，驱动器盘符后的冒号不会被视为分隔符。此外，可以使用分号（<code>;</code>）作为替代的参数分隔符。这在监听器参数本身包含冒号时很有用，但在类 UNIX 操作系统上需要用引号将整个值括起来：</p>
+<pre><code class="language-bash">robot --listener listener.py:arg1:arg2 tests.robot
+robot --listener &quot;listener.py;arg:with:colons&quot; tests.robot
+robot --listener c:\path\listener.py;d:\first\arg;e:\second\arg tests.robot
+</code></pre>
+<p>除了逐个传递位置参数外，还可以使用<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#named-argument-syntax">命名参数语法</a>传递参数，与使用关键字时的方式相同：</p>
+<pre><code class="language-bash">robot --listener listener.py:name=value tests.robot
+robot --listener &quot;listener.py;name=value:with:colons;second=argument&quot; tests.robot
+</code></pre>
+<p>监听器参数会基于<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#specifying-argument-types-using-function-annotations">类型提示</a>和<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#implicit-argument-types-based-on-default-values">默认值</a>，使用与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#supported-conversions">关键字相同的规则</a>进行自动转换。例如，这个监听器</p>
+<pre><code class="language-py">class Listener:
+
+    def __init__(self, port: int, log=True):
+        self.port = post
+        self.log = log
+</code></pre>
+<p>可以这样使用：</p>
+<pre><code class="language-bash">robot --listener Listener:8270:false
+</code></pre>
+<p>第一个参数会基于类型提示转换为整数，第二个参数会基于默认值转换为布尔值。</p>
+<blockquote>
+<p>命名参数语法和参数转换在 Robot Framework 4.0 中新增。</p>
+</blockquote>
+<h3>库作为监听器</h3>
+<p>有时<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#creating-test-libraries">测试库</a>获取测试执行的通知也是有用的。这使得它们可以在测试套件或整个测试执行结束时自动执行某些清理活动。</p>
+<h4>注册监听器</h4>
+<p>测试库可以通过使用 <code>ROBOT_LIBRARY_LISTENER</code> 属性来注册监听器。该属性的值应该是要使用的监听器的实例。它可以是一个完全独立的监听器，也可以是库本身充当监听器。在后一种情况下，为了避免监听器方法被暴露为关键字，可以在方法名前加上下划线前缀。例如，可以使用 <code>_end_suite</code> 而不是 <code>end_suite</code>。</p>
+<p>以下示例分别展示了使用外部监听器和库本身作为监听器：</p>
+<pre><code class="language-py">from listener import Listener
+
+
+class LibraryWithExternalListener:
+    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
+    ROBOT_LIBRARY_LISTENER = Listener()
+
+    def example_keyword(self):
+         ...
+</code></pre>
+<pre><code class="language-py">class LibraryItselfAsListener:
+    ROBOT_LIBRARY_SCOPE = 'SUITE'
+    ROBOT_LISTENER_API_VERSION = 2
+
+    def __init__(self):
+        self.ROBOT_LIBRARY_LISTENER = self
+
+    # 使用 '_' 前缀以避免监听器方法变成关键字。
+    def _end_suite(self, name, attrs):
+        print(f&quot;Suite '{name}' ending with status {attrs['id']}.&quot;)
+
+    def example_keyword(self):
+         ...
+</code></pre>
+<p>如上面第二个例子所示，库监听器可以通过 <code>ROBOT_LISTENER_API_VERSION</code> 属性指定<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E6%8E%A5%E5%8F%A3%E7%89%88%E6%9C%AC">监听器接口版本</a>，与其他监听器完全相同。</p>
+<p>从 Robot Framework 7.0 开始，监听器也可以通过使用字符串 <code>SELF</code>（不区分大小写）来将自身注册为监听器。这在使用 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#library-decorator"><code>@library</code> 装饰器</a>时特别方便：</p>
+<pre><code class="language-py">from robot.api.deco import keyword, library
+
+
+@library(scope='SUITE', listener='SELF')
+class LibraryItselfAsListener:
+
+    # 未指定监听器版本，因此默认使用监听器版本 3。
+    # 使用 @library 装饰器时，关键字必须使用 @keyword 装饰器，
+    # 所以这里不需要使用 '_' 前缀。
+    def end_suite(self, data, result):
+        print(f&quot;Suite '{data.name}' ending with status {result.status}.&quot;)
+
+    @keyword
+    def example_keyword(self):
+         ...
+</code></pre>
+<p>也可以通过将 <code>ROBOT_LIBRARY_LISTENER</code> 的值设为列表来为单个库指定多个监听器：</p>
+<pre><code class="language-py">from listeners import Listener1, Listener2, Listener3
+
+
+class LibraryWithMultipleListeners:
+    ROBOT_LIBRARY_LISTENER = [Listener1(), Listener2(), Listener3()]
+
+    def example_keyword(self):
+         ...
+</code></pre>
+<h4>被调用的监听器方法</h4>
+<p>库监听器会收到导入了使用它们的库的测试套件中所有事件的通知。实际上这意味着与套件、测试、关键字、控制结构和日志消息相关的方法都会被调用。除此之外，<code>close</code> 方法会在库超出作用域时被调用。</p>
+<p>如果库在每次实例化时都创建一个新的监听器实例，则实际使用的监听器实例会根据<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#library-scope">库作用域</a>而改变。</p>
+<h2>监听器调用顺序</h2>
+<p>默认情况下，监听器按照启用的顺序被调用，从命令行注册的监听器在库监听器之前被调用。不过，可以通过将特殊的 <code>ROBOT_LISTENER_PRIORITY</code> 属性设置为整数或浮点值来控制调用顺序。数值越大，监听器的优先级越高，越早被调用。该数值可以是正数或负数，默认为零。</p>
+<p>自定义顺序不影响库监听器的 <code>close</code> 方法。该方法始终在库超出其作用域时被调用。</p>
+<blockquote>
+<p>控制监听器调用顺序在 Robot Framework 7.1 中新增。</p>
+</blockquote>
+<h2>监听器示例</h2>
+<p>本节包含使用监听器接口的示例。前面的示例展示了在执行过程中获取通知，后面的示例展示了修改执行的测试和创建的结果。</p>
+<h3>获取信息</h3>
+<p>第一个示例以 Python 模块的形式实现。它使用<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-2">监听器版本 2</a>，但同样可以使用<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-3">监听器版本 3</a> 来实现。</p>
+<pre><code class="language-py">&quot;&quot;&quot;在测试失败时停止执行的监听器。&quot;&quot;&quot;
+
+ROBOT_LISTENER_API_VERSION = 2
+
+def end_test(name, attrs):
+    if attrs['status'] == 'FAIL':
+        print(f&quot;Test '{name}'&quot; failed: {attrs['message']}&quot;)
+        input(&quot;Press enter to continue.&quot;)
+</code></pre>
+<p>如果将上面的示例保存为 <code>PauseExecution.py</code> 文件，可以像这样从命令行使用：</p>
+<pre><code class="language-bash">robot --listener path/to/PauseExecution.py tests.robot
+</code></pre>
+<p>下一个示例仍然使用监听器版本 2，稍微复杂一些。它将接收到的所有信息写入临时目录中的一个文本文件，没有太多格式化。文件名可以从命令行指定，也有默认值。在实际使用中，通过命令行选项 <code>--debugfile</code> 提供的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#debug-file">调试文件</a>功能可能比这个示例更有用。</p>
+<pre><code class="language-py">import os.path
+import tempfile
+
+
+class Example:
+    ROBOT_LISTENER_API_VERSION = 2
+
+    def __init__(self, file_name='listen.txt'):
+        path = os.path.join(tempfile.gettempdir(), file_name)
+        self.file = open(path, 'w')
+
+    def start_suite(self, name, attrs):
+        self.file.write(&quot;%s '%s'\n&quot; % (name, attrs['doc']))
+
+    def start_test(self, name, attrs):
+        tags = ' '.join(attrs['tags'])
+        self.file.write(&quot;- %s '%s' [ %s ] :: &quot; % (name, attrs['doc'], tags))
+
+    def end_test(self, name, attrs):
+        if attrs['status'] == 'PASS':
+            self.file.write('PASS\n')
+        else:
+            self.file.write('FAIL: %s\n' % attrs['message'])
+
+    def end_suite(self, name, attrs):
+         self.file.write('%s\n%s\n' % (attrs['status'], attrs['message']))
+
+    def close(self):
+         self.file.close()
+</code></pre>
+<h3>修改数据和结果</h3>
+<p>以下示例展示了如何修改执行的测试和套件以及执行结果。所有这些示例都需要使用<a href="#%E7%9B%91%E5%90%AC%E5%99%A8%E7%89%88%E6%9C%AC-3">监听器版本 3</a>。</p>
+<h4>修改执行的套件和测试</h4>
+<p>修改执行内容就像修改传递给监听器方法的代表执行数据的模型对象一样简单。下面的示例展示了向每个执行的套件添加一个新测试，以及向每个测试添加一个新的关键字调用。</p>
+<pre><code class="language-py">def start_suite(data, result):
+    data.tests.create(name='New test')
+
+def start_test(data, result):
+    data.body.create_keyword(name='Log', args=['Keyword added by listener!'])
+</code></pre>
+<p>这个 API 与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#pre-run-modifier">预执行修改器</a> API 非常相似，后者可以在整个测试执行开始之前修改套件和测试。使用监听器 API 的主要好处是可以根据执行结果或其他条件动态地进行修改。这为基于模型的测试等提供了有趣的可能性。</p>
+<p>虽然监听器接口不像预执行修改器 API 那样构建在 Robot Framework 内部的<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#visitor-interface">访问者接口</a>之上，但监听器仍然可以自行使用访问者接口。例如，<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#pre-run-modifier">预执行修改器</a>示例中使用的 <code>SelectEveryXthTest</code> 访问者可以这样使用：</p>
+<pre><code class="language-py">from SelectEveryXthTest import SelectEveryXthTest
+
+
+def start_suite(suite, result):
+    selector = SelectEveryXthTest(x=2)
+    suite.visit(selector)
+</code></pre>
+<h4>访问库或资源文件</h4>
+<p>可以获取关于实际执行的关键字及其所属的库或资源文件的更多信息：</p>
+<pre><code class="language-py">from robot.running import Keyword as KeywordData, LibraryKeyword
+from robot.result import Keyword as KeywordResult
+
+
+def start_library_keyword(data: KeywordData,
+                          implementation: LibraryKeyword,
+                          result: KeywordResult):
+    library = implementation.owner
+    print(f&quot;Keyword '{implementation.name}' is implemented in library &quot;
+          f&quot;'{library.name}' at '{implementation.source}' on line &quot;
+          f&quot;{implementation.lineno}. The library has {library.scope.name} &quot;
+          f&quot;scope and the current instance is {library.instance}.&quot;)
+</code></pre>
+<p>如上面的示例所示，可以获取实际的库实例。这意味着监听器可以检查库状态，也可以修改它。对于用户关键字，甚至可以修改关键字本身，或者通过 <code>owner</code> 资源文件修改资源文件中的任何其他关键字。</p>
+<h4>修改结果</h4>
+<p>测试执行结果可以通过修改传递给监听器方法的结果对象来改变。以下监听器以类的形式实现，并使用了类型提示：</p>
+<pre><code class="language-py">from robot import result, running
+
+
+class ResultModifier:
+
+    def __init__(self, max_seconds: float = 10.0):
+        self.max_seconds = max_seconds
+
+    def start_suite(self, data: running.TestSuite, result: result.TestSuite):
+        result.doc = 'Documentation set by listener.'
+        # 此时关于测试的信息只能通过 data 获取。
+        smoke_tests = [test for test in data.tests if 'smoke' in test.tags]
+        result.metadata['Smoke tests'] = len(smoke_tests)
+
+    def end_test(self, data: running.TestCase, result: result.TestCase):
+        elapsed_seconds = result.elapsed_time.total_seconds()
+        if result.status == 'PASS' and elapsed_seconds &gt; self.max_seconds:
+            result.status = 'FAIL'
+            result.message = 'Test execution took too long.'
+
+    def log_message(self, msg: result.Message):
+        if msg.level == 'WARN' and not msg.html:
+            msg.message = f'&lt;b style=&quot;font-size: 1.5em&quot;&gt;{msg.message}&lt;/b&gt;'
+            msg.html = True
+        if self._message_is_not_relevant(msg.message):
+            msg.message = None
+
+    def _message_is_not_relevant(self, message: str) -&gt; bool:
+        ...
+</code></pre>
+<p>一个限制是无法修改当前测试套件或测试用例的名称，因为在监听器被调用时它已经被写入了 <a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#output-file">output.xml</a> 文件。出于同样的原因，在 <code>end_suite</code> 方法中修改已经完成的测试也不会产生效果。</p>
+<p>在修改日志消息时，可以通过将 <code>message</code> 设置为 <code>None</code> 来完全移除消息，如上面的示例所示。这可以用于移除敏感或不相关的消息，使其在日志文件中不可见。</p>
+<p>这个 API 与<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#pre-rebot-modifier">预 Rebot 修改器</a> API 非常相似，后者可以在生成报告和日志之前修改结果。主要区别是监听器还会修改创建的 <code>output.xml</code> 文件。</p>
+<blockquote>
+<p>通过将消息设置为 <code>None</code> 来完全移除消息在 Robot Framework 7.2 中新增。</p>
+</blockquote>
+<h4>改变关键字和控制结构的状态</h4>
+<p>监听器还可以通过改变执行的关键字和控制结构的状态来影响执行流程。例如，如果监听器将一个通过的关键字的状态改为 FAIL，该关键字将被视为失败，就像它正常失败一样。类似地，可以将通过或失败的关键字的状态改为 SKIP，以使该关键字和整个测试被跳过。也可以通过将状态改为 PASS 来消除失败，但这应该仅在特殊情况下谨慎使用，以避免隐藏真正的失败。</p>
+<p>以下示例通过使执行时间过长的关键字失败来演示如何改变状态。前面的示例对测试有类似的逻辑，但这个监听器在遇到太慢的关键字时还会立即停止执行。如示例所示，监听器不仅可以改变状态，还可以改变错误消息。</p>
+<pre><code class="language-py">from robot import result, running
+
+
+class KeywordPerformanceMonitor:
+
+    def __init__(self, max_seconds: float = 0.1):
+        self.max_seconds = max_seconds
+
+    def end_keyword(self, data: running.Keyword, result: result.Keyword):
+        elapsed_seconds = result.elapsed_time.total_seconds()
+        if result.status == 'PASS' and elapsed_seconds &gt; self.max_seconds:
+            result.status = 'FAIL'
+            result.message = 'Keyword execution took too long.'
+</code></pre>
+<blockquote>
+<p>状态的改变从 Robot Framework 7.1 开始才会影响执行流程。</p>
+</blockquote>
+<h3>更多示例</h3>
+<p>关键字和控制结构相关的监听器版本 3 方法功能非常丰富，在用户指南中无法完全覆盖。更多示例可以参阅以各种方式使用这些方法的<a href="https://github.com/robotframework/robotframework/tree/master/atest/testdata/output/listener_interface/body_items_v3">验收测试</a>。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/11/4-2-robotframework-new-tutorial-remote-library/">
+          Robot Framework 新版教程 - 远程库接口
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/13/4-4-robotframework-new-tutorial-parser-interface/">
+          Robot Framework 新版教程 - 解析器接口
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,754 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 配置执行</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 配置执行
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 16</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>配置执行</h2>
+<p>本节解释可以用于配置<a href="robotframework-new-tutorial-test-execution.html">测试执行</a>或<a href="robotframework-new-tutorial-post-processing.html">后处理输出</a>的各种命令行选项。与生成的<a href="robotframework-new-tutorial-output-files.html">输出文件</a>相关的选项将在下一节讨论。</p>
+<h2>选择要解析的文件</h2>
+<h3>执行单个文件</h3>
+<p>当执行单个文件时，Robot Framework 会尝试解析并运行它们，而不管文件名或扩展名。使用哪个解析器取决于扩展名：</p>
+<ul>
+<li><code>.robot</code> 文件和无法识别的文件使用标准的 <a href="robotframework-new-tutorial-creating-test-data.html">Robot Framework 解析器</a>解析。</li>
+<li><code>.rst</code> 和 <code>.rest</code> 文件使用 <a href="robotframework-new-tutorial-creating-test-data.html">reStructuredText 解析器</a>解析。</li>
+<li><code>.rbt</code> 和 <code>.json</code> 文件使用 <a href="robotframework-new-tutorial-creating-test-data.html">JSON 解析器</a>解析。</li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A7%A3%E6%9E%90%E5%99%A8">自定义解析器</a>支持的文件由匹配的解析器解析。</li>
+</ul>
+<p>示例：</p>
+<pre><code class="language-bash">robot example.robot    # 标准 Robot Framework 解析器。
+robot example.tsv      # 必须兼容标准解析器。
+robot example.rst      # reStructuredText 解析器。
+robot x.robot y.rst    # 使用合适的解析器解析两个文件。
+</code></pre>
+<h3>包含和排除的文件</h3>
+<p>当执行一个<a href="robotframework-new-tutorial-creating-test-data.html">目录</a>时，文件和目录按以下规则解析：</p>
+<ul>
+<li>所有以点（<code>.</code>）或下划线（<code>_</code>）开头的文件和目录会被忽略。</li>
+<li><code>.robot</code> 文件使用标准的 <a href="robotframework-new-tutorial-creating-test-data.html">Robot Framework 解析器</a>解析。</li>
+<li><code>.robot.rst</code> 文件使用 <a href="robotframework-new-tutorial-creating-test-data.html">reStructuredText 解析器</a>解析。</li>
+<li><code>.rbt</code> 文件使用 <a href="robotframework-new-tutorial-creating-test-data.html">JSON 解析器</a>解析。</li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A7%A3%E6%9E%90%E5%99%A8">自定义解析器</a>支持的文件由匹配的解析器解析。</li>
+<li>除非使用后续章节中讨论的 <code>--parseinclude</code> 或 <code>--extension</code> 选项启用了解析，否则其他文件会被忽略。</li>
+</ul>
+<h3>按名称或路径选择文件</h3>
+<p>当执行一个目录时，可以使用 <code>--parseinclude (-I)</code> 选项根据文件名或路径只解析特定文件。该选项的语义因使用的值不同而略有差异：</p>
+<ul>
+<li>
+<p>如果值只是一个文件名，如 <code>example.robot</code>，则所有目录中匹配该名称的文件都会被解析。</p>
+</li>
+<li>
+<p>要只匹配特定目录中的特定文件，可以使用相对或绝对路径，如 <code>path/to/tests.robot</code>。</p>
+</li>
+<li>
+<p>如果值是一个目录路径，则该目录内的所有文件会被递归解析。</p>
+</li>
+</ul>
+<p>示例：</p>
+<pre><code class="language-bash">robot --parseinclude example.robot tests       # 解析 `tests` 下任意位置的 `example.robot` 文件。
+robot -I example_*.robot -I ???.robot tests    # 解析 `tests` 下匹配 `example_*.robot` 或 `???.robot` 的文件。
+robot -I tests/example.robot tests             # 只解析 `tests/example.robot`。
+robot --parseinclude tests/example tests       # 递归解析 `tests/example` 目录下的文件。
+</code></pre>
+<p><code>--parseinclude</code> 使用的值不区分大小写，并支持类似 <code>example_*.robot</code> 的 glob 模式。不过，与 Robot Framework 中模式的通常工作方式相比有两个小差异：</p>
+<ul>
+<li>
+<p><code>*</code> 只匹配单个路径段。例如，<code>path/*/tests.robot</code> 匹配 <code>path/to/tests.robot</code> 但不匹配 <code>path/to/nested/tests.robot</code>。</p>
+</li>
+<li>
+<p><code>**</code> 可用于启用递归匹配。例如，<code>path/**/tests.robot</code> 既匹配 <code>path/to/tests.robot</code> 也匹配 <code>path/to/nested/tests.robot</code>。</p>
+</li>
+</ul>
+<p>如果模式包含扩展名，即使该扩展名的文件<a href="#%E5%8C%85%E5%90%AB%E5%92%8C%E6%8E%92%E9%99%A4%E7%9A%84%E6%96%87%E4%BB%B6">默认不会被解析</a>，也会被解析。使用哪个解析器取决于扩展名：</p>
+<ul>
+<li><code>.rst</code> 和 <code>.rest</code> 文件使用 <a href="robotframework-new-tutorial-creating-test-data.html">reStructuredText 解析器</a>解析。</li>
+<li><code>.json</code> 文件使用 <a href="robotframework-new-tutorial-creating-test-data.html">JSON 解析器</a>解析。</li>
+<li>其他文件使用标准的 <a href="robotframework-new-tutorial-creating-test-data.html">Robot Framework 解析器</a>解析。</li>
+</ul>
+<p>注意，当你使用类似 <code>*.robot</code> 的模式并且执行目录中存在匹配该模式的文件时，shell 可能会在调用 Robot Framework 之前解析该模式，传递给它的值将是文件名而不是原始模式。在这种情况下，你需要像 <code>'*.robot'</code> 或 <code>\*.robot</code> 这样对模式进行引用或转义。</p>
+<blockquote>
+<p><code>--parseinclude</code> 是 Robot Framework 6.1 中的新功能。</p>
+</blockquote>
+<h3>按扩展名选择文件</h3>
+<p>除了使用上一节讨论的 <code>--parseinclude</code> 选项外，还可以使用 <code>--extension (-F)</code> 选项来启用对<a href="#%E5%8C%85%E5%90%AB%E5%92%8C%E6%8E%92%E9%99%A4%E7%9A%84%E6%96%87%E4%BB%B6">默认不解析</a>的文件的解析。扩展名匹配不区分大小写，且可以省略前导点。如果需要解析多种文件，可以使用冒号 <code>:</code> 分隔扩展名：</p>
+<pre><code class="language-bash">robot --extension rst path/to/tests    # 只解析 *.rst 文件。
+robot -F robot:rst path/to/tests       # 解析 *.robot 和 *.rst 文件。
+</code></pre>
+<p>上述命令等价于以下 <code>--parseinclude</code> 用法：</p>
+<pre><code class="language-bash">robot --parseinclude *.rst path/to/tests
+robot -I *.robot -I *.rst path/to/tests
+</code></pre>
+<p>由于 <code>--parseinclude</code> 选项更强大且涵盖了 <code>--extension</code> 选项的所有使用场景，后者将来可能会被弃用。建议用户现在就使用 <code>--parseinclude</code>。</p>
+<h3>使用自定义解析器</h3>
+<p>外部解析器可以解析 Robot Framework 无法识别的文件。关于创建和使用此类解析器的更多信息，请参阅<a href="robotframework-new-tutorial-extending.html">解析器接口</a>章节。</p>
+<h2>选择测试用例</h2>
+<p>Robot Framework 提供了多个命令行选项用于选择要执行的测试用例。这些选项在<a href="robotframework-new-tutorial-task-execution.html">执行任务</a>以及使用 Rebot 后处理输出时同样适用。</p>
+<h3>按测试名称</h3>
+<p>选择只运行部分测试的最简单方式是使用 <code>--test (-t)</code> 选项。顾名思义，它可以按名称选择测试。给定的名称不区分大小写、空格和下划线，还支持<a href="robotframework-new-tutorial-advanced-features.html">简单模式</a>。该选项可以多次使用以匹配多个测试：</p>
+<pre><code class="language-bash">--test Example                   # 只匹配名为 'Example' 的测试。
+--test example*                  # 匹配以 'example' 开头的测试。
+--test first --test second       # 匹配名为 'first' 或 'second' 的测试。
+</code></pre>
+<p>要更精确地定位一个测试，可以在测试名称前加上套件名称作为前缀：</p>
+<pre><code class="language-bash">--test mysuite.mytest            # 匹配套件 'mysuite' 中的测试 'mytest'。
+--test root.sub.test             # 匹配套件 'root' 下子套件 'sub' 中的测试 'test'。
+--test *.sub.test                # 匹配任意位置套件 'sub' 中的测试 'test'。
+</code></pre>
+<p>注意，当给定的名称包含套件名称时，它必须从根套件开始匹配完整的套件名称。如上面最后一个例子所示，使用通配符可以匹配任意位置有父套件的测试。</p>
+<p>当只需选择少数测试时，使用 <code>--test</code> 选项很方便。一个常见的用例是只运行当前正在开发的测试。如果需要选择大量测试，通常使用<a href="#%E6%8C%89%E5%A5%97%E4%BB%B6%E5%90%8D%E7%A7%B0">按套件名称</a>或<a href="#%E6%8C%89-tag-%E5%90%8D%E7%A7%B0">按 tag 名称</a>选择会更简单。</p>
+<p>在<a href="robotframework-new-tutorial-task-execution.html">执行任务</a>时，可以使用 <code>--task</code> 选项作为 <code>--test</code> 的别名。</p>
+<h3>按套件名称</h3>
+<p>也可以使用 <code>--suite (-s)</code> 选项通过套件名称选择测试，该选项会选择匹配套件中的所有测试。与 <code>--test</code> 类似，给定的名称不区分大小写、空格和下划线，并支持<a href="robotframework-new-tutorial-advanced-features.html">简单模式</a>。要更精确地定位一个套件，可以在名称前加上父套件名称作为前缀：</p>
+<pre><code class="language-bash">--suite Example                  # 只匹配名为 'Example' 的套件。
+--suite example*                 # 匹配以 'example' 开头的套件。
+--suite first --suite second     # 匹配名为 'first' 或 'second' 的套件。
+--suite root.child               # 匹配根套件 'root' 中的子套件 'child'。
+--suite *.parent.child           # 匹配任意位置父套件为 'parent' 的子套件 'child'。
+</code></pre>
+<p>如果名称包含父套件名称，它必须以与 <code>--test</code> 相同的方式匹配完整的套件名称。如上面最后一个例子所示，使用通配符可以匹配任意位置有父套件的套件。</p>
+<blockquote>
+<p>在 Robot Framework 7.0 之前，带父套件的 <code>--suite</code> 不需要匹配完整的套件名称。例如，<code>parent.child</code> 会匹配任意位置父套件为 <code>parent</code> 的子套件 <code>child</code>。如果现在需要这种行为，名称必须以通配符为前缀。</p>
+</blockquote>
+<p>如果同时使用 <code>--suite</code> 和 <code>--test</code> 选项，只有在指定套件中的指定测试才会被选中：</p>
+<pre><code class="language-bash">--suite mysuite --test mytest    # 匹配套件 'mysuite' 中的测试 'mytest'。
+</code></pre>
+<p>使用 <code>--suite</code> 选项与直接执行相应的套件文件或目录大致相同。主要区别在于，如果直接运行文件或目录，可能存在的更高层级的<a href="robotframework-new-tutorial-creating-test-data.html">套件初始化文件</a>会被忽略：</p>
+<pre><code class="language-bash"># 根套件是 'Tests'，其可能存在的初始化文件会被使用。
+robot --suite example path/to/tests
+
+# 根套件是 'Example'，更高层级的初始化文件被忽略。
+robot path/to/tests/example.robot
+</code></pre>
+<p>在 Robot Framework 6.1 之前，出于性能考虑，不匹配 <code>--suite</code> 选项的文件根本不会被解析。在套件获得了可以覆盖从文件或目录名获取的默认套件名称的新 <code>Name</code> 设置后，这种优化不再可行。新的 <code>--parseinclude</code> 选项已被添加，用于在需要此类解析优化时<a href="#%E6%8C%89%E5%90%8D%E7%A7%B0%E6%88%96%E8%B7%AF%E5%BE%84%E9%80%89%E6%8B%A9%E6%96%87%E4%BB%B6">显式选择要解析的文件</a>。</p>
+<h3>按 tag 名称</h3>
+<p>可以使用 <code>--include (-i)</code> 和 <code>--exclude (-e)</code> 选项分别按 <a href="robotframework-new-tutorial-creating-test-data.html">tag</a> 名称包含和排除测试用例。如果使用了 <code>--include</code> 选项，只有具有匹配 tag 的测试用例才会被选中；使用 <code>--exclude</code> 选项时，具有匹配 tag 的测试用例不会被选中。如果两者都使用，只有具有匹配前者选项的 tag 且不具有匹配后者选项的 tag 的测试才会被选中：</p>
+<pre><code class="language-bash">--include example
+--exclude not_ready
+--include regression --exclude long_lasting
+</code></pre>
+<p><code>--include</code> 和 <code>--exclude</code> 都可以多次使用以匹配多个 tag。在这种情况下，如果测试具有匹配任一包含 tag 的 tag，并且没有匹配任一排除 tag 的 tag，则该测试会被选中。</p>
+<p>除了完全匹配 tag 外，还可以使用 <a href="robotframework-new-tutorial-advanced-features.html">tag 模式</a>，其中 <code>*</code> 和 <code>?</code> 是通配符，<code>AND</code>、<code>OR</code> 和 <code>NOT</code> 运算符可用于组合单个 tag 或模式：</p>
+<pre><code class="language-bash">--include feature-4?
+--exclude bug*
+--include fooANDbar
+--exclude xxORyyORzz
+--include fooNOTbar
+</code></pre>
+<p>另一种按 tag 排除测试的方式是使用 <code>robot:exclude</code> <a href="robotframework-new-tutorial-creating-test-data.html">保留 tag</a>。这个 tag 也可以使用变量设置，从而允许在执行过程中动态排除测试。</p>
+<pre><code class="language-markdown">*** Variables ***
+${EXCLUDE}        robot:exclude
+
+*** Test Cases ***
+Literal
+   [Documentation]    无条件排除。
+   [Tags]    robot:exclude
+   Log    This is not executed
+
+As variable
+   [Documentation]    除非 ${EXCLUDE} 被设置为不同的值，否则会被排除。
+   [Tags]    ${EXCLUDE}
+   Log    This is not executed by default
+</code></pre>
+<p>按 tag 选择测试用例是一种非常灵活的机制，允许许多有趣的用法：</p>
+<ul>
+<li>
+<p>可以将一部分需要先于其他测试执行的测试（通常称为冒烟测试）标记为 <code>smoke</code>，并使用 <code>--include smoke</code> 执行。</p>
+</li>
+<li>
+<p>未完成的测试可以带上 <code>not_ready</code> 之类的 tag 提交到版本控制，然后使用 <code>--exclude not_ready</code> 从测试执行中排除。</p>
+</li>
+<li>
+<p>测试可以用 <code>sprint-&lt;num&gt;</code> 标记，其中 <code>&lt;num&gt;</code> 指定当前 sprint 的编号，在执行所有测试用例后，可以生成只包含特定 sprint 测试的独立报告（例如，<code>rebot --include sprint-42 output.xml</code>）。</p>
+</li>
+</ul>
+<p><code>--include</code> 和 <code>--exclude</code> 选项可以与前面章节讨论的 <code>--suite</code> 和 <code>--test</code> 组合使用。在这种情况下，被选中的测试必须满足所有选择条件：</p>
+<pre><code class="language-bash">--suite example --include tag    # 匹配在套件 'example' 中且具有 tag 'tag' 的测试。
+--suite example --exclude tag    # 匹配在套件 'example' 中且不具有 tag 'tag' 的测试。
+--test ex* --include tag         # 匹配名称以 'ex' 开头且具有 tag 'tag' 的测试。
+--test ex* --exclude tag         # 匹配名称以 'ex' 开头且不具有 tag 'tag' 的测试。
+</code></pre>
+<blockquote>
+<p><code>robot:exclude</code> 是 Robot Framework 5.0 中的新功能。</p>
+</blockquote>
+<blockquote>
+<p>在 Robot Framework 7.2 中新增了对 <code>robot:exclude</code> 使用变量的支持。对 <code>--include</code> 和 <code>--exclude</code> 匹配的 tag 使用变量则不受支持。</p>
+</blockquote>
+<blockquote>
+<p>在 Robot Framework 7.0 中，<code>--include</code> 和 <code>--test</code> 是累加的，被选中的测试只需匹配其中任一选项。该行为导致了<a href="https://github.com/robotframework/robotframework/issues/5023">向后不兼容的问题</a>，在 Robot Framework 7.0.1 中已被还原。</p>
+</blockquote>
+<h3>重新执行失败的测试用例</h3>
+<p>命令行选项 <code>--rerunfailed (-R)</code> 可用于从之前的<a href="robotframework-new-tutorial-output-files.html">输出文件</a>中选择所有失败的测试进行重新执行。例如，当运行所有测试需要很长时间而你想迭代修复失败的测试用例时，这个选项非常有用。</p>
+<pre><code class="language-bash">robot tests                             # 先执行所有测试
+robot --rerunfailed output.xml tests    # 然后重新执行失败的测试
+</code></pre>
+<p>在底层，这个选项会像使用 <code>--test</code> 选项逐个选择失败的测试一样来选择它们。可以使用 <code>--test</code>、<code>--suite</code>、<code>--include</code> 和 <code>--exclude</code> 选项进一步细化选中的测试列表。</p>
+<p>如果输出中不包含失败的测试会报错，但可以使用<a href="#%E5%BD%93%E6%B2%A1%E6%9C%89%E6%B5%8B%E8%AF%95%E5%8C%B9%E9%85%8D%E9%80%89%E6%8B%A9%E6%9D%A1%E4%BB%B6">下文讨论</a>的 <code>--runemptysuite</code> 选项更改此行为。使用并非来自执行当前相同测试的输出会导致未定义的结果。使用特殊值 <code>NONE</code> 作为输出等同于不指定此选项。</p>
+<blockquote>
+<p>重新执行的结果和原始结果可以使用 <code>--merge</code> 命令行选项<a href="robotframework-new-tutorial-post-processing.html">合并在一起</a>。</p>
+</blockquote>
+<h3>重新执行失败的测试套件</h3>
+<p>命令行选项 <code>--rerunfailedsuites (-S)</code> 可用于从之前的<a href="robotframework-new-tutorial-output-files.html">输出文件</a>中选择所有失败的套件进行重新执行。与 <code>--rerunfailed (-R)</code> 类似，当完整测试执行需要很长时间时这个选项很有用。注意，失败测试套件中的所有测试都会被重新执行，包括通过的测试。当测试套件中的测试相互依赖时，这个选项很有用。</p>
+<p>在底层，这个选项会像使用 <code>--suite</code> 选项逐个选择失败的套件一样来选择它们。可以使用 <code>--test</code>、<code>--suite</code>、<code>--include</code> 和 <code>--exclude</code> 选项进一步细化选中的测试列表。</p>
+<h3>当没有测试匹配选择条件</h3>
+<p>默认情况下，当没有测试匹配选择条件时，测试执行会失败并显示如下错误：</p>
+<pre><code class="language-bash">[ ERROR ] Suite 'Example' contains no tests matching tag 'xxx'.
+</code></pre>
+<p>由于没有生成输出，当测试是自动执行和处理结果时，这种行为可能会有问题。幸运的是，命令行选项 <code>--RunEmptySuite</code>（不区分大小写）可以强制在这种情况下也执行套件。结果是会创建正常的输出，但显示零个执行的测试。同样的选项也可以用于改变执行空目录或不包含测试的测试用例文件时的行为。</p>
+<p>在使用 Rebot 处理输出文件时也可能出现类似情况。可能没有测试匹配使用的过滤条件，或者输出文件本身就不包含测试。默认情况下 Rebot 在这些情况下会失败，但它有一个单独的 <code>--ProcessEmptySuite</code> 选项可以用来改变行为。实际上，这个选项的工作方式与运行测试时的 <code>--RunEmptySuite</code> 相同。</p>
+<blockquote>
+<p>将 <code>--RunEmptySuite</code> 与 <code>--ReRunFailed</code> 或 <code>--ReRunFailedSuites</code> 一起使用需要 Robot Framework 5.0.1 或更高版本。</p>
+</blockquote>
+<h2>设置元数据</h2>
+<h3>设置套件名称</h3>
+<p>当 Robot Framework 解析测试数据时，<a href="robotframework-new-tutorial-creating-test-data.html">套件名称</a>是从文件和目录名创建的。不过，顶层测试套件的名称可以使用命令行选项 <code>--name (-N)</code> 覆盖：</p>
+<pre><code class="language-bash">robot --name &quot;Custom name&quot; tests.robot
+</code></pre>
+<h3>设置套件文档</h3>
+<p>除了在<a href="robotframework-new-tutorial-creating-test-data.html">测试数据中定义文档</a>外，顶层套件的文档还可以通过命令行选项 <code>--doc (-D)</code> 给出。值可以包含简单的 <a href="robotframework-new-tutorial-creating-test-data.html">HTML 格式化</a>，如果包含空格则必须加引号。</p>
+<p>如果给定的文档是指向现有文件的相对或绝对路径，实际的文档将从该文件中读取。当外部指定的文档很长或包含多行时，这特别方便。</p>
+<p>示例：</p>
+<pre><code class="language-bash">robot --doc &quot;Example documentation&quot; tests.robot
+robot --doc doc.txt tests.robot    # 如果 doc.txt 存在，文档从中读取。
+</code></pre>
+<blockquote>
+<p>从外部文件读取文档是 Robot Framework 4.1 中的新功能。</p>
+<p>在 Robot Framework 3.1 之前，文档中的下划线会像 <code>--name</code> 选项一样被转换为空格。</p>
+</blockquote>
+<h3>设置自由套件元数据</h3>
+<p><a href="robotframework-new-tutorial-creating-test-data.html">自由套件元数据</a>也可以通过命令行选项 <code>--metadata (-M)</code> 给出。参数必须采用 <code>name:value</code> 格式，其中 <code>name</code> 是要设置的元数据名称，<code>value</code> 是其值。值可以包含简单的 <a href="robotframework-new-tutorial-creating-test-data.html">HTML 格式化</a>，如果整个参数包含空格则必须加引号。该选项可以多次使用以设置多个元数据值。</p>
+<p>如果给定的值是指向现有文件的相对或绝对路径，实际的值将从该文件中读取。当值很长或包含多行时，这特别方便。如果值应该是指向现有文件的路径而不是从该文件中读取，则值必须与 <code>name:</code> 部分之间用空格分隔。</p>
+<p>示例：</p>
+<pre><code class="language-bash">robot --metadata Name:Value tests.robot
+robot --metadata &quot;Another Name:Another value, now with spaces&quot; tests.robot
+robot --metadata &quot;Read From File:meta.txt&quot; tests.robot    # 如果 meta.txt 存在，值从中读取。
+robot --metadata &quot;Path As Value: meta.txt&quot; tests.robot    # 值始终按原样使用。
+</code></pre>
+<blockquote>
+<p>从外部文件读取元数据值是 Robot Framework 4.1 中的新功能。</p>
+<p>在 Robot Framework 3.1 之前，值中的下划线会像 <code>--name</code> 选项一样被转换为空格。</p>
+</blockquote>
+<h3>设置测试 tag</h3>
+<p>命令行选项 <code>--settag (-G)</code> 可用于为所有执行的测试用例设置给定的 tag。该选项可以多次使用以设置多个 tag。</p>
+<h2>配置库和其他扩展的搜索路径</h2>
+<p>当 Robot Framework 导入<a href="robotframework-new-tutorial-using-test-libraries.html">测试库</a>、<a href="#%E8%AE%BE%E7%BD%AE%E7%9B%91%E5%90%AC%E5%99%A8">监听器</a>或其他基于 Python 的扩展时，它使用 Python 解释器从系统中导入包含该扩展的模块。查找模块的位置列表称为<em>模块搜索路径</em>，可以使用本节中解释的不同方式进行配置。</p>
+<p>当导入<a href="robotframework-new-tutorial-resource-and-variable-files.html">资源和变量文件</a>时，如果指定的路径没有直接匹配任何文件，Robot Framework 也会使用 Python 的模块搜索路径。</p>
+<p>正确设置模块搜索路径以便找到库和其他扩展是成功执行测试的前提。如果你需要使用下面解释的方式进行自定义，创建一个自定义<a href="robotframework-new-tutorial-basic-usage.html">启动脚本</a>通常是个好主意。</p>
+<h3>自动包含在模块搜索路径中的位置</h3>
+<p>Python 解释器有自己的标准库以及一个自动安装第三方模块的目录在模块搜索路径中。这意味着使用 <a href="robotframework-new-tutorial-extending.html">Python 自身打包系统</a>打包的测试库会被自动安装，无需任何额外配置即可导入。</p>
+<h3><code>PYTHONPATH</code></h3>
+<p>Python 从 <code>PYTHONPATH</code> 环境变量中读取要添加到模块搜索路径的额外位置。如果要指定多个位置，在类 UNIX 机器上需要用冒号分隔（例如 <code>/opt/libs:$HOME/testlibs</code>），在 Windows 上用分号分隔（例如 <code>D:\libs;%HOMEPATH%\testlibs</code>）。</p>
+<p>环境变量可以在系统范围内永久配置，也可以只影响某个用户。或者可以在运行命令之前临时设置，这在自定义<a href="robotframework-new-tutorial-basic-usage.html">启动脚本</a>中非常好用。</p>
+<h3>使用 <code>--pythonpath</code> 选项</h3>
+<p>Robot Framework 有一个单独的命令行选项 <code>--pythonpath (-P)</code> 用于向模块搜索路径添加位置。</p>
+<p>多个位置可以使用冒号（<code>:</code>）或分号（<code>;</code>）分隔，或者多次使用该选项。如果值同时包含冒号和分号，则从分号处分割。路径也可以是匹配多个路径的 <a href="https://en.wikipedia.org/wiki/Glob_(programming)">glob 模式</a>，但在控制台上使用时通常需要转义。</p>
+<p>示例：</p>
+<pre><code class="language-bash">--pythonpath libs
+--pythonpath /opt/testlibs:mylibs.zip:yourlibs
+--pythonpath /opt/testlibs --pythonpath mylibs.zip --pythonpath yourlibs
+--pythonpath c:\temp;d:\resources
+--pythonpath  lib/\*.zip    # '*' 已转义
+</code></pre>
+<blockquote>
+<p>无论操作系统如何，冒号和分号都可以使用。分号的支持是 Robot Framework 5.0 中的新功能。</p>
+</blockquote>
+<h3>以编程方式配置 <code>sys.path</code></h3>
+<p>Python 解释器将其使用的模块搜索路径存储为 <a href="http://docs.python.org/library/sys.html#sys.path"><code>sys.path</code></a> 属性中的字符串列表。此列表可以在执行期间动态更新，更改会在下次导入内容时生效。</p>
+<h2>设置变量</h2>
+<p><a href="robotframework-new-tutorial-variables.html">变量</a>可以从命令行使用 <code>--variable (-v)</code> 选项<a href="robotframework-new-tutorial-variables.html">逐个设置</a>，也可以通过 <code>--variablefile (-V)</code> 选项使用<a href="robotframework-new-tutorial-resource-and-variable-files.html">变量文件</a>设置。变量和变量文件在各自的章节中有详细解释，以下示例说明了如何使用这些选项：</p>
+<pre><code class="language-bash">--variable name:value
+--variable OS:Linux --variable IP:10.0.0.42
+--variablefile path/to/variables.py
+--variablefile myvars.py:possible:arguments:here
+--variable ENVIRONMENT:Windows --variablefile c:\resources\windows.py
+</code></pre>
+<h2>空运行</h2>
+<p>Robot Framework 支持所谓的<em>空运行</em>（dry run）模式，在该模式下测试会正常运行，但来自测试库的关键字完全不会被执行。空运行模式可以用来验证测试数据；如果空运行通过，数据在语法上应该是正确的。使用选项 <code>--dryrun</code> 触发此模式。</p>
+<p>空运行执行可能因以下原因失败：</p>
+<ul>
+<li>使用了未找到的关键字。</li>
+<li>使用了参数数量错误的关键字。</li>
+<li>使用了语法无效的用户关键字。</li>
+</ul>
+<p>除了这些失败外，还会显示正常的<a href="robotframework-new-tutorial-test-execution.html">执行错误</a>，例如当测试库或资源文件导入无法解析时。</p>
+<p>可以通过向特定的<a href="robotframework-new-tutorial-creating-test-data.html">用户关键字</a>添加特殊的 <code>robot:no-dry-run</code> <a href="robotframework-new-tutorial-creating-test-data.html">关键字 tag</a> 来禁用对它们的空运行验证。当某个关键字在空运行模式下由于某种原因失败但在正常执行时工作正常时，这很有用。</p>
+<blockquote>
+<p>空运行模式不会验证变量。</p>
+</blockquote>
+<h2>随机化执行顺序</h2>
+<p>测试执行顺序可以使用选项 <code>--randomize &lt;what&gt;[:&lt;seed&gt;]</code> 来随机化，其中 <code>&lt;what&gt;</code> 是以下值之一：</p>
+<p><code>tests</code>
+:   每个测试套件内的测试用例以随机顺序执行。</p>
+<p><code>suites</code>
+:   所有测试套件以随机顺序执行，但套件内的测试用例按定义顺序运行。</p>
+<p><code>all</code>
+:   测试用例和测试套件都以随机顺序执行。</p>
+<p><code>none</code>
+:   测试和套件的执行顺序都不随机化。此值可用于覆盖之前用 <code>--randomize</code> 设置的值。</p>
+<p>可以提供自定义种子来初始化随机生成器。如果你想使用与之前相同的顺序重新运行测试，这很有用。种子作为 <code>--randomize</code> 值的一部分以 <code>&lt;what&gt;:&lt;seed&gt;</code> 格式给出，且必须是整数。如果没有给出种子，则随机生成。被执行的顶层测试套件会自动获得一个名为 <code>Randomized</code> 的<a href="robotframework-new-tutorial-creating-test-data.html">元数据</a>，说明随机化了什么以及使用了什么种子。</p>
+<p>示例：</p>
+<pre><code class="language-bash">robot --randomize tests my_test.robot
+robot --randomize all:12345 path/to/tests
+</code></pre>
+<h2>以编程方式修改测试数据</h2>
+<p>如果提供的用于在执行前修改测试数据的内置功能不够用，Robot Framework 允许以编程方式进行自定义修改。这是通过创建所谓的 <em>pre-run modifier</em> 并使用 <code>--prerunmodifier</code> 选项激活来实现的。</p>
+<p>Pre-run modifier 应实现为能够遍历可执行测试套件结构并根据需要修改它的 visitor。visitor 接口在 <a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.model.html#module-robot.model.visitor">Robot Framework API 文档</a>中有说明，可以用它来修改被执行的<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.TestSuite">测试套件</a>、<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.TestCase">测试用例</a>和<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html#robot.running.model.Keyword">关键字</a>。下面的示例应该能让你了解 pre-run modifier 的使用方式和功能之强大。</p>
+<p>在命令行上使用 <code>--prerunmodifier</code> 选项启用 pre-run modifier 时，可以将其指定为 modifier 类的名称或 modifier 文件的路径。如果 modifier 以类名形式给出，包含该类的模块必须在<a href="#%E9%85%8D%E7%BD%AE%E5%BA%93%E5%92%8C%E5%85%B6%E4%BB%96%E6%89%A9%E5%B1%95%E7%9A%84%E6%90%9C%E7%B4%A2%E8%B7%AF%E5%BE%84">模块搜索路径</a>中，并且如果模块名与类名不同，给定的名称必须同时包含两者，如 <code>module.ModifierClass</code>。如果 modifier 以路径形式给出，类名必须与文件名相同。在大多数方面，这与<a href="robotframework-new-tutorial-using-test-libraries.html">导入测试库</a>的工作方式完全相同。</p>
+<p>如果 modifier 需要参数，如下面的示例所示，可以在 modifier 名称或路径之后使用冒号（<code>:</code>）或分号（<code>;</code>）作为分隔符来指定。如果值中两者都使用了，先出现的被视为实际分隔符。从 Robot Framework 4.0 开始，参数也支持<a href="robotframework-new-tutorial-creating-test-data.html">命名参数语法</a>以及基于<a href="robotframework-new-tutorial-extending.html">类型提示</a>和<a href="robotframework-new-tutorial-extending.html">默认值</a>的<a href="robotframework-new-tutorial-extending.html">参数转换</a>，方式与关键字相同。</p>
+<p>如果需要多个 pre-run modifier，可以多次使用 <code>--prerunmodifier</code> 选项。如果在创建日志和报告之前需要类似的修改，可以使用 <code>--prerebotmodifier</code> 选项启用<a href="robotframework-new-tutorial-post-processing.html">对结果的编程修改</a>。</p>
+<p>Pre-run modifier 在影响被执行测试套件和测试用例的其他配置之前执行。最重要的是，与<a href="#%E9%80%89%E6%8B%A9%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B">选择测试用例</a>相关的选项在 modifier 之后处理，这使得可以对可能动态添加的测试使用 <code>--include</code> 等选项。</p>
+<p>修改测试的另一种方式是使用<a href="robotframework-new-tutorial-extending.html">监听器版本 3</a>接口。修改首次调用 <code>start_suite</code> 监听器方法时传递的 <code>data</code> 参数，在实践中与使用 pre-run modifier 具有相同的效果。主要区别在于 <code>--include/--exclude</code> 和其他此类选项对添加的测试不起作用。使用监听器的主要优点是它们允许根据执行过程中发生的情况动态进行修改。</p>
+<blockquote>
+<p>modifier 从命令行启用的方式与<a href="#%E8%AE%BE%E7%BD%AE%E7%9B%91%E5%90%AC%E5%99%A8">监听器</a>完全相同。更多信息和示例请参阅<a href="robotframework-new-tutorial-extending.html">从命令行注册监听器</a>章节。</p>
+</blockquote>
+<h3>示例：选择每第 X 个测试</h3>
+<p>第一个示例展示了 pre-run modifier 如何从被执行的测试套件结构中移除测试。在这个例子中只保留每第 X 个测试，X 从命令行给出，还有一个可选的起始索引。</p>
+<pre><code class="language-python">../api/code_examples/SelectEveryXthTest.py
+</code></pre>
+<p>如果上述 pre-run modifier 在文件 <code>SelectEveryXthTest.py</code> 中且该文件在<a href="#%E9%85%8D%E7%BD%AE%E5%BA%93%E5%92%8C%E5%85%B6%E4%BB%96%E6%89%A9%E5%B1%95%E7%9A%84%E6%90%9C%E7%B4%A2%E8%B7%AF%E5%BE%84">模块搜索路径</a>中，可以这样使用：</p>
+<pre><code class="language-bash"># 以路径方式指定 modifier。运行每隔一个的测试。
+robot --prerunmodifier path/to/SelectEveryXthTest.py:2 tests.robot
+
+# 以名称方式指定 modifier。从第二个开始，运行每隔两个的测试。
+robot --prerunmodifier SelectEveryXthTest:3:1 tests.robot
+</code></pre>
+<h3>示例：按名称排除测试</h3>
+<p>第二个示例也是移除测试，这次是基于给定的名称模式。实际上它的工作方式类似于内置 <code>--test</code> 选项的反向版本。</p>
+<pre><code class="language-python">../api/code_examples/ExcludeTests.py
+</code></pre>
+<p>假设上述 modifier 在名为 <code>ExcludeTests.py</code> 的文件中，可以这样使用：</p>
+<pre><code class="language-bash"># 排除名为 'Example' 的测试。
+robot --prerunmodifier path/to/ExcludeTests.py:Example tests.robot
+
+# 排除所有以 'something' 结尾的测试。
+robot --prerunmodifier path/to/ExcludeTests.py:*something tests.robot
+</code></pre>
+<h3>示例：禁用 setup 和 teardown</h3>
+<p>在调试测试时，禁用 setup 或 teardown 有时很有用。这可以通过编辑测试数据来实现，但 pre-run modifier 使得可以轻松地为单次运行临时做到这一点：</p>
+<pre><code class="language-python">../api/code_examples/disable.py
+</code></pre>
+<p>假设上述 modifier 都在名为 <code>disable.py</code> 的文件中且该文件在<a href="#%E9%85%8D%E7%BD%AE%E5%BA%93%E5%92%8C%E5%85%B6%E4%BB%96%E6%89%A9%E5%B1%95%E7%9A%84%E6%90%9C%E7%B4%A2%E8%B7%AF%E5%BE%84">模块搜索路径</a>中，setup 和 teardown 可以如下禁用：</p>
+<pre><code class="language-bash"># 禁用 suite teardown。
+robot --prerunmodifier disable.SuiteTeardown tests.robot
+
+# 通过使用两次 '--prerunmodifier' 同时禁用 test setup 和 teardown。
+robot --prerunmodifier disable.TestSetup --prerunmodifier disable.TestTeardown tests.robot
+</code></pre>
+<blockquote>
+<p>在 Robot Framework 4.0 之前，<code>setup</code> 和 <code>teardown</code> 是通过中间的 <code>keywords</code> 属性访问的，例如 suite setup 的禁用方式为 <code>suite.keywords.setup = None</code>。</p>
+</blockquote>
+<h2>控制控制台输出</h2>
+<p>有多个命令行选项可以控制测试执行在控制台上的报告方式。</p>
+<h3>控制台输出类型</h3>
+<p>整体控制台输出类型使用 <code>--console</code> 选项设置。它支持以下不区分大小写的值：</p>
+<p><code>verbose</code>
+:   每个测试套件和测试用例都会单独报告。这是默认值。</p>
+<p><code>dotted</code>
+:   只显示 <code>.</code> 表示通过的测试，<code>F</code> 表示失败的测试，<code>s</code> 表示跳过的测试，<code>x</code> 表示因<a href="robotframework-new-tutorial-test-execution.html">测试执行退出</a>而跳过的测试。失败的测试在执行后会单独列出。这种输出类型使得即使有大量测试，也能很容易看到执行期间是否有失败。</p>
+<p><code>quiet</code>
+:   除了<a href="robotframework-new-tutorial-test-execution.html">错误和警告</a>外没有输出。</p>
+<p><code>none</code>
+:   完全没有输出。在使用<a href="#%E8%AE%BE%E7%BD%AE%E7%9B%91%E5%90%AC%E5%99%A8">监听器</a>等创建自定义输出时很有用。</p>
+<p>单独的便捷选项 <code>--dotted (-.)</code> 和 <code>--quiet</code> 分别是 <code>--console dotted</code> 和 <code>--console quiet</code> 的快捷方式。</p>
+<p>示例：</p>
+<pre><code class="language-bash">robot --console quiet tests.robot
+robot --dotted tests.robot
+</code></pre>
+<h3>控制台宽度</h3>
+<p>控制台中测试执行输出的宽度可以使用选项 <code>--consolewidth (-W)</code> 设置。默认宽度为 78 个字符。</p>
+<blockquote>
+<p>在许多类 UNIX 机器上，你可以使用方便的 <code>$COLUMNS</code> 环境变量，如 <code>--consolewidth $COLUMNS</code>。</p>
+</blockquote>
+<h3>控制台颜色</h3>
+<p><code>--consolecolors (-C)</code> 选项用于控制控制台输出中是否使用颜色。颜色使用 <a href="http://en.wikipedia.org/wiki/ANSI_escape_code">ANSI 转义码</a>实现，对于不支持 ANSI 码的旧版 Windows 有备用机制。</p>
+<p>该选项支持以下不区分大小写的值：</p>
+<p><code>auto</code>
+:   当输出写入控制台时启用颜色，但当输出重定向到文件或其他地方时不启用。这是默认值。</p>
+<p><code>on</code>
+:   即使输出被重定向也使用颜色。在 Windows 上不起作用。</p>
+<p><code>ansi</code>
+:   与 <code>on</code> 相同，但强制在 Windows 上无条件使用 ANSI 码。</p>
+<p><code>off</code>
+:   禁用颜色。</p>
+<blockquote>
+<p>在 Windows 上默认使用 ANSI 码是 Robot Framework 7.1 中的新功能。</p>
+</blockquote>
+<h3>控制台链接</h3>
+<p>执行结束时写入控制台的结果文件路径默认是超链接。可以使用 <code>--consolelinks</code> 选项控制此行为，该选项接受以下不区分大小写的值：</p>
+<p><code>auto</code>
+:   当<a href="#%E6%8E%A7%E5%88%B6%E5%8F%B0%E9%A2%9C%E8%89%B2">控制台颜色</a>启用时，路径会被转换为链接。这是默认值。</p>
+<p><code>off</code>
+:   无条件禁用链接。</p>
+<p>超链接支持还取决于使用的控制台，不过现在<a href="https://github.com/Alhadis/OSC8-Adoption">支持已经相当好了</a>。常用的 <a href="https://en.wikipedia.org/wiki/Windows_Console">Windows Console</a> 不支持链接，但较新的 <a href="https://en.wikipedia.org/wiki/Windows_Terminal">Windows Terminal</a> 支持。</p>
+<blockquote>
+<p>超链接支持是 Robot Framework 7.1 中的新功能。</p>
+</blockquote>
+<h3>控制台标记</h3>
+<p>当使用<a href="#%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA%E7%B1%BB%E5%9E%8B">详细输出</a>且测试用例中的顶层关键字结束时，控制台上会显示特殊标记 <code>.</code>（成功）和 <code>F</code>（失败）。这些标记可以在高层级上跟踪测试执行情况，当测试用例结束时会被擦除。</p>
+<p>可以使用 <code>--consolemarkers (-K)</code> 选项配置何时使用标记。它支持以下不区分大小写的值：</p>
+<p><code>auto</code>
+:   当标准输出写入控制台时启用标记，但当输出重定向到文件或其他地方时不启用。这是默认值。</p>
+<p><code>on</code>
+:   始终使用标记。</p>
+<p><code>off</code>
+:   禁用标记。</p>
+<h2>设置监听器</h2>
+<p><a href="robotframework-new-tutorial-extending.html">监听器</a>可用于监控测试执行。从命令行启用时，使用 <code>--listener</code> 命令行选项指定。值可以是监听器的路径或监听器名称。更多详情请参阅<a href="robotframework-new-tutorial-extending.html">监听器接口</a>章节。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/07/3-4-robotframework-new-tutorial-post-processing/">
+          Robot Framework 新版教程 - 后处理输出
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/09/3-6-robotframework-new-tutorial-output-files/">
+          Robot Framework 新版教程 - 输出文件
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

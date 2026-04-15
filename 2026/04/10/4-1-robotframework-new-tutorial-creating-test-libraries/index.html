@@ -1,0 +1,2132 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 创建测试库</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 创建测试库
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 18</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>创建测试库</h2>
+<p>Robot Framework 的实际测试能力由测试库（test library）提供。虽然已经有许多现成的库，其中一些甚至与核心框架捆绑在一起，但仍然经常需要创建新的库。这项任务并不太复杂，因为正如本章所阐述的那样，Robot Framework 的库 API 简单且直接。</p>
+<h2>简介</h2>
+<h3>支持的编程语言</h3>
+<p>Robot Framework 本身使用 <a href="http://python.org">Python</a> 编写，因此扩展它的测试库自然也可以使用同一语言来实现。也可以使用 C 语言通过 <a href="http://docs.python.org/c-api/index.html">Python C API</a> 来实现库，不过使用 <a href="http://docs.python.org/library/ctypes.html">ctypes</a> 模块从 Python 库与 C 代码交互通常更容易。</p>
+<p>使用 Python 实现的库也可以作为其他编程语言实现的功能的包装器。这种方式的一个很好的例子是 Remote library，另一种广泛使用的方式是将外部脚本或工具作为独立进程运行。</p>
+<h3>不同的库 API</h3>
+<p>Robot Framework 有两种不同的库 API。</p>
+<p>静态 API（Static API）</p>
+<blockquote>
+<p>最简单的方式是拥有一个模块或类，其中的函数/方法直接映射到关键字名称。关键字也接受与实现它们的方法相同的参数。关键字通过异常报告失败，通过写入标准输出进行日志记录，并使用 <code>return</code> 语句返回值。</p>
+</blockquote>
+<p>动态 API（Dynamic API）</p>
+<blockquote>
+<p>动态库是实现了一个方法来获取它们所实现的关键字名称、一个方法来用给定参数执行指定关键字、以及各种可选方法来提供关于已实现关键字和库本身更多信息的类。要实现的关键字名称以及它们如何执行可以在运行时动态确定，但报告状态、日志记录和返回值的方式与静态 API 类似。</p>
+</blockquote>
+<p>本章集中介绍静态 API，另有单独的章节介绍动态库 API。</p>
+<h2>创建测试库类或模块</h2>
+<p>测试库可以实现为 Python 模块或类。</p>
+<h3>库名</h3>
+<p>如<a href="https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#using-test-libraries">使用测试库</a>一节中所讨论的，库可以通过名称或路径导入：</p>
+<pre><code class="language-markdown">*** Settings ***
+Library    MyLibrary
+Library    module.LibraryClass
+Library    path/AnotherLibrary.py
+</code></pre>
+<p>当通过名称导入库时，库模块必须在模块搜索路径中，名称可以指向库模块或库类。当名称直接指向库类时，名称必须采用 <code>modulename.ClassName</code> 这样的格式。通过路径导入总是指向模块。</p>
+<p>即使库导入指向模块（无论是通过名称还是路径），在以下情况中，模块中的类（而非模块本身）将被用作库：</p>
+<ol>
+<li>
+<p>如果模块包含一个与模块同名的类。该类可以在模块中实现，也可以导入到模块中。</p>
+<p>这使得可以使用简单的名称如 <code>MyLibrary</code> 导入库，而不必同时指定模块和类如 <code>module.MyLibrary</code> 或 <code>MyLibrary.MyLibrary</code>。当通过路径导入库时，甚至无法直接引用库类，只能自动使用导入模块中的类。</p>
+</li>
+<li>
+<p>如果模块包含恰好一个使用 <code>@library</code> 装饰器装饰的类。在这种情况下，类需要在模块中实现，而非导入到模块中。</p>
+<p>这种方式与前一种具有相同的好处，但它还允许类名与模块名不同。</p>
+<p>使用 <code>@library</code> 装饰器实现此用途是 Robot Framework 7.2 的新功能。</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>提示：</strong> 如果库名非常长，在导入时给它取一个更简单的别名通常是个好主意。</p>
+</blockquote>
+<h3>向库提供参数</h3>
+<p>所有以类实现的测试库都可以接受参数。这些参数在导入库时在库名之后指定，当 Robot Framework 创建导入库的实例时，会将它们传递给构造函数。以模块实现的库不能接受任何参数。</p>
+<p>库所需的参数数量与库的 <code>__init__</code> 方法接受的参数数量相同。默认值、参数转换以及其他类似功能的工作方式与关键字参数相同。传递给库的参数以及库名本身都可以使用变量指定，因此可以修改它们，例如从命令行修改。</p>
+<pre><code class="language-markdown">*** Settings ***
+Library    MyLibrary     10.0.0.1    8080
+Library    AnotherLib    ${ENVIRONMENT}
+</code></pre>
+<p>上述示例中使用的库的示例实现：</p>
+<pre><code class="language-py">from example import Connection
+
+class MyLibrary:
+
+    def __init__(self, host, port=80):
+        self.connection = Connection(host, port)
+
+    def send_message(self, message):
+        self.connection.send(message)
+</code></pre>
+<pre><code class="language-py">class AnotherLib:
+
+    def __init__(self, environment):
+        self.environment = environment
+
+    def do_something(self):
+        if self.environment == 'test':
+            do_something_in_test_environment()
+        else:
+            do_something_in_other_environments()
+</code></pre>
+<p>如果一个库在同一个套件中使用不同参数多次导入，需要给它一个自定义名称，否则后续的导入会被忽略：</p>
+<pre><code class="language-markdown">*** Settings ***
+Library    MyLibrary     10.0.0.1    8080    AS    RemoteLibrary
+Library    MyLibrary     127.0.0.1    AS    LocalLibrary
+
+*** Test Cases ***
+Example
+    RemoteLibrary.Send Message    Hello!
+    LocalLibrary.Send Message    Hi!
+</code></pre>
+<h3>库作用域</h3>
+<p>以类实现的库可以拥有内部状态，这些状态可以被关键字和库构造函数的参数改变。由于状态可能影响关键字的实际行为，因此确保一个测试用例中的更改不会意外影响其他测试用例非常重要。这类依赖可能会导致难以调试的问题，例如当添加新的测试用例并且它们不一致地使用库时。</p>
+<p>Robot Framework 尝试保持测试用例之间相互独立：默认情况下，它为每个测试用例创建测试库的新实例。然而，这种行为并不总是理想的，因为有时测试用例应该能够共享公共状态。此外，并非所有库都有状态，为它们创建新实例完全没有必要。</p>
+<p>测试库可以通过类属性 <code>ROBOT_LIBRARY_SCOPE</code> 来控制何时创建新的库实例。这个属性必须是字符串，可以有以下三个值：</p>
+<p><code>TEST</code></p>
+<blockquote>
+<p>为每个测试用例创建一个新实例。可能存在的 suite setup 和 suite teardown 共享另一个实例。</p>
+<p>在 Robot Framework 3.2 之前，这个值是 <code>TEST CASE</code>，但现在推荐使用 <code>TEST</code>。因为所有无法识别的值都被视为与 <code>TEST</code> 相同，所以两个值在所有版本中都有效。出于同样的原因，如果库更侧重于 RPA 用途而非测试，也可以使用 <code>TASK</code> 值。如果未设置 <code>ROBOT_LIBRARY_SCOPE</code> 属性，<code>TEST</code> 也是默认值。</p>
+</blockquote>
+<p><code>SUITE</code></p>
+<blockquote>
+<p>为每个测试套件创建一个新实例。从测试用例文件创建的、包含测试用例的最低级别测试套件拥有自己的实例，更高级别的套件也各自获得自己的实例以用于可能的 setup 和 teardown。</p>
+<p>在 Robot Framework 3.2 之前，这个值是 <code>TEST SUITE</code>。该值仍然有效，但目标为 Robot Framework 3.2 及更新版本的库推荐使用 <code>SUITE</code>。</p>
+</blockquote>
+<p><code>GLOBAL</code></p>
+<blockquote>
+<p>在整个测试执行期间只创建一个实例，并且被所有测试用例和测试套件共享。从模块创建的库始终是全局的。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> 如果一个库使用不同的参数被多次导入，则无论作用域如何，每次都会创建一个新实例。</p>
+</blockquote>
+<p>当 <code>SUITE</code> 或 <code>GLOBAL</code> 作用域与有状态的库一起使用时，建议库拥有一些特殊的关键字来清理状态。这个关键字然后可以在 suite setup 或 teardown 中使用，以确保下一个测试套件中的测试用例可以从已知状态开始。例如，SeleniumLibrary 使用 <code>GLOBAL</code> 作用域来允许在不同的测试用例中使用同一个浏览器而不必重新打开它，并且它还有 Close All Browsers 关键字来方便地关闭所有已打开的浏览器。</p>
+<p>使用 <code>SUITE</code> 作用域的示例库：</p>
+<pre><code class="language-py">class ExampleLibrary:
+    ROBOT_LIBRARY_SCOPE = 'SUITE'
+
+    def __init__(self):
+        self._counter = 0
+
+    def count(self):
+        self._counter += 1
+        print(self._counter)
+
+    def clear_count(self):
+        self._counter = 0
+</code></pre>
+<h3>库版本</h3>
+<p>当测试库被使用时，Robot Framework 会尝试确定其版本。这些信息随后被写入 syslog 以提供调试信息。库文档工具 Libdoc 也会将这些信息写入它生成的关键字文档中。</p>
+<p>版本信息从 <code>ROBOT_LIBRARY_VERSION</code> 属性读取，类似于库作用域从 <code>ROBOT_LIBRARY_SCOPE</code> 读取。如果 <code>ROBOT_LIBRARY_VERSION</code> 不存在，会尝试从 <code>__version__</code> 属性读取信息。这些属性必须是类属性或模块属性，取决于库是以类还是模块实现的。</p>
+<p>一个使用 <code>__version__</code> 的模块示例：</p>
+<pre><code class="language-py">__version__ = '0.1'
+
+def keyword():
+    pass
+</code></pre>
+<h3>文档格式</h3>
+<p>库文档工具 Libdoc 支持多种格式的文档。如果你想使用 Robot Framework 自有的文档格式以外的格式，可以在源代码中使用 <code>ROBOT_LIBRARY_DOC_FORMAT</code> 属性来指定格式，类似于作用域和版本通过各自的 <code>ROBOT_LIBRARY_*</code> 属性设置。</p>
+<p>文档格式的可选值（不区分大小写）为 <code>ROBOT</code>（默认）、<code>HTML</code>、<code>TEXT</code>（纯文本）和 <code>reST</code>（reStructuredText）。使用 <code>reST</code> 格式需要在生成文档时安装 docutils 模块。</p>
+<p>下面的示例通过使用 reStructuredText 格式来说明文档格式的设置。更多关于测试库文档的一般信息，参见记录库一节和 Libdoc 章节。</p>
+<pre><code class="language-py">&quot;&quot;&quot;A library for *documentation format* demonstration purposes.
+
+This documentation is created using reStructuredText__. Here is a link
+to the only \`Keyword\`.
+
+__ http://docutils.sourceforge.net
+&quot;&quot;&quot;
+
+ROBOT_LIBRARY_DOC_FORMAT = 'reST'
+
+
+def keyword():
+    &quot;&quot;&quot;**Nothing** to see here. Not even in the table below.
+
+    =======  =====  =====
+    Table    here   has
+    nothing  to     see.
+    =======  =====  =====
+    &quot;&quot;&quot;
+    pass
+</code></pre>
+<h3>库作为 listener</h3>
+<p>Listener 接口允许外部 listener 获取有关测试执行的通知。它们在套件、测试和关键字开始和结束等事件时被调用。有时在测试库中获取此类通知也很有用，它们可以使用 <code>ROBOT_LIBRARY_LISTENER</code> 属性注册一个自定义 listener。这个属性的值应该是要使用的 listener 实例，可以是库本身。</p>
+<p>更多信息和示例参见 Libraries as listeners 一节。</p>
+<h3><code>@library</code> 装饰器</h3>
+<p>配置以类实现的库的一种便捷方式是使用 <code>robot.api.deco.library</code> 类装饰器。它允许通过可选参数 <code>scope</code>、<code>version</code>、<code>converter</code>、<code>doc_format</code> 和 <code>listener</code> 分别配置库的作用域、版本、自定义参数转换器、文档格式和 listener。使用这些参数时，它们会自动设置相应的 <code>ROBOT_LIBRARY_SCOPE</code>、<code>ROBOT_LIBRARY_VERSION</code>、<code>ROBOT_LIBRARY_CONVERTERS</code>、<code>ROBOT_LIBRARY_DOC_FORMAT</code> 和 <code>ROBOT_LIBRARY_LISTENER</code> 属性：</p>
+<pre><code class="language-py">from robot.api.deco import library
+
+from example import Listener
+
+
+@library(scope='GLOBAL', version='3.2b1', doc_format='reST', listener=Listener())
+class Example:
+    ...
+</code></pre>
+<p><code>@library</code> 装饰器还通过将 <code>ROBOT_AUTO_KEYWORDS</code> 参数默认设置为 <code>False</code> 来禁用自动关键字发现。这意味着必须使用 <code>@keyword</code> 装饰器来装饰方法以将其暴露为关键字。如果只需要这个行为而不需要进一步配置，装饰器也可以不带括号使用：</p>
+<pre><code class="language-py">from robot.api.deco import library
+
+
+@library
+class Example:
+    ...
+</code></pre>
+<p>如果需要，可以使用 <code>auto_keywords</code> 参数启用自动关键字发现：</p>
+<pre><code class="language-py">from robot.api.deco import library
+
+
+@library(scope='GLOBAL', auto_keywords=True)
+class Example:
+    ...
+</code></pre>
+<p><code>@library</code> 装饰器只在使用了相应的参数 <code>scope</code>、<code>version</code>、<code>converters</code>、<code>doc_format</code> 和 <code>listener</code> 时才设置类属性 <code>ROBOT_LIBRARY_SCOPE</code>、<code>ROBOT_LIBRARY_VERSION</code>、<code>ROBOT_LIBRARY_CONVERTERS</code>、<code>ROBOT_LIBRARY_DOC_FORMAT</code> 和 <code>ROBOT_LIBRARY_LISTENER</code>。<code>ROBOT_AUTO_KEYWORDS</code> 属性始终被设置，其存在可以作为 <code>@library</code> 装饰器已被使用的标志。当属性被设置时，它们会覆盖可能存在的类属性。</p>
+<p>当一个类被 <code>@library</code> 装饰器装饰后，即使库导入只指向包含它的模块，它也会被用作库。无论类名是否与模块名匹配，都是如此。</p>
+<blockquote>
+<p><strong>注意：</strong> <code>@library</code> 装饰器是 Robot Framework 3.2 的新功能，<code>converters</code> 参数是 Robot Framework 5.0 的新功能，指定导入模块中的类应被用作库是 Robot Framework 7.2 的新功能。</p>
+</blockquote>
+<h2>创建关键字</h2>
+<h3>哪些方法被视为关键字</h3>
+<p>Robot Framework 默认使用内省来找出库包含哪些属性，并将所有不以下划线开头的函数和方法视为关键字。例如，这个库实现了一个关键字 My Keyword：</p>
+<pre><code class="language-py">def my_keyword(arg):
+    return _helper(arg)
+
+def _helper(arg):
+    return arg.upper()
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> 在 Python 中，任何以下划线开头的内容都被视为私有的，Robot Framework 遵循这一惯例。</p>
+</blockquote>
+<p>自动将所有公共方法和函数视为关键字通常运行良好，特别是在简单情况下，但也有不希望如此的场景。例如，当以类实现库时，可能会意外地将基类中的方法也视为关键字。当以模块实现库时，导入到模块命名空间的函数成为关键字可能是更大的意外。例如，这个库如预期地实现了关键字 Example Keyword，但也意外地实现了关键字 Current Thread：</p>
+<pre><code class="language-py">from threading import current_thread
+
+
+def example_keyword():
+    name = current_thread().name
+    print(f&quot;Running in thread '{name}'.&quot;)
+</code></pre>
+<p>下一节解释控制关键字发现和避免上述问题的不同方式。</p>
+<h3>控制关键字发现</h3>
+<p>本节解释如何控制哪些方法和函数成为关键字。</p>
+<h4>在基于模块的库中避免导入的公共函数</h4>
+<p>如前一节所述，对于基于模块的库，导入的函数也会成为关键字。有两种简单的方式可以调整导入本身来避免这个问题：</p>
+<ol>
+<li>只导入模块，不导入函数：</li>
+</ol>
+<pre><code class="language-py">import threading
+
+
+def example_keyword():
+    name = threading.current_thread().name
+    print(f&quot;Running in thread '{name}'.&quot;)
+</code></pre>
+<ol start="2">
+<li>使用导入别名为导入的函数添加下划线前缀：</li>
+</ol>
+<pre><code class="language-py">from threading import current_thread as _current_thread
+
+
+def example_keyword():
+    name = _current_thread().name
+    print(f&quot;Running in thread '{name}'.&quot;)
+</code></pre>
+<p>虽然这两种解决方案都很简单，但它们不够显式，存在有人重构代码时意外将函数暴露为关键字的风险。添加注释或使用下面讨论的方法来限制暴露的关键字可能是个好主意，至少在库变得更大时。</p>
+<h4>使用 <code>@library</code> 装饰器</h4>
+<p>对于基于类的库，禁用公共方法成为关键字的最简单方式是使用 <code>@library</code> 装饰器。该装饰器默认禁用自动关键字发现，要求使用 <code>@keyword</code> 装饰器显式标记关键字。例如，这个库只创建一个关键字 My Keyword：</p>
+<pre><code class="language-py">from robot.api.deco import keyword, library
+
+
+@library
+class MyLibrary:
+
+    @keyword
+    def my_keyword(self, arg):
+        return self.helper(arg)
+
+    def helper(self, arg):
+        return arg.upper()
+</code></pre>
+<h4>使用 <code>ROBOT_AUTO_KEYWORDS</code> 属性</h4>
+<p>禁用自动关键字发现的另一种方式是将特殊的 <code>ROBOT_AUTO_KEYWORDS</code> 属性设置为 <code>False</code>，这是 <code>@library</code> 装饰器的替代方案。这对于无法自身被装饰的基于模块的库特别有用：</p>
+<pre><code class="language-py">from robot.api.deco import keyword
+
+
+ROBOT_AUTO_KEYWORDS = False
+
+
+@keyword
+def my_keyword(arg):
+    return helper(arg)
+
+def helper(arg):
+    return arg.upper()
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> <code>@library</code> 装饰器内部也设置了 <code>ROBOT_AUTO_KEYWORDS</code> 属性。</p>
+</blockquote>
+<h4>使用 <code>@not_keyword</code> 装饰器</h4>
+<p>模块中的函数和类中的方法可以使用 <code>@not_keyword</code> 装饰器显式标记为&quot;非关键字&quot;：</p>
+<pre><code class="language-py">from robot.api.deco import not_keyword
+
+
+def my_keyword(arg):
+    return helper(arg)
+
+@not_keyword
+def helper(arg):
+    return arg.upper()
+</code></pre>
+<p>当库以模块实现时，可以显式调用这个装饰器来避免将导入的函数暴露为关键字：</p>
+<pre><code class="language-py">from threading import current_thread
+
+from robot.api.deco import not_keyword
+
+
+not_keyword(current_thread)  # 不将 `current_thread` 暴露为关键字。
+
+
+def example_keyword():
+    thread_name = current_thread().name
+    print(f&quot;Running in thread '{thread_name}'.&quot;)
+</code></pre>
+<h4>使用 <code>__all__</code> 属性</h4>
+<p>Python 模块可以定义特殊的 <code>__all__</code> 属性来指定它们包含哪些<a href="https://docs.python.org/3/reference/simple_stmts.html#import">公共名称</a>。如果基于模块的库有这样的属性，Robot Framework 会尊重它并且只将列出的函数视为关键字：</p>
+<pre><code class="language-py">__all__ = [&quot;my_keyword&quot;]
+
+
+def my_keyword(arg):
+    return helper(arg)
+
+def helper(arg):
+    return arg.upper()
+</code></pre>
+<h4>使用 <code>get_keyword_names</code> 方法</h4>
+<p>基于类的库可以使用特殊的 <code>get_keyword_names</code> 方法显式告诉 Robot Framework 哪些方法是关键字，该方法必须返回一个暴露的方法名列表：</p>
+<pre><code class="language-py">class MyLibrary:
+
+    def get_keyword_names(self):
+        return [&quot;my_keyword&quot;]
+
+    def my_keyword(self, arg):
+        return self.helper(arg)
+
+    def helper(self, arg):
+        return arg.upper()
+</code></pre>
+<p>除了获取方法名列表之外的所有内容与其他静态库的工作方式完全相同。然而，也可以通过利用 Python 的 <a href="https://docs.python.org/3/reference/datamodel.html#object.__getattr__"><code>__getattr__</code></a> 方法动态创建实际的关键字——如果返回的方法名不存在，Python 就会调用该方法：</p>
+<pre><code class="language-py">class MyLibrary:
+
+    def get_keyword_names(self):
+        return [&quot;normal_keyword&quot;, &quot;dynamic_keyword&quot;]
+
+    def normal_keyword(self, arg):
+        print(&quot;This is a normal keyword.&quot;)
+
+    def __getattr__(self, name):
+        if name != &quot;dynamic_keyword&quot;:
+            raise AttributeError(name)
+
+        def dynamically_created_keyword():
+            print(&quot;This is a dynamically created keyword.&quot;)
+
+        return dynamically_created_keyword
+</code></pre>
+<p>在上面的示例中，实际的关键字是在 <code>__getattr__</code> 方法内部定义的。在更实际的场景中，它可以是导入的或从某个对象动态获取的。</p>
+<blockquote>
+<p><strong>注意：</strong> 拥有 <code>get_keyword_names</code> 方法但其他方面与普通静态库工作方式相同的库有时被称为<strong>混合库</strong>（hybrid library），这种 API 可以称为<strong>混合库 API</strong>。原因是使用动态库 API 的库也使用 <code>get_keyword_names</code> 方法来指定关键字，但它们执行关键字的方式不同。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> 由于历史原因，<code>get_keyword_names</code> 方法也可以拼写为 <code>getKeywordNames</code>。推荐使用前一种变体。</p>
+</blockquote>
+<h4>使用动态库 API</h4>
+<p>动态库 API 要求使用 <code>get_keyword_names</code> 方法显式列出已实现的关键字。这完全避免了方法或函数可能意外暴露为关键字的问题。</p>
+<h3>关键字名称</h3>
+<p>测试数据中使用的关键字名称与方法名进行比较以找到实现这些关键字的方法。名称比较不区分大小写，并且空格和下划线也被忽略。例如，方法 <code>hello</code> 映射到关键字名称 Hello、hello 甚至 h e l l o。类似地，<code>do_nothing</code> 和 <code>doNothing</code> 方法都可以用作测试数据中的 Do Nothing 关键字。</p>
+<p>实现为模块的示例库位于 <code>MyLibrary.py</code> 文件中：</p>
+<pre><code class="language-py">def hello(name):
+    print(f&quot;Hello, {name}!&quot;)
+
+def do_nothing():
+    pass
+</code></pre>
+<p>下面的示例说明了如何使用上面的示例库。如果你想自己尝试，请确保库在模块搜索路径中。</p>
+<pre><code class="language-markdown">*** Settings ***
+Library    MyLibrary
+
+*** Test Cases ***
+My Test
+    Do Nothing
+    Hello    world
+</code></pre>
+<h4>设置自定义名称</h4>
+<p>可以为关键字暴露一个不同的名称，而不是映射到方法名的默认关键字名称。这可以通过将方法的 <code>robot_name</code> 属性设置为所需的自定义名称来实现：</p>
+<pre><code class="language-py">def login(username, password):
+    ...
+
+login.robot_name = 'Login via user panel'
+</code></pre>
+<pre><code class="language-markdown">*** Test Cases ***
+My Test
+    Login Via User Panel    ${username}    ${password}
+</code></pre>
+<p>与上面的示例中显式设置 <code>robot_name</code> 属性不同，使用 <code>@keyword</code> 装饰器通常是最简单的方式：</p>
+<pre><code class="language-py">from robot.api.deco import keyword
+
+
+@keyword('Login via user panel')
+def login(username, password):
+    ...
+</code></pre>
+<p>不带参数使用此装饰器不会影响暴露的关键字名称，但仍然会设置 <code>robot_name</code> 属性。这允许在不实际更改关键字名称的情况下标记要暴露为关键字的方法。拥有 <code>robot_name</code> 属性的方法即使方法名本身以下划线开头也会创建关键字。</p>
+<p>设置自定义关键字名称还可以使库关键字能够使用嵌入式参数语法接受参数。</p>
+<h3>关键字标签</h3>
+<p>库关键字和用户关键字都可以拥有标签（tag）。库关键字可以通过将方法的 <code>robot_tags</code> 属性设置为所需标签的列表来定义它们。与设置自定义名称类似，使用 <code>@keyword</code> 装饰器来设置这个属性是最简单的方式：</p>
+<pre><code class="language-py">from robot.api.deco import keyword
+
+
+@keyword(tags=['tag1', 'tag2'])
+def login(username, password):
+    ...
+
+@keyword('Custom name', ['tags', 'here'])
+def another_example():
+    ...
+</code></pre>
+<p>另一种设置标签的方式是在关键字文档的最后一行以 <code>Tags:</code> 前缀给出，标签之间用逗号分隔。例如：</p>
+<pre><code class="language-py">def login(username, password):
+    &quot;&quot;&quot;Log user in to SUT.
+
+    Tags: tag1, tag2
+    &quot;&quot;&quot;
+    ...
+</code></pre>
+<h3>关键字参数</h3>
+<p>使用静态和混合 API 时，关键字需要多少参数的信息直接从实现它的方法获取。使用动态库 API 的库有其他方式共享这些信息，因此本节与它们无关。</p>
+<p>最常见也是最简单的情况是关键字需要确定数量的参数。在这种情况下，方法简单地接受恰好那些参数。例如，一个不带参数的关键字的实现方法也不接受参数，一个带一个参数的关键字的实现方法也接受一个参数，以此类推。</p>
+<p>接受不同数量参数的示例关键字：</p>
+<pre><code class="language-py">def no_arguments():
+    print(&quot;Keyword got no arguments.&quot;)
+
+def one_argument(arg):
+    print(f&quot;Keyword got one argument '{arg}'.&quot;)
+
+def three_arguments(a1, a2, a3):
+    print(f&quot;Keyword got three arguments '{a1}', '{a2}' and '{a3}'.&quot;)
+</code></pre>
+<h3>关键字的默认值</h3>
+<p>关键字使用的某些参数具有默认值通常是有用的。</p>
+<p>在 Python 中，一个方法总是只有一个实现，可能的默认值在方法签名中指定。这种语法对所有 Python 程序员来说都很熟悉，如下所示：</p>
+<pre><code class="language-py">def one_default(arg='default'):
+    print(f&quot;Got argument '{arg}'.&quot;)
+
+
+def multiple_defaults(arg1, arg2='default 1', arg3='default 2'):
+    print(f&quot;Got arguments '{arg1}', '{arg2}' and '{arg3}'.&quot;)
+</code></pre>
+<p>上面的第一个示例关键字可以使用零个或一个参数。如果没有给出参数，<code>arg</code> 获取值 <code>default</code>。如果有一个参数，<code>arg</code> 获取该值，使用多于一个参数调用关键字将会失败。在第二个示例中，总是需要一个参数，但第二个和第三个参数有默认值，因此可以使用一到三个参数来使用该关键字。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Defaults
+    One Default
+    One Default    argument
+    Multiple Defaults    required arg
+    Multiple Defaults    required arg    optional
+    Multiple Defaults    required arg    optional 1    optional 2
+</code></pre>
+<h3>可变数量的参数（<code>*varargs</code>）</h3>
+<p>Robot Framework 也支持接受任意数量参数的关键字。</p>
+<p>Python 支持接受任意数量参数的方法。相同的语法在库中也可以使用，并且如下面的示例所示，它也可以与其他指定参数的方式结合使用：</p>
+<pre><code class="language-py">def any_arguments(*args):
+    print(&quot;Got arguments:&quot;)
+    for arg in args:
+        print(arg)
+
+def one_required(required, *others):
+    print(f&quot;Required: {required}\nOthers:&quot;)
+    for arg in others:
+        print(arg)
+
+def also_defaults(req, def1=&quot;default 1&quot;, def2=&quot;default 2&quot;, *rest):
+    print(req, def1, def2, rest)
+</code></pre>
+<pre><code class="language-markdown">*** Test Cases ***
+Varargs
+    Any Arguments
+    Any Arguments    argument
+    Any Arguments    arg 1    arg 2    arg 3    arg 4    arg 5
+    One Required     required arg
+    One Required     required arg    another arg    yet another
+    Also Defaults    required
+    Also Defaults    required    these two    have defaults
+    Also Defaults    1    2    3    4    5    6
+</code></pre>
+<h3>自由关键字参数（<code>**kwargs</code>）</h3>
+<p>Robot Framework 支持 <a href="https://docs.python.org/tutorial/controlflow.html#keyword-arguments">Python 的 **kwargs 语法</a>。如何使用接受<em>自由关键字参数</em>（也称为<em>自由命名参数</em>）的关键字，在创建测试用例一节中讨论。在本节中，我们看看如何创建这样的关键字。</p>
+<p>如果你已经熟悉 kwargs 在 Python 中的工作方式，理解它们在 Robot Framework 测试库中的工作方式就相当简单了。下面的示例展示了基本功能：</p>
+<pre><code class="language-py">def example_keyword(**stuff):
+    for name, value in stuff.items():
+        print(name, value)
+</code></pre>
+<pre><code class="language-markdown">*** Test Cases ***
+Keyword Arguments
+    Example Keyword    hello=world        # 日志输出 'hello world'。
+    Example Keyword    foo=1    bar=42    # 日志输出 'foo 1' 和 'bar 42'。
+</code></pre>
+<p>基本上，关键字调用末尾所有使用命名参数语法 <code>name=value</code> 且不匹配任何其他参数的参数，都作为 kwargs 传递给关键字。要避免将像 <code>foo=quux</code> 这样的字面值用作自由关键字参数，必须使用转义（escape）如 <code>foo\=quux</code>。</p>
+<p>下面的示例说明了普通参数、varargs 和 kwargs 如何协同工作：</p>
+<pre><code class="language-py">def various_args(arg=None, *varargs, **kwargs):
+    if arg is not None:
+        print('arg:', arg)
+    for value in varargs:
+        print('vararg:', value)
+    for name, value in sorted(kwargs.items()):
+        print('kwarg:', name, value)
+</code></pre>
+<pre><code class="language-markdown">*** Test Cases ***
+Positional
+    Various Args    hello    world                # 日志输出 'arg: hello' 和 'vararg: world'。
+
+Named
+    Various Args    arg=value                     # 日志输出 'arg: value'。
+
+Kwargs
+    Various Args    a=1    b=2    c=3             # 日志输出 'kwarg: a 1'、'kwarg: b 2' 和 'kwarg: c 3'。
+    Various Args    c=3    a=1    b=2             # 与上面相同。顺序无关紧要。
+
+Positional and kwargs
+    Various Args    1    2    kw=3                # 日志输出 'arg: 1'、'vararg: 2' 和 'kwarg: kw 3'。
+
+Named and kwargs
+    Various Args    arg=value      hello=world    # 日志输出 'arg: value' 和 'kwarg: hello world'。
+    Various Args    hello=world    arg=value      # 与上面相同。顺序无关紧要。
+</code></pre>
+<p>关于使用与上面示例完全相同签名的真实示例，参见 Process 库中的 Run Process 和 Start Keyword 关键字。</p>
+<h3>仅限关键字参数</h3>
+<p>从 Robot Framework 3.1 开始，可以在不同的关键字中使用仅限命名参数（named-only argument）。这种支持由 Python 的<a href="https://www.python.org/dev/peps/pep-3102">仅限关键字参数</a>提供。仅限关键字参数在可能的 <code>*varargs</code> 之后指定，或者当不需要 <code>*varargs</code> 时在专用的 <code>*</code> 标记之后指定。可能的 <code>**kwargs</code> 在仅限关键字参数之后指定。</p>
+<p>示例：</p>
+<pre><code class="language-py">def sort_words(*words, case_sensitive=False):
+    key = str.lower if case_sensitive else None
+    return sorted(words, key=key)
+
+def strip_spaces(word, *, left=True, right=True):
+    if left:
+        word = word.lstrip()
+    if right:
+        word = word.rstrip()
+    return word
+</code></pre>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Sort Words    Foo    bar    baZ
+    Sort Words    Foo    bar    baZ    case_sensitive=True
+    Strip Spaces    ${word}    left=False
+</code></pre>
+<h3>仅限位置参数</h3>
+<p>Python 支持所谓的<a href="https://www.python.org/dev/peps/pep-0570/">仅限位置参数</a>，它可以指定一个参数只能作为位置参数（positional argument）给出，而不能作为命名参数（named argument）如 <code>name=value</code> 给出。仅限位置参数在普通参数之前指定，并且必须在它们之后使用特殊的 <code>/</code> 标记：</p>
+<pre><code class="language-py">def keyword(posonly, /, normal):
+    print(f&quot;Got positional-only argument {posonly} and normal argument {normal}.&quot;)
+</code></pre>
+<p>上面的关键字可以这样使用：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    # 仅限位置参数和普通参数用作位置参数。
+    Keyword    foo    bar
+    # 普通参数也可以使用命名方式。
+    Keyword    foo    normal=bar
+</code></pre>
+<p>如果仅限位置参数使用了包含等号的值如 <code>example=usage</code>，即使 <code>=</code> 之前的部分匹配参数名，也不会被视为命名参数语法。不过这条规则仅在仅限位置参数在其正确位置使用且之前没有其他参数使用命名参数语法时才适用。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    # 在这种情况下，仅限位置参数获取字面值 `posonly=foo`。
+    Keyword    posonly=foo    normal=bar
+    # 这会失败。
+    Keyword    normal=bar    posonly=foo
+</code></pre>
+<p>仅限位置参数从 Robot Framework 4.0 开始完全支持。将它们用作位置参数在更早的版本中也有效，但将它们用作命名参数会在 Python 端导致错误。</p>
+<h3>参数转换</h3>
+<p>在 Robot Framework 测试数据中定义的参数默认以 Unicode 字符串的形式传递给关键字。然而，有几种方式可以使用非字符串值：</p>
+<ul>
+<li>变量可以包含任何类型的对象作为值，并且用作参数的变量会原样传递给关键字。</li>
+<li>关键字可以自行转换它们接受的参数为其他类型。</li>
+<li>可以使用函数注解或 <code>@keyword</code> 装饰器显式指定参数类型。在这些情况下，Robot Framework 会自动转换参数。</li>
+<li>自动转换也会基于关键字默认值进行。</li>
+<li>库可以注册自定义参数转换器。</li>
+</ul>
+<p>基于函数注解、使用 <code>@keyword</code> 装饰器指定的类型以及参数默认值的自动参数转换都是 Robot Framework 3.1 的新功能。支持的转换一节指定了这些情况下支持哪些参数转换。</p>
+<p>在 Robot Framework 4.0 之前，只有当给定参数是字符串时才会进行自动转换。如今无论参数类型如何都会进行转换。</p>
+<h4>手动参数转换</h4>
+<p>如果没有向 Robot Framework 指定类型信息，所有不是通过变量传递的参数都将以 Unicode 字符串的形式提供给关键字。这包括以下这样的情况：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Example Keyword    42    False
+</code></pre>
+<p>在关键字内部总是可以转换作为字符串传递的参数。在简单情况下，这意味着使用 <code>int()</code> 或 <code>float()</code> 将参数转换为数字，但其他类型的转换也是可能的。处理布尔值时需要注意，因为 Python 将所有非空字符串（包括字符串 <code>False</code>）视为真值。Robot Framework 自己的 <code>robot.utils.is_truthy()</code> 工具很好地处理了这个问题，因为它将 <code>FALSE</code>、<code>NO</code> 和 <code>NONE</code>（不区分大小写）视为假值：</p>
+<pre><code class="language-py">from robot.utils import is_truthy
+
+
+def example_keyword(count, case_insensitive):
+    count = int(count)
+    if is_truthy(case_insensitive):
+        ...
+</code></pre>
+<p>关键字也可以通过 <a href="https://robot-framework.readthedocs.io/en/stable/autodoc/robot.running.arguments.html#robot.running.arguments.typeinfo.TypeInfo"><code>robot.api.TypeInfo</code></a> 类及其 <code>convert</code> 方法使用 Robot Framework 的参数转换功能。如果所需的转换逻辑更复杂或需要比简单使用 <code>int()</code> 更好的错误报告，这会很有用。</p>
+<pre><code class="language-py">from robot.api import TypeInfo
+
+
+def example_keyword(count, case_insensitive):
+    count = TypeInfo.from_type(int).convert(count)
+    if TypeInfo.from_type(bool).convert(case_insensitive):
+        ...
+</code></pre>
+<blockquote>
+<p><strong>提示：</strong> 一般建议使用类型提示或其他方式指定类型，让 Robot Framework 自动处理参数转换。手动参数转换只应在特殊情况下使用。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> <code>robot.api.TypeInfo</code> 是 Robot Framework 7.0 的新功能。</p>
+</blockquote>
+<h4>使用函数注解指定参数类型</h4>
+<p>从 Robot Framework 3.1 开始，如果参数类型信息可用且类型被识别，传递给关键字的参数会自动转换。指定类型最自然的方式是使用 Python <a href="https://www.python.org/dev/peps/pep-3107/">函数注解</a>。例如，前面示例中的关键字可以如下实现，参数将自动转换：</p>
+<pre><code class="language-py">def example_keyword(count: int, case_insensitive: bool = True):
+    if case_insensitive:
+        ...
+</code></pre>
+<p>关于自动转换的类型列表以及这些类型接受哪些值，参见下面的支持的转换一节。如果一个参数拥有受支持的类型但给出了无法转换的值，将会产生错误。只注解部分参数是可以的。</p>
+<p>使用非受支持类型注解参数不是错误，也可以将注解用于类型之外的目的。在这些情况下不会进行转换，但注解仍会显示在 Libdoc 生成的文档中。</p>
+<p>关键字还可以使用签名末尾的 <code>-&gt;</code> 表示法指定返回类型注解，如 <code>def example() -&gt; int:</code>。这些信息在执行期间不会被使用，但从 Robot Framework 7.0 开始，它会被 Libdoc 显示以用于文档目的。</p>
+<h4>使用 <code>@keyword</code> 装饰器指定参数类型</h4>
+<p>指定显式参数类型的另一种方式是使用 <code>@keyword</code> 装饰器。从 Robot Framework 3.1 开始，它接受一个可选的 <code>types</code> 参数，可以用于将参数类型指定为将参数名映射到类型的字典，或者作为根据位置将参数映射到类型的列表。下面的两种方式展示了实现与之前示例相同关键字的方法：</p>
+<pre><code class="language-py">from robot.api.deco import keyword
+
+
+@keyword(types={'count': int, 'case_insensitive': bool})
+def example_keyword(count, case_insensitive=True):
+    if case_insensitive:
+        ...
+
+@keyword(types=[int, bool])
+def example_keyword(count, case_insensitive=True):
+    if case_insensitive:
+        ...
+</code></pre>
+<p>无论使用哪种方式，都不需要为所有参数指定类型。当以列表形式指定类型时，可以使用 <code>None</code> 来标记某个参数没有类型信息，末尾的参数可以完全省略。例如，以下两个关键字都只为第二个参数指定了类型：</p>
+<pre><code class="language-py">@keyword(types={'second': float})
+def example1(first, second, third):
+    ...
+
+@keyword(types=[None, float])
+def example2(first, second, third):
+    ...
+</code></pre>
+<p>从 Robot Framework 7.0 开始，可以通过在类型字典中使用键 <code>'return'</code> 和适当的类型来指定关键字的返回类型。这些信息在执行期间不会被使用，但会被 Libdoc 显示以用于文档目的。</p>
+<p>如果使用 <code>@keyword</code> 装饰器指定了任何类型，该关键字的注解类型信息将被忽略。将 <code>types</code> 设置为 <code>None</code> 如 <code>@keyword(types=None)</code> 会完全禁用类型转换，这样默认值获取的类型信息也会被忽略。</p>
+<h4>基于默认值的隐式参数类型</h4>
+<p>如果没有通过注解或 <code>@keyword</code> 装饰器显式获取类型信息，Robot Framework 3.1 及更新版本会尝试根据可能的参数默认值来获取。在这个示例中，<code>count</code> 和 <code>case_insensitive</code> 分别获取类型 <code>int</code> 和 <code>bool</code>：</p>
+<pre><code class="language-py">def example_keyword(count=-1, case_insensitive=True):
+    if case_insensitive:
+        ...
+</code></pre>
+<p>当类型信息基于默认值隐式获取时，参数转换本身不如显式获取信息时严格：</p>
+<ul>
+<li>转换也可能尝试到其他&quot;类似&quot;的类型。例如，如果转换为整数失败，会尝试浮点数转换。</li>
+<li>转换失败不是错误，在这些情况下关键字会获取原始值。</li>
+</ul>
+<p>如果一个参数有显式类型和默认值，首先基于显式类型尝试转换。如果失败，则基于默认值尝试转换。在这种特殊情况下，基于默认值的转换是严格的，转换失败会导致错误。</p>
+<p>如果不希望基于默认值进行参数转换，可以使用 <code>@keyword</code> 装饰器如 <code>@keyword(types=None)</code> 禁用整个参数转换。</p>
+<blockquote>
+<p><strong>注意：</strong> 在 Robot Framework 4.0 之前，只有当参数没有显式类型时才会基于默认值进行转换。</p>
+</blockquote>
+<h4>支持的转换</h4>
+<p>下表列出了 Robot Framework 3.1 及更新版本将参数转换到的类型。以下特征适用于所有转换：</p>
+<ul>
+<li>类型可以使用函数注解或 <code>@keyword</code> 装饰器显式指定。</li>
+<li>如果未显式指定，类型可以从参数默认值隐式获取。</li>
+<li>无论给定参数的类型如何都会进行转换。如果参数类型与预期类型不兼容，转换将失败。</li>
+<li>如果类型是显式指定的，转换失败会导致错误。如果类型是基于默认值获取的，给定的参数将原样使用。</li>
+</ul>
+<blockquote>
+<p><strong>注意：</strong> 如果一个参数同时拥有类型提示和默认值，首先基于类型提示尝试转换，然后如果失败，再基于默认值类型尝试。此行为将来可能会更改，以便基于默认值的转换<strong>仅</strong>在参数没有类型提示时进行。这将改变 <code>arg: list = None</code> 这样的情况中的转换行为，其中 <code>None</code> 转换将不再被尝试。强烈建议库创建者现在就显式指定默认值类型如 <code>arg: list | None = None</code>。</p>
+</blockquote>
+<p>用于指定的类型可以是具体类型（例如 <a href="https://docs.python.org/library/stdtypes.html#list">list</a>）、抽象基类（ABC）（例如 <a href="https://docs.python.org/library/collections.abc.html#collections.abc.Sequence">Sequence</a>）或这些类型的子类（例如 <a href="https://docs.python.org/library/collections.abc.html#collections.abc.MutableSequence">MutableSequence</a>）。<a href="https://docs.python.org/library/typing.html">typing</a> 模块中映射到受支持具体类型或 ABC 的类型（例如 <code>List</code>）也受支持。在所有这些情况下，参数都被转换为具体类型。</p>
+<p>除了使用实际类型（例如 <code>int</code>），还可以使用类型名称字符串（例如 <code>'int'</code>）来指定类型，某些类型也有别名（例如 <code>'integer'</code>）。类型到名称和别名的匹配不区分大小写。</p>
+<p>&quot;接受&quot;列指定了哪些给定的参数类型会被转换。如果给定的参数已经具有预期的类型，则不进行转换。其他类型会导致转换失败。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>ABC</th>
+<th>别名</th>
+<th>接受</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://docs.python.org/library/functions.html#bool">bool</a></td>
+<td></td>
+<td>boolean</td>
+<td>str, int, float, None</td>
+<td>字符串 <code>TRUE</code>、<code>YES</code>、<code>ON</code> 和 <code>1</code> 被转换为 <code>True</code>，空字符串以及 <code>FALSE</code>、<code>NO</code>、<code>OFF</code> 和 <code>0</code> 被转换为 <code>False</code>，字符串 <code>NONE</code> 被转换为 <code>None</code>。其他字符串和其他接受的值原样传递，允许关键字在需要时对它们进行特殊处理。所有字符串比较不区分大小写。True 和 false 字符串可以本地化。参见翻译附录了解支持的翻译。</td>
+<td><code>TRUE</code>（转换为 <code>True</code>）, <code>off</code>（转换为 <code>False</code>）, <code>example</code>（原样使用）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/functions.html#int">int</a></td>
+<td><a href="https://docs.python.org/library/numbers.html#numbers.Integral">Integral</a></td>
+<td>integer, long</td>
+<td>str, float</td>
+<td>使用内置 int 函数进行转换。浮点数只有在能精确表示为整数时才被接受。例如 <code>1.0</code> 被接受而 <code>1.1</code> 不被接受。如果字符串转整数失败且类型基于默认值隐式获取，也会尝试浮点数转换。从 Robot Framework 4.1 开始，可以通过在值前添加 <code>0x</code>、<code>0o</code> 和 <code>0b</code> 前缀来使用十六进制、八进制和二进制数。从 Robot Framework 4.1 开始，空格和下划线可用作数字分组的视觉分隔符。从 Robot Framework 7.0 开始，表示浮点数的字符串只要其小数部分为零就被接受，这包括使用科学计数法如 <code>1e100</code>。</td>
+<td><code>42</code>, <code>-1</code>, <code>10 000 000</code>, <code>1e100</code>, <code>0xFF</code>, <code>0o777</code>, <code>0b1010</code>, <code>0xBAD_C0FFEE</code>, <code>${1}</code>, <code>${1.0}</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/functions.html#float">float</a></td>
+<td><a href="https://docs.python.org/library/numbers.html#numbers.Real">Real</a></td>
+<td>double</td>
+<td>str, Real</td>
+<td>使用内置 float 函数进行转换。从 Robot Framework 4.1 开始，空格和下划线可用作数字分组的视觉分隔符。</td>
+<td><code>3.14</code>, <code>2.9979e8</code>, <code>10 000.000 01</code>, <code>10_000.000_01</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/decimal.html#decimal.Decimal">Decimal</a></td>
+<td></td>
+<td></td>
+<td>str, int, float</td>
+<td>使用 Decimal 类进行转换。当需要精确表示十进制数时，Decimal 比 float 更推荐。从 Robot Framework 4.1 开始，空格和下划线可用作数字分组的视觉分隔符。</td>
+<td><code>3.14</code>, <code>10 000.000 01</code>, <code>10_000.000_01</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/functions.html#func-str">str</a></td>
+<td></td>
+<td>string, unicode</td>
+<td>任何类型</td>
+<td>所有参数被转换为 Unicode 字符串。大多数值简单地使用 <code>str(value)</code> 转换。一个例外是 bytes 直接映射到具有相同序数的 Unicode 码点，这意味着例如 <code>b&quot;hyv\xe4&quot;</code> 变成 <code>&quot;hyvä&quot;</code>。另一个例外是 Secret 对象被显式拒绝。Robot Framework 4.0 新功能。bytes 特殊转换和拒绝 <code>Secret</code> 对象是 Robot Framework 7.4 的新功能。</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/functions.html#func-bytes">bytes</a></td>
+<td></td>
+<td></td>
+<td>str, bytearray</td>
+<td>字符串被转换为 bytes，使得 256 以下的每个 Unicode 码点直接映射到匹配的字节。更高的码点不被允许。整数和整数序列直接转换为匹配的字节，必须在 0-255 范围内。支持整数和整数序列是 Robot Framework 7.4 的新功能。</td>
+<td>字符串：<code>good</code>, <code>hyvä</code>（转换为 <code>hyv\xe4</code>）, <code>\x00</code>（转换为 null 字节）。整数和整数序列：<code>0</code>（转换为 null 字节）, <code>[82, 70, 33]</code>（转换为 <code>RF!</code>）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/functions.html#func-bytearray">bytearray</a></td>
+<td></td>
+<td></td>
+<td>str, bytes</td>
+<td>与 bytes 相同的转换，但结果是 bytearray。</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/datetime.html#datetime.datetime">datetime</a></td>
+<td></td>
+<td></td>
+<td>str, int, float</td>
+<td>字符串时间戳预期为类似 <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> 的格式 <code>YYYY-MM-DD hh:mm:ss.mmmmmm</code>，其中任何非数字字符都可以用作分隔符或完全省略分隔符。此外，只有日期部分是必须的，所有可能缺失的时间部分被视为零。特殊值 <code>NOW</code> 和 <code>TODAY</code>（不区分大小写）可用于获取当前本地日期时间，这是 Robot Framework 7.3 的新功能。整数和浮点数被视为自 Unix epoch 以来的秒数。</td>
+<td><code>2022-02-09T16:39:43.632269</code>, <code>20220209 16:39</code>, <code>2022-02-09</code>, <code>now</code>（当前本地日期时间）, <code>TODAY</code>（同上）, <code>${1644417583.632269}</code>（Epoch 时间）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/datetime.html#datetime.date">date</a></td>
+<td></td>
+<td></td>
+<td>str</td>
+<td>与 datetime 相同的时间戳转换，但所有时间部分预期被省略或为零。特殊值 <code>NOW</code> 和 <code>TODAY</code>（不区分大小写）可用于获取当前本地日期，这是 Robot Framework 7.3 的新功能。</td>
+<td><code>2018-09-12</code>, <code>20180912</code>, <code>today</code>（当前本地日期）, <code>NOW</code>（同上）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/datetime.html#datetime.timedelta">timedelta</a></td>
+<td></td>
+<td></td>
+<td>str, int, float</td>
+<td>字符串预期以 Robot Framework 支持的时间格式之一表示时间间隔：数字形式的时间、时间字符串形式或&quot;计时器&quot;字符串形式。整数和浮点数被视为秒数。</td>
+<td><code>42</code>（42 秒）, <code>1 minute 2 seconds</code>, <code>01:02</code>（同上）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/pathlib.html">Path</a></td>
+<td><a href="https://docs.python.org/library/os.html#os.PathLike">PathLike</a></td>
+<td></td>
+<td>str</td>
+<td>字符串被转换为 <code>pathlib.Path</code> 对象。在 Windows 上 <code>/</code> 自动转换为 <code>\</code>。Robot Framework 6.0 新功能。</td>
+<td><code>/tmp/absolute/path</code>, <code>relative/path/to/file.ext</code>, <code>name.txt</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/enum.html#enum.Enum">Enum</a></td>
+<td></td>
+<td></td>
+<td>str</td>
+<td>指定的类型必须是枚举（Enum 或 Flag 的子类），给定的参数必须匹配其成员名称。匹配成员名称时不区分大小写、空格、下划线和连字符，但精确匹配优先于规范化匹配。忽略连字符是 Robot Framework 7.0 的新功能。枚举文档和成员会自动显示在 Libdoc 生成的文档中。</td>
+<td><code>NORTH</code>（Direction.NORTH）, <code>north west</code>（Direction.NORTH_WEST）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/enum.html#enum.IntEnum">IntEnum</a></td>
+<td></td>
+<td></td>
+<td>str, int</td>
+<td>指定的类型必须是基于整数的枚举（IntEnum 或 IntFlag 的子类），给定的参数必须匹配其成员名称或值。匹配成员名称的方式与 Enum 相同。值可以以整数形式或可转换为整数的字符串形式给出。枚举文档和成员会自动显示在 Libdoc 生成的文档中。Robot Framework 4.1 新功能。</td>
+<td><code>OFF</code>（PowerState.OFF）, <code>1</code>（PowerState.ON）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/typing.html#typing.Literal">Literal</a></td>
+<td></td>
+<td></td>
+<td>取决于用法</td>
+<td>只接受指定的值。值可以是字符串、整数、bytes、布尔值、枚举和 <code>None</code>，使用的参数使用值类型特定的转换逻辑进行转换。字符串不区分大小写、空格、下划线和连字符，但精确匹配优先于规范化匹配。<code>Literal</code> 提供类似于 <code>Enum</code> 的功能，但不支持自定义文档。Robot Framework 7.0 新功能。</td>
+<td><code>OFF</code>, <code>on</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/constants.html#None">None</a></td>
+<td></td>
+<td></td>
+<td>str</td>
+<td>字符串 <code>NONE</code>（不区分大小写）和空字符串被转换为 Python 的 <code>None</code> 对象。其他值会导致错误。转换空字符串是 Robot Framework 7.4 的新功能。</td>
+<td><code>None</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/typing.html#typing.Any">Any</a></td>
+<td></td>
+<td></td>
+<td>任何类型</td>
+<td>接受任何值。不进行转换。Robot Framework 6.1 新功能。</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a></td>
+<td></td>
+<td></td>
+<td>任何类型</td>
+<td>接受任何值。不进行转换。Robot Framework 7.4 新功能。</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/stdtypes.html#list">list</a></td>
+<td></td>
+<td></td>
+<td>str, Sequence</td>
+<td>将字符串和序列转换为 <code>list</code>。字符串必须是 Python 列表或元组字面量。使用 <a href="https://docs.python.org/library/ast.html#ast.literal_eval"><code>ast.literal_eval</code></a> 函数转换，可能的元组进一步转换为列表。它们可以包含 <code>ast.literal_eval</code> 支持的任何值，包括列表和其他集合。如果参数是列表，则直接使用不转换。元组和其他序列转换为列表。支持元组字面量是 Robot Framework 7.4 的新功能。</td>
+<td><code>['one', 'two']</code>, <code>[('one', 1), ('two', 2)]</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/stdtypes.html#tuple">tuple</a></td>
+<td></td>
+<td></td>
+<td>str, Sequence</td>
+<td>与 list 相同，但结果是 tuple。在 Robot Framework 7.4 之前，只支持元组字面量。</td>
+<td><code>('one', 'two')</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/collections.abc.html#collections.abc.Sequence">Sequence</a></td>
+<td></td>
+<td></td>
+<td>str, Sequence</td>
+<td>与 list 相同，但任何序列都被接受而不转换。如果使用的类型是 MutableSequence，不可变值将转换为列表。</td>
+<td><code>[1, 2, 3]</code>（结果是 list）, <code>(1, 2, 3)</code>（结果是 tuple）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/stdtypes.html#set">set</a></td>
+<td><a href="https://docs.python.org/library/collections.abc.html#collections.abc.Set">Set</a></td>
+<td></td>
+<td>str, Collection</td>
+<td>与 list 相同，但也支持集合对象和集合字面量，结果是 set。在 Robot Framework 7.4 之前，只支持集合字面量。</td>
+<td><code>{1, 2, 3, 42}</code>, <code>set()</code>（空集合）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/stdtypes.html#frozenset">frozenset</a></td>
+<td></td>
+<td></td>
+<td>str, Collection</td>
+<td>与 set 相同，但结果是 frozenset。</td>
+<td><code>{1, 2, 3, 42}</code>, <code>frozenset()</code>（空集合）</td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/stdtypes.html#dict">dict</a></td>
+<td></td>
+<td>dictionary</td>
+<td>str, Mapping</td>
+<td>将字符串和映射转换为 <code>dict</code>。字符串必须是 Python 字典字面量。使用 <code>ast.literal_eval</code> 函数转换为 <code>dict</code>。它们可以包含 <code>ast.literal_eval</code> 支持的任何值，包括字典和其他集合。</td>
+<td><code>{'a': 1, 'b': 2}</code>, <code>{'key': 1, 'nested': {'key': 2}}</code></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/collections.abc.html#collections.abc.Mapping">Mapping</a></td>
+<td></td>
+<td>map</td>
+<td>str, Mapping</td>
+<td>与 dict 相同，但保留原始映射类型。如果类型是 MutableMapping，不可变值将转换为 <code>dict</code>。</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://docs.python.org/library/typing.html#typing.TypedDict">TypedDict</a></td>
+<td></td>
+<td></td>
+<td>str, Mapping</td>
+<td>与 dict 相同，但字典项也会转换为指定的类型，并且不允许类型规范中未包含的项。Robot Framework 6.0 新功能。之前使用普通 <code>dict</code> 转换。</td>
+<td><code>{'width': 1600, 'enabled': True}</code></td>
+</tr>
+<tr>
+<td><a href="https://robot-framework.readthedocs.io/en/master/autodoc/robot.utils.html#robot.utils.secret.Secret">Secret</a></td>
+<td></td>
+<td></td>
+<td>Secret</td>
+<td>使用 <code>Secret</code> 类型作为类型提示确保只接受 Secret 变量作为参数。Robot Framework 7.4 新功能。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>注意：</strong> 从 Robot Framework 5.0 开始，拥有转换器的类型会自动显示在 Libdoc 输出中。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> 在 Robot Framework 4.0 之前，大多数类型支持将字符串 <code>NONE</code>（不区分大小写）转换为 Python 的 <code>None</code>。该支持已被移除，<code>None</code> 转换仅在参数将 <code>None</code> 作为显式类型或默认值时进行。</p>
+</blockquote>
+<h4>指定多种可能的类型</h4>
+<p>可以指定一个参数有多种可能的类型。在这种情况下，参数转换按从左到右的顺序基于每种类型尝试，第一个成功转换的值被使用。如果所有转换都不成功，整个转换将失败。</p>
+<p><strong>Union 语法</strong></p>
+<p>使用函数注解时，指定参数有多种可能类型的自然语法是使用 <a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>：</p>
+<pre><code class="language-py">from typing import Union
+
+
+def example(length: Union[int, float], padding: Union[int, str, None] = None):
+    ...
+</code></pre>
+<p>使用 Python 3.10 或更新版本时，可以使用<a href="https://peps.python.org/pep-0604/">原生 union 语法</a>如 <code>int | float</code> 代替：</p>
+<pre><code class="language-py">def example(length: int | float, padding: int | str | None = None):
+    ...
+</code></pre>
+<p>Robot Framework 7.0 增强了对 union 语法的支持，使得&quot;字符串类型化&quot;的 union 如 <code>&quot;int | float&quot;</code> 也可以工作。这种语法也适用于较旧的 Python 版本：</p>
+<pre><code class="language-py">def example(length: &quot;int | float&quot;, padding: &quot;int | str | None&quot; = None):
+    ...
+</code></pre>
+<p><strong>使用元组</strong></p>
+<p>另一种方式是将类型指定为元组。不建议在注解中使用，因为其他工具不支持该语法，但与 <code>@keyword</code> 装饰器配合使用效果很好：</p>
+<pre><code class="language-py">from robot.api.deco import keyword
+
+
+@keyword(types={'length': (int, float), 'padding': (int, str, None)})
+def example(length, padding=None):
+    ...
+</code></pre>
+<p>在上面的示例中，<code>length</code> 参数首先被转换为整数，如果失败则转换为浮点数。<code>padding</code> 首先被转换为整数，然后是字符串，最后是 <code>None</code>。</p>
+<p><strong>当参数匹配其中一个类型时</strong></p>
+<p>如果给定的参数已经具有接受的类型之一，则不进行转换，参数原样使用。例如，如果类型为 <code>length: int | float</code> 的 <code>length</code> 参数与浮点数 <code>1.5</code> 一起使用，它不会被转换为整数。注意，使用非字符串值如浮点数作为参数需要使用变量，如以下为 <code>length</code> 参数提供不同值的示例所示：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Conversion
+    Example    10        # 参数是字符串。转换为整数。
+    Example    1.5       # 参数是字符串。转换为浮点数。
+    Example    ${10}     # 参数是整数。原样接受。
+    Example    ${1.5}    # 参数是浮点数。原样接受。
+</code></pre>
+<p>如果接受的类型之一是字符串如 <code>padding: int | str | None</code>，那么当给定的参数是字符串时不进行转换。如以下为 <code>padding</code> 参数提供不同值的示例所示，在这些情况下通过变量传递其他类型也是可能的：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Conversion
+    Example    1    big        # 参数是字符串。原样接受。
+    Example    1    10         # 参数是字符串。原样接受。
+    Example    1    ${10}      # 参数是整数。原样接受。
+    Example    1    ${None}    # 参数是 `None`。原样接受。
+    Example    1    ${1.5}     # 参数是浮点数。转换为整数。
+</code></pre>
+<p>如果给定的参数不具有任何接受的类型，按类型指定的顺序尝试转换。</p>
+<blockquote>
+<p><strong>注意：</strong> 在使用的值不匹配任何类型但可以成功转换为多种类型的情况下，类型的顺序会改变转换结果。</p>
+<p>例如，如果类型是 <code>float | int</code> 且使用的值是字符串 <code>42</code>，结果将是浮点数 <code>42.0</code> 而不是整数 <code>42</code>。原因是字符串不匹配任何类型，并且首先尝试 <code>float</code> 转换。如果顺序改为 <code>int | float</code>，结果将是整数。</p>
+<p>字符串 <code>3.14</code> 无论顺序如何都会转换为浮点数，因为 <code>int</code> 转换不成功。当值已经是整数或浮点数时，顺序也不影响结果，因为在这种情况下不需要转换。</p>
+</blockquote>
+<p><strong>处理 <code>Any</code> 和 <code>object</code></strong></p>
+<p>如果 <code>Any</code> 或 <code>object</code> 单独用作类型提示如 <code>arg: Any</code> 或 <code>arg: object</code>，任何值都被接受而不转换。但在 union 中使用时的行为有所不同。</p>
+<p>如果 <code>Any</code> 用在 union 中如 <code>arg: int | Any</code>，任何值都被接受而不转换。这允许使用 <code>Any</code> 作为完全禁用参数转换的逃脱手段。</p>
+<p>另一方面，如果 <code>object</code> 用在 union 中如 <code>arg: int | object</code>，转换会尝试应用于 <code>object</code> 之前的类型。这允许尝试转换为某种或某些类型，但在转换失败时获取原始值。</p>
+<blockquote>
+<p><strong>注意：</strong> 虽然这种行为上的微妙差异可能有用，但也有些令人困惑，计划在 Robot Framework 8.0 中更改，使 <code>Any</code> 的行为与 <code>object</code> 相同。更多信息参见 <a href="https://github.com/robotframework/robotframework/issues/5571">issue #5571</a>，如果你认为计划的更改不是好主意，请在该 issue 中评论。</p>
+</blockquote>
+<p><strong>处理无法识别的类型</strong></p>
+<p>如果在 union 中使用了 Robot Framework 无法识别的类型，处理方式如下：</p>
+<ul>
+<li>如果使用的值匹配任何类型（包括无法识别的类型），值原样使用而不转换。</li>
+<li>否则从左到右尝试转换为已识别的类型。</li>
+<li>如果任何转换成功，返回转换后的值。</li>
+<li>如果没有转换成功，返回原始值。</li>
+</ul>
+<p>例如，使用以下关键字，字符串 <code>&quot;7&quot;</code> 将被转换为整数，但字符串 <code>&quot;something&quot;</code> 将原样使用：</p>
+<pre><code class="language-py">def example(argument: int | Unrecognized):
+    ...
+</code></pre>
+<p>从 Robot Framework 6.1 开始，即使无法识别的类型列在已识别类型之前如 <code>Unrecognized | int</code>，上面的逻辑也能工作。在这种情况下也会尝试 <code>int</code> 转换，如果失败则参数原样传递。在更早的 Robot Framework 版本中，<code>int</code> 转换根本不会被尝试。</p>
+<h4>参数化类型</h4>
+<p>对于泛型，参数化语法如 <code>list[int]</code> 或 <code>dict[str, int]</code> 也可以工作。使用此语法时，给定的值首先转换为基础类型，然后各个项转换为嵌套类型。不同泛型类型的转换规则如下：</p>
+<ul>
+<li>列表只能有一个类型如 <code>list[float]</code>。所有列表项都转换为该类型。</li>
+<li>元组可以有任意数量的类型如 <code>tuple[int, int]</code> 和 <code>tuple[str, int, bool]</code>。用作参数的元组预期恰好有那么多项，并且它们被转换为匹配的类型。</li>
+<li>要创建同质元组，可以使用恰好一个类型和省略号如 <code>tuple[int, ...]</code>。在这种情况下，元组可以有任意数量的项（包括零），并且它们都被转换为指定的类型。</li>
+<li>字典必须恰好有两个类型如 <code>dict[str, int]</code>。字典键使用第一个类型转换，值使用第二个类型转换。</li>
+<li>集合只能有一个类型如 <code>set[float]</code>。转换逻辑与列表相同。</li>
+</ul>
+<p>使用原生 <code>list[int]</code> 语法需要 <a href="https://peps.python.org/pep-0585/">Python 3.9</a> 或更新版本。如果需要支持更早的 Python 版本，可以使用 typing 模块中的匹配类型如 <code>List[int]</code> 或使用&quot;字符串类型化&quot;语法如 <code>'list[int]'</code>。</p>
+<blockquote>
+<p><strong>注意：</strong> 泛型嵌套类型转换支持是 Robot Framework 6.0 的新功能。相同语法在更早版本中也可以工作，但参数只转换为基础类型，嵌套类型信息被忽略。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> &quot;字符串类型化&quot;参数化泛型支持是 Robot Framework 7.0 的新功能。</p>
+</blockquote>
+<h4>Secret 类型</h4>
+<p>Robot Framework 有一个自定义的 <a href="https://robot-framework.readthedocs.io/en/master/autodoc/robot.utils.html#robot.utils.secret.Secret"><code>robot.api.types.Secret</code></a> 类型，它封装值使其不显示在日志文件中。如果 <code>Secret</code> 类型用作参数类型，只接受 <code>Secret</code> 对象，尝试使用例如字面字符串会失败。封装的值可以通过 <code>value</code> 属性访问，关键字可以方便地使用它：</p>
+<pre><code class="language-py">from example import SUT
+from robot.api.types import Secret
+
+
+def login_to_sut(user: str, token: Secret):
+    SUT.login(user, token.value)
+</code></pre>
+<p>Secret 变量一节解释了如何在数据中、命令行以及其他地方创建 <code>Secret</code> 对象。在数据中涉及使用变量类型转换以及例如环境变量：</p>
+<pre><code class="language-markdown">*** Variables ***
+${USER}             robot
+${TOKEN: Secret}    %{ROBOT_TOKEN}
+
+*** Test Cases ***
+Example
+    Login to SUT    ${USER}    ${TOKEN}
+</code></pre>
+<p>关键字也可以通过使用 union 语法如 <code>str | Secret</code> 来接受 <code>Secret</code> 对象和字符串：</p>
+<pre><code class="language-py">from example import SUT
+from robot.api import logger
+from robot.api.types import Secret
+
+
+def input_password(password: str | Secret):
+     logger.debug(f&quot;Typing password: {password}&quot;)
+     if isinstance(password, Secret):
+         password = password.value
+     SUT.input_password(password)
+</code></pre>
+<p>在这种情况下，重要的是不要记录或以其他方式泄露实际的秘密值。<code>Secret</code> 对象的字符串表示始终是 <code>&lt;secret&gt;</code>，因此在上面的示例中记录 <code>f&quot;Typing password: {password}&quot;</code> 是安全的，但在示例末尾记录就不安全了。<code>Secret</code> 对象的 <code>repr()</code> 是 <code>Secret(value=&lt;secret&gt;)</code>，因此在该字符串表示中也不会显示真实值。</p>
+<p>在复杂类型提示中使用 <code>Secret</code> 类型与其他类型的工作方式类似。以下示例与上面的示例相似，但使用了带有 <code>Secret</code> 项的 <code>TypedDict</code>：</p>
+<pre><code class="language-py">from typing import TypedDict
+
+from robot.api.types import Secret
+
+
+class Credential(TypedDict):
+    user: str
+    token: Secret
+
+
+def login_to_sut(credentials: Credential):
+    SUT.login(credentials[&quot;user&quot;], credentials[&quot;token&quot;].value)
+</code></pre>
+<pre><code class="language-markdown">*** Variables ***
+${TOKEN: Secret}    %{ROBOT_TOKEN}
+&amp;{CREDENTIALS}      user=robot    token=${TOKEN}
+
+*** Test Cases ***
+Example
+    Login to SUT    ${CREDENTIALS}
+</code></pre>
+<blockquote>
+<p><strong>警告：</strong> Secret 对象不会隐藏或加密它们的值。因此，所有能直接或间接通过 Robot Framework API 访问这些对象的代码都可以获取真实值。</p>
+</blockquote>
+<blockquote>
+<p><strong>警告：</strong> 关键字传递出去的实际秘密值可能被使用它们的外部模块或工具记录或以其他方式泄露。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> Secret 类型是 Robot Framework 7.4 的新功能。</p>
+</blockquote>
+<h4>自定义参数转换器</h4>
+<p>除了如前面几节所述的自动参数转换外，Robot Framework 还支持自定义参数转换。这个功能有两个主要用途：</p>
+<ul>
+<li>覆盖框架提供的标准参数转换器。</li>
+<li>为自定义类型和其他不支持开箱即用的类型添加参数转换。</li>
+</ul>
+<p>参数转换器是函数或其他可调用对象，它们获取数据中使用的参数并在将参数传递给关键字之前将其转换为所需的格式。转换器通过将 <code>ROBOT_LIBRARY_CONVERTERS</code> 属性（区分大小写）设置为将所需类型映射到转换器的字典来注册到库。当以模块实现库时，此属性必须在模块级别设置；对于基于类的库，它必须是类属性。对于以类实现的库，也可以使用 <code>@library</code> 装饰器的 <code>converters</code> 参数。以下各节通过示例说明了这两种方式。</p>
+<blockquote>
+<p><strong>注意：</strong> 自定义参数转换器是 Robot Framework 5.0 的新功能。</p>
+</blockquote>
+<p><strong>覆盖默认转换器</strong></p>
+<p>假设我们想创建一个接受 date 对象的关键字，面向芬兰用户，那里常用的日期格式是 <code>dd.mm.yyyy</code>。用法可能如下所示：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Keyword    25.1.2022
+</code></pre>
+<p>自动参数转换支持日期，但它预期日期格式为 <code>yyyy-mm-dd</code>，因此不起作用。一种解决方案是创建自定义转换器并将其注册用于处理 date 转换：</p>
+<pre><code class="language-py">from datetime import date
+
+
+# 转换器函数。
+def parse_fi_date(value):
+    day, month, year = value.split('.')
+    return date(int(year), int(month), int(day))
+
+
+# 为指定类型注册转换器函数。
+ROBOT_LIBRARY_CONVERTERS = {date: parse_fi_date}
+
+
+# 使用自定义转换器的关键字。转换器基于参数类型解析。
+def keyword(arg: date):
+    print(f'year: {arg.year}, month: {arg.month}, day: {arg.day}')
+</code></pre>
+<p><strong>转换错误</strong></p>
+<p>如果我们尝试使用上面的关键字传入无效参数如 <code>invalid</code>，它会以如下错误失败：</p>
+<pre><code>ValueError: Argument 'arg' got value 'invalid' that cannot be converted to date: not enough values to unpack (expected 3, got 1)
+</code></pre>
+<p>这个错误信息不够有用，也没有说明预期的格式。Robot Framework 无法自动提供更多信息，但转换器本身可以增强以验证输入。如果输入无效，转换器应该抛出一个带有适当消息的 <code>ValueError</code>。在这种特殊情况下，有多种方式来验证输入，但使用<a href="https://en.wikipedia.org/wiki/Regular_expression">正则表达式</a>可以同时验证输入在正确位置有点（<code>.</code>）以及日期各部分包含正确的数字位数：</p>
+<pre><code class="language-py">from datetime import date
+import re
+
+
+def parse_fi_date(value):
+    # 使用正则表达式验证输入，如果无效则抛出 ValueError。
+    match = re.match(r'(\d{1,2})\.(\d{1,2})\.(\d{4})$', value)
+    if not match:
+        raise ValueError(f&quot;Expected date in format 'dd.mm.yyyy', got '{value}'.&quot;)
+    day, month, year = match.groups()
+    return date(int(year), int(month), int(day))
+
+
+ROBOT_LIBRARY_CONVERTERS = {date: parse_fi_date}
+
+
+def keyword(arg: date):
+    print(f'year: {arg.year}, month: {arg.month}, day: {arg.day}')
+</code></pre>
+<p>使用上面的转换器代码，用参数 <code>invalid</code> 使用关键字会以更有帮助的错误消息失败：</p>
+<pre><code>ValueError: Argument 'arg' got value 'invalid' that cannot be converted to date: Expected date in format 'dd.mm.yyyy', got 'invalid'.
+</code></pre>
+<p><strong>限制值类型</strong></p>
+<p>默认情况下，Robot Framework 会尝试对所有给定参数使用转换器，无论其类型如何。这意味着如果之前的示例关键字使用了包含非字符串值的变量，转换代码会在 <code>re.match</code> 调用时失败。例如，尝试使用参数 <code>${42}</code> 会失败如下：</p>
+<pre><code>ValueError: Argument 'arg' got value '42' (integer) that cannot be converted to date: TypeError: expected string or bytes-like object
+</code></pre>
+<p>这种错误情况自然可以在转换器代码中通过检查值类型来处理，但如果转换器只接受特定类型，通常只需限制值为该类型更简单。这只需要向转换器添加适当的类型提示：</p>
+<pre><code class="language-py">def parse_fi_date(value: str):
+    ...
+</code></pre>
+<p>注意这个类型提示<em>不是</em>用于在调用转换器之前转换值，它用于严格限制可以使用哪些类型。加上上面的内容后，使用 <code>${42}</code> 调用关键字会失败如下：</p>
+<pre><code>ValueError: Argument 'arg' got value '42' (integer) that cannot be converted to date.
+</code></pre>
+<p>如果转换器可以接受多种类型，可以使用 Union 指定类型。例如，如果我们想增强关键字以也接受整数（将其视为自 Unix epoch 以来的秒数），可以像这样修改转换器：</p>
+<pre><code class="language-py">from datetime import date
+import re
+from typing import Union
+
+
+# 接受字符串和整数。
+def parse_fi_date(value: Union[str, int]):
+    # 整数单独转换。
+    if isinstance(value, int):
+        return date.fromtimestamp(value)
+    match = re.match(r'(\d{1,2})\.(\d{1,2})\.(\d{4})$', value)
+    if not match:
+        raise ValueError(f&quot;Expected date in format 'dd.mm.yyyy', got '{value}'.&quot;)
+    day, month, year = match.groups()
+    return date(int(year), int(month), int(day))
+
+
+ROBOT_LIBRARY_CONVERTERS = {date: parse_fi_date}
+
+
+def keyword(arg: date):
+    print(f'year: {arg.year}, month: {arg.month}, day: {arg.day}')
+</code></pre>
+<p><strong>转换自定义类型</strong></p>
+<p>之前示例的一个问题是 date 对象只能以 <code>dd.mm.yyyy</code> 格式给出。如果需要支持不同格式的日期（如以下示例），它将不起作用：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Finnish     25.1.2022
+    US          1/25/2022
+    ISO 8601    2022-01-22
+</code></pre>
+<p>这个问题的解决方案是创建自定义类型而不是覆盖默认的 date 转换：</p>
+<pre><code class="language-py">from datetime import date
+import re
+from typing import Union
+
+from robot.api.deco import keyword, library
+
+
+# 自定义类型。扩展了现有类型，但这不是必需的。
+class FiDate(date):
+
+    # 转换器函数实现为类方法。它也可以是普通函数，
+    # 但这种方式所有代码都在同一个类中。
+    @classmethod
+    def from_string(cls, value: str):
+        match = re.match(r'(\d{1,2})\.(\d{1,2})\.(\d{4})$', value)
+        if not match:
+            raise ValueError(f&quot;Expected date in format 'dd.mm.yyyy', got '{value}'.&quot;)
+        day, month, year = match.groups()
+        return cls(int(year), int(month), int(day))
+
+
+# 另一个自定义类型。
+class UsDate(date):
+
+    @classmethod
+    def from_string(cls, value: str):
+        match = re.match(r'(\d{1,2})/(\d{1,2})/(\d{4})$', value)
+        if not match:
+            raise ValueError(f&quot;Expected date in format 'mm/dd/yyyy', got '{value}'.&quot;)
+        month, day, year = match.groups()
+        return cls(int(year), int(month), int(day))
+
+
+# 使用 '@library' 装饰器注册转换器。
+@library(converters={FiDate: FiDate.from_string, UsDate: UsDate.from_string})
+class Library:
+
+    # 使用支持 'dd.mm.yyyy' 格式的自定义转换器。
+    @keyword
+    def finnish(self, arg: FiDate):
+        print(f'year: {arg.year}, month: {arg.month}, day: {arg.day}')
+
+    # 使用支持 'mm/dd/yyyy' 格式的自定义转换器。
+    @keyword
+    def us(self, arg: UsDate):
+        print(f'year: {arg.year}, month: {arg.month}, day: {arg.day}')
+
+    # 使用兼容 ISO-8601 的默认转换。
+    @keyword
+    def iso_8601(self, arg: date):
+        print(f'year: {arg.year}, month: {arg.month}, day: {arg.day}')
+
+    # 接受不同格式的日期。
+    @keyword
+    def any(self, arg: Union[FiDate, UsDate, date]):
+        print(f'year: {arg.year}, month: {arg.month}, day: {arg.day}')
+</code></pre>
+<p><strong>严格类型验证</strong></p>
+<p>如果参数本身已经是指定的类型，转换器根本不会被使用。因此很容易通过一个不接受任何值的自定义转换器来启用严格类型验证。例如，Example 关键字只接受 <code>StrictType</code> 实例：</p>
+<pre><code class="language-py">class StrictType:
+    pass
+
+
+def strict_converter(arg):
+    raise TypeError(f'Only StrictType instances accepted, got {type(arg).__name__}.')
+
+
+ROBOT_LIBRARY_CONVERTERS = {StrictType: strict_converter}
+
+
+def example(argument: StrictType):
+    assert isinstance(argument, StrictType)
+</code></pre>
+<p>为方便起见，Robot Framework 允许将转换器设置为 <code>None</code> 以获得相同的效果。例如，以下代码与上面的代码行为完全相同：</p>
+<pre><code class="language-py">class StrictType:
+    pass
+
+
+ROBOT_LIBRARY_CONVERTERS = {StrictType: None}
+
+
+def example(argument: StrictType):
+    assert isinstance(argument, StrictType)
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> 使用 <code>None</code> 作为严格转换器是 Robot Framework 6.0 的新功能。更早的版本需要使用显式的转换器函数。</p>
+</blockquote>
+<p><strong>从转换器访问测试库</strong></p>
+<p>从 Robot Framework 6.1 开始，可以从转换器函数中访问库实例。这允许定义依赖于库状态的动态类型转换。例如，如果库可以配置为测试特定区域设置，你可以使用库状态来确定日期应该如何解析：</p>
+<pre><code class="language-py">from datetime import date
+import re
+
+
+def parse_date(value, library):
+    # 使用正则表达式验证输入，如果无效则抛出 ValueError。
+    # 使用来自库状态的区域设置来确定解析格式。
+    if library.locale == 'en_US':
+        match = re.match(r'(?P&lt;month&gt;\d{1,2})/(?P&lt;day&gt;\d{1,2})/(?P&lt;year&gt;\d{4})$', value)
+        format = 'mm/dd/yyyy'
+    else:
+        match = re.match(r'(?P&lt;day&gt;\d{1,2})\.(?P&lt;month&gt;\d{1,2})\.(?P&lt;year&gt;\d{4})$', value)
+        format = 'dd.mm.yyyy'
+    if not match:
+        raise ValueError(f&quot;Expected date in format '{format}', got '{value}'.&quot;)
+    return date(int(match.group('year')), int(match.group('month')), int(match.group('day')))
+
+
+ROBOT_LIBRARY_CONVERTERS = {date: parse_date}
+
+
+def keyword(arg: date):
+    print(f'year: {arg.year}, month: {arg.month}, day: {arg.day}')
+</code></pre>
+<p>转换器函数的 <code>library</code> 参数是可选的，即如果转换器函数只接受一个参数，则省略 <code>library</code> 参数。通过使转换器函数只接受可变参数也可以达到类似效果，例如 <code>def parse_date(*varargs)</code>。</p>
+<p><strong>转换器文档</strong></p>
+<p>关于转换器的信息会自动添加到 Libdoc 生成的输出中。这些信息包括类型名称、接受的值（如果使用类型提示指定）和文档。类型信息会自动链接到使用这些类型的所有关键字。</p>
+<p>默认使用转换器函数的文档。如果它没有任何文档，则使用类型的文档。因此，以下两种为前面示例中的转换器添加文档的方式产生相同的结果：</p>
+<pre><code class="language-py">class FiDate(date):
+
+    @classmethod
+    def from_string(cls, value: str):
+        &quot;&quot;&quot;Date in ``dd.mm.yyyy`` format.&quot;&quot;&quot;
+        ...
+
+
+class UsDate(date):
+    &quot;&quot;&quot;Date in ``mm/dd/yyyy`` format.&quot;&quot;&quot;
+
+    @classmethod
+    def from_string(cls, value: str):
+        ...
+</code></pre>
+<p>一般建议添加文档以向用户提供更多关于转换的信息。为已有类型注册的转换器函数添加文档尤其重要，因为它们自身的文档在此上下文中可能不太有用。</p>
+<h3><code>@keyword</code> 装饰器</h3>
+<p>虽然 Robot Framework 自动获取很多关于关键字的信息（如名称和参数），但有时需要进一步配置这些信息。这通常使用 <code>robot.api.deco.keyword</code> 装饰器来完成是最简单的。它有几个在其他地方详细解释的有用用途，这里仅作为参考列出：</p>
+<ul>
+<li>当使用 <code>@library</code> 装饰器或其他方式禁用了自动关键字发现时，暴露方法和函数为关键字。</li>
+<li>为关键字设置自定义名称。当使用嵌入式参数语法时这特别有用。</li>
+<li>设置关键字标签。</li>
+<li>设置类型信息以启用自动参数类型转换。也支持完全禁用参数转换。</li>
+<li>在使用动态库 API 时标记要暴露为关键字的方法。</li>
+</ul>
+<h3><code>@not_keyword</code> 装饰器</h3>
+<p><code>robot.api.deco.not_keyword</code> 装饰器可用于禁止函数或方法成为关键字。</p>
+<h3>使用自定义装饰器</h3>
+<p>在实现关键字时，有时使用 <a href="https://realpython.com/primer-on-python-decorators/">Python 装饰器</a>来修改它们是有用的。然而，装饰器通常会修改函数签名，因此在确定关键字接受哪些参数时可能会迷惑 Robot Framework 的内省。这在使用 Libdoc 创建库文档和使用 RIDE 等外部工具时尤其成问题。避免此问题最简单的方式是使用 <a href="https://docs.python.org/library/functools.html#functools.wraps"><code>functools.wraps</code></a> 装饰器来装饰装饰器本身。其他解决方案包括使用 <a href="https://pypi.org/project/decorator/">decorator</a> 和 <a href="https://wrapt.readthedocs.io">wrapt</a> 等外部模块，它们允许创建完全保留签名的装饰器。</p>
+<blockquote>
+<p><strong>注意：</strong> 对使用 <code>functools.wraps</code> 装饰的装饰器进行&quot;解包&quot;的支持是 Robot Framework 3.2 的新功能。</p>
+</blockquote>
+<h3>将参数嵌入关键字名称</h3>
+<p>库关键字也可以像用户关键字一样接受<em>嵌入式参数</em>（embedded argument）。本节主要介绍创建此类关键字所需的 Python 语法，嵌入式参数语法本身作为用户关键字文档的一部分进行详细介绍。</p>
+<p>带有嵌入式参数的库关键字需要有一个自定义名称，通常使用 <code>@keyword</code> 装饰器设置。匹配嵌入式参数的值作为位置参数传递给实现关键字的函数或方法。如果函数或方法接受更多参数，它们可以作为普通的位置参数或命名参数传递给关键字。参数名不需要匹配嵌入式参数名，但这通常是个好的惯例。</p>
+<p>接受嵌入式参数的关键字：</p>
+<pre><code class="language-py">from robot.api.deco import keyword
+
+
+@keyword('Select ${animal} from list')
+def select_animal_from_list(animal):
+    ...
+
+
+@keyword('Number of ${animals} should be')
+def number_of_animals_should_be(animals, count):
+    ...
+</code></pre>
+<p>使用上述关键字的测试：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Embedded arguments
+    Select cat from list
+    Select dog from list
+
+Embedded and normal arguments
+    Number of cats should be    2
+    Number of dogs should be    count=3
+</code></pre>
+<p>如果指定了类型信息，自动参数转换也适用于嵌入式参数：</p>
+<pre><code class="language-py">@keyword('Add ${quantity} copies of ${item} to cart')
+def add_copies_to_cart(quantity: int, item: str):
+    ...
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> 像用户关键字那样将类型信息嵌入关键字名称如 <code>Add ${quantity: int} copies of ${item: str} to cart</code>，库关键字<strong>不支持</strong>这种方式。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> 混合使用嵌入式参数和普通参数的支持是 Robot Framework 7.0 的新功能。</p>
+</blockquote>
+<h3>异步关键字</h3>
+<p>从 Robot Framework 6.1 开始，可以像普通函数一样运行原生异步函数（通过 <code>async def</code> 创建）：</p>
+<pre><code class="language-py">import asyncio
+
+from robot.api.deco import keyword
+
+
+@keyword
+async def this_keyword_waits():
+    await asyncio.sleep(5)
+</code></pre>
+<p>你可以使用 <code>asyncio.get_running_loop()</code> 或 <code>asyncio.get_event_loop()</code> 获取事件循环的引用。修改循环的运行方式时要小心，它是一个全局资源。例如，永远不要调用 <code>loop.close()</code>，因为这会使得无法运行更多的协程。如果你有任何函数或资源需要事件循环，即使没有显式使用 <code>await</code>，你也必须将函数定义为 async 以使事件循环可用。</p>
+<p>更多功能示例：</p>
+<pre><code class="language-py">import asyncio
+from robot.api.deco import keyword
+
+
+async def task_async():
+    await asyncio.sleep(5)
+
+@keyword
+async def examples():
+    tasks = [task_async() for _ in range(10)]
+    results = await asyncio.gather(*tasks)
+
+    background_task = asyncio.create_task(task_async())
+    await background_task
+
+    # 如果运行在 Python 3.10 或更高版本
+    async with asyncio.TaskGroup() as tg:
+        task1 = tg.create_task(task_async())
+        task2 = tg.create_task(task_async())
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> Robot Framework 等待函数完成。如果你想要一个长时间运行的任务，例如使用 <code>asyncio.create_task()</code>。管理任务并保存引用以避免被垃圾回收是你的责任。如果事件循环关闭时任务仍在等待，会在控制台打印一条消息。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> 如果关键字执行因某种原因无法继续，例如信号停止，Robot Framework 会取消 async 任务及其所有子任务。其他 async 任务将继续正常运行。</p>
+</blockquote>
+<h2>与 Robot Framework 通信</h2>
+<p>在调用实现关键字的方法之后，它可以使用任何机制与被测系统通信。然后它还可以向 Robot Framework 的日志文件发送消息、返回可以保存到变量中的信息，以及最重要的——报告关键字是通过还是失败。</p>
+<h3>报告关键字状态</h3>
+<p>报告关键字状态的方式很简单——使用异常。如果执行的方法抛出异常，关键字状态为 <code>FAIL</code>；如果正常返回，状态为 <code>PASS</code>。</p>
+<p>普通的执行失败和错误可以使用标准异常如 <code>AssertionError</code>、<code>ValueError</code> 和 <code>RuntimeError</code> 报告。然而，在后续小节中解释的一些特殊情况下需要特殊异常。</p>
+<h4>错误消息</h4>
+<p>显示在日志、报告和控制台中的错误消息由异常类型及其消息创建。对于通用异常（例如 <code>AssertionError</code>、<code>Exception</code> 和 <code>RuntimeError</code>），只使用异常消息；对于其他异常，消息以 <code>ExceptionType: Actual message</code> 的格式创建。</p>
+<p>也可以避免将异常类型作为前缀添加到失败消息中（对于非通用异常）。这通过向异常添加一个值为 <code>True</code> 的特殊 <code>ROBOT_SUPPRESS_NAME</code> 属性来实现。</p>
+<p>Python：</p>
+<pre><code class="language-py">class MyError(RuntimeError):
+    ROBOT_SUPPRESS_NAME = True
+</code></pre>
+<p>在所有情况下，异常消息尽可能提供信息是重要的。</p>
+<h4>错误消息中的 HTML</h4>
+<p>也可以使用 HTML 格式的错误消息，方式是以文本 <code>*HTML*</code> 开始消息：</p>
+<pre><code class="language-py">raise AssertionError(&quot;*HTML* &lt;a href='robotframework.org'&gt;Robot Framework&lt;/a&gt; rulez!!&quot;)
+</code></pre>
+<p>这种方法既可以在库中抛出异常时使用（如上面的示例），也可以在用户在测试数据中提供错误消息时使用。</p>
+<h4>自动截断过长的消息</h4>
+<p>如果错误消息超过 40 行，它会从中间自动截断，以防止报告变得太长和难以阅读。完整的错误消息始终显示在失败关键字的日志消息中。</p>
+<h4>回溯信息</h4>
+<p>异常的回溯信息也使用 <code>DEBUG</code> 日志级别记录。这些消息在日志文件中默认不可见，因为对普通用户来说它们很少有意义。在开发库时，使用 <code>--loglevel DEBUG</code> 运行测试通常是个好主意。</p>
+<h3>Robot Framework 提供的异常</h3>
+<p>Robot Framework 提供了一些异常，库可以用于报告失败和其他事件。这些异常通过 <a href="https://robot-framework.readthedocs.io/en/master/autodoc/robot.api.html"><code>robot.api</code></a> 包暴露，包含以下内容：</p>
+<p><code>Failure</code></p>
+<blockquote>
+<p>报告验证失败。与使用标准 <code>AssertionError</code> 相比，使用此异常没有实际区别。使用此异常的主要好处是其名称与其他提供的异常一致。</p>
+</blockquote>
+<p><code>Error</code></p>
+<blockquote>
+<p>报告执行中的错误。与系统行为不符预期相关的失败通常应使用 <code>Failure</code> 异常或标准 <code>AssertionError</code> 报告。此异常可用于例如关键字使用不当的情况。与使用此异常和标准 <code>RuntimeError</code> 相比，除了与其他提供的异常一致的命名外，没有实际区别。</p>
+</blockquote>
+<p><code>ContinuableFailure</code></p>
+<blockquote>
+<p>报告验证失败但允许继续执行。更多信息参见下面的可继续失败一节。</p>
+</blockquote>
+<p><code>SkipExecution</code></p>
+<blockquote>
+<p>将执行的测试或任务标记为跳过。更多信息参见下面的跳过测试一节。</p>
+</blockquote>
+<p><code>FatalError</code></p>
+<blockquote>
+<p>报告停止整个执行的错误。更多信息参见下面的停止测试执行一节。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意：</strong> 所有这些异常都是 Robot Framework 4.0 的新功能。除了跳过测试（也是 Robot Framework 4.0 的新功能）外的其他功能，在更早的版本中可以通过其他方式实现。</p>
+</blockquote>
+<h3>可继续失败</h3>
+<p>可以在有失败的情况下继续测试执行。最简单的方式是使用提供的 <code>robot.api.ContinuableFailure</code> 异常：</p>
+<pre><code class="language-py">from robot.api import ContinuableFailure
+
+
+def example_keyword():
+    if something_is_wrong():
+        raise ContinuableFailure('Something is wrong but execution can continue.')
+    ...
+</code></pre>
+<p>另一种方式是创建一个自定义异常，其特殊的 <code>ROBOT_CONTINUE_ON_FAILURE</code> 属性设置为 <code>True</code> 值。下面的示例演示了这一点。</p>
+<pre><code class="language-py">class MyContinuableError(RuntimeError):
+    ROBOT_CONTINUE_ON_FAILURE = True
+</code></pre>
+<h3>跳过测试</h3>
+<p>可以使用库关键字跳过测试。最简单的方式是使用提供的 <code>robot.api.SkipExecution</code> 异常：</p>
+<pre><code class="language-py">from robot.api import SkipExecution
+
+
+def example_keyword():
+    if test_should_be_skipped():
+        raise SkipExecution('Cannot proceed, skipping test.')
+    ...
+</code></pre>
+<p>另一种方式是创建一个自定义异常，其特殊的 <code>ROBOT_SKIP_EXECUTION</code> 属性设置为 <code>True</code> 值。下面的示例演示了这一点。</p>
+<pre><code class="language-py">class MySkippingError(RuntimeError):
+    ROBOT_SKIP_EXECUTION = True
+</code></pre>
+<h3>停止测试执行</h3>
+<p>可以使测试用例失败以至于整个测试执行被停止。最简单的方式是使用提供的 <code>robot.api.FatalError</code> 异常：</p>
+<pre><code class="language-py">from robot.api import FatalError
+
+
+def example_keyword():
+    if system_is_not_running():
+        raise FatalError('System is not running!')
+    ...
+</code></pre>
+<p>除了使用 <code>robot.api.FatalError</code> 异常外，还可以创建一个自定义异常，其特殊的 <code>ROBOT_EXIT_ON_FAILURE</code> 属性设置为 <code>True</code> 值。下面的示例说明了这一点。</p>
+<pre><code class="language-py">class MyFatalError(RuntimeError):
+    ROBOT_EXIT_ON_FAILURE = True
+</code></pre>
+<h3>日志信息</h3>
+<p>异常消息不是向用户提供信息的唯一方式。除此之外，方法还可以通过写入标准输出流（stdout）或标准错误流（stderr）向日志文件发送消息，甚至可以使用不同的日志级别。另一种（通常更好的）日志记录方式是使用编程式日志 API。</p>
+<p>默认情况下，方法写入标准输出的所有内容作为单个条目以 <code>INFO</code> 日志级别写入日志文件。写入标准错误的消息在其他方面被类似处理，但在关键字执行完成后会回显到原始 stderr。因此，如果你需要一些消息在执行测试的控制台上可见，可以使用 stderr。</p>
+<h4>使用日志级别</h4>
+<p>要使用 <code>INFO</code> 以外的其他日志级别，或创建多条消息，需要通过将级别嵌入消息中来显式指定日志级别，格式为 <code>*LEVEL* Actual log message</code>。在这种格式中，<code>*LEVEL*</code> 必须在行首，<code>LEVEL</code> 必须是可用的具体日志级别之一：<code>TRACE</code>、<code>DEBUG</code>、<code>INFO</code>、<code>WARN</code> 或 <code>ERROR</code>，或者伪日志级别 <code>HTML</code> 或 <code>CONSOLE</code>。伪级别可分别用于记录 HTML 和记录到控制台。</p>
+<h4>错误和警告</h4>
+<p><code>ERROR</code> 或 <code>WARN</code> 级别的消息会自动写入控制台和日志文件中单独的 Test Execution Errors 部分。这使得这些消息比其他消息更加醒目，允许使用它们向用户报告重要但非关键性的问题。</p>
+<h4>记录 HTML</h4>
+<p>库正常记录的所有内容都会被转换为可以安全表示为 HTML 的格式。例如，<code>&lt;b&gt;foo&lt;/b&gt;</code> 会在日志中完全按照原样显示，而不是显示为 <strong>foo</strong>。如果库想使用格式化、链接、显示图片等，可以使用特殊的伪日志级别 <code>HTML</code>。Robot Framework 会以 <code>INFO</code> 级别将这些消息直接写入日志，因此它们可以使用任何 HTML 语法。注意这个特性需要谨慎使用，因为例如一个放置不当的 <code>&lt;/table&gt;</code> 标签会严重破坏日志文件。</p>
+<p>使用公共日志 API 时，各种日志方法都有可选的 <code>html</code> 属性，可以设置为 <code>True</code> 以启用 HTML 格式记录。</p>
+<h4>时间戳</h4>
+<p>默认情况下，通过标准输出或错误流记录的消息在执行的关键字结束时获取时间戳。这意味着时间戳不准确，调试问题（特别是长时间运行的关键字）可能会有问题。</p>
+<p>关键字有可能为记录的消息添加准确的时间戳（如有需要）。时间戳必须以自 <a href="http://en.wikipedia.org/wiki/Unix_time">Unix epoch</a> 以来的毫秒数给出，并且必须放在日志级别之后用冒号分隔：</p>
+<pre><code>*INFO:1308435758660* Message with timestamp
+*HTML:1308435758661* &lt;b&gt;HTML&lt;/b&gt; message with timestamp
+</code></pre>
+<p>如下面的示例所示，添加时间戳很容易。不过使用编程式日志 API 获取准确时间戳更加简单。显式添加时间戳的一大好处是这种方式也适用于远程库接口。</p>
+<pre><code class="language-py">import time
+
+
+def example_keyword():
+    timestamp = int(time.time() * 1000)
+    print(f'*INFO:{timestamp}* Message with timestamp')
+</code></pre>
+<h4>记录到控制台</h4>
+<p>库有多种方式将消息写入控制台。如前所述，警告和所有写入标准错误流的消息会同时写入日志文件和控制台。这两种方式都有一个限制，就是消息只有在当前执行的关键字完成后才会出现在控制台上。</p>
+<p>从 Robot Framework 6.1 开始，库可以使用伪日志级别 <code>CONSOLE</code> 将消息<em>同时</em>记录到日志文件和控制台：</p>
+<pre><code class="language-py">def my_keyword(arg):
+    print('*CONSOLE* Message both to log and to console.')
+</code></pre>
+<p>这些消息会以 <code>INFO</code> 级别记录到日志文件，类似于 <code>HTML</code> 伪日志级别。使用这种方式时，消息只在关键字执行结束后才记录到控制台。</p>
+<p>另一种方式是将消息写入 <code>sys.__stdout__</code> 或 <code>sys.__stderr__</code>。使用这种方式时，消息会立即写入控制台，但不会写入日志文件：</p>
+<pre><code class="language-py">import sys
+
+
+def my_keyword(arg):
+    print('Message only to console.', file=sys.__stdout__)
+</code></pre>
+<p>最后一种方式是使用公共日志 API。使用这种方式时，消息也会立即写入控制台：</p>
+<pre><code class="language-py">from robot.api import logger
+
+
+def log_to_console(arg):
+    logger.console('Message only to console.')
+
+def log_to_console_and_log_file(arg):
+    logger.info('Message both to log and to console.', also_console=True)
+</code></pre>
+<h4>日志记录示例</h4>
+<p>在大多数情况下，<code>INFO</code> 级别就够用了。<code>DEBUG</code> 和 <code>TRACE</code> 级别用于编写调试信息。这些消息通常不显示，但它们可以帮助调试库本身可能存在的问题。<code>WARN</code> 或 <code>ERROR</code> 级别可以使消息更加醒目，<code>HTML</code> 在需要任何格式化时很有用。级别 <code>CONSOLE</code> 可用于消息需要同时在控制台和日志文件中显示时。</p>
+<p>以下示例阐明了使用不同级别记录的工作方式。</p>
+<pre><code class="language-py">print('Hello from a library.')
+print('*WARN* Warning from a library.')
+print('*ERROR* Something unexpected happen that may indicate a problem in the test.')
+print('*INFO* Hello again!')
+print('This will be part of the previous message.')
+print('*INFO* This is a new message.')
+print('*INFO* This is &lt;b&gt;normal text&lt;/b&gt;.')
+print('*CONSOLE* This logs into console and log file.')
+print('*HTML* This is &lt;b&gt;bold&lt;/b&gt;.')
+print('*HTML* &lt;a href=&quot;http://robotframework.org&quot;&gt;Robot Framework&lt;/a&gt;')
+</code></pre>
+<h3>编程式日志 API</h3>
+<p>编程式 API 提供了比使用标准输出和错误流更清洁的日志记录方式。</p>
+<h4>公共日志 API</h4>
+<p>Robot Framework 有一个基于 Python 的日志 API，用于将消息写入日志文件和控制台。测试库可以像 <code>logger.info('My message')</code> 这样使用此 API，而不是通过标准输出记录如 <code>print('*INFO* My message')</code>。除了编程接口用起来干净得多之外，此 API 还有一个好处，即日志消息具有准确的时间戳。</p>
+<p>公共日志 API 作为 API 文档的一部分在 https://robot-framework.readthedocs.org 有<a href="https://robot-framework.readthedocs.io/en/master/autodoc/robot.api.html#module-robot.api.logger">详细文档</a>。下面是一个简单的使用示例：</p>
+<pre><code class="language-py">from robot.api import logger
+
+
+def my_keyword(arg):
+    logger.debug(f&quot;Got argument '{arg}'.&quot;)
+    do_something()
+    logger.info('&lt;i&gt;This&lt;/i&gt; is a boring example', html=True)
+    logger.console('Hello, console!')
+</code></pre>
+<p>一个明显的限制是使用此日志 API 的测试库依赖于 Robot Framework。如果 Robot Framework 没有运行，消息会自动重定向到 Python 的标准 <a href="http://docs.python.org/library/logging.html">logging</a> 模块。</p>
+<h4>使用 Python 的标准 <code>logging</code> 模块</h4>
+<p>除了新的公共日志 API 外，Robot Framework 还提供了对 Python 标准 <a href="http://docs.python.org/library/logging.html">logging</a> 模块的内置支持。其工作方式是模块的根 logger 接收的所有消息会自动传播到 Robot Framework 的日志文件。此 API 也会生成具有准确时间戳的日志消息，但不支持记录 HTML 消息或将消息写入控制台。一大好处是（如下面的简单示例所示）使用此日志 API 不会产生对 Robot Framework 的依赖。</p>
+<pre><code class="language-py">import logging
+
+
+def my_keyword(arg):
+    logging.debug(f&quot;Got argument '{arg}'.&quot;)
+    do_something()
+    logging.info('This is a boring example')
+</code></pre>
+<p><code>logging</code> 模块的日志级别与 Robot Framework 略有不同。它的 <code>DEBUG</code>、<code>INFO</code>、<code>WARNING</code> 和 <code>ERROR</code> 级别直接映射到对应的 Robot Framework 日志级别，<code>CRITICAL</code> 映射到 <code>ERROR</code>。自定义日志级别映射到小于该自定义级别的最接近标准级别。例如，介于 <code>INFO</code> 和 <code>WARNING</code> 之间的级别映射到 Robot Framework 的 <code>INFO</code> 级别。</p>
+<h3>库初始化期间的日志</h3>
+<p>库也可以在测试库导入和初始化期间记录日志。这些消息不会像正常日志消息那样出现在日志文件中，而是写入 syslog。这允许记录关于库初始化的任何有用的调试信息。使用 <code>WARN</code> 或 <code>ERROR</code> 级别记录的消息也会在日志文件的 test execution errors 部分可见。</p>
+<p>导入和初始化期间的日志可以使用标准输出和错误流以及编程式日志 API。以下两种方式都进行了演示。</p>
+<p>在导入期间使用日志 API 记录的库：</p>
+<pre><code class="language-py">from robot.api import logger
+
+
+logger.debug(&quot;Importing library&quot;)
+
+
+def keyword():
+    ...
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> 如果你在初始化期间（即 Python 的 <code>__init__</code> 中）记录日志，消息可能会根据库作用域被多次记录。</p>
+</blockquote>
+<h3>返回值</h3>
+<p>关键字与核心框架通信的最后一种方式是返回从被测系统获取的信息或通过其他方式生成的信息。返回的值可以在测试数据中赋值给变量，然后作为其他关键字的输入使用，甚至来自不同的测试库。</p>
+<p>值使用方法中的 <code>return</code> 语句返回。通常，一个值赋给一个标量变量，如下面的示例所示。这个示例也说明了可以返回任何对象并使用扩展变量语法来访问对象属性。</p>
+<pre><code class="language-py">from mymodule import MyObject
+
+
+def return_string():
+    return &quot;Hello, world!&quot;
+
+def return_object(name):
+    return MyObject(name)
+</code></pre>
+<pre><code class="language-markdown">*** Test Cases ***
+Returning one value
+    ${string} =    Return String
+    Should Be Equal    ${string}    Hello, world!
+    ${object} =    Return Object    Robot
+    Should Be Equal    ${object.name}    Robot
+</code></pre>
+<p>关键字也可以返回值以便同时赋给多个标量变量、赋给列表变量，或赋给标量变量和列表变量的组合。所有这些用法都要求返回的值是列表或类似列表的对象。</p>
+<pre><code class="language-py">def return_two_values():
+    return 'first value', 'second value'
+
+def return_multiple_values():
+    return ['a', 'list', 'of', 'strings']
+</code></pre>
+<pre><code class="language-markdown">*** Test Cases ***
+Returning multiple values
+    ${var1}    ${var2} =    Return Two Values
+    Should Be Equal    ${var1}    first value
+    Should Be Equal    ${var2}    second value
+    @{list} =    Return Two Values
+    Should Be Equal    @{list}[0]    first value
+    Should Be Equal    @{list}[1]    second value
+    ${s1}    ${s2}    @{li} =    Return Multiple Values
+    Should Be Equal    ${s1} ${s2}    a list
+    Should Be Equal    @{li}[0] @{li}[1]    of strings
+</code></pre>
+<h3>检测 Robot Framework 是否在运行</h3>
+<p>从 Robot Framework 6.1 开始，可以通过使用 BuiltIn 库的 <code>robot_running</code> 和 <code>dry_run_active</code> 属性来轻松检测 Robot Framework 是否正在运行以及干运行模式是否激活。一个相对常见的用例是，库初始化器可能希望在库不是在执行期间使用而是被例如 Libdoc 初始化时避免做某些工作：</p>
+<pre><code class="language-py">from robot.libraries.BuiltIn import BuiltIn
+
+
+class MyLibrary:
+
+    def __init__(self):
+        builtin = BuiltIn()
+        if builtin.robot_running and not builtin.dry_run_active:
+            # 执行一些只在真实执行期间才有意义的初始化。
+</code></pre>
+<p>关于将 BuiltIn 库用作编程 API 的更多信息，包括另一个使用 <code>robot_running</code> 的示例，参见使用 BuiltIn 库一节。</p>
+<h3>使用线程通信</h3>
+<p>如果库使用线程，通常应该只从主线程与框架通信。如果工作线程有例如要报告的失败或要记录的信息，它应该先将信息传递给主线程，然后主线程可以使用异常或本节中解释的其他机制与框架通信。</p>
+<p>当线程在后台运行而其他关键字正在执行时，这一点尤其重要。在这种情况下与框架通信的结果是未定义的，最坏情况下可能导致崩溃或损坏的输出文件。如果一个关键字在后台启动了某些东西，应该有另一个关键字来检查工作线程的状态并相应地报告收集到的信息。</p>
+<p>非主线程使用编程式日志 API 的正常日志方法记录的消息会被静默忽略。</p>
+<p>还有一个单独的 <a href="https://github.com/robotframework/robotbackgroundlogger">robotbackgroundlogger</a> 项目中的 <code>BackgroundLogger</code>，它有类似于标准 <code>robot.api.logger</code> 的 API。正常的日志方法会忽略非主线程的消息，但 <code>BackgroundLogger</code> 会保存后台消息，以便稍后记录到 Robot 的日志中。</p>
+<h2>分发测试库</h2>
+<h3>记录库文档</h3>
+<p>一个没有关于它包含什么关键字以及这些关键字做什么的文档的测试库几乎没有用。为了便于维护，强烈建议将库文档包含在源代码中并从中生成。基本上，这意味着使用 <a href="http://www.python.org/dev/peps/pep-0257">docstrings</a>，如下面的示例所示。</p>
+<pre><code class="language-py">class MyLibrary:
+    &quot;&quot;&quot;This is an example library with some documentation.&quot;&quot;&quot;
+
+    def keyword_with_short_documentation(self, argument):
+        &quot;&quot;&quot;This keyword has only a short documentation&quot;&quot;&quot;
+        pass
+
+    def keyword_with_longer_documentation(self):
+        &quot;&quot;&quot;First line of the documentation is here.
+
+        Longer documentation continues here and it can contain
+        multiple lines or paragraphs.
+        &quot;&quot;&quot;
+        pass
+</code></pre>
+<p>Python 有工具可以从上面这样记录的库创建 API 文档。然而，这些工具的输出对某些用户来说可能有些技术性。另一种选择是使用 Robot Framework 自己的文档工具 Libdoc。此工具可以从使用静态库 API（如上面的库）的库创建库文档，也能处理使用动态库 API 的库。</p>
+<p>关键字文档的第一个逻辑行（直到第一个空行）用于特殊目的，应包含关键字的简短整体描述。Libdoc 将它用作<em>简短文档</em>（例如作为工具提示），也会在测试日志中显示。</p>
+<p>默认情况下，文档被视为遵循 Robot Framework 自己的文档格式规则。这种简单格式允许常用样式如 <code>*bold*</code> 和 <code>_italic_</code>、表格、列表、链接等。也可以使用 HTML、纯文本和 reStructuredText 格式。有关如何在库源代码中设置格式的信息参见文档格式一节，更多关于格式的一般信息参见 Libdoc 章节。</p>
+<blockquote>
+<p><strong>注意：</strong> 在 Robot Framework 3.1 之前，简短文档只包含关键字文档的第一个物理行。</p>
+</blockquote>
+<h3>测试库</h3>
+<p>任何非平凡的测试库都需要被充分测试以防止其中的 bug。当然，这种测试应该是自动化的，以便在库更改时可以轻松重新运行测试。</p>
+<p>Python 有优秀的单元测试工具，它们非常适合测试库。将它们用于此目的与用于其他测试没有大的区别。熟悉这些工具的开发者不需要学习任何新东西，不熟悉的开发者无论如何都应该学习它们。</p>
+<p>也很容易使用 Robot Framework 本身来测试库，从而为它们提供实际的端到端验收测试。BuiltIn 库中有很多有用的关键字可用于此目的。特别值得一提的是 Run Keyword And Expect Error，它用于测试关键字是否正确报告错误。</p>
+<p>是使用单元级别还是验收级别的测试方式取决于上下文。如果需要模拟实际的被测系统，在单元级别通常更容易。另一方面，验收测试确保关键字通过 Robot Framework 正常工作。如果你无法决定，当然可以同时使用两种方式。</p>
+<h3>打包库</h3>
+<p>库实现、记录和测试之后，还需要分发给用户。对于由单个文件组成的简单库，通常让用户将该文件复制到某处并相应设置模块搜索路径就够了。更复杂的库应该被打包以使安装更容易。</p>
+<p>由于库是普通的编程代码，可以使用普通的打包工具来打包。有关打包和分发 Python 代码的信息，参见 https://packaging.python.org/。当使用 pip 或其他工具安装这样的包时，它会自动进入模块搜索路径。</p>
+<h3>弃用关键字</h3>
+<p>有时需要用新关键字替换现有关键字或完全删除它们。仅通知用户变更可能并不总是足够的，在运行时获取警告更有效。为此，Robot Framework 有能力将关键字标记为<em>弃用</em>。这使得从测试数据中找到旧关键字并删除或替换它们变得更容易。</p>
+<p>可以通过在关键字文档开头以文本 <code>*DEPRECATED</code>（区分大小写）开始、并且在文档第一行也有一个结束的 <code>*</code> 来弃用关键字。例如，<code>*DEPRECATED*</code>、<code>*DEPRECATED.*</code> 和 <code>*DEPRECATED in version 1.5.*</code> 都是有效的标记。</p>
+<p>当执行弃用的关键字时，会记录一个弃用警告，该警告也会显示在控制台和日志文件的 Test Execution Errors 部分。弃用警告以文本 <code>Keyword '&lt;name&gt;' is deprecated.</code> 开始，后面是弃用标记之后简短文档的剩余部分（如果有的话）。例如，如果执行以下关键字，日志文件中会出现如下所示的警告。</p>
+<pre><code class="language-py">def example_keyword(argument):
+    &quot;&quot;&quot;*DEPRECATED!!* Use keyword `Other Keyword` instead.
+
+    This keyword does something to given ``argument`` and returns results.
+    &quot;&quot;&quot;
+    return do_something(argument)
+</code></pre>
+<p>此弃用系统适用于大多数测试库以及用户关键字。</p>
+<h2>处理 Robot Framework 的超时</h2>
+<p>Robot Framework 有自己的超时机制，可以在测试或关键字花费太多时间时停止关键字执行。关于超时有两个需要注意的事项。</p>
+<h3>超时发生时进行清理</h3>
+<p>超时在技术上是使用 <code>robot.errors.TimeoutExceeded</code> 异常实现的，该异常可能在关键字执行期间的任何时候发生。如果关键字想要确保可能的清理活动始终被执行，它需要处理这些异常。处理异常最简单的方式可能是使用 Python 的 <code>try/finally</code> 结构：</p>
+<pre><code class="language-py">def example():
+    try:
+        do_something()
+    finally:
+        do_cleanup()
+</code></pre>
+<p>上面的好处是无论异常如何都会进行清理。如果需要特殊处理超时，可以显式捕获 <code>TimeoutExceeded</code>。在这种情况下，重要的是之后重新抛出原始异常：</p>
+<pre><code class="language-py">from robot.errors import TimeoutExceeded
+
+def example():
+    try:
+        do_something()
+    except TimeoutExceeded:
+        do_cleanup()
+        raise
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> <code>TimeoutExceeded</code> 异常在 Robot Framework 7.3 之前名为 <code>TimeoutError</code>。重命名是为了避免与 Python 的同名标准异常冲突。旧名称仍然作为向后兼容的别名存在于 <code>robot.errors</code> 模块中，如果需要支持较旧的 Robot Framework 版本可以使用它。</p>
+</blockquote>
+<h3>允许超时停止执行</h3>
+<p>Robot Framework 的超时可以停止普通的 Python 代码，但如果代码调用了使用 C 或其他语言实现的功能，超时可能无法工作。行为良好的关键字应该避免无法被中断的长时间阻塞调用。</p>
+<p>例如，<a href="https://docs.python.org/3/library/subprocess.html#subprocess.run"><code>subprocess.run</code></a> 在 Windows 上无法被中断，所以以下简单关键字在那里无法被超时停止：</p>
+<pre><code class="language-py">import subprocess
+
+
+def run_command(command, *args):
+    result = subprocess.run([command, *args], encoding='UTF-8')
+    print(f'stdout: {result.stdout}\nstderr: {result.stderr}')
+</code></pre>
+<p>这个问题可以通过使用更低级别的 <a href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen"><code>subprocess.Popen</code></a> 并在短超时的循环中处理等待来避免。不过这增加了相当多的复杂性，因此在所有情况下可能不值得。</p>
+<pre><code class="language-py">import subprocess
+
+
+def run_command(command, *args):
+    process = subprocess.Popen([command, *args], encoding='UTF-8',
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    while True:
+        try:
+            stdout, stderr = process.communicate(timeout=0.1)
+        except subprocess.TimeoutExpired:
+            continue
+        else:
+            break
+    print(f'stdout: {stdout}\nstderr: {stderr}')
+</code></pre>
+<h2>使用 Robot Framework 的内部模块</h2>
+<p>测试库可以使用 Robot Framework 的内部模块，例如获取有关已执行测试和使用的设置的信息。不过，这种与框架通信的强大机制应该谨慎使用，因为并非所有 Robot Framework 的 API 都旨在供外部使用，它们可能在不同的框架版本之间发生重大变化。</p>
+<h3>可用的 API</h3>
+<p><a href="https://robot-framework.readthedocs.io/">API 文档</a>单独托管在优秀的 <a href="https://readthedocs.org/">Read the Docs</a> 服务上。如果你不确定如何使用某些 API 或使用它们是否具有前向兼容性，请向邮件列表发送问题。</p>
+<h3>使用 BuiltIn 库</h3>
+<p>最安全的可用 API 是 BuiltIn 库中实现关键字的方法。关键字的更改很少，并且总是先弃用旧的用法。最有用的方法之一是 <code>replace_variables</code>，它允许访问当前可用的变量。以下示例演示了如何获取 <code>${OUTPUT_DIR}</code>，它是众多实用的自动变量之一。也可以从库中使用 <code>set_test_variable</code>、<code>set_suite_variable</code> 和 <code>set_global_variable</code> 设置新变量。</p>
+<pre><code class="language-py">import os.path
+from robot.libraries.BuiltIn import BuiltIn
+
+
+def do_something(argument):
+    builtin = BuiltIn()
+    output = do_something_that_creates_a_lot_of_output(argument)
+    if builtin.robot_running:
+        output_dir = builtin.replace_variables('${OUTPUT_DIR}')
+    else:
+        output_dir = '.'
+    with open(os.path.join(output_dir, 'output.txt'), 'w') as file:
+        file.write(output)
+    print('*HTML* Output written to &lt;a href=&quot;output.txt&quot;&gt;output.txt&lt;/a&gt;')
+</code></pre>
+<p>如上面的示例所示，BuiltIn 还有一个方便的 <code>robot_running</code> 属性用于检测 Robot Framework 是否在运行。</p>
+<p>使用 <code>BuiltIn</code> 中方法的唯一注意事项是所有 <code>run_keyword</code> 方法变体必须被特殊处理。使用 <code>run_keyword</code> 方法的方法本身必须使用 <code>BuiltIn</code> 模块中的 <code>register_run_keyword</code> 方法注册为 <em>run keywords</em>。该方法的文档解释了为什么需要这样做以及如何做。</p>
+<h2>扩展现有测试库</h2>
+<p>本节解释向现有测试库添加新功能以及在你自己的库中使用它们的不同方式。</p>
+<h3>修改原始源代码</h3>
+<p>如果你有权访问要扩展的库的源代码，自然可以直接修改源代码。这种方式最大的问题是，在不影响你的更改的情况下更新原始库可能会很困难。对于用户来说，使用一个与原始库功能不同的库也可能令人困惑。重新打包库也可能是一项额外的大任务。</p>
+<p>如果增强功能是通用的并且你计划将其提交回原始开发者，这种方式效果非常好。如果你的更改被应用到原始库，它们将包含在未来的发布中，上面讨论的所有问题都将得到缓解。如果更改是非通用的，或者你出于某些其他原因无法提交回去，后续小节中解释的方式可能效果更好。</p>
+<h3>使用继承</h3>
+<p>另一种直接的扩展现有库的方式是使用继承。下面的示例说明了如何向 SeleniumLibrary 添加新的 Title Should Start With 关键字。</p>
+<pre><code class="language-py">from robot.api.deco import keyword
+from SeleniumLibrary import SeleniumLibrary
+
+
+class ExtendedSeleniumLibrary(SeleniumLibrary):
+
+    @keyword
+    def title_should_start_with(self, expected):
+        title = self.get_title()
+        if not title.startswith(expected):
+            raise AssertionError(f&quot;Title '{title}' did not start with '{expected}'.&quot;)
+</code></pre>
+<p>与修改原始库相比，这种方式的一大区别是新库与原始库有不同的名称。好处是你可以很容易地判断你在使用自定义库，但一个大问题是你无法同时轻松使用新库和原始库。一方面你的新库与原始库有相同的关键字，这意味着总是存在冲突。另一个问题是这些库不共享它们的状态。</p>
+<p>当你开始使用新库并想从一开始就添加自定义增强功能时，这种方式效果很好。否则本节中解释的其他机制可能更好。</p>
+<h3>直接使用其他库</h3>
+<p>因为测试库在技术上只是类或模块，使用另一个库的简单方式是导入它并使用它的方法。当方法是静态的且不依赖于库状态时，这种方式效果很好。这由之前使用 Robot Framework 的 BuiltIn 库的示例所说明。</p>
+<p>然而，如果库有状态，事情可能不会如你所期望的那样工作。你在库中使用的库实例与框架使用的不同，因此已执行关键字所做的更改对你的库不可见。下一节解释如何获取与框架使用的相同库实例的访问权限。</p>
+<h3>从 Robot Framework 获取活动库实例</h3>
+<p>BuiltIn 关键字 Get Library Instance 可用于从框架本身获取当前活动的库实例。该关键字返回的库实例与框架自身使用的相同，因此不存在看到不正确库状态的问题。虽然此功能作为关键字可用，但通常在测试库中直接通过导入 BuiltIn 库类来使用，如前面讨论的那样。以下示例说明了如何实现与之前关于使用继承的示例中相同的 Title Should Start With 关键字。</p>
+<pre><code class="language-py">from robot.libraries.BuiltIn import BuiltIn
+
+
+def title_should_start_with(expected):
+    seleniumlib = BuiltIn().get_library_instance('SeleniumLibrary')
+    title = seleniumlib.get_title()
+    if not title.startswith(expected):
+        raise AssertionError(f&quot;Title '{title}' did not start with '{expected}'.&quot;)
+</code></pre>
+<p>与直接导入库并在库有状态时使用相比，这种方式明显更好。相对于继承的最大好处是你可以正常使用原始库，并在需要时额外使用新库。这在下面的示例中得到了演示，其中前面示例中的代码预计在名为 SeLibExtensions 的新库中可用。</p>
+<pre><code class="language-markdown">*** Settings ***
+Library    SeleniumLibrary
+Library    SeLibExtensions
+
+*** Test Cases ***
+Example
+    Open Browser    http://example      # SeleniumLibrary
+    Title Should Start With    Example  # SeLibExtensions
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/09/3-6-robotframework-new-tutorial-output-files/">
+          Robot Framework 新版教程 - 输出文件
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/11/4-2-robotframework-new-tutorial-remote-library/">
+          Robot Framework 新版教程 - 远程库接口
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

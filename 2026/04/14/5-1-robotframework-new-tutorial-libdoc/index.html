@@ -1,0 +1,752 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 库文档工具（Libdoc）</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 库文档工具（Libdoc）
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 22</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>库文档工具（Libdoc）</h2>
+<p>Libdoc 是 Robot Framework 的内置工具，可以为 Robot Framework 库和资源文件生成文档。它既可以生成供人类阅读的 HTML 文档，也可以生成 XML 和 JSON 格式的机器可读 spec 文件。Libdoc 还提供了一些特殊命令，可以在控制台上显示库或资源文件的信息。</p>
+<p>可以为以下内容创建文档：</p>
+<ul>
+<li>使用普通静态库 API 实现的库，</li>
+<li>使用动态 API 的库，包括 remote 库，</li>
+<li>资源文件，</li>
+<li>套件文件，以及</li>
+<li>套件初始化文件。</li>
+</ul>
+<p>此外，还可以将 Libdoc 之前生成的 XML 和 JSON spec 文件作为输入。</p>
+<blockquote>
+<p>对套件文件和套件初始化文件生成文档的支持是 Robot Framework 6.0 的新功能。</p>
+</blockquote>
+<h2>一般用法</h2>
+<h3>命令概要</h3>
+<pre><code class="language-bash">libdoc [options] library_or_resource output_file
+libdoc [options] library_or_resource list|show|version [names]
+</code></pre>
+<h3>选项</h3>
+<pre><code>-f, --format &lt;html|xml|json|libspec&gt;
+                         指定生成供人类阅读的 HTML 输出还是 XML 或 JSON 格式的
+                         机器可读 spec 文件。libspec 格式表示将文档转换为 HTML 的
+                         XML spec。默认格式根据输出文件的扩展名决定。
+-s, --specdocformat &lt;raw|html&gt;
+                         指定 XML 和 JSON spec 文件中使用的文档格式。raw 表示
+                         保留原始文档格式，html 表示将文档转换为 HTML。默认情况下
+                         XML spec 文件使用 raw，JSON spec 文件以及使用特殊的
+                         libspec 格式时使用 html。
+-F, --docformat &lt;robot|html|text|rest&gt;
+                         指定源文档格式。可选值为 Robot Framework 的文档格式、
+                         HTML、纯文本和 reStructuredText。默认值可以在测试库源代码中
+                         指定，初始默认值为 robot。
+--theme &lt;dark|light|none&gt;
+                         使用深色或浅色 HTML 主题。如果不使用此选项，或者值为 none，
+                         则根据浏览器配色方案选择主题。仅适用于 HTML 输出。
+                         Robot Framework 6.0 新功能。
+--language &lt;lang&gt;
+                         设置文档中的默认语言。lang 必须是内置语言的代码，
+                         包括 en 和 fi。Robot Framework 7.2 新功能。
+-N, --name &lt;newname&gt;     设置被文档化的库或资源文件的名称。
+-V, --version &lt;newversion&gt;  设置被文档化的库或资源文件的版本。
+                         测试库的默认值在源代码中定义。
+-P, --pythonpath &lt;path&gt;  额外的库和资源搜索路径，与运行测试时类似。
+--quiet                  不在控制台打印生成的输出文件路径。
+-h, --help               打印此帮助信息。
+</code></pre>
+<h3>执行 Libdoc</h3>
+<p>运行 Libdoc 最简单的方式是使用作为常规安装一部分创建的 <code>libdoc</code> 命令：</p>
+<pre><code class="language-bash">libdoc ExampleLibrary ExampleLibrary.html
+</code></pre>
+<p>另一种方式是直接执行 <code>robot.libdoc</code> 模块。当你安装了多个 Python 版本并希望使用特定版本运行 Libdoc 时，这种方式尤其有用：</p>
+<pre><code class="language-bash">python -m robot.libdoc ExampleLibrary ExampleLibrary.html
+python3.9 -m robot.libdoc ExampleLibrary ExampleLibrary.html
+</code></pre>
+<p>还有一种方式是将 <code>robot.libdoc</code> 模块作为脚本运行：</p>
+<pre><code class="language-bash">python path/to/robot/libdoc.py ExampleLibrary ExampleLibrary.html
+</code></pre>
+<blockquote>
+<p>独立的 <code>libdoc</code> 命令是 Robot Framework 4.0 的新功能。</p>
+</blockquote>
+<h3>指定库或资源文件</h3>
+<h4>通过名称或路径指定 Python 库和动态库</h4>
+<p>当为使用 Python 实现或使用动态库 API 的库生成文档时，可以通过库名称或库源代码路径来指定：</p>
+<pre><code class="language-bash">libdoc ExampleLibrary ExampleLibrary.html
+libdoc src/ExampleLibrary.py docs/ExampleLibrary.html
+</code></pre>
+<p>在前一种情况下，库通过模块搜索路径查找，其名称必须与在 Robot Framework 测试数据中导入库时使用的格式相同。</p>
+<p>如果这些库在导入时需要参数，参数必须使用双冒号连接在库名称或路径之后，例如 <code>MyLibrary::arg1::arg2</code>。如果参数会改变库提供的关键字或以其他方式影响其文档，使用 <code>--name</code> 选项相应地更改库名称可能是个好主意。</p>
+<h4>通过路径指定资源文件</h4>
+<p>资源文件必须始终使用路径来指定：</p>
+<pre><code class="language-bash">libdoc example.resource example.html
+</code></pre>
+<p>如果路径不存在，资源文件也会像执行测试用例时一样从模块搜索路径中的所有目录中查找。</p>
+<h4>Libdoc spec 文件</h4>
+<p>之前生成的 Libdoc XML 或 JSON spec 文件也可以用作输入。前提是 spec 文件使用 <code>*.xml</code>、<code>*.libspec</code> 或 <code>*.json</code> 扩展名：</p>
+<pre><code class="language-bash">libdoc Example.xml Example.html
+libdoc Example.libspec Example.html
+libdoc Example.json Example.html
+</code></pre>
+<blockquote>
+<p>对 <code>*.libspec</code> 扩展名的支持是 Robot Framework 3.2 的新功能。</p>
+</blockquote>
+<blockquote>
+<p>对 <code>*.json</code> 扩展名的支持是 Robot Framework 4.0 的新功能。</p>
+</blockquote>
+<h3>生成文档</h3>
+<p>Libdoc 可以生成 HTML（供人类阅读）和 XML 或 JSON（供工具使用）格式的文档。写入文档的文件作为库/资源名称或路径之后的第二个参数指定，默认情况下输出格式根据输出文件的扩展名决定。</p>
+<h4>Libdoc HTML 文档</h4>
+<p>大多数 Robot Framework 库使用 Libdoc 生成 HTML 格式的库文档。因此大多数使用过 Robot Framework 的人都熟悉这种格式。下面可以看到一个简单的示例，它是基于本节稍后的示例生成的。</p>
+<p>HTML 文档以库的总体介绍开始，接着是关于导入时如何配置库的部分（如果适用），最后是所有关键字的快捷方式和关键字本身。右下角的放大镜图标可以打开关键字搜索对话框，也可以通过直接按 <code>s</code> 键打开。</p>
+<p>如果输出文件扩展名为 <code>*.html</code>，Libdoc 会自动创建 HTML 文档。如果需要使用其他扩展名，可以通过 <code>--format</code> 选项显式指定格式。</p>
+<p>从 Robot Framework 7.2 开始，可以通过 <code>--language</code> 选项对 HTML 文档中的静态文本进行本地化。</p>
+<p>有关如何为本地化添加新语言的最新信息，请参阅项目仓库中 <code>src/web/libdoc</code> 目录下的 <code>README.rst</code> 文件。</p>
+<pre><code class="language-bash">libdoc OperatingSystem OperatingSystem.html
+libdoc --name MyLibrary Remote::http://10.0.0.42:8270 MyLibrary.html
+libdoc --format HTML test/resource.robot doc/resource.htm
+</code></pre>
+<h4>Libdoc XML spec 文件</h4>
+<p>Libdoc 还可以生成 XML 格式的文档，适用于编辑器等外部工具。它包含与 HTML 格式相同的所有信息，但采用机器可读的格式。</p>
+<p>XML spec 文件还包含库和关键字的源信息，使得库和每个关键字都可以有源路径（<code>source</code> 属性）和行号（<code>lineno</code> 属性）。源路径相对于 spec 文件生成的目录，因此如果 spec 文件被移动，路径将不再指向正确的文件。如果关键字的源路径与库的相同，则省略关键字的源路径；如果由于任何原因无法从库中获取源路径和行号，则两者都会被省略。</p>
+<p>如果输出文件扩展名为 <code>*.xml</code> 或 <code>*.libspec</code>，Libdoc 会自动使用 XML 格式。当使用特殊的 <code>*.libspec</code> 扩展名时，Libdoc 会自动启用选项 <code>-f XML -s HTML</code>，这意味着创建一个将关键字文档转换为 HTML 的 XML 输出文件。如果需要，可以使用 <code>--format</code> 选项显式设置格式。</p>
+<pre><code class="language-bash">libdoc OperatingSystem OperatingSystem.xml
+libdoc test/resource.robot doc/resource.libspec
+libdoc --format xml MyLibrary MyLibrary.spec
+libdoc --format xml -s html MyLibrary MyLibrary.xml
+</code></pre>
+<p>确切的 Libdoc spec 文件格式在 https://github.com/robotframework/robotframework/tree/master/doc/schema 处通过 <a href="https://en.wikipedia.org/wiki/XML_Schema_(W3C)">XML schema</a>（XSD）进行文档化。spec 文件格式可能会在 Robot Framework 主要版本之间发生变化。</p>
+<p>为了让外部工具更容易知道如何解析特定的 spec 文件，spec 文件根元素有一个专门的 <code>specversion</code> 属性。它在 Robot Framework 3.2 中添加，值为 <code>2</code>，更早的 spec 文件可以视为版本 <code>1</code>。如果将来进行了更改，spec 版本将递增。Robot Framework 4.0 引入了新的 spec 版本 <code>3</code>，与之前的版本不兼容。</p>
+<blockquote>
+<p>Robot Framework 3.2 中引入的 <code>XML:HTML</code> 格式已被 <code>LIBSPEC</code> 格式或选项组合 <code>--format XML --specdocformat HTML</code> 所取代。</p>
+</blockquote>
+<blockquote>
+<p>包含源信息和 spec 版本是 Robot Framework 3.2 的新功能。</p>
+</blockquote>
+<h4>Libdoc JSON spec 文件</h4>
+<p>从 Robot Framework 4.0 开始，Libdoc 还可以生成 JSON 格式的文档，适用于编辑器或网页等外部工具。它包含与 HTML 格式相同的所有信息，但采用机器可读的格式。</p>
+<p>与 XML spec 文件类似，JSON spec 文件包含所有信息，也可以用作 Libdoc 的输入。从该格式可以创建任何其他输出格式。默认情况下，JSON 输出文件中的库文档字符串会被转换为 HTML 格式。</p>
+<p>确切的 JSON spec 文件格式在 https://github.com/robotframework/robotframework/tree/master/doc/schema 处通过 <a href="https://json-schema.org/">JSON schema</a> 进行文档化。spec 文件格式可能会在 Robot Framework 主要版本之间发生变化。</p>
+<h3>在控制台查看信息</h3>
+<p>Libdoc 有三个特殊命令用于在控制台显示信息。这些命令用于替代输出文件名称，它们还可以接受额外的参数。</p>
+<p><code>list</code></p>
+<blockquote>
+<p>列出库/资源文件包含的关键字名称。可以通过传递可选的模式（pattern）作为参数来限制仅显示特定关键字。如果关键字名称包含给定的模式，则会被列出。</p>
+</blockquote>
+<p><code>show</code></p>
+<blockquote>
+<p>显示库/资源文件的文档。可以通过传递名称作为参数来限制仅显示特定关键字。如果关键字名称匹配任何给定的名称，则会被显示。特殊参数 <code>intro</code> 将仅显示库的介绍和导入部分。</p>
+</blockquote>
+<p><code>version</code></p>
+<blockquote>
+<p>显示库版本。</p>
+</blockquote>
+<p>传递给 <code>list</code> 和 <code>show</code> 的可选模式不区分大小写和空格。两者都接受 <code>*</code> 和 <code>?</code> 作为通配符。</p>
+<p>示例：</p>
+<pre><code class="language-bash">libdoc Dialogs list
+libdoc SeleniumLibrary list browser
+libdoc Remote::10.0.0.42:8270 show
+libdoc Dialogs show PauseExecution execute*
+libdoc SeleniumLibrary show intro
+libdoc SeleniumLibrary version
+</code></pre>
+<h2>编写文档</h2>
+<p>本节讨论如何为使用静态库 API 的基于 Python 的测试库、动态库以及资源文件编写文档。创建测试库和资源文件在用户指南的其他地方有更详细的描述。</p>
+<h3>Python 库</h3>
+<p>使用静态库 API 的 Python 库的文档，直接以库类或模块的文档字符串（doc string）以及实现关键字的方法的文档字符串来编写。方法文档的第一行被视为关键字的简短文档（例如，在生成的 HTML 文档的链接中用作工具提示），因此应尽可能具有描述性，但不宜过长。</p>
+<p>下面的简单示例说明了一般如何编写文档。基于此示例生成的 HTML 文档可以在上文中看到，本章末尾还有一个更长的示例。</p>
+<pre><code class="language-py">src/SupportingTools/ExampleLibrary.py
+</code></pre>
+<blockquote>
+<p>如果你的库执行了一些不应在使用 Libdoc 时进行的初始化工作，你可以轻松检测 Robot Framework 是否正在运行。</p>
+</blockquote>
+<blockquote>
+<p>有关 Python 文档字符串的更多信息，请参阅 <a href="http://www.python.org/dev/peps/pep-0257">PEP-257</a>。</p>
+</blockquote>
+<h3>动态库</h3>
+<p>为了能够为动态库生成有意义的文档，库必须通过 <code>get_keyword_arguments</code> 和 <code>get_keyword_documentation</code> 方法（或它们的驼峰命名变体 <code>getKeywordArguments</code> 和 <code>getKeywordDocumentation</code>）返回关键字参数名称和文档。库还可以通过向 <code>get_keyword_documentation</code> 方法传递特殊的 <code>__intro__</code> 和 <code>__init__</code> 值来支持通用库文档。</p>
+<p>有关如何创建这些方法的更多信息，请参阅动态库 API 一节。</p>
+<h3>导入部分</h3>
+<p>关于如何导入库的独立部分是基于其初始化方法创建的。如果库有一个除 <code>self</code> 之外还接受参数的 <code>__init__</code> 方法，则会显示其文档和参数。</p>
+<pre><code class="language-py">class TestLibrary:
+
+    def __init__(self, mode='default')
+        &quot;&quot;&quot;创建新的 TestLibrary。`mode` 参数用于确定模式。&quot;&quot;&quot;
+        self.mode = mode
+
+    def some_keyword(self, arg):
+        &quot;&quot;&quot;基于给定的 `arg` 执行某些操作。
+
+        执行的具体操作取决于 `importing` 库时指定的 `mode`。
+        &quot;&quot;&quot;
+        if self.mode == 'secret':
+             # ...
+</code></pre>
+<h3>资源文件文档</h3>
+<p>资源文件中的关键字可以使用 <code>[Documentation]</code> 设置项提供文档，此文档也会被 Libdoc 使用。文档的第一行（直到第一个隐式换行或显式的 <code>\n</code>）被视为简短文档，与测试库类似。</p>
+<p>资源文件本身也可以在 Settings 部分使用 <code>Documentation</code> 来为整个资源文件编写文档。</p>
+<p>资源文件中的变量无法被文档化。</p>
+<pre><code class="language-markdown">*** Settings ***
+Documentation    用于演示目的的资源文件。
+...              此资源文件仅用于示例，不执行任何有用的操作。
+
+*** Keywords ***
+My Keyword
+    [Documentation]   不执行任何操作
+    No Operation
+
+Your Keyword
+    [Arguments]  ${arg}
+    [Documentation]   接受一个参数并且对其*不做任何操作*。
+    ...
+    ...    Examples:
+    ...    | Your Keyword | xxx |
+    ...    | Your Keyword | yyy |
+    No Operation
+</code></pre>
+<h2>文档语法</h2>
+<p>Libdoc 支持 Robot Framework 自有的文档语法、HTML、纯文本和 reStructuredText 格式的文档。使用的格式可以通过库源代码中的 <code>ROBOT_LIBRARY_DOC_FORMAT</code> 属性指定，或者通过命令行的 <code>--docformat (-F)</code> 选项指定。两种情况下，可选的不区分大小写的值为 <code>ROBOT</code>（默认）、<code>HTML</code>、<code>TEXT</code> 和 <code>reST</code>。</p>
+<p>Robot Framework 自有的文档格式是默认的，也是一般推荐使用的格式。其他格式在测试库中使用已有代码和已有文档时特别有用。</p>
+<h3>Robot Framework 文档语法</h3>
+<p>Robot Framework 文档语法中最重要的特性包括：使用 <code>*bold*</code> 和 <code>_italic_</code> 进行格式化、自定义链接和 URL 自动转换为链接，以及使用管道字符简单地创建表格和预格式化文本块（对示例很有用）。如果文档较长，对节标题的支持也很方便。</p>
+<p>下面的示例展示了一些最重要的格式化特性。注意，由于这是默认格式，因此无需使用 <code>ROBOT_LIBRARY_DOC_FORMAT</code> 属性，也无需从命令行指定格式。</p>
+<pre><code class="language-py">&quot;&quot;&quot;Robot Framework 格式的示例库。
+
+- 使用 *bold* 和 _italic_ 格式化。
+- 像 http://example.com 这样的 URL 会自动转换为链接。
+- 支持自定义链接如 [http://robotframework.org|Robot Framework]。
+- 可以链接到 `My Keyword`。
+&quot;&quot;&quot;
+
+def my_keyword():
+    &quot;&quot;&quot;这里没有更多内容了。&quot;&quot;&quot;
+</code></pre>
+<h4>自动创建目录</h4>
+<p>对于较大的库，在库介绍中添加目录通常很有用。使用 Robot Framework 文档格式时，可以通过在单独一行中添加特殊的 <code>%TOC%</code> 标记来自动完成。目录基于介绍中使用的顶级节标题（例如 <code>= Section =</code>）创建。除了这些标题外，目录还会获得指向自动创建的快捷方式和关键字部分的链接，以及（如果适用的话）导入和标签部分的链接。</p>
+<pre><code class="language-py">&quot;&quot;&quot;演示目录生成的示例库。
+
+%TOC% 标记仅创建实际的目录，可能的标题或其他说明需要像下面这样单独添加。
+
+== Table of contents ==
+
+%TOC%
+
+= Section title =
+
+顶级节标题会被自动添加到目录中。
+
+= Second section =
+
+== Sub section ==
+
+子节标题不会被添加到目录中。
+&quot;&quot;&quot;
+
+def my_keyword():
+    &quot;&quot;&quot;这里没有更多内容了。&quot;&quot;&quot;
+</code></pre>
+<blockquote>
+<p>自动目录生成是 Robot Framework 3.2 的新功能。</p>
+</blockquote>
+<h3>HTML 文档语法</h3>
+<p>使用 HTML 格式时，你可以使用几乎任何语法相当自由地创建文档。主要缺点是 HTML 标记对人类不太友好，这可能使源代码中的文档难以维护和阅读。HTML 格式的文档会被 Libdoc 直接使用，不做任何转换或转义。但是支持使用 <code>`My Keyword`</code> 这样的语法进行关键字链接。</p>
+<p>下面的示例包含与前一个示例相同的格式化示例。现在必须使用 <code>ROBOT_LIBRARY_DOC_FORMAT</code> 属性，或者从命令行指定格式如 <code>--docformat HTML</code>。</p>
+<pre><code class="language-py">&quot;&quot;&quot;HTML 格式的示例库。
+
+&lt;ul&gt;
+  &lt;li&gt;使用 &lt;b&gt;bold&lt;/b&gt; 和 &lt;i&gt;italic&lt;/i&gt; 格式化。
+  &lt;li&gt;URL 不会自动转换为链接。
+  &lt;li&gt;支持自定义链接如 &lt;a href=&quot;http://www.w3.org/html&quot;&gt;HTML&lt;/a&gt;。
+  &lt;li&gt;可以链接到 `My Keyword`。
+&lt;/ul&gt;
+&quot;&quot;&quot;
+ROBOT_LIBRARY_DOC_FORMAT = 'HTML'
+
+def my_keyword():
+    &quot;&quot;&quot;这里没有更多内容了。&quot;&quot;&quot;
+</code></pre>
+<h3>纯文本文档语法</h3>
+<p>使用纯文本格式时，Libdoc 会原样使用文档。除了缩进之外，换行和其他空白都会保留，HTML 特殊字符（<code>&lt;&gt;&amp;</code>）会被转义。唯一进行的格式化是将 URL 转换为可点击的链接以及支持使用 <code>`My Keyword`</code> 的内部链接。</p>
+<pre><code class="language-py">&quot;&quot;&quot;纯文本格式的示例库。
+
+- 不支持格式化。
+- 像 http://example.com 这样的 URL 会转换为链接。
+- 不支持自定义链接。
+- 可以链接到 `My Keyword`。
+&quot;&quot;&quot;
+ROBOT_LIBRARY_DOC_FORMAT = 'text'
+
+def my_keyword():
+    &quot;&quot;&quot;这里没有更多内容了。&quot;&quot;&quot;
+</code></pre>
+<h3>reStructuredText 文档语法</h3>
+<p>reStructuredText 是一种简单而强大的标记语法，广泛用于 Python 项目（包括本用户指南）和其他地方。主要限制是需要安装 <a href="http://docutils.sourceforge.net">docutils</a> 模块才能使用它生成文档。由于反引号字符在 reStructuredText 中有特殊含义，链接到关键字需要将其转义为 <code>\`My Keyword\`</code>。</p>
+<p>reStructuredText 支持的一个不错的特性是能够标记可以进行语法高亮的代码块。语法高亮需要额外的 <a href="http://pygments.org">Pygments</a> 模块，并支持 Pygments 支持的所有语言。</p>
+<pre><code class="language-py">&quot;&quot;&quot;reStructuredText 格式的示例库。
+
+- 使用 **bold** 和 *italic* 格式化。
+- 像 http://example.com 这样的 URL 会转换为链接。
+- 支持自定义链接如 reStructuredText__。
+- 可以链接到 \`My Keyword\`，但需要转义反引号。
+
+__ http://docutils.sourceforge.net
+
+.. code:: robotframework
+
+    *** Test Cases ***
+    Example
+        My keyword    # 这不是很酷吗!!?!!?!1!!
+&quot;&quot;&quot;
+ROBOT_LIBRARY_DOC_FORMAT = 'reST'
+
+def my_keyword():
+    &quot;&quot;&quot;这里没有更多内容了。&quot;&quot;&quot;
+</code></pre>
+<h2>内部链接</h2>
+<p>Libdoc 支持在文档中链接到关键字和不同的节。链接通过用反引号字符包围目标名称来完成，如 <code>`target`</code>。目标名称不区分大小写，可能的目标在后续各节中解释。</p>
+<p>如果找不到链接目标，不会有错误或警告，Libdoc 只会将文本格式化为斜体。之前建议在引用关键字参数时使用这种格式，但这样做有问题，因为它可能会意外创建内部链接。现在建议使用双反引号的内联代码样式，如 <code> </code>argument<code> </code>。旧的单反引号格式将来甚至可能被移除，转而在找不到链接目标时给出错误。</p>
+<p>除了以下各节中的示例外，内部链接和参数格式化在本章末尾的更长示例中也有展示。</p>
+<h3>链接到关键字</h3>
+<p>库中的所有关键字会自动创建链接目标，可以使用 <code>`Keyword Name`</code> 语法进行链接。下面的示例进行了说明，其中两个关键字互相链接。</p>
+<pre><code class="language-py">def keyword(log_level=&quot;INFO&quot;):
+    &quot;&quot;&quot;执行某些操作并使用给定的级别记录输出。
+
+    log level 的有效值为 &quot;INFO&quot;（默认）、&quot;DEBUG&quot; 和 &quot;TRACE&quot;。
+
+    另请参阅 `Another Keyword`。
+    &quot;&quot;&quot;
+    # ...
+
+def another_keyword(argument, log_level=&quot;INFO&quot;):
+    &quot;&quot;&quot;使用给定的参数执行某些操作并记录输出。
+
+    有关有效日志级别的信息，请参阅 `Keyword`。
+    &quot;&quot;&quot;
+    # ...
+</code></pre>
+<blockquote>
+<p>使用 reStructuredText 文档语法时，反引号必须转义为 <code>\`Keyword Name\`</code>。</p>
+</blockquote>
+<h3>链接到自动生成的节</h3>
+<p>Libdoc 生成的文档始终包含库整体介绍和关键字部分。如果库本身接受参数，还会有单独的导入部分。如果任何关键字有标签（tag），概览中还会显示标签选择器。</p>
+<p>所有这些节都可以作为链接目标，可能的目标名称在下表中列出。下一节的示例展示了如何使用这些目标。</p>
+<table>
+<thead>
+<tr>
+<th>节</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Introduction</td>
+<td><code>`introduction`</code> 和 <code>`library introduction`</code></td>
+</tr>
+<tr>
+<td>Importing</td>
+<td><code>`importing`</code> 和 <code>`library importing`</code></td>
+</tr>
+<tr>
+<td>Keywords</td>
+<td><code>`keywords`</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>在 Robot Framework 4.0 之前还有标签和快捷方式部分。在 Robot Framework 4.0 中，这些已被概览菜单取代。这意味着之前链接到快捷方式或标签部分的链接将不再有效。</p>
+</blockquote>
+<h3>链接到自定义节</h3>
+<p>Robot Framework 的文档语法支持自定义节标题，在库或资源文件介绍中使用的标题会自动创建链接目标。下面的示例说明了如何链接到自动节和自定义节：</p>
+<pre><code class="language-py">&quot;&quot;&quot;用于 Libdoc 演示目的的库。
+
+此库不执行任何有用的操作。
+
+= My section  =
+
+不过，我们在文档中确实有一个自定义节。
+&quot;&quot;&quot;
+
+def keyword():
+    &quot;&quot;&quot;不执行任何操作。
+
+    有关更多信息请参阅 `introduction`，并查看 `My section` 以测试
+    链接到自定义节是如何工作的。
+    &quot;&quot;&quot;
+    pass
+</code></pre>
+<blockquote>
+<p>链接到自定义节仅在使用 Robot Framework 文档语法时有效。</p>
+</blockquote>
+<h2>参数表示</h2>
+<p>Libdoc 会自动显示关键字参数的信息。</p>
+<h3>包含的信息</h3>
+<p>无论关键字是在库中还是在资源文件中实现的，以下信息都会显示：</p>
+<ul>
+<li>参数名称。用户关键字参数显示时不带 <code>${}</code> 装饰，使参数在不同来源的关键字中看起来一致。</li>
+<li>标记参数是仅限位置参数（positional-only）、仅限命名参数（named-only）、自由位置参数（free positional）、自由命名参数（free named）还是可以按位置或名称传递的普通参数。</li>
+<li>可能的默认值。显示为 <code>= 42</code>。</li>
+<li>可能的类型。显示为 <code>&lt;int&gt;</code>。可以是指向类型文档的链接，如下一节所述。</li>
+</ul>
+<p>在关键字文档中引用参数时，建议使用双反引号的内联代码样式，如 <code> </code>argument<code> </code>。</p>
+<h3>自动列出类型文档</h3>
+<p>如上所述，Libdoc 在列出参数时会自动显示可能的类型信息。如果类型是基于 Enum 或 TypedDict 的自定义类型、类型被自动转换，或者类型有自定义转换器，则该类型本身也会被单独列出以显示更多信息。当这些类型在参数中使用时，类型名称也会成为指向类型信息的链接。</p>
+<p>所有列出的数据类型都会显示可能的类型文档以及支持哪些参数类型。除此之外，基于 <code>Enum</code> 的类型会列出可用的成员，基于 <code>TypedDict</code> 的类型会显示字典结构。</p>
+<blockquote>
+<p>自动列出基于 <code>Enum</code> 和 <code>TypedDict</code> 的类型是 Robot Framework 4.0 的新功能。列出其他类型是 Robot Framework 5.0 的新功能。</p>
+</blockquote>
+<h2>Libdoc 示例</h2>
+<p>以下示例展示了如何使用最重要的文档格式化功能、内部链接等。<a href="src/SupportingTools/LoggingLibrary.html">点击这里</a>可以查看生成的文档。</p>
+<pre><code class="language-py">src/SupportingTools/LoggingLibrary.py
+</code></pre>
+<p>所有标准库都有由 Libdoc 生成的文档，它们的文档（和源代码）可以作为更实际的示例。</p>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/13/4-4-robotframework-new-tutorial-parser-interface/">
+          Robot Framework 新版教程 - 解析器接口
+        </a>
+      
+
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

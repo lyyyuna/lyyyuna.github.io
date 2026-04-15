@@ -1,0 +1,1237 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 控制结构</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 控制结构
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 10</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>控制结构</h2>
+<p>本节描述可用于控制测试执行流程的各种结构。这些结构在大多数编程语言中都很常见，它们允许条件执行、重复执行一组关键字以及细粒度的错误处理。为了可读性，应谨慎使用这些结构，更复杂的用例最好在测试库中实现。</p>
+<h3><code>FOR</code> 循环</h3>
+<p>在测试自动化中，重复执行相同操作是很常见的需求。使用 Robot Framework 时，测试库可以包含任何类型的循环结构，大多数情况下循环应在库中实现。Robot Framework 也有自己的 <code>FOR</code> 循环语法，例如当需要重复调用来自不同库的关键字时非常有用。</p>
+<p><code>FOR</code> 循环可以在测试用例和用户关键字中使用。除了非常简单的情况外，用户关键字更好，因为它们隐藏了 <code>FOR</code> 循环引入的复杂性。基本的 <code>FOR</code> 循环语法 <code>FOR item IN sequence</code> 源自 Python，但许多其他编程语言也支持类似的语法。</p>
+<h4>简单的 <code>FOR</code> 循环</h4>
+<p>在普通的 <code>FOR</code> 循环中，一个变量根据值列表进行赋值，每次迭代一个值。语法以 <code>FOR</code>（区分大小写）作为标记开始，然后是循环变量，接着是必须的 <code>IN</code>（区分大小写）作为分隔符，最后是要迭代的值。这些值可以包含变量，包括列表变量。</p>
+<p><code>FOR</code> 循环中使用的关键字位于后续行中，循环以单独一行的 <code>END</code>（区分大小写）结束。循环内的关键字不需要缩进，但强烈建议缩进以使语法更易于阅读。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    FOR    ${animal}    IN    cat    dog
+        Log    ${animal}
+        Log    2nd keyword
+    END
+    Log    Outside loop
+
+Second Example
+    FOR    ${var}    IN    one    two    ${3}    four    ${five}
+    ...    kuusi    7    eight    nine    ${last}
+        Log    ${var}
+    END
+</code></pre>
+<p>上面 <code>Example</code> 中的 <code>FOR</code> 循环执行两次，第一次循环变量 <code>${animal}</code> 的值为 <code>cat</code>，然后为 <code>dog</code>。循环包含两个 <code>Log</code> 关键字。在第二个示例中，循环值被拆分到两行，循环总共运行十次。</p>
+<p>将 <code>FOR</code> 循环与列表变量配合使用通常很方便。下面的示例说明了这一点，其中 <code>@{ELEMENTS}</code> 包含一个任意长度的元素列表，关键字 <code>Start Element</code> 逐一对所有元素执行。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    FOR    ${element}    IN    @{ELEMENTS}
+        Start Element    ${element}
+    END
+</code></pre>
+<h4>旧的 <code>FOR</code> 循环语法</h4>
+<p>在 Robot Framework 3.1 之前，<code>FOR</code> 循环语法与现在不同。启动循环的标记是 <code>:FOR</code> 而不是 <code>FOR</code>，循环内容需要用反斜杠显式标记，而不是使用 <code>END</code> 标记来结束循环。上面的第一个示例使用旧语法如下：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    :FOR    ${animal}    IN    cat    dog
+    \    Log    ${animal}
+    \    Log    2nd keyword
+    Log    Outside loop
+</code></pre>
+<p>旧语法在 Robot Framework 3.2 中被废弃，在 Robot Framework 4.0 中被完全移除。</p>
+<h4>嵌套 <code>FOR</code> 循环</h4>
+<p>从 Robot Framework 4.0 开始，可以通过在循环内部添加循环来使用嵌套 <code>FOR</code> 循环：</p>
+<pre><code class="language-markdown">*** Keywords ***
+Handle Table
+    [Arguments]    @{table}
+    FOR    ${row}    IN    @{table}
+        FOR    ${cell}    IN    @{row}
+            Handle Cell    ${cell}
+        END
+    END
+</code></pre>
+<p>可以有多层嵌套，循环也可以与其他控制结构组合使用：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Multiple nesting levels
+    FOR    ${root}    IN    r1    r2
+        FOR    ${child}    IN    c1   c2    c3
+            FOR    ${grandchild}    IN    g1    g2
+                Log Many    ${root}    ${child}    ${grandchild}
+            END
+        END
+        FOR    ${sibling}    IN    s1    s2    s3
+            IF    '${sibling}' != 's2'
+                Log Many    ${root}    ${sibling}
+            END
+        END
+    END
+</code></pre>
+<h4>使用多个循环变量</h4>
+<p>通过在 <code>FOR</code> 和 <code>IN</code> 标记之间使用多个循环变量，可以在一次迭代中遍历多个值。循环变量的数量不限，但值的数量必须能被变量数量整除。每次迭代消耗与变量数量相同的值。</p>
+<p>如果要迭代的值很多，通常方便将它们组织在循环变量下方，如下面示例中的第一个循环所示：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Multiple loop variables
+    FOR    ${index}    ${english}    ${finnish}    IN
+    ...    1           cat           kissa
+    ...    2           dog           koira
+    ...    3           horse         hevonen
+        Add Translation    ${english}    ${finnish}    ${index}
+    END
+    FOR    ${name}    ${id}    IN    @{EMPLOYERS}
+        Create    ${name}    ${id}
+    END
+</code></pre>
+<h4><code>FOR-IN-RANGE</code> 循环</h4>
+<p>前面章节中的所有 <code>FOR</code> 循环都是遍历序列。这是最常见的用例，但有时需要一个执行特定次数的循环。为此，Robot Framework 提供了特殊的 <code>FOR index IN RANGE limit</code> 循环语法，源自 Python 中使用<a href="http://docs.python.org/library/functions.html#func-range">内置 range() 函数</a>的类似用法。</p>
+<p>与其他 <code>FOR</code> 循环类似，<code>FOR-IN-RANGE</code> 循环以 <code>FOR</code> 开头，后跟循环变量。在这种格式中只能有一个循环变量，它包含当前循环索引。变量之后必须是 <code>IN RANGE</code> 标记（区分大小写），后跟循环限制。</p>
+<p>在最简单的情况下，只指定循环的上限。此时循环索引从零开始，每次增加一，直到（但不包括）上限。也可以同时给出起始和结束限制，索引从起始限制开始，增长方式与简单情况相同。最后，还可以给出步长值来指定增量。如果步长为负数，则用作递减量。</p>
+<p>可以对范围限制使用简单的算术运算，如加法和减法。当限制由变量指定时，这特别有用。起始值、结束值和步长通常以整数给出，但也可以使用浮点值。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Only upper limit
+    [Documentation]    Loops over values from 0 to 9.
+    FOR    ${index}    IN RANGE    10
+        Log    ${index}
+    END
+
+Start and end
+    [Documentation]    Loops over values from 1 to 10.
+    FOR    ${index}    IN RANGE    1    11
+        Log    ${index}
+    END
+
+Also step given
+    [Documentation]    Loops over values 5, 15, and 25.
+    FOR    ${index}    IN RANGE    5    26    10
+        Log    ${index}
+    END
+
+Negative step
+    [Documentation]    Loops over values 13, 3, and -7.
+    FOR    ${index}    IN RANGE    13    -13    -10
+        Log    ${index}
+    END
+
+Arithmetic
+    [Documentation]    Arithmetic with variable.
+    FOR    ${index}    IN RANGE    ${var} + 1
+        Log    ${index}
+    END
+
+Float parameters
+    [Documentation]    Loops over values 3.14, 4.34, and 5.54.
+    FOR    ${index}    IN RANGE    3.14    6.09    1.2
+        Log    ${index}
+    END
+</code></pre>
+<h4><code>FOR-IN-ENUMERATE</code> 循环</h4>
+<p>有时在遍历列表的同时还需要跟踪在列表中的位置。Robot Framework 提供了特殊的 <code>FOR index ... IN ENUMERATE ...</code> 语法来处理这种情况。该语法源自 <a href="http://docs.python.org/library/functions.html#enumerate">Python 内置的 enumerate() 函数</a>。</p>
+<p><code>FOR-IN-ENUMERATE</code> 循环的语法与普通 <code>FOR</code> 循环相同，只是变量和值之间的分隔符是 <code>IN ENUMERATE</code>（区分大小写）。通常的用法是在其他循环变量之前增加一个索引变量。默认情况下，索引在第一次迭代时值为 <code>0</code>，第二次为 <code>1</code>，以此类推。</p>
+<p>例如，以下两个测试用例做的是同样的事情：</p>
+<pre><code class="language-markdown">*** Variables ***
+@{LIST}         a    b    c
+
+*** Test Cases ***
+Manage index manually
+    ${index} =    Set Variable    -1
+    FOR    ${item}    IN    @{LIST}
+        ${index} =    Evaluate    ${index} + 1
+        My Keyword    ${index}    ${item}
+    END
+
+FOR-IN-ENUMERATE
+    FOR    ${index}    ${item}    IN ENUMERATE    @{LIST}
+        My Keyword    ${index}    ${item}
+    END
+</code></pre>
+<p>从 Robot Framework 4.0 开始，可以使用 <code>start=&lt;index&gt;</code> 语法作为 <code>FOR ... IN ENUMERATE ...</code> 头部的最后一项来指定自定义起始索引：</p>
+<pre><code class="language-markdown">*** Variables ***
+@{LIST}         a    b    c
+${START}        10
+
+*** Test Cases ***
+FOR-IN-ENUMERATE with start
+    FOR    ${index}    ${item}    IN ENUMERATE    @{LIST}    start=1
+        My Keyword    ${index}    ${item}
+    END
+
+Start as variable
+    FOR    ${index}    ${item}    IN ENUMERATE    @{LIST}    start=${start}
+        My Keyword    ${index}    ${item}
+    END
+</code></pre>
+<p><code>start=&lt;index&gt;</code> 语法必须在 <code>FOR</code> 头部中显式使用，不能来自变量。如果最后一个实际要枚举的项以 <code>start=</code> 开头，需要转义为 <code>start\=</code>。</p>
+<p>与普通 <code>FOR</code> 循环一样，只要列表中的值数量能被循环变量数量（不包括索引变量）整除，就可以在每次迭代中遍历多个值：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+FOR-IN-ENUMERATE with two values per iteration
+    FOR    ${index}    ${en}    ${fi}    IN ENUMERATE
+    ...    cat      kissa
+    ...    dog      koira
+    ...    horse    hevonen
+        Log    &quot;${en}&quot; in English is &quot;${fi}&quot; in Finnish (index: ${index})
+    END
+</code></pre>
+<p>如果 <code>FOR-IN-ENUMERATE</code> 循环只使用一个循环变量，该变量会成为包含索引和迭代值的 Python 元组：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+FOR-IN-ENUMERATE with one loop variable
+    FOR    ${x}    IN ENUMERATE    @{LIST}
+        Length Should Be    ${x}    2
+        Log    Index is ${x}[0] and item is ${x}[1].
+    END
+</code></pre>
+<blockquote>
+<p>只使用一个循环变量的 <code>FOR-IN-ENUMERATE</code> 循环是 Robot Framework 3.2 的新功能。</p>
+</blockquote>
+<h4><code>FOR-IN-ZIP</code> 循环</h4>
+<p>有些测试会构建多个相关列表，然后一起遍历它们。Robot Framework 为这种情况提供了简写：<code>FOR ... IN ZIP ...</code>，源自 <a href="http://docs.python.org/library/functions.html#zip">Python 内置的 zip() 函数</a>。</p>
+<p>用示例来说明可能最为直观：</p>
+<pre><code class="language-markdown">*** Variables ***
+@{NUMBERS}       ${1}    ${2}    ${5}
+@{NAMES}         one     two     five
+
+*** Test Cases ***
+Iterate over two lists manually
+    ${length}=    Get Length    ${NUMBERS}
+    FOR    ${index}    IN RANGE    ${length}
+        Log Many    ${NUMBERS}[${index}]    ${NAMES}[${index}]
+    END
+
+FOR-IN-ZIP
+    FOR    ${number}    ${name}    IN ZIP    ${NUMBERS}    ${NAMES}
+        Log Many    ${number}    ${name}
+    END
+</code></pre>
+<p>如上例所示，<code>FOR-IN-ZIP</code> 循环在循环变量和值之间需要自己的自定义分隔符 <code>IN ZIP</code>（区分大小写）。与 <code>FOR-IN-ZIP</code> 循环一起使用的值必须是列表或类似列表的对象。</p>
+<p>要迭代的项必须以标量变量（如 <code>${items}</code>）或列表变量（如 <code>@{lists}</code>，产生实际的迭代列表）的形式给出。前一种方式更常见，上面已经演示过了。后一种方式如下：</p>
+<pre><code class="language-markdown">*** Variables ***
+@{NUMBERS}       ${1}    ${2}    ${5}
+@{NAMES}         one     two     five
+@{LISTS}         ${NUMBERS}    ${NAMES}
+
+*** Test Cases ***
+FOR-IN-ZIP with lists from variable
+    FOR    ${number}    ${name}    IN ZIP    @{LISTS}
+        Log Many    ${number}    ${name}
+    END
+</code></pre>
+<p>要迭代的列表数量不受限制，但必须与循环变量的数量匹配。或者也可以只使用一个循环变量，此时该变量会成为包含所有列表中项的 Python 元组。</p>
+<pre><code class="language-markdown">*** Variables ***
+@{ABC}           a    b    c
+@{XYZ}           x    y    z
+@{NUM}           1    2    3
+
+*** Test Cases ***
+FOR-IN-ZIP with multiple lists
+    FOR    ${a}    ${x}    ${n}    IN ZIP    ${ABC}    ${XYZ}    ${NUM}
+        Log Many    ${a}    ${x}    ${n}
+    END
+
+FOR-IN-ZIP with one variable
+    FOR    ${items}    IN ZIP    ${ABC}    ${XYZ}    ${NUM}
+        Length Should Be    ${items}    3
+        Log Many    ${items}[0]    ${items}[1]    ${items}[2]
+    END
+</code></pre>
+<p>从 Robot Framework 6.1 开始，可以配置当迭代项的长度不同时的行为。默认情况下，最短的项决定迭代次数，较长项末尾的值会被忽略。可以通过 <code>mode</code> 选项更改此行为，它有三个可能的值：</p>
+<ul>
+<li><code>STRICT</code>：项的长度必须相等。如果不等，执行将失败。这与 Python 的 <a href="https://docs.python.org/library/functions.html#zip">zip</a> 函数使用 <code>strict=True</code> 相同。</li>
+<li><code>SHORTEST</code>：较长项中的多余项会被忽略。只要其中一个项被耗尽，此模式就支持无限迭代器。这是默认行为。</li>
+<li><code>LONGEST</code>：最长的项决定迭代次数。较短项中缺失的值用 <code>fill</code> 选项指定的值填充，如果未使用则为 <code>None</code>。这与 Python 的 <a href="https://docs.python.org/library/itertools.html#itertools.zip_longest">zip_longest</a> 函数相同，只是它使用 <code>fill</code> 参数而不是 <code>fillvalue</code>。</li>
+</ul>
+<p>以下示例说明了所有这些模式：</p>
+<pre><code class="language-markdown">*** Variables ***
+@{CHARACTERS}     a    b    c    d    f
+@{NUMBERS}        1    2    3
+
+*** Test Cases ***
+STRICT mode
+    [Documentation]    This loop fails due to lists lengths being different.
+    FOR    ${c}    ${n}    IN ZIP    ${CHARACTERS}    ${NUMBERS}    mode=STRICT
+        Log    ${c}: ${n}
+    END
+
+SHORTEST mode
+    [Documentation]    This loop executes three times.
+    FOR    ${c}    ${n}    IN ZIP    ${CHARACTERS}    ${NUMBERS}    mode=SHORTEST
+        Log    ${c}: ${n}
+    END
+
+LONGEST mode
+    [Documentation]    This loop executes five times.
+    ...                On last two rounds `${n}` has value `None`.
+    FOR    ${c}    ${n}    IN ZIP    ${CHARACTERS}    ${NUMBERS}    mode=LONGEST
+        Log    ${c}: ${n}
+    END
+
+LONGEST mode with custom fill value
+    [Documentation]    This loop executes five times.
+    ...                On last two rounds `${n}` has value `0`.
+    FOR    ${c}    ${n}    IN ZIP    ${CHARACTERS}    ${NUMBERS}    mode=LONGEST    fill=0
+        Log    ${c}: ${n}
+    END
+</code></pre>
+<blockquote>
+<p>如果列表长度不同，未来的默认行为将更改为 <code>STRICT</code> 模式。如果不希望如此，需要显式使用 <code>SHORTEST</code> 模式。</p>
+</blockquote>
+<h4>字典迭代</h4>
+<p>普通 <code>FOR</code> 循环和 <code>FOR-IN-ENUMERATE</code> 循环支持遍历字典中的键和值。此语法要求至少有一个循环值是字典变量。可以使用多个字典变量，也可以用 <code>key=value</code> 语法提供额外的项。项按定义的顺序迭代，如果同一个键有多个值，将使用最后一个值。</p>
+<pre><code class="language-markdown">*** Variables ***
+&amp;{DICT}          a=1    b=2    c=3
+
+*** Test Cases ***
+Dictionary iteration with FOR loop
+    FOR    ${key}    ${value}    IN    &amp;{DICT}
+        Log    Key is '${key}' and value is '${value}'.
+    END
+
+Dictionary iteration with FOR-IN-ENUMERATE loop
+    FOR    ${index}    ${key}    ${value}    IN ENUMERATE    &amp;{DICT}
+        Log    On round ${index} key is '${key}' and value is '${value}'.
+    END
+
+Multiple dictionaries and extra items in 'key=value' syntax
+    &amp;{more} =    Create Dictionary    e=5    f=6
+    FOR    ${key}    ${value}    IN    &amp;{DICT}    d=4    &amp;{more}    g=7
+        Log    Key is '${key}' and value is '${value}'.
+    END
+</code></pre>
+<p>通常最简单的方式是使用字典迭代语法，让键和值分别赋给不同的变量，如上面的示例所示。对于普通 <code>FOR</code> 循环，也可以只使用一个变量，该变量会成为包含键和值的元组。如果 <code>FOR-IN-ENUMERATE</code> 循环只使用一个变量，它会成为包含索引、键和值的元组。<code>FOR-IN-ENUMERATE</code> 循环使用两个变量意味着将索引赋给第一个变量，第二个变量成为包含键和值的元组。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+One loop variable
+    FOR    ${item}    IN    &amp;{DICT}
+        Log    Key is '${item}[0]' and value is '${item}[1]'.
+    END
+
+One loop variable with FOR-IN-ENUMERATE
+    FOR    ${item}    IN ENUMERATE    &amp;{DICT}
+        Log    On round ${item}[0] key is '${item}[1]' and value is '${item}[2]'.
+    END
+
+Two loop variables with FOR-IN-ENUMERATE
+    FOR    ${index}    ${item}    IN ENUMERATE    &amp;{DICT}
+        Log    On round ${index} key is '${item}[0]' and value is '${item}[1]'.
+    END
+</code></pre>
+<p>除了遍历字典中的名称和值之外，还可以只遍历键，然后根据键获取值。此语法要求将字典作为列表变量使用：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Iterate over keys
+    FOR    ${key}    IN    @{DICT}
+        Log    Key is '${key}' and value is '${DICT}[${key}]'.
+    END
+</code></pre>
+<blockquote>
+<p>遍历字典中的键和值是 Robot Framework 3.2 的新功能。在更早的版本中，只能像上面最后一个示例那样遍历字典的键。</p>
+</blockquote>
+<h4>循环变量转换</h4>
+<p>变量类型转换也适用于 FOR 循环变量。可以使用熟悉的 <code>${name: type}</code> 语法为任何循环变量添加所需的类型。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Variable conversion
+    FOR    ${value: bytes}    IN    Hello!    Hyvä!    \x00\x00\x07
+        Log    ${value}    formatter=repr
+    END
+    FOR    ${index}    ${date: date}    IN ENUMERATE   2023-06-15    2025-05-30    today
+        Log    ${date}     formatter=repr
+    END
+    FOR    ${item: tuple[str, date]}    IN ENUMERATE   2023-06-15    2025-05-30    today
+        Log    ${item}     formatter=repr
+    END
+</code></pre>
+<blockquote>
+<p>变量类型转换是 Robot Framework 7.3 的新功能。</p>
+</blockquote>
+<h4>从输出中移除不必要的关键字</h4>
+<p>迭代次数多的 <code>FOR</code> 循环通常会产生大量输出，并显著增加生成的 output 和 log 文件的大小。可以使用 <code>--removekeywords</code> 和 <code>--flattenkeywords</code> 命令行选项来移除或扁平化不必要的关键字。</p>
+<h4>重复执行单个关键字</h4>
+<p>在只需要重复执行单个关键字的情况下，<code>FOR</code> 循环可能显得过于繁重。这种情况下使用 BuiltIn 库的 <code>Repeat Keyword</code> 关键字通常更简单。该关键字接受一个关键字和重复次数作为参数。重复次数可以带有可选的后缀 <code>times</code> 或 <code>x</code>，使语法更易于阅读。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    Repeat Keyword    5    Some Keyword    arg1    arg2
+    Repeat Keyword    42 times    My Keyword
+    Repeat Keyword    ${var}    Another Keyword    argument
+</code></pre>
+<h3><code>WHILE</code> 循环</h3>
+<p><code>WHILE</code> 循环结合了 <code>FOR</code> 循环和 <code>IF/ELSE</code> 结构的特性。它们指定一个条件并在条件为真时重复执行循环体。例如，可以利用它来重复执行一个不确定性的序列直到获得期望的结果，在某些情况下也可以作为 <code>FOR</code> 循环的替代方案。</p>
+<blockquote>
+<p><code>WHILE</code> 循环是 Robot Framework 5.0 的新功能。</p>
+</blockquote>
+<h4>基本 <code>WHILE</code> 语法</h4>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    VAR    ${rc}   1
+    WHILE    ${rc} != 0
+        ${rc} =    Keyword that returns zero on success
+    END
+</code></pre>
+<p><code>WHILE</code> 循环条件在 Python 中求值，因此 Python 内置函数如 <code>len()</code> 可用，模块也会自动导入以支持如 <code>math.pi * math.pow(${radius}, 2) &lt; 10</code> 这样的用法。普通变量如上例中的 <code>${rc}</code> 在求值前会被替换，但变量也可以使用特殊的 <code>$rc</code> 语法在求值命名空间中使用。后一种方式在变量的字符串表示不能直接用于条件时很方便。例如，字符串需要引号，多行字符串和本身包含引号的字符串会带来额外的问题。更多信息和与求值语法相关的示例，请参阅&quot;表达式求值&quot;附录。</p>
+<p>从 Robot Framework 6.1 开始，<code>WHILE</code> 语句中的条件可以省略。这被解释为条件始终为真，与下面描述的 <code>limit</code> 选项配合使用时可能很有用。</p>
+<h4>限制 <code>WHILE</code> 循环迭代次数</h4>
+<p>使用 <code>WHILE</code> 循环时，总有可能出现无限循环的情况，无论是有意还是无意。当循环条件永远不变为假时就会发生这种情况。虽然无限循环在应用程序编程中有一些用途，但在自动化中，无限循环很少是期望的结果。如果在 Robot Framework 中出现这样的循环，执行必须被强制停止，且无法创建 log 或 report。因此，Robot Framework 中的 <code>WHILE</code> 循环默认限制为 10000 次迭代。如果超过限制，循环将失败。</p>
+<p>可以通过 <code>limit</code> 配置参数设置限制，既可以是最大迭代次数，也可以是整个循环的最大时间。当限制是迭代次数时，可以只使用整数如 <code>100</code>，也可以在值后面加 <code>times</code> 或 <code>x</code> 后缀，如 <code>100 times</code>。当限制是超时时间时，可以使用时间字符串如 <code>10 s</code> 或 <code>1 hour 10 minutes</code>。也可以使用 <code>NONE</code>（不区分大小写）完全禁用限制。以下示例说明了所有这些选项。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Limit as iteration count
+    WHILE    True    limit=100
+        Log    This is run 100 times.
+    END
+    WHILE    True    limit=10 times
+        Log    This is run 10 times.
+    END
+    WHILE    True    limit=42x
+        Log    This is run 42 times.
+    END
+
+Limit as time
+    WHILE    True    limit=10 seconds
+        Log    This is run 10 seconds.
+    END
+
+No limit
+    WHILE    True    limit=NONE
+        Log    This runs forever.
+    END
+</code></pre>
+<blockquote>
+<p>支持使用 <code>times</code> 和 <code>x</code> 后缀指定迭代次数是 Robot Framework 7.0 的新功能。</p>
+</blockquote>
+<p>当超过限制时，循环中的关键字不会被强制停止。循环的退出方式与条件变为假时相同。主要区别在于此时循环状态将为 <code>FAIL</code>。</p>
+<p>从 Robot Framework 6.1 开始，可以使用 <code>on_limit</code> 参数配置超过限制时的行为。它支持两个值 <code>pass</code> 和 <code>fail</code>（不区分大小写）。如果值为 <code>pass</code>，达到限制时执行将正常继续，<code>WHILE</code> 循环的状态为 <code>PASS</code>。值 <code>fail</code> 的行为与默认行为相同，即如果超过限制，循环和测试将失败。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Continue when iteration limit is reached
+    WHILE    True    limit=5    on_limit=pass
+        Log    Loop will be executed five times
+    END
+    Log    This will be executed normally.
+
+Continue when time limit is reached
+    WHILE    True    limit=10s    on_limit=pass
+        Log    Loop will be executed for 10 seconds.
+        Sleep   0.5s
+    END
+    Log    This will be executed normally.
+</code></pre>
+<p>默认情况下，达到限制时抛出的错误消息是 <code>WHILE loop was aborted because it did not finish within the limit of 0.5 seconds. Use the 'limit' argument to increase or remove the limit if needed.</code>。从 Robot Framework 6.1 开始，可以使用 <code>on_limit_message</code> 配置参数更改错误消息。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Limit as iteration count
+    WHILE    True    limit=0.5s    on_limit_message=Custom While loop error message
+        Log    This is run 0.5 seconds.
+    END
+</code></pre>
+<blockquote>
+<p><code>on_limit_message</code> 配置参数是 Robot Framework 6.1 的新功能。</p>
+</blockquote>
+<h4>嵌套 <code>WHILE</code> 循环</h4>
+<p><code>WHILE</code> 循环可以嵌套，也可以与其他控制结构组合使用：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Nesting WHILE
+    VAR    ${x}    10
+    WHILE    ${x} &gt; 0
+        VAR    ${y}    ${x}
+        WHILE    ${y} &gt; 0
+            ${y} =    Evaluate    ${y} - 1
+        END
+        IF    ${x} &gt; 5
+            ${x} =    Evaluate    ${x} - 1
+        ELSE
+            ${x} =    Evaluate    ${x} - 2
+        END
+    END
+</code></pre>
+<h4>从输出中移除不必要的关键字</h4>
+<p>迭代次数多的 <code>WHILE</code> 循环通常会产生大量输出，并显著增加生成的 output 和 log 文件的大小。可以使用 <code>--removekeywords</code> 和 <code>--flattenkeywords</code> 命令行选项来移除或扁平化不必要的关键字。</p>
+<h3>使用 <code>BREAK</code> 和 <code>CONTINUE</code> 进行循环控制</h3>
+<p>FOR 和 WHILE 循环的执行都可以通过 <code>BREAK</code> 和 <code>CONTINUE</code> 语句来控制。前者提前退出整个循环，后者停止执行当前循环迭代并继续下一次迭代。实际上，它们与 Python、Java 及许多其他编程语言中的 <code>break</code> 和 <code>continue</code> 语句具有相同的语义。</p>
+<p><code>BREAK</code> 和 <code>CONTINUE</code> 通常与 <code>IF/ELSE</code> 或 <code>TRY/EXCEPT</code> 结构配合条件使用，尤其是内联 <code>IF</code> 语法与它们搭配使用时很方便。这些语句必须在循环体中使用，可以在上述控制结构内部使用，但在循环体中调用的关键字中使用是无效的。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+BREAK with FOR
+    ${text} =    Set Variable    zero
+    FOR    ${var}    IN    one    two    three
+        IF    '${var}' == 'two'    BREAK
+        ${text} =    Set Variable    ${text}-${var}
+    END
+    Should Be Equal    ${text}    zero-one
+
+CONTINUE with FOR
+    ${text} =    Set Variable    zero
+    FOR    ${var}    IN    one    two    three
+        IF    '${var}' == 'two'    CONTINUE
+        ${text} =    Set Variable    ${text}-${var}
+    END
+    Should Be Equal    ${text}    zero-one-three
+
+CONTINUE and BREAK with WHILE
+    WHILE    True
+        TRY
+             ${value} =    Do Something
+        EXCEPT
+            CONTINUE
+        END
+        Do something with value    ${value}
+        BREAK
+    END
+
+Invalid BREAK usage
+    [Documentation]    BREAK and CONTINUE can only be used in the loop body,
+    ...                not in keywords used in the loop.
+    FOR    ${var}    IN    one    two    three
+        Invalid BREAK
+    END
+
+*** Keywords ***
+Invalid BREAK
+    [Documentation]    This keyword fails due to invalid syntax.
+    BREAK
+</code></pre>
+<blockquote>
+<p><code>BREAK</code> 和 <code>CONTINUE</code> 语句是 Robot Framework 5.0 的新功能，与 <code>WHILE</code> 一样。更早的版本支持使用 BuiltIn 库的 <code>Exit For Loop</code>、<code>Exit For Loop If</code>、<code>Continue For Loop</code> 和 <code>Continue For Loop If</code> 关键字来控制 <code>FOR</code> 循环。这些关键字仍然可以使用，但将来会被废弃和移除。</p>
+</blockquote>
+<blockquote>
+<p>RETURN 语句也可以用于退出循环。它仅在循环用于用户关键字内部时有效。</p>
+</blockquote>
+<h3><code>IF/ELSE</code> 语法</h3>
+<p>有时需要有条件地执行某些关键字。从 Robot Framework 4.0 开始有了单独的 <code>IF/ELSE</code> 语法，但也有其他条件执行关键字的方式。如果逻辑变得复杂，通常最好将其移到测试库中。</p>
+<h4>基本 <code>IF</code> 语法</h4>
+<p>Robot Framework 的原生 <code>IF</code> 语法以 <code>IF</code>（区分大小写）开始，以 <code>END</code>（区分大小写）结束。<code>IF</code> 标记恰好需要一个值，即要求值的条件。条件为真时要执行的关键字位于 <code>IF</code> 和 <code>END</code> 标记之间的各行中。强烈建议对 <code>IF</code> 块中的关键字进行缩进，但这不是强制的。</p>
+<p>在以下示例中，如果 <code>${rc}</code> 大于零，将执行 <code>Some keyword</code> 和 <code>Another keyword</code>：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+   IF    ${rc} &gt; 0
+       Some keyword
+       Another keyword
+   END
+</code></pre>
+<p>条件在 Python 中求值，因此 Python 内置函数如 <code>len()</code> 可用，模块也会自动导入以支持如 <code>platform.system() == 'Linux'</code> 和 <code>math.ceil(${x}) == 1</code> 这样的用法。普通变量如上例中的 <code>${rc}</code> 在求值前会被替换，但变量也可以使用特殊的 <code>$rc</code> 语法在求值命名空间中使用。后一种方式在变量的字符串表示不能直接用于条件时很方便。例如，字符串需要引号，多行字符串和本身包含引号的字符串会带来额外的问题。更多信息和与求值语法相关的示例，请参阅&quot;表达式求值&quot;附录。</p>
+<h4><code>ELSE</code> 分支</h4>
+<p>与大多数支持条件执行的语言一样，Robot Framework 的 <code>IF</code> 语法也支持 <code>ELSE</code> 分支，当 <code>IF</code> 条件不为真时执行。</p>
+<p>在此示例中，如果 <code>${rc}</code> 大于零则执行 <code>Some keyword</code>，否则执行 <code>Another keyword</code>：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    IF    ${rc} &gt; 0
+        Some keyword
+    ELSE
+        Another keyword
+    END
+</code></pre>
+<h4><code>ELSE IF</code> 分支</h4>
+<p>Robot Framework 也支持 <code>ELSE IF</code> 分支，当初始条件不为真时它们有自己的条件进行求值。可以有任意数量的 <code>ELSE IF</code> 分支，按指定顺序依次求值。如果某个 <code>ELSE IF</code> 条件为真，执行其后的代码块，其余 <code>ELSE IF</code> 分支将被忽略。可选的 <code>ELSE</code> 分支可以跟在 <code>ELSE IF</code> 分支之后，当所有条件都为假时执行。</p>
+<p>在以下示例中，根据 <code>${rc}</code> 是正数、负数、零还是其他值（如字符串或 <code>None</code>），执行不同的关键字：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Example
+    IF    $rc &gt; 0
+        Positive keyword
+    ELSE IF    $rc &lt; 0
+        Negative keyword
+    ELSE IF    $rc == 0
+        Zero keyword
+    ELSE
+        Fail    Unexpected rc: ${rc}
+    END
+</code></pre>
+<p>注意此示例使用了 <code>${rc}</code> 变量的特殊 <code>$rc</code> 格式，以避免在它不是数字时出现求值错误。更多关于此语法的信息，请参阅前面提到的&quot;表达式求值&quot;附录。</p>
+<h4>内联 <code>IF</code></h4>
+<p>普通 <code>IF/ELSE</code> 结构在只需要执行单个语句时显得有些冗长。另一种选择是使用内联 <code>IF</code> 语法，要执行的语句直接跟在 <code>IF</code> 标记和条件之后，不需要 <code>END</code> 标记。例如，以下两个关键字是等价的：</p>
+<pre><code class="language-markdown">*** Keywords ***
+Normal IF
+    IF    $condition1
+        Keyword    argument
+    END
+    IF    $condition2
+        RETURN
+    END
+
+Inline IF
+    IF    $condition1    Keyword    argument
+    IF    $condition2    RETURN
+</code></pre>
+<p>内联 <code>IF</code> 语法也支持 <code>ELSE</code> 和 <code>ELSE IF</code> 分支：</p>
+<pre><code class="language-markdown">*** Keywords ***
+Inline IF/ELSE
+    IF    $condition    Keyword    argument    ELSE    Another Keyword
+
+Inline IF/ELSE IF/ELSE
+    IF    $cond1    Keyword 1    ELSE IF    $cond2    Keyword 2    ELSE IF    $cond3    Keyword 3    ELSE    Keyword 4
+</code></pre>
+<p>如上面后一个示例所示，带有多个 <code>ELSE IF</code> 和 <code>ELSE</code> 分支的内联 <code>IF</code> 开始变得难以理解。可以使用通用的 <code>...</code> 延续语法将长的内联 <code>IF</code> 结构拆分到多行，但使用普通 <code>IF/ELSE</code> 结构或将逻辑移到测试库中可能是更好的选择。每个内联 <code>IF</code> 分支只能包含一个语句。如果需要更多语句，必须使用普通 <code>IF/ELSE</code> 结构。</p>
+<p>如果需要在内联 <code>IF</code> 中使用赋值，要赋值的变量必须放在起始 <code>IF</code> 之前。其他逻辑与根据关键字返回值进行变量赋值完全相同。如果使用了赋值但没有任何分支被执行，变量将获得值 <code>None</code>。</p>
+<pre><code class="language-markdown">*** Keywords ***
+Inline IF/ELSE with assignment
+    ${var} =    IF    $condition    Keyword    argument    ELSE    Another Keyword
+
+Inline IF/ELSE with assignment having multiple variables
+    ${host}    ${port} =    IF    $production    Get Production Config    ELSE    Get Testing Config
+</code></pre>
+<blockquote>
+<p>内联 <code>IF</code> 语法是 Robot Framework 5.0 的新功能。</p>
+</blockquote>
+<h4>嵌套 <code>IF</code> 结构</h4>
+<p><code>IF</code> 结构可以相互嵌套，也可以与 <code>FOR</code> 循环嵌套。以下示例使用了高级功能，如 <code>FOR-IN-ENUMERATE</code> 循环、用户关键字的仅限命名参数（named-only argument）和内联 Python 求值语法（<code>${{len(${items})}}</code>）来说明这一点：</p>
+<pre><code class="language-markdown">*** Keywords ***
+Log items
+    [Arguments]    @{items}    ${log_values}=True
+    IF    not ${items}
+        Log to console    No items.
+    ELSE IF    len(${items}) == 1
+        IF    ${log_values}
+            Log to console    One item: ${items}[0]
+        ELSE
+            Log to console    One item.
+        END
+    ELSE
+        Log to console    ${{len(${items})}} items.
+        IF    ${log_values}
+            FOR    ${index}    ${item}    IN ENUMERATE    @{items}    start=1
+                Log to console    Item ${index}: ${item}
+            END
+        END
+    END
+
+*** Test Cases ***
+No items
+    Log items
+
+One item without logging value
+    Log items    xxx    log_values=False
+
+Multiple items
+    Log items    a    b    c
+</code></pre>
+<h4>其他条件执行关键字的方式</h4>
+<p>还有其他方法可以有条件地执行关键字：</p>
+<ul>
+<li>
+<p>用作测试套件、测试用例和关键字的 setup 或 teardown 的关键字名称可以使用变量指定。这便于从命令行等位置更改它们。</p>
+</li>
+<li>
+<p>BuiltIn 库的 <code>Run Keyword</code> 关键字接受一个实际要执行的关键字作为参数，因此它可以是变量。变量的值可以从之前的关键字动态获取或从命令行传入。</p>
+</li>
+<li>
+<p>BuiltIn 库的 <code>Run Keyword If</code> 和 <code>Run Keyword Unless</code> 关键字仅在特定表达式为真或假时才执行指定的关键字。但通常建议使用上面介绍的新 <code>IF/ELSE</code> 语法。</p>
+</li>
+<li>
+<p>BuiltIn 库的另一个关键字 <code>Set Variable If</code> 可以根据给定表达式动态设置变量。</p>
+</li>
+<li>
+<p>BuiltIn 库中有多个关键字允许仅在测试用例或测试套件失败或通过时执行指定的关键字。</p>
+</li>
+</ul>
+<h3><code>TRY/EXCEPT</code> 语法</h3>
+<p>当关键字失败时，Robot Framework 的默认行为是停止当前测试并执行可能的 teardown。然而，在执行过程中也可能需要处理这些失败。Robot Framework 5.0 引入了原生 <code>TRY/EXCEPT</code> 语法来实现此目的，但也有其他处理错误的方式。</p>
+<p>Robot Framework 的 <code>TRY/EXCEPT</code> 语法受到 Python <a href="https://docs.python.org/tutorial/errors.html#handling-exceptions">异常处理</a>语法的启发。它与 Python 具有相同的 <code>TRY</code>、<code>EXCEPT</code>、<code>ELSE</code> 和 <code>FINALLY</code> 分支，工作方式也大致相同。不同之处在于 Python 使用小写的 <code>try</code>、<code>except</code> 等，但 Robot Framework 中所有此类语法必须使用大写字母。更大的区别是 Python 中的异常是对象，而 Robot Framework 中处理的是作为字符串的错误消息。</p>
+<blockquote>
+<p>无法捕获由无效语法引起的错误或停止整个执行的错误。</p>
+</blockquote>
+<h4>使用 <code>EXCEPT</code> 捕获异常</h4>
+<p>基本的 <code>TRY/EXCEPT</code> 语法可以基于错误消息处理失败：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+First example
+    TRY
+        Some Keyword
+    EXCEPT    Error message
+        Error Handler Keyword
+    END
+    Keyword Outside
+</code></pre>
+<p>在上面的示例中，如果 <code>Some Keyword</code> 通过，<code>EXCEPT</code> 分支不会运行，执行在 <code>TRY/EXCEPT</code> 结构之后继续。如果关键字以消息 <code>Error message</code>（区分大小写）失败，<code>EXCEPT</code> 分支将被执行。如果 <code>EXCEPT</code> 分支成功，执行在 <code>TRY/EXCEPT</code> 结构之后继续。如果它失败，测试失败，不再执行剩余关键字。如果 <code>Some Keyword</code> 以任何其他异常失败，该失败不会被处理，测试将失败且不执行剩余关键字。</p>
+<p>可以有多个 <code>EXCEPT</code> 分支。在这种情况下，它们逐一匹配，第一个匹配的分支被执行。一个 <code>EXCEPT</code> 也可以有多个要匹配的消息，如果任何消息匹配则执行该分支。在所有这些情况下，消息可以使用变量，也可以使用字面字符串。</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Multiple EXCEPT branches
+    TRY
+        Some Keyword
+    EXCEPT    Error message    # 先尝试匹配这个。
+        Error Handler 1
+    EXCEPT    Another error    # 如果上面没匹配到则尝试这个。
+        Error Handler 2
+    EXCEPT    ${message}       # 最后一次匹配尝试，这次使用变量。
+        Error Handler 3
+    END
+
+Multiple messages with one EXCEPT
+    TRY
+        Some Keyword
+    EXCEPT    Error message    Another error    ${message}    # 匹配其中任一个。
+        Error handler
+    END
+</code></pre>
+<p>也可以有不带消息的 <code>EXCEPT</code>，此时它匹配任何错误。这样的 <code>EXCEPT</code> 只能有一个，且必须跟在其他可能的 <code>EXCEPT</code> 分支之后：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Match any error
+    TRY
+        Some Keyword
+    EXCEPT               # 匹配任何错误。
+        Error Handler
+    END
+
+Match any after testing more specific errors
+    TRY
+        Some Keyword
+    EXCEPT    Error message    # 先尝试匹配这个
+        Error Handler 1
+    EXCEPT                     # 匹配上面没有匹配到的任何错误。
+        Error Handler 2
+    END
+</code></pre>
+<h4>使用模式匹配错误</h4>
+<p>默认情况下，使用 <code>EXCEPT</code> 匹配错误需要精确匹配。可以通过配置选项 <code>type=</code> 作为 EXCEPT 子句的参数来更改。有效值为 <code>GLOB</code>、<code>REGEXP</code> 或 <code>START</code>（不区分大小写），分别使匹配成为 <a href="https://en.wikipedia.org/wiki/Glob_(programming)">glob 模式匹配</a>、<a href="https://en.wikipedia.org/wiki/Regular_expression">正则表达式匹配</a>或只匹配错误的开头。使用值 <code>LITERAL</code> 与默认行为相同。如果一个 <code>EXCEPT</code> 有多个消息，此选项适用于所有消息。选项的值也可以用变量定义。</p>
+<pre><code class="language-markdown">*** Variables ***
+${MATCH TYPE}     regexp
+
+*** Test Cases ***
+Glob pattern
+    TRY
+        Some Keyword
+    EXCEPT    ValueError: *    type=GLOB
+        Error Handler 1
+    EXCEPT    [Ee]rror ?? occurred    ${pattern}    type=glob
+        Error Handler 2
+    END
+
+Regular expression
+    TRY
+        Some Keyword
+    EXCEPT    ValueError: .*    type=${MATCH TYPE}
+        Error Handler 1
+    EXCEPT    [Ee]rror \\d+    (Invalid|Bad) usage    type=Regexp    # 反斜杠需要转义。
+        Error Handler 2
+    END
+
+Match start
+    TRY
+        Some Keyword
+    EXCEPT    ValueError:    ${beginning}    type=start
+        Error Handler
+    END
+
+Explicit exact match
+    TRY
+        Some Keyword
+    EXCEPT    ValueError: invalid literal for int() with base 10: 'ooops'    type=LITERAL
+        Error Handler
+    EXCEPT    Error 13 occurred    type=LITERAL
+        Error Handler 2
+    END
+</code></pre>
+<blockquote>
+<p>注意，正则表达式中常用的反斜杠字符在 Robot Framework 数据中是转义字符。因此在正则表达式中使用时需要用另一个反斜杠进行转义。</p>
+</blockquote>
+<h4>捕获错误消息</h4>
+<p>当使用模式匹配错误以及使用不带任何消息的 <code>EXCEPT</code> 来匹配任何错误时，通常需要知道实际发生的错误。Robot Framework 支持通过在 <code>EXCEPT</code> 语句末尾添加 <code>AS  ${var}</code> 来将错误消息捕获到变量中：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Capture error
+    TRY
+        Some Keyword
+    EXCEPT    ValueError: *    type=GLOB    AS   ${error}
+        Error Handler 1    ${error}
+    EXCEPT    [Ee]rror \\d+    (Invalid|Bad) usage    type=REGEXP    AS    ${error}
+        Error Handler 2    ${error}
+    EXCEPT    AS    ${error}
+        Error Handler 3    ${error}
+    END
+</code></pre>
+<h4>使用 <code>ELSE</code> 在没有错误时执行关键字</h4>
+<p>可选的 <code>ELSE</code> 分支允许在没有错误时执行关键字。只能有一个 <code>ELSE</code> 分支，且只允许在一个或多个 <code>EXCEPT</code> 分支之后：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+ELSE branch
+    TRY
+        Some Keyword
+    EXCEPT    X
+        Log    Error 'X' occurred!
+    EXCEPT    Y
+        Log    Error 'Y' occurred!
+    ELSE
+        Log    No error occurred!
+    END
+    Keyword Outside
+</code></pre>
+<p>在上面的示例中，如果 <code>Some Keyword</code> 通过，<code>ELSE</code> 分支将被执行；如果它以消息 <code>X</code> 或 <code>Y</code> 失败，相应的 <code>EXCEPT</code> 分支将运行。在所有这些情况下，执行在整个 <code>TRY/EXCEPT/ELSE</code> 结构之后继续。如果 <code>Some Keyword</code> 以其他方式失败，<code>EXCEPT</code> 和 <code>ELSE</code> 分支不会运行，<code>TRY/EXCEPT/ELSE</code> 结构将失败。</p>
+<p>要同时处理有错误和没有错误的情况，可以将不带任何消息的 <code>EXCEPT</code> 与 <code>ELSE</code> 组合使用：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Handle everything
+    TRY
+        Some Keyword
+    EXCEPT    AS    ${err}
+        Log    Error occurred: ${err}
+    ELSE
+        Log    No error occurred!
+    END
+</code></pre>
+<h4>使用 <code>FINALLY</code> 无论是否有错误都执行关键字</h4>
+<p>可选的 <code>FINALLY</code> 分支允许在有错误和没有错误时都执行关键字。因此它们适合在关键字执行后进行清理，类似于 teardown。只能有一个 <code>FINALLY</code> 分支，且必须始终在最后。它们可以与 <code>EXCEPT</code> 和 <code>ELSE</code> 分支组合使用，也可以有 <code>TRY/FINALLY</code> 结构：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+TRY/EXCEPT/ELSE/FINALLY
+    TRY
+        Some keyword
+    EXCEPT
+        Log    Error occurred!
+    ELSE
+        Log    No error occurred.
+    FINALLY
+        Log    Always executed.
+    END
+
+TRY/FINALLY
+    Open Connection
+    TRY
+        Use Connection
+    FINALLY
+        Close Connection
+    END
+</code></pre>
+<h4>其他处理错误的方式</h4>
+<p>还有其他方法可以有条件地执行关键字：</p>
+<ul>
+<li>
+<p>BuiltIn 库的 <code>Run Keyword And Expect Error</code> 关键字执行一个指定的关键字并期望它以指定的错误消息失败。它基本上与使用带有指定消息的 <code>TRY/EXCEPT</code> 相同。指定错误消息的语法也相同，只是该关键字默认使用 glob 模式匹配而非精确匹配。通常建议使用原生 <code>TRY/EXCEPT</code> 功能，除非需要支持不支持该功能的旧版 Robot Framework。</p>
+</li>
+<li>
+<p>BuiltIn 库的 <code>Run Keyword And Ignore Error</code> 关键字执行一个指定的关键字并返回其状态（字符串 <code>PASS</code> 或 <code>FAIL</code>）以及可能的返回值或错误消息。它基本上与使用 <code>TRY/EXCEPT/ELSE</code> 让 <code>EXCEPT</code> 捕获所有错误相同。除非需要支持旧版 Robot Framework，否则建议使用原生语法。</p>
+</li>
+<li>
+<p>BuiltIn 库的 <code>Run Keyword And Return Status</code> 关键字执行一个指定的关键字并以布尔值 true 或 false 返回其状态。它是上述 <code>Run Keyword And Ignore Error</code> 的包装。现在建议使用原生语法替代。</p>
+</li>
+<li>
+<p>测试 teardown 和关键字 teardown 可以用于清理活动，类似于 <code>FINALLY</code> 分支。</p>
+</li>
+<li>
+<p>当关键字在基于 Python 的库中实现时，Python 的所有错误处理功能都可以直接使用。尤其当所需逻辑变得更复杂时，推荐使用这种方式。</p>
+</li>
+</ul>
+<h3><code>GROUP</code> 语法</h3>
+<p><code>GROUP</code> 语法允许将相关的关键字和控制结构组合在一起：</p>
+<pre><code class="language-markdown">*** Test Cases ***
+Valid login
+    GROUP    Open browser to login page
+        Open Browser    ${LOGIN URL}
+        Title Should Be    Login Page
+    END
+    GROUP    Submit credentials
+        Input Username    username_field    demo
+        Input Password    password_field    mode
+        Click Button    login_button
+    END
+    GROUP    Login should have succeeded
+        Title Should Be    Welcome Page
+    END
+
+Anonymous group
+    GROUP
+        Log    Group name is optional.
+    END
+
+Nesting
+    GROUP
+        GROUP    Nested group
+            Log    Groups can be nested.
+        END
+        IF    True
+            GROUP
+                Log    Groups can also be nested with other control structures.
+            END
+        END
+    END
+</code></pre>
+<p>如上面的示例所示，GROUP 可以有名称，但名称是可选的。GROUP 也可以与其他 GROUP 以及其他控制结构自由嵌套。</p>
+<p>通常建议使用用户关键字而非 <code>GROUP</code> 语法，因为用户关键字可重用，且通过隐藏和封装底层细节简化了使用它们的测试或关键字。不过在 log 文件中，用户关键字和 GROUP 看起来相同，只是标签是 <code>GROUP</code> 而不是 <code>KEYWORD</code>。</p>
+<p>同一测试或关键字内的所有 GROUP 共享相同的变量命名空间。这意味着，与使用关键字不同，不需要使用参数或返回值来共享值。在简单情况下这可以是一个好处，但如果变量很多，这个好处可能会变成问题并造成混乱。</p>
+<blockquote>
+<p><code>GROUP</code> 语法是 Robot Framework 7.2 的新功能。</p>
+</blockquote>
+<h4><code>GROUP</code> 与模板</h4>
+<p><code>GROUP</code> 语法可以用于对测试模板的迭代进行分组：</p>
+<pre><code class="language-markdown">*** Settings ***
+Library           String
+Test Template     Upper case should be
+
+*** Test Cases ***
+Template example
+    GROUP    ASCII characters
+        a    A
+        z    Z
+    END
+    GROUP    Latin-1 characters
+        ä    Ä
+        ß    SS
+    END
+    GROUP    Numbers
+        1    1
+        9    9
+    END
+
+*** Keywords ***
+Upper case should be
+    [Arguments]    ${char}    ${expected}
+    ${actual} =    Convert To Upper Case    ${char}
+    Should Be Equal    ${actual}    ${expected}
+</code></pre>
+<h4>编程式使用</h4>
+<p>GROUP 的主要用途之一是使得以编程方式创建结构化的测试和用户关键字成为可能。例如，以下 pre-run modifier 在每个修改的测试末尾添加一个包含两个关键字的 GROUP。GROUP 也可以由使用 listener API version 3 的 listener 添加。</p>
+<pre><code class="language-python">from robot.api import SuiteVisitor
+
+
+class GroupAdder(SuiteVisitor):
+
+    def start_test(self, test):
+        group = test.body.create_group(name='Example')
+        group.body.create_keyword(name='Log', args=['Hello, world!'])
+        group.body.create_keyword(name='No Operation')
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/01/2-8-robotframework-new-tutorial-resource-and-variable-files/">
+          Robot Framework 新版教程 - 资源文件和变量文件
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/03/2-10-robotframework-new-tutorial-advanced-features/">
+          Robot Framework 新版教程 - 高级功能
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>
