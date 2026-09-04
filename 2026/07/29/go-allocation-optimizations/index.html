@@ -1,0 +1,474 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Go：在栈上分配内存</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Go：在栈上分配内存
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-07
+
+      </div>
+    </div>
+    <div class="post-summary">Go 1.25 和 Go 1.26 中，编译器如何把更多 slice 分配从堆移到栈上。</div>
+    <h2>前言</h2>
+<p>本文翻译自 Go 官方博客 <a href="https://go.dev/blog/allocation-optimizations">Allocating on the Stack</a>，原作者 Keith Randall。</p>
+<p>这篇文章讲的是 Go 最近两个版本里和内存分配有关的一组优化。主题并不复杂：尽量把原本会发生在堆上的分配，搬到栈上。堆分配慢，还会给 GC 增加负担；栈分配便宜，有时候甚至几乎是免费的。</p>
+<p>我们一直在寻找让 Go 程序更快的办法。在最近两个版本里，我们主要集中在缓解一个特定的性能来源：堆分配。Go 程序每次从堆上分配内存时，都需要执行一大段代码来完成这次分配。另外，堆分配还会给垃圾回收器带来额外负载。即便有 <a href="https://go.dev/blog/greenteagc">Green Tea</a> 这样的近期增强，垃圾回收器仍然会带来不小的开销。</p>
+<p>所以我们一直在研究，如何让更多分配发生在栈上，而不是堆上。栈分配要便宜得多（有时甚至完全免费）。更重要的是，栈分配不会给垃圾回收器增加负担，因为栈上的分配可以随着栈帧本身一起自动回收。栈分配也能让内存更快被复用，这对缓存非常友好。</p>
+<h2>固定大小 slice 的栈分配</h2>
+<p>考虑这样一个任务：构建一个待处理任务的 slice：</p>
+<pre><code class="language-go">func process(c chan task) {
+    var tasks []task
+    for t := range c {
+        tasks = append(tasks, t)
+    }
+    processAll(tasks)
+}
+</code></pre>
+<p>让我们看看运行时从 channel <code>c</code> 中取出任务，并把它们加入 <code>tasks</code> slice 时会发生什么。</p>
+<p>第一次循环时，<code>tasks</code> 还没有 backing store，所以 <code>append</code> 必须分配一个。因为它不知道这个 slice 最终会有多大，所以不能太激进。目前，它会分配一个大小为 1 的 backing store。</p>
+<p>第二次循环时，backing store 已经存在，但已经满了。<code>append</code> 又必须分配一个新的 backing store，这次大小为 2。原来大小为 1 的 backing store 就变成了垃圾。</p>
+<p>第三次循环时，大小为 2 的 backing store 又满了。<code>append</code> 再一次分配新的 backing store，这次大小为 4。原来大小为 2 的 backing store 也变成了垃圾。</p>
+<p>第四次循环时，大小为 4 的 backing store 里只有 3 个元素。<code>append</code> 可以直接把新元素放进去，再把 slice 长度加一。不错，这次不用调用分配器了。</p>
+<p>第五次循环时，大小为 4 的 backing store 满了，<code>append</code> 又得分配一个新的 backing store，这次大小为 8。</p>
+<p>后面也差不多。一般来说，我们每次都会把分配大小翻倍，这样最终大多数新的 task 都可以追加到 slice 中，而不需要重新分配。但 slice 还比较小时，这个“启动阶段”有相当多额外开销。在这个阶段，我们会花很多时间在分配器上，还会产生一堆垃圾，看起来挺浪费的。而且在你的程序里，这个 slice 可能根本不会变得很大。你遇到的也许只有这个启动阶段。</p>
+<p>如果这段代码真的是程序里的热点，你可能会想，一开始就给 slice 一个更大的容量，避免这些分配。</p>
+<pre><code class="language-go">func process2(c chan task) {
+    tasks := make([]task, 0, 10) // 大概最多 10 个 task
+    for t := range c {
+        tasks = append(tasks, t)
+    }
+    processAll(tasks)
+}
+</code></pre>
+<p>这是一个合理的优化。它永远不会让程序变错，程序仍然可以正确运行。如果估计太小，那就和之前一样，<code>append</code> 会继续触发分配。如果估计太大，只是浪费一些内存。</p>
+<p>如果你对 task 数量的估计是准确的，那么这个程序里只有一个分配点。<code>make</code> 调用会分配一个大小正确的 slice backing store，<code>append</code> 再也不需要重新分配。</p>
+<p>有趣的是，如果你用 channel 里 10 个元素来 benchmark 这段代码，会发现分配次数不是从多次降到了 1 次，而是降到了 0 次。</p>
+<p>原因是编译器决定把 backing store 分配到栈上。因为编译器知道它需要的大小（10 乘以一个 task 的大小），所以可以把这段存储放进 <code>process2</code> 的栈帧里，而不是放到堆上<sup>1</sup>。注意，这依赖于 backing store 不会在 <code>processAll</code> 内部<a href="https://go.dev/doc/gc-guide#Escape_analysis">逃逸到堆上</a>。</p>
+<h2>变量大小 slice 的栈分配</h2>
+<p>当然，把估计大小硬编码进去有点死板。也许我们可以把估计长度传进来？</p>
+<pre><code class="language-go">func process3(c chan task, lengthGuess int) {
+    tasks := make([]task, 0, lengthGuess)
+    for t := range c {
+        tasks = append(tasks, t)
+    }
+    processAll(tasks)
+}
+</code></pre>
+<p>这样调用方就可以为 <code>tasks</code> slice 选择一个合适大小，而这个大小可能会随着调用位置不同而变化。</p>
+<p>不幸的是，在 Go 1.24 中，backing store 的大小不是常量，意味着编译器不能再把它分配到栈上。它最终会落到堆上，把我们的 0 分配代码变成 1 分配代码。虽然仍然比让 <code>append</code> 做所有中间分配要好，但还是有点遗憾。</p>
+<p>但别急，Go 1.25 来了。</p>
+<p>想象一下，为了只在估计值比较小时拿到栈分配，你决定这么写：</p>
+<pre><code class="language-go">func process4(c chan task, lengthGuess int) {
+    var tasks []task
+    if lengthGuess &lt;= 10 {
+        tasks = make([]task, 0, 10)
+    } else {
+        tasks = make([]task, 0, lengthGuess)
+    }
+    for t := range c {
+        tasks = append(tasks, t)
+    }
+    processAll(tasks)
+}
+</code></pre>
+<p>有点丑，但它确实能工作。当估计值比较小时，你使用常量大小的 <code>make</code>，于是 backing store 分配在栈上；当估计值更大时，你使用变量大小的 <code>make</code>，backing store 从堆上分配。</p>
+<p>但在 Go 1.25 中，你不需要走这条丑路。Go 1.25 编译器会替你做这个转换。对于某些 slice 分配位置，编译器会自动分配一个较小的（目前是 32 字节）slice backing store，并在请求大小足够小时，把这个 backing store 用作 <code>make</code> 的结果。否则，它会像平常一样使用堆分配。</p>
+<p>在 Go 1.25 中，如果 <code>lengthGuess</code> 足够小，小到这个长度的 slice 可以放进 32 字节里，那么 <code>process3</code> 就不会产生堆分配。（当然，这也要求 <code>lengthGuess</code> 对 <code>c</code> 中元素数量的估计是正确的。）</p>
+<p>我们一直在改进 Go 的性能，所以升级到最新 Go 版本，也许会<a href="https://youtu.be/FUm0pfgWehI?si=QRTt_JYwr-cRHDNJ&amp;t=960">惊讶</a>于你的程序变得更快、更省内存。</p>
+<h2>append 分配的 slice 的栈分配</h2>
+<p>好吧，但你可能仍然不想为了这个奇怪的长度估计值修改 API。还有其他办法吗？</p>
+<p>升级到 Go 1.26。</p>
+<pre><code class="language-go">func process(c chan task) {
+    var tasks []task
+    for t := range c {
+        tasks = append(tasks, t)
+    }
+    processAll(tasks)
+}
+</code></pre>
+<p>在 Go 1.26 中，我们会在栈上分配同样的小型、推测性的 backing store，但现在可以直接在 <code>append</code> 位置使用它。</p>
+<p>第一次循环时，<code>tasks</code> 没有 backing store，所以 <code>append</code> 会使用一个小的、栈分配的 backing store 作为第一次分配。比如，如果这个 backing store 能放下 4 个 <code>task</code>，第一次 <code>append</code> 就会从栈上分配一个长度为 4 的 backing store。</p>
+<p>接下来的 3 次循环会直接追加到这个栈上的 backing store 中，不需要任何分配。</p>
+<p>到第 4 次循环时，栈上的 backing store 终于满了，我们才需要去堆上申请更多 backing store。但我们已经避开了本文前面描述的几乎所有启动阶段开销。没有大小为 1、2、4 的堆分配，也没有它们最终变成的垃圾。如果你的 slice 很小，也许一次堆分配都不会发生。</p>
+<h2>append 分配且会逃逸的 slice 的栈分配</h2>
+<p>好，这些在 <code>tasks</code> slice 不逃逸时都很好。但如果我要返回这个 slice 呢？那它就不能分配在栈上了，对吧？</p>
+<p>对。下面 <code>extract</code> 返回的 slice 的 backing store 不能分配在栈上，因为 <code>extract</code> 返回后，<code>extract</code> 的栈帧就消失了。</p>
+<pre><code class="language-go">func extract(c chan task) []task {
+    var tasks []task
+    for t := range c {
+        tasks = append(tasks, t)
+    }
+    return tasks
+}
+</code></pre>
+<p>但你可能会想，返回的 slice 不能分配在栈上。那那些中间 slice 呢？它们只是变成垃圾，也许可以分配在栈上？</p>
+<pre><code class="language-go">func extract2(c chan task) []task {
+    var tasks []task
+    for t := range c {
+        tasks = append(tasks, t)
+    }
+    tasks2 := make([]task, len(tasks))
+    copy(tasks2, tasks)
+    return tasks2
+}
+</code></pre>
+<p>这样 <code>tasks</code> slice 就不会逃逸出 <code>extract2</code>。它可以受益于上面描述的所有优化。然后在 <code>extract2</code> 的最后，当我们知道 slice 的最终大小时，只做一次所需大小的堆分配，把这些 <code>task</code> 复制进去，并返回这个副本。</p>
+<p>但你真的想写这些额外代码吗？看起来很容易出错。也许编译器可以替我们做这个转换？</p>
+<p>在 Go 1.26 中，可以。</p>
+<p>对于会逃逸的 slice，编译器会把原来的 <code>extract</code> 代码转换成类似这样：</p>
+<pre><code class="language-go">func extract3(c chan task) []task {
+    var tasks []task
+    for t := range c {
+        tasks = append(tasks, t)
+    }
+    tasks = runtime.move2heap(tasks)
+    return tasks
+}
+</code></pre>
+<p><code>runtime.move2heap</code> 是一个特殊的 compiler + runtime 函数。对于已经分配在堆上的 slice，它相当于 identity function。对于还在栈上的 slice，它会在堆上分配一个新的 slice，把栈分配的 slice 复制到堆上的副本里，并返回这个堆副本。</p>
+<p>这保证了，对于原始的 <code>extract</code> 代码，如果元素数量能放进我们那个小的栈分配缓冲区里，那么我们会正好执行 1 次分配，并且大小正好合适。如果元素数量超过了小型栈分配缓冲区的容量，那么一旦这个栈分配缓冲区溢出，我们就走正常的翻倍分配逻辑。</p>
+<p>Go 1.26 做的优化实际上比手写优化更好，因为它不需要手写优化最后总会发生的额外分配和复制。只有在我们一路都只操作栈 backing 的 slice，直到 return 位置时，它才需要这次分配和复制。</p>
+<p>我们确实付出了复制成本，但这个成本几乎完全被我们不再需要执行的启动阶段复制抵消了。（事实上，新方案最坏情况下只需要比旧方案多复制一个元素。）</p>
+<h2>总结</h2>
+<p>手写优化仍然可能有收益，尤其是你提前就能很好地估计 slice 大小时。但希望现在编译器可以替你抓住很多简单场景，让你把注意力放在真正重要的剩余部分上。</p>
+<p>为了正确完成这些优化，编译器需要处理大量细节。如果你认为其中某个优化给你带来了正确性问题或性能下降，可以用 <code>-gcflags=all=-d=variablemakehash=n</code> 关闭它们。如果关闭这些优化之后问题消失了，请<a href="https://go.dev/issue/new">提交 issue</a>，这样我们可以进一步调查。</p>
+<p><sup>1</sup> Go 的栈没有 <code>alloca</code> 这种动态大小栈帧机制。所有 Go 栈帧都是固定大小的。</p>
+<p>原文内容遵循 <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 License</a>，代码遵循 <a href="https://go.dev/LICENSE">BSD license</a>。本文为中文翻译。</p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

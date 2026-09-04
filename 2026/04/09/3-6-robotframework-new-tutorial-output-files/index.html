@@ -1,0 +1,628 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Robot Framework 新版教程 - 输出文件</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Robot Framework 新版教程 - 输出文件
+    
+    <div class="subtitle">(<i><a href="/series/Robot Framework 7.x 教程/">Robot Framework 7.x 教程</a>, Part 17</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    
+    <h2>输出文件</h2>
+<p>测试执行时会创建多个输出文件，它们都以某种方式与测试结果相关。本节讨论会创建哪些输出文件、如何配置它们的创建位置，以及如何调整它们的内容。</p>
+<h2>不同的输出文件</h2>
+<p>本节解释可以创建哪些不同的输出文件，以及如何配置它们的创建位置。输出文件通过命令行选项配置，这些选项以相关输出文件的路径作为参数。特殊值 <code>NONE</code>（不区分大小写）可用于禁止创建某个输出文件。</p>
+<h3>输出目录</h3>
+<p>所有输出文件都可以使用绝对路径来设置，在这种情况下它们将创建在指定位置；其他情况下，路径被视为相对于输出目录的相对路径。默认的输出目录是执行启动时所在的目录，但可以通过 <code>--outputdir (-d)</code> 选项来修改。该选项设置的路径同样是相对于执行目录的，当然也可以给定绝对路径。无论单个输出文件的路径如何获得，如果其父目录不存在，都会自动创建。</p>
+<h3>输出文件（Output file）</h3>
+<p>输出文件以机器可读的 XML 或 JSON 格式包含所有执行结果。<a href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6">日志文件</a>、<a href="#%E6%8A%A5%E5%91%8A%E6%96%87%E4%BB%B6">报告文件</a>和 <a href="#xunit-%E5%85%BC%E5%AE%B9%E7%BB%93%E6%9E%9C%E6%96%87%E4%BB%B6">xUnit 文件</a>通常基于输出文件生成，它们还可以通过 <a href="robotframework-new-tutorial-post-processing.html">Rebot</a> 进行合并和其他后处理。各种外部工具也会处理输出文件以便展示详细的执行信息。</p>
+<blockquote>
+<p><strong>提示：</strong> 在测试执行过程中生成<a href="#%E6%8A%A5%E5%91%8A%E6%96%87%E4%BB%B6">报告文件</a>和 <a href="#xunit-%E5%85%BC%E5%AE%B9%E7%BB%93%E6%9E%9C%E6%96%87%E4%BB%B6">xUnit 文件</a>不需要在执行后处理输出文件。因此，运行测试时禁用<a href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6">日志文件</a>生成可以节省内存。</p>
+</blockquote>
+<p>命令行选项 <code>--output (-o)</code> 决定输出文件的创建路径。该路径相对于<a href="#%E8%BE%93%E5%87%BA%E7%9B%AE%E5%BD%95">输出目录</a>，执行测试时的默认值为 <code>output.xml</code>。使用 Rebot <a href="robotframework-new-tutorial-post-processing.html">后处理输出</a>时，除非显式使用 <code>--output</code> 选项，否则不会创建新的输出文件。</p>
+<p>可以通过对 <code>--output</code> 选项使用特殊值 <code>NONE</code> 来禁用输出文件。如果不需要任何输出，应使用 <code>--output NONE --report NONE --log NONE</code> 显式禁用所有输出。</p>
+<h4>XML 输出格式</h4>
+<p>输出文件默认使用 XML 格式创建。XML 输出格式在 <code>result.xsd</code> <a href="https://github.com/robotframework/robotframework/tree/master/doc/schema">schema 文件</a>中有文档说明。</p>
+<h4>JSON 输出格式</h4>
+<p>Robot Framework 也支持 JSON 输出，如果输出文件扩展名为 <code>.json</code>，将自动使用该格式。JSON 输出格式在 <code>result.json</code> <a href="https://github.com/robotframework/robotframework/tree/master/doc/schema">schema 文件</a>中有文档说明。</p>
+<blockquote>
+<p><strong>注意：</strong> 从 Robot Framework 7.2 开始，执行期间支持 JSON 输出文件。<a href="robotframework-new-tutorial-post-processing.html">Rebot</a> 从 Robot Framework 7.0 起就可以基于 XML 输出文件创建 JSON 输出文件。</p>
+</blockquote>
+<h4>旧版 XML 格式</h4>
+<p>Robot Framework 7.0 对 XML 输出文件格式进行了一些<a href="https://github.com/robotframework/robotframework/blob/master/doc/releasenotes/rf-7.0.rst#changes-to-output-xml">不向后兼容的更改</a>。为了使新版 Robot Framework 能够与尚未更新以支持新格式的外部工具配合使用，提供了 <code>--legacyoutput</code> 选项，该选项生成与 Robot Framework 6.x 及更早版本兼容的输出文件。Robot Framework 本身可以处理旧格式和新格式的输出文件。</p>
+<p>我们希望外部工具能够尽快更新，但我们计划至少在 Robot Framework 8.0 之前继续支持此选项。如果你遇到不兼容的工具，请通知工具开发者相关更改。</p>
+<h3>日志文件</h3>
+<p>日志文件以 HTML 格式包含已执行测试用例的详细信息。它们具有层级结构，展示测试套件、测试用例和关键字的详细信息。在需要详细调查测试结果时，几乎总是需要日志文件。尽管日志文件也包含统计信息，但报告文件更适合获取更高层次的概览。</p>
+<p>命令行选项 <code>--log (-l)</code> 决定日志文件的创建位置。除非使用特殊值 <code>NONE</code>，否则日志文件总是会被创建，其默认名称为 <code>log.html</code>。</p>
+<h3>报告文件</h3>
+<p>报告文件以 HTML 格式包含测试执行结果的概览。它们包含基于 tag 和已执行测试套件的统计信息，以及所有已执行测试用例的列表。当同时生成报告和日志时，报告中包含指向日志文件的链接，便于导航到更详细的信息。从报告中可以轻松查看整体的测试执行状态，因为当所有测试通过时其背景色为绿色，而当任何测试失败时为亮红色。背景色也可能是黄色，这表示所有测试都被<a href="robotframework-new-tutorial-test-execution.html">跳过</a>了。</p>
+<p>命令行选项 <code>--report (-r)</code> 决定报告文件的创建位置。与日志文件类似，除非使用 <code>NONE</code> 作为值，否则报告文件总是会被创建，其默认名称为 <code>report.html</code>。</p>
+<h3>xUnit 兼容结果文件</h3>
+<p>xUnit 结果文件以 <a href="http://en.wikipedia.org/wiki/XUnit">xUnit</a> 兼容的 XML 格式包含测试执行摘要。因此这些文件可以作为能理解 xUnit 报告的外部工具的输入。例如，<a href="http://jenkins-ci.org">Jenkins</a> 持续集成服务器支持基于 xUnit 兼容结果生成统计信息。</p>
+<blockquote>
+<p><strong>提示：</strong> Jenkins 还有一个单独的 <a href="https://wiki.jenkins-ci.org/display/JENKINS/Robot+Framework+Plugin">Robot Framework 插件</a>。</p>
+</blockquote>
+<p>除非显式使用命令行选项 <code>--xunit (-x)</code>，否则不会创建 xUnit 输出文件。该选项需要一个相对于<a href="#%E8%BE%93%E5%87%BA%E7%9B%AE%E5%BD%95">输出目录</a>的生成 xUnit 文件路径作为值。</p>
+<p>xUnit 输出文件在 Robot Framework 5.0 中进行了大幅修改。它们现在为每个套件包含单独的 <code>&lt;testsuite&gt;</code> 元素，<code>&lt;testsuite&gt;</code> 元素具有 <code>timestamp</code> 属性，并且<a href="robotframework-new-tutorial-create-test-suites.html">套件文档</a>和元数据以 <code>&lt;property&gt;</code> 元素存储。</p>
+<h3>调试文件</h3>
+<p>调试文件是在测试执行过程中写入的纯文本文件。从测试库获得的所有消息都会写入其中，同时还包括关于已启动和已结束的测试套件、测试用例和关键字的信息。调试文件可用于监控测试执行。可以使用例如单独的 <a href="https://bitbucket.org/robotframework/robottools/src/master/fileviewer/">fileviewer.py</a> 工具来实现这一点，或者在类 UNIX 系统中，简单地使用 <code>tail -f</code> 命令即可。</p>
+<p>除非显式使用命令行选项 <code>--debugfile (-b)</code>，否则不会创建调试文件。</p>
+<h3>为输出文件添加时间戳</h3>
+<p>所有由 Robot Framework 自身生成的输出文件都可以通过 <code>--timestampoutputs (-T)</code> 选项自动添加时间戳。使用此选项时，格式为 <code>YYYYMMDD-hhmmss</code> 的时间戳会放置在每个文件的扩展名和基本名称之间。例如，下面的命令会创建类似 <code>output-20080604-163225.xml</code> 和 <code>mylog-20080604-163225.html</code> 这样的输出文件：</p>
+<pre><code class="language-bash">robot --timestampoutputs --log mylog.html --report NONE tests.robot
+</code></pre>
+<h3>设置标题</h3>
+<p><a href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6">日志文件</a>和<a href="#%E6%8A%A5%E5%91%8A%E6%96%87%E4%BB%B6">报告文件</a>的默认标题是通过在顶层测试套件的名称前加上 <code>Test Log</code> 或 <code>Test Report</code> 来生成的。可以通过命令行选项 <code>--logtitle</code> 和 <code>--reporttitle</code> 分别指定自定义标题。</p>
+<p>示例：</p>
+<pre><code class="language-bash">robot --logtitle &quot;Smoke Test Log&quot; --reporttitle &quot;Smoke Test Report&quot; --include smoke my_tests/
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> 在 Robot Framework 3.1 之前，给定标题中的下划线会被转换为空格。现在需要像上面的示例一样对空格进行转义或加引号。</p>
+</blockquote>
+<h3>设置背景颜色</h3>
+<p>默认情况下，<a href="#%E6%8A%A5%E5%91%8A%E6%96%87%E4%BB%B6">报告文件</a>在有失败时显示红色背景，在有通过测试（可能还有一些被跳过的测试）时显示绿色背景，在所有测试被跳过或没有运行任何测试时显示黄色背景。可以使用 <code>--reportbackground</code> 命令行选项来自定义这些颜色，该选项接受两个或三个以冒号分隔的颜色作为参数：</p>
+<pre><code class="language-bash">--reportbackground blue:red
+--reportbackground blue:red:orange
+--reportbackground #00E:#E00
+</code></pre>
+<p>如果指定两种颜色，第一种将替代默认的绿色（通过）颜色，第二种替代默认的红色（失败）颜色。例如，这允许使用蓝色替代绿色，以便色盲人群更容易区分背景颜色。</p>
+<p>如果指定三种颜色，前两种的含义与之前相同，最后一种替代默认的黄色（跳过）颜色。</p>
+<p>指定的颜色用作 <code>body</code> 元素的 <code>background</code> CSS 属性的值。该值按原样使用，可以是 HTML 颜色名称（如 <code>red</code>）、十六进制值（如 <code>#f00</code> 或 <code>#ff0000</code>）或 RGB 值（如 <code>rgb(255,0,0)</code>）。默认的绿色、红色和黄色分别使用十六进制值 <code>#9e9</code>、<code>#f66</code> 和 <code>#fed84f</code> 指定。</p>
+<h2>日志级别</h2>
+<h3>可用的日志级别</h3>
+<p><a href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6">日志文件</a>中的消息可以具有不同的日志级别。一些消息由 Robot Framework 自身写入，但已执行的关键字也可以使用不同级别<a href="robotframework-new-tutorial-create-test-cases.html">记录信息</a>。可用的日志级别有：</p>
+<p><code>FAIL</code>
+: 当关键字失败时使用。只能由 Robot Framework 自身使用。</p>
+<p><code>ERROR</code>
+: 用于显示错误。错误会显示在<a href="robotframework-new-tutorial-test-execution.html">控制台以及日志文件的 Test Execution Errors 部分</a>，但不会影响测试用例的状态。不过，如果<a href="robotframework-new-tutorial-configuring-execution.html">启用了 --exitonerror 选项</a>，错误将停止整个执行。</p>
+<p><code>WARN</code>
+: 用于显示警告。警告会显示在<a href="robotframework-new-tutorial-test-execution.html">控制台以及日志文件的 Test Execution Errors 部分</a>，但不会影响测试用例的状态。</p>
+<p><code>INFO</code>
+: 普通消息的默认级别。默认情况下，低于此级别的消息不会在日志文件中显示。</p>
+<p><code>DEBUG</code>
+: 用于调试目的。例如，在记录库内部行为时很有用。当关键字失败时，会自动使用此级别记录一个 traceback，显示代码中发生故障的位置。</p>
+<p><code>TRACE</code>
+: 更详细的调试级别。关键字参数和返回值会自动使用此级别记录。</p>
+<h3>设置日志级别</h3>
+<p>默认情况下，低于 <code>INFO</code> 级别的日志消息不会被记录，但可以通过命令行选项 <code>--loglevel (-L)</code> 来更改此阈值。该选项接受任何可用的日志级别作为参数，该级别将成为新的阈值级别。也可以使用特殊值 <code>NONE</code> 来完全禁用日志记录。</p>
+<p>也可以在使用 Rebot <a href="robotframework-new-tutorial-post-processing.html">后处理输出</a>时使用 <code>--loglevel</code> 选项。例如，这允许先以 <code>TRACE</code> 级别运行测试，之后再以 <code>INFO</code> 级别生成更小的日志文件用于日常查看。默认情况下，执行期间包含的所有消息在使用 Rebot 时也会包含。执行期间被忽略的消息无法恢复。</p>
+<p>另一种更改日志级别的方式是在测试数据中使用 BuiltIn 关键字 <code>Set Log Level</code>。它接受与 <code>--loglevel</code> 选项相同的参数，并且返回旧的级别，以便之后可以恢复它，例如在 <a href="robotframework-new-tutorial-create-test-cases.html">test teardown</a> 中。</p>
+<h3>可见日志级别</h3>
+<p>如果日志文件包含 <code>DEBUG</code> 或 <code>TRACE</code> 级别的消息，右上角会显示一个可见日志级别下拉菜单。这允许用户从视图中移除低于所选级别的消息。在以 <code>TRACE</code> 级别运行测试时，这特别有用。</p>
+<p>默认情况下，下拉菜单将设置为日志文件中的最低级别，以便显示所有消息。可以通过 <code>--loglevel</code> 选项更改默认的可见日志级别，方法是在正常日志级别之后用冒号分隔给出默认值：</p>
+<pre><code class="language-bash">--loglevel DEBUG:INFO
+</code></pre>
+<p>在上面的示例中，测试以 <code>DEBUG</code> 级别运行，但日志文件中的默认可见级别为 <code>INFO</code>。</p>
+<h2>拆分日志</h2>
+<p>通常日志文件只是一个单独的 HTML 文件。当测试用例数量增加时，文件大小可能会增长到在浏览器中打开不方便甚至无法打开的程度。因此，可以使用 <code>--splitlog</code> 选项将日志的部分内容拆分到外部文件中，这些文件在需要时会透明地加载到浏览器中。</p>
+<p>拆分日志的主要好处是各个日志部分足够小，即使测试数据量非常大，打开和浏览日志文件也是可能的。一个小缺点是日志文件占用的总体大小会增加。</p>
+<p>从技术上讲，与每个测试用例相关的测试数据会保存到与主日志文件相同文件夹中的 JavaScript 文件中。这些文件的名称类似于 <code>log-42.js</code>，其中 <code>log</code> 是主日志文件的基本名称，<code>42</code> 是递增的索引。</p>
+<p>JavaScript 文件保存到与<a href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6">日志文件</a>本身相同的目录中。默认是公共的<a href="#%E8%BE%93%E5%87%BA%E7%9B%AE%E5%BD%95">输出目录</a>，但可以通过 <code>--log</code> 命令行选项更改。</p>
+<blockquote>
+<p><strong>注意：</strong> 复制日志文件时，需要同时复制所有 <code>log-*.js</code> 文件，否则部分信息将缺失。</p>
+</blockquote>
+<h2>配置统计信息</h2>
+<p>有多个命令行选项可用于配置和调整不同输出文件中 <code>Statistics by Tag</code>、<code>Statistics by Suite</code> 和 <code>Test Details by Tag</code> 表格的内容。所有这些选项在执行测试用例和后处理输出时都有效。</p>
+<h3>配置显示的套件统计</h3>
+<p>当执行较深的套件结构时，在 <code>Statistics by Suite</code> 表格中显示所有测试套件层级可能会使表格难以阅读。默认情况下显示所有套件，但可以通过命令行选项 <code>--suitestatlevel</code> 控制，该选项接受要显示的套件层级作为参数：</p>
+<pre><code class="language-bash">--suitestatlevel 3
+</code></pre>
+<h3>包含和排除 tag 统计</h3>
+<p>当使用很多 tag 时，<code>Statistics by Tag</code> 表格可能会变得相当拥挤。如果发生这种情况，可以使用命令行选项 <code>--tagstatinclude</code> 和 <code>--tagstatexclude</code> 来选择显示哪些 tag，用法类似于 <code>--include</code> 和 <code>--exclude</code> 用于<a href="robotframework-new-tutorial-configuring-execution.html">选择测试用例</a>：</p>
+<pre><code class="language-bash">--tagstatinclude some-tag --tagstatinclude another-tag
+--tagstatexclude owner-*
+--tagstatinclude prefix-* --tagstatexclude prefix-13
+</code></pre>
+<h3>生成组合 tag 统计</h3>
+<p>命令行选项 <code>--tagstatcombine</code> 可用于生成将多个 tag 的统计信息合并在一起的聚合 tag。组合 tag 使用 <a href="robotframework-new-tutorial-configuring-execution.html">tag 模式</a>指定，其中 <code>*</code> 和 <code>?</code> 作为通配符，<code>AND</code>、<code>OR</code> 和 <code>NOT</code> 运算符可用于将单个 tag 或模式组合在一起。</p>
+<p>以下示例展示了使用不同模式创建组合 tag 统计，下图显示了结果 <code>Statistics by Tag</code> 表格的一个片段：</p>
+<pre><code class="language-bash">--tagstatcombine owner-*
+--tagstatcombine smokeANDmytag
+--tagstatcombine smokeNOTowner-janne*
+</code></pre>
+<p>如上例所示，添加的组合统计的名称默认只是给定的模式。如果这不够好，可以在模式之后用冒号（<code>:</code>）分隔给出自定义名称：</p>
+<pre><code class="language-bash">--tagstatcombine &quot;prio1ORprio2:High priority tests&quot;
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> 在 Robot Framework 3.1 之前，自定义名称中的下划线会被转换为空格。现在需要像上面的示例一样对空格进行转义或加引号。</p>
+</blockquote>
+<h3>从 tag 名称创建链接</h3>
+<p>可以通过使用命令行选项 <code>--tagstatlink</code> 向 <code>Statistics by Tag</code> 表格添加外部链接。该选项的参数格式为 <code>tag:link:name</code>，其中 <code>tag</code> 指定要分配链接的 tag，<code>link</code> 是要创建的链接，<code>name</code> 是给链接指定的名称。</p>
+<p><code>tag</code> 可以是单个 tag，但更常见的是<a href="robotframework-new-tutorial-configuring-execution.html">简单模式</a>，其中 <code>*</code> 匹配任意内容，<code>?</code> 匹配任意单个字符。当 <code>tag</code> 是模式时，通配符的匹配结果可以在 <code>link</code> 和 <code>title</code> 中使用语法 <code>%N</code>，其中 &quot;N&quot; 是从 1 开始的匹配索引。</p>
+<p>以下示例展示了此选项的用法，下图显示了使用这些选项执行示例测试数据时，结果 <code>Statistics by Tag</code> 表格的一个片段：</p>
+<pre><code class="language-bash">--tagstatlink mytag:http://www.google.com:Google
+--tagstatlink example-bug-*:http://example.com
+--tagstatlink owner-*:mailto:%1@domain.com?subject=Acceptance_Tests:Send_Mail
+</code></pre>
+<h3>为 tag 添加文档</h3>
+<p>可以通过命令行选项 <code>--tagdoc</code> 为 tag 指定文档，该选项接受格式为 <code>tag:doc</code> 的参数。<code>tag</code> 是要分配文档的 tag 名称，也可以是匹配多个 tag 的<a href="robotframework-new-tutorial-configuring-execution.html">简单模式</a>。<code>doc</code> 是分配的文档内容。</p>
+<p>给定的文档在 <code>Test Details by Tag</code> 表格中与匹配的 tag 一起显示，并在 <code>Statistics by Tag</code> 表格中作为这些 tag 的工具提示显示。如果一个 tag 获得多个文档，它们会组合在一起并以 &amp; 符号分隔。</p>
+<p>示例：</p>
+<pre><code class="language-bash">--tagdoc mytag:Example
+--tagdoc &quot;regression:See http://example.com/info.html&quot;
+--tagdoc &quot;owner-*:Original author&quot;
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> 在 Robot Framework 3.1 之前，文档中的下划线会被转换为空格。现在需要像上面的示例一样对空格进行转义或加引号。</p>
+</blockquote>
+<h2>移除和扁平化关键字</h2>
+<p><a href="#%E4%B8%8D%E5%90%8C%E7%9A%84%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6">输出文件</a>的大部分内容来自关键字及其日志消息。在创建更高层次的报告时，日志文件可能根本不需要，在这种情况下关键字及其消息只是不必要地占用空间。日志文件本身也可能变得过大，特别是当它们包含 <a href="robotframework-new-tutorial-control-structures.html">FOR 循环</a>或其他重复执行某些关键字的结构时。</p>
+<p>在这些情况下，可以使用命令行选项 <code>--removekeywords</code> 和 <code>--flattenkeywords</code> 来处置或扁平化不必要的关键字。它们可以在<a href="robotframework-new-tutorial-basic-usage.html">执行测试用例</a>时和<a href="robotframework-new-tutorial-post-processing.html">后处理输出</a>时使用。在执行期间使用时，它们只影响日志文件，不影响 XML 输出文件。使用 <code>rebot</code> 时，它们同时影响日志和可能生成的新输出 XML 文件。</p>
+<h3>移除关键字</h3>
+<p><code>--removekeywords</code> 选项完全移除关键字及其消息。它具有以下操作模式，可以多次使用以启用多种模式。包含<a href="robotframework-new-tutorial-test-execution.html">错误或警告</a>的关键字不会被移除，除非使用 <code>ALL</code> 模式。</p>
+<p><code>ALL</code>
+: 无条件地从所有关键字中移除数据。</p>
+<p><code>PASSED</code>
+: 从通过的测试用例中移除关键字数据。在大多数情况下，使用此选项创建的日志文件包含足够的信息来调查可能的失败。</p>
+<p><code>FOR</code>
+: 从 <a href="robotframework-new-tutorial-control-structures.html">FOR 循环</a>中移除除最后一次外的所有通过的迭代。</p>
+<p><code>WHILE</code>
+: 从 <a href="robotframework-new-tutorial-control-structures.html">WHILE 循环</a>中移除除最后一次外的所有通过的迭代。</p>
+<p><code>WUKS</code>
+: 移除 BuiltIn 关键字 <code>Wait Until Keyword Succeeds</code> 内部除最后一个外的所有失败关键字。</p>
+<p><code>NAME:&lt;pattern&gt;</code>
+: 无论关键字状态如何，从所有匹配给定模式的关键字中移除数据。模式与关键字的完整名称匹配，包含可能的库或资源文件名前缀，如 <code>MyLibrary.Keyword Name</code>。模式不区分大小写、空格和下划线，并且支持使用 <code>*</code>、<code>?</code> 和 <code>[]</code> 作为通配符的<a href="robotframework-new-tutorial-configuring-execution.html">简单模式</a>。</p>
+<p><code>TAG:&lt;pattern&gt;</code>
+: 从 tag 匹配给定模式的关键字中移除数据。tag 不区分大小写和空格，可以使用 <a href="robotframework-new-tutorial-configuring-execution.html">tag 模式</a>指定，其中 <code>*</code>、<code>?</code> 和 <code>[]</code> 作为通配符，<code>AND</code>、<code>OR</code> 和 <code>NOT</code> 运算符可用于将单个 tag 或模式组合在一起。可以同时用于<a href="robotframework-new-tutorial-create-test-cases.html">库关键字 tag</a> 和<a href="robotframework-new-tutorial-create-user-keywords.html">用户关键字 tag</a>。</p>
+<p>示例：</p>
+<pre><code class="language-bash">rebot --removekeywords all --output removed.xml output.xml
+robot --removekeywords passed --removekeywords for tests.robot
+robot --removekeywords name:HugeKeyword --removekeywords name:resource.* tests.robot
+robot --removekeywords tag:huge tests.robot
+</code></pre>
+<p>移除关键字是在解析<a href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6output-file">输出文件</a>并基于它生成内部模型之后完成的。因此它不像<a href="#%E6%89%81%E5%B9%B3%E5%8C%96%E5%85%B3%E9%94%AE%E5%AD%97">扁平化关键字</a>那样能有效减少内存使用。</p>
+<h3>扁平化关键字</h3>
+<p><code>--flattenkeywords</code> 选项会扁平化匹配的关键字。实际上这意味着匹配的关键字会递归地获取其子关键字的所有日志消息，而子关键字本身则被丢弃。扁平化支持以下模式：</p>
+<p><code>FOR</code>
+: 完全扁平化 <a href="robotframework-new-tutorial-control-structures.html">FOR 循环</a>。</p>
+<p><code>WHILE</code>
+: 完全扁平化 <a href="robotframework-new-tutorial-control-structures.html">WHILE 循环</a>。</p>
+<p><code>ITERATION</code>
+: 扁平化单个 <code>FOR</code> 和 <code>WHILE</code> 循环迭代。</p>
+<p><code>FORITEM</code>
+: <code>ITERATION</code> 的已弃用别名。</p>
+<p><code>NAME:&lt;pattern&gt;</code>
+: 扁平化匹配给定模式的关键字。模式匹配规则与使用 <code>NAME:&lt;pattern&gt;</code> 模式<a href="#%E7%A7%BB%E9%99%A4%E5%85%B3%E9%94%AE%E5%AD%97">移除关键字</a>时相同。</p>
+<p><code>TAG:&lt;pattern&gt;</code>
+: 扁平化 tag 匹配给定模式的关键字。模式匹配规则与使用 <code>TAG:&lt;pattern&gt;</code> 模式<a href="#%E7%A7%BB%E9%99%A4%E5%85%B3%E9%94%AE%E5%AD%97">移除关键字</a>时相同。</p>
+<p>示例：</p>
+<pre><code class="language-bash">robot --flattenkeywords name:HugeKeyword --flattenkeywords name:resource.* tests.robot
+rebot --flattenkeywords foritem --output flattened.xml original.xml
+</code></pre>
+<p>扁平化关键字在<a href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6output-file">输出文件</a>最初被解析时就已完成。这可以节省大量内存，特别是对于深度嵌套的关键字结构。</p>
+<h3>在执行期间扁平化关键字</h3>
+<p>从 Robot Framework 6.1 开始，可以在执行期间启用关键字扁平化。这只能在用户关键字级别通过将<a href="robotframework-new-tutorial-create-test-cases.html">保留 tag</a> <code>robot:flatten</code> 定义为<a href="robotframework-new-tutorial-create-user-keywords.html">关键字 tag</a> 来实现。使用此 tag 的效果与上一节描述的命令行选项类似，例如，具有该 tag 的关键字下方的所有内容（日志消息除外）都会被移除。一个重要区别是，在这种情况下，被移除的内容根本不会写入输出文件，因此之后无法访问。</p>
+<pre><code class="language-markdown">*** Keywords ***
+Example
+    [Tags]    robot:flatten
+    Log    关键字和循环会被移除，但日志消息会被保留。
+    FOR     ${i}     IN RANGE     1    101
+         Log    Iteration ${i}/100.
+    END
+</code></pre>
+<h2>自动展开关键字</h2>
+<p>通过的关键字在日志文件中默认是折叠的。因此它们包含的信息在你展开之前是不可见的。如果某些关键字包含应在打开日志文件时就可见的重要信息，可以使用 <code>--expandkeywords</code> 选项将关键字设置为在日志文件中自动展开，类似于失败的关键字。展开支持以下模式：</p>
+<p><code>NAME:&lt;pattern&gt;</code>
+: 展开匹配给定模式的关键字。模式匹配规则与使用 <code>NAME:&lt;pattern&gt;</code> 模式<a href="#%E7%A7%BB%E9%99%A4%E5%85%B3%E9%94%AE%E5%AD%97">移除关键字</a>时相同。</p>
+<p><code>TAG:&lt;pattern&gt;</code>
+: 展开 tag 匹配给定模式的关键字。模式匹配规则与使用 <code>TAG:&lt;pattern&gt;</code> 模式<a href="#%E7%A7%BB%E9%99%A4%E5%85%B3%E9%94%AE%E5%AD%97">移除关键字</a>时相同。</p>
+<p>如果需要展开匹配不同名称或模式的关键字，可以多次使用 <code>--expandkeywords</code>。</p>
+<p>示例：</p>
+<pre><code class="language-bash">robot --expandkeywords name:SeleniumLibrary.CapturePageScreenshot tests.robot
+rebot --expandkeywords tag:example --expandkeywords tag:another output.xml
+</code></pre>
+<blockquote>
+<p><strong>注意：</strong> <code>--expandkeywords</code> 选项是 Robot Framework 3.2 中新增的。</p>
+</blockquote>
+<h2>设置执行的开始和结束时间</h2>
+<p>使用 Rebot <a href="robotframework-new-tutorial-post-processing.html">合并输出</a>时，可以使用 <code>--starttime</code> 和 <code>--endtime</code> 选项分别设置合并后测试套件的开始和结束时间。这很方便，因为默认情况下合并的套件没有这些值。当同时给出开始和结束时间时，经过时间也会基于它们计算。否则，经过时间通过将子测试套件的经过时间相加来获得。</p>
+<p>也可以在使用 Rebot 处理单个套件时使用上述选项设置开始和结束时间。对单个输出使用这些选项总是会影响套件的经过时间。</p>
+<p>时间必须以 <code>YYYY-MM-DD hh:mm:ss.mil</code> 格式的时间戳给出，其中所有分隔符都是可选的，从毫秒到小时的部分都可以省略。例如，<code>2008-06-11 17:59:20.495</code> 等同于 <code>20080611-175920.495</code> 和 <code>20080611175920495</code>，单独的 <code>20080611</code> 也可以。</p>
+<p>示例：</p>
+<pre><code class="language-bash">rebot --starttime 20080611-17:59:20.495 output1.xml output2.xml
+rebot --starttime 20080611-175920 --endtime 20080611-180242 *.xml
+rebot --starttime 20110302-1317 --endtime 20110302-11418 myoutput.xml
+</code></pre>
+<h2>限制报告中的错误消息长度</h2>
+<p>如果测试用例失败并且错误消息很长，<a href="#%E6%8A%A5%E5%91%8A%E6%96%87%E4%BB%B6">报告</a>中显示的消息会自动从中间截断以保持报告的可读性。默认情况下超过 40 行的消息会被截断，但可以通过 <code>--maxerrorlines</code> 命令行选项来配置。该选项的最小值为 10，也可以使用特殊值 <code>NONE</code> 来显示完整消息。</p>
+<p>完整的错误消息始终可以在<a href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6">日志文件</a>中作为失败关键字的消息查看。</p>
+<blockquote>
+<p><strong>注意：</strong> <code>--maxerrorlines</code> 选项是 Robot Framework 3.1 中新增的。</p>
+</blockquote>
+<h2>以编程方式修改结果</h2>
+<p>如果提供的内置功能不足以修改结果，Robot Framework 允许以编程方式进行自定义修改。这通过创建一个模型修改器并使用 <code>--prerebotmodifier</code> 选项激活它来实现。</p>
+<p>此功能的工作方式与可以通过 <code>--prerunmodifier</code> 选项启用的<a href="robotframework-new-tutorial-advanced-features.html">以编程方式修改测试数据</a>几乎完全相同。明显的区别是，这次修改器操作的是<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.result.html">结果模型</a>，而不是<a href="https://robot-framework.readthedocs.io/en/latest/autodoc/robot.running.html">运行模型</a>。例如，以下修改器将所有执行时间超过允许时间的通过测试标记为失败：</p>
+<pre><code class="language-python">from robot.api import SuiteVisitor
+
+
+class ExecutionTimeChecker(SuiteVisitor):
+
+    def __init__(self, max_seconds: float):
+        self.max_milliseconds = max_seconds * 1000
+
+    def visit_test(self, test):
+        if test.status == 'PASS' and test.elapsedtime &gt; self.max_milliseconds:
+            test.status = 'FAIL'
+            test.message = 'Test execution took too long.'
+</code></pre>
+<p>如果上述修改器保存在文件 <code>ExecutionTimeChecker.py</code> 中，可以如下使用：</p>
+<pre><code class="language-bash"># 运行测试时将修改器指定为路径。最大时间为 42 秒。
+robot --prerebotmodifier path/to/ExecutionTimeChecker.py:42 tests.robot
+
+# 使用 Rebot 时将修改器指定为名称。最大时间为 3.14 秒。
+# ExecutionTimeChecker.py 必须在模块搜索路径中。
+rebot --prerebotmodifier ExecutionTimeChecker:3.14 output.xml
+</code></pre>
+<p>如果需要多个模型修改器，可以多次使用 <code>--prerebotmodifier</code> 选项指定。执行测试时，可以同时使用 <code>--prerunmodifier</code> 和 <code>--prerebotmodifier</code> 选项。</p>
+<h2>系统日志</h2>
+<p>Robot Framework 有自己的纯文本系统日志，其中记录以下信息：</p>
+<ul>
+<li>已处理和已跳过的测试数据文件</li>
+<li>已导入的测试库、资源文件和变量文件</li>
+<li>已执行的测试套件和测试用例</li>
+<li>已创建的输出</li>
+</ul>
+<p>通常用户不需要这些信息，但在调查测试库或 Robot Framework 自身的问题时可能很有用。默认不创建系统日志，但可以通过设置环境变量 <code>ROBOT_SYSLOG_FILE</code> 使其包含指向所选文件的路径来启用。</p>
+<p>系统日志具有与普通日志文件相同的<a href="#%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB">日志级别</a>，但用 <code>ERROR</code> 级别替代了 <code>FAIL</code>。阈值级别可以使用 <code>ROBOT_SYSLOG_LEVEL</code> 环境变量更改，如下例所示。<a href="robotframework-new-tutorial-test-execution.html">意外的错误和警告</a>除了写入控制台和普通日志文件外，还会写入系统日志。</p>
+<pre><code class="language-bash">#!/bin/bash
+
+export ROBOT_SYSLOG_FILE=/tmp/syslog.txt
+export ROBOT_SYSLOG_LEVEL=DEBUG
+
+robot --name Syslog_example path/to/tests
+</code></pre>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2026/04/08/3-5-robotframework-new-tutorial-configuring-execution/">
+          Robot Framework 新版教程 - 配置执行
+        </a>
+      
+
+      
+        <a class="next" href="/2026/04/10/4-1-robotframework-new-tutorial-creating-test-libraries/">
+          Robot Framework 新版教程 - 创建测试库
+        </a>
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

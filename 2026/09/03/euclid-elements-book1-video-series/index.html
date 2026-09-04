@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 几何原本·卷一·平面几何基础 - 动画演示</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>几何原本·卷一·平面几何基础 - 动画演示
+    
+    <div class="subtitle">(<i><a href="/series/几何原本/">几何原本</a>, Part 1</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-09
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>花了近一年时间，把《几何原本》卷一的 48 个命题用 manim 做成了动画视频，每个命题一个短片，从作图步骤到证明过程完整演示。</p>
+<p>《几何原本》卷一讨论的是平面几何的基础。欧几里得从定义、公设和公理出发，用 48 个命题一步步建立起直线、三角形、平行线、平行四边形和面积关系。它的意义不只在于讲了哪些几何知识，更在于展示了一套影响深远的推理方式：先承认极少数基本事实，再通过严格证明推出越来越复杂的结论。</p>
+<p>这 48 个命题的推进很有层次。前十二个命题主要处理基本作图，包括作等边三角形、截取相等线段、平分角与线段、作垂线；命题 13 到 26 转向三角形的角、边、全等和大小关系；命题 27 到 34 建立平行线理论，并证明三角形内角和以及平行四边形的基本性质；命题 35 到 45 讨论图形面积相等与等积变换；命题 46 作出正方形，最后以命题 47 的毕达哥拉斯定理和命题 48 的逆定理收尾。</p>
+<p>这些结论今天看来大多是中学几何知识，但重新沿着《几何原本》的顺序走一遍，仍然很有意思。前面的每一次作图和证明，都会成为后面命题的工具。勾股定理并不是突然出现的孤立结论，而是建立在之前四十多个命题形成的体系之上。</p>
+<p>原始合集：<a href="https://www.bilibili.com/video/BV1Eq2TBNEXB">几何原本·卷一·平面几何基础</a></p>
+<h2>命题1 在给定的有限直线上构造一个等边三角形</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115505897870520&bvid=BV1Eq2TBNEXB&cid=33774765132&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题2 从给定的点作一条直线等于给定的直线</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115507424468959&bvid=BV1dP2uBeEeC&cid=33786431980&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题3 在长的线段上截取一条线段使它等于另一条线段</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115524117795902&bvid=BV1nvCFBrE3o&cid=33880868785&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题4 两边及其夹角对应相等，则三角形全等 (SAS)</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115524805595650&bvid=BV1CMkfBgEKB&cid=33885847801&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题5 等腰三角形的两底角相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115530224836014&bvid=BV1Ltk6B1EUA&cid=33914423674&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题6 两角相等的三角形，等角所对的边也相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115559567989447&bvid=BV1QYCdBJEWz&cid=34049819680&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题7 从线段两端点引两线交于一点，不能再作等长的两线交于同侧另一点</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115559937151215&bvid=BV1CbCRBPEhF&cid=34051852357&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题8 三边对应相等，则三角形全等 (SSS)</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115586814188097&bvid=BV1KSUVBTEqv&cid=34157101188&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题9 二等分一个给定的角</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115604413485860&bvid=BV1GaUCBcEU7&cid=34231746718&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题10 二等分线段</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115620486061742&bvid=BV17gUzBfEQR&cid=34302462360&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题11 过点向直线作垂线</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115626072873566&bvid=BV15bS7BcEJo&cid=34328743357&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题12 过直线外点向直线作垂线</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115659996467527&bvid=BV1gE2aBWEYb&cid=34494547954&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题13 一直线与另一直线相交所成的角，为两直角或和等于两直角</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115660365503965&bvid=BV1tT2vBtEKd&cid=34496973969&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题14 邻角和为两直角的两直线共线</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115699590700980&bvid=BV1VjmMBhE77&cid=25928011979&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题15 两直线相交，对顶角相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115700479892245&bvid=BV157mgBBEXS&cid=34664285080&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题16 三角形外角大于任一内对角</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115704405696511&bvid=BV1h7m7BDELm&cid=25928668639&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题17 任何两角之和小于两直角和</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115722508375965&bvid=BV1UgmCBHEeM&cid=34750532488&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题18 三角形大边对大角</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115722743321530&bvid=BV1mfm1B4EHT&cid=34751840536&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题19 三角形大角对大边</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115727776356930&bvid=BV1TpqbBDEnV&cid=34769932259&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题20 三角形任意两边之和大于第三边</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115744083811202&bvid=BV1FbqoBnETA&cid=34832452020&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题21 由三角形一边两端点向内作两条相交线段，线段和小于另两边和，所成角大于对应角</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115767035105458&bvid=BV1t4BNB9E9R&cid=34921710931&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题22 以三条已知线段为三边作三角形</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115938816958262&bvid=BV11SBfBqEGN&cid=35546989290&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题23 在已知直线和它上面的一点，作一个直线角等于已知直线角</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116457300039862&bvid=BV1BgoVBGE26&cid=37768593800&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题24 两三角形中两边对应相等，夹角大者所对的边也较大</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116600913074761&bvid=BV1M9Lz6eEib&cid=38450759890&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题25 两三角形中两边对应相等，第三边较大者所对的角也较大</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116601382901171&bvid=BV1S3Lz6AEsj&cid=38453773041&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题26 两三角形中两角对应相等，且一边对应相等，则其余边角也对应相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116675286471955&bvid=BV1KoVf6jEoC&cid=38778503584&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题27 一条直线与两条直线相交，若内错角相等，则两直线平行</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116686627804733&bvid=BV1z37X64EDn&cid=38833881908&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题28 一条直线与两条直线相交，若同位角相等或同旁内角之和等于两直角，则两直线平行</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116695066743810&bvid=BV1Nd7B6cExJ&cid=38868746854&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题29 一条直线与两条平行线相交，则内错角相等、同位角相等，且同旁内角之和等于两直角</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116708958279757&bvid=BV1DXEt6LE2s&cid=38936053773&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题30 平行于同一条直线的直线相互平行</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116709142829080&bvid=BV1M7Et6gEEL&cid=38937233298&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题31 过给定点，作一条直线与已知直线平行</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116714863858863&bvid=BV1pJEG6XECS&cid=38963448851&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题32 三角形一边延长所得外角等于两个内对角之和，且三内角和等于两直角</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116726289274188&bvid=BV1usER6nEBD&cid=39017187354&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题33 在同一方向连接平行且相等的线段，连成的线段相互平行且相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116816668006337&bvid=BV1v57j6UEqQ&cid=39430785788&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题34 平行四边形的对边对角彼此相等，且对角线二等分平行四边形</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116822472988108&bvid=BV1wj7s6nE43&cid=39458639844&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题35 同底且在相同平行线之间的平行四边形彼此相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116826516233007&bvid=BV1f3Tu63ETE&cid=39475022960&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题36 在等底上且在相同平行线之间的平行四边形彼此相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116867653965812&bvid=BV1mzT16ZEh3&cid=39680018862&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题37 在同底上且在相同平行线之间的三角形彼此相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116884783701348&bvid=BV1TUMG6BEaN&cid=39767772279&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题38 在等底上且在相同平行线之间的三角形彼此相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116888038284766&bvid=BV1k2M76VErf&cid=39780548664&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题39 在同底上且在底的同一侧的相等三角形在相同的平行线之间</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116901661383557&bvid=BV1iuNP6nEkZ&cid=39858341399&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题40 在等底上且在底的同一侧的相等三角形在相同的平行线之间</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116906879095240&bvid=BV1mANG64EVk&cid=39883901814&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题41 如果平行四边形和三角形既同底又在相同的平行线之间，那么平行四边形是三角形的二倍</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116912751188753&bvid=BV1iuNm6gE5E&cid=39915881653&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题42 用已知直线角作平行四边形，使它等于已知三角形</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116924310689085&bvid=BV1qDNB6nEUY&cid=39981680538&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题43 在任意平行四边形中，对角线两侧的平行四边形的补形彼此相等</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116934980931650&bvid=BV1TkNd6SEaT&cid=40041254717&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题44 用已知线段及已知直线角作一个平行四边形，使它等于已知三角形</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116958351594498&bvid=BV1NUK86CE3T&cid=40168721677&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题45 用一个已知直线角作一个平行四边形，使它等于已知直线形</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116986554228574&bvid=BV1jrg963EBy&cid=40319978769&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题46 在已知线段上作正方形</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116997878714765&bvid=BV1rU3i6vEQw&cid=40381711130&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题47 毕达哥拉斯定理 勾股定理</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=117003650207905&bvid=BV1iX3n6mEgC&cid=40415330903&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+<h2>命题48 毕达哥拉斯定理的逆定理</h2>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=117019051628246&bvid=BV1k8G36vE8o&cid=40496992168&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" width="800" height="600" style="width: 100%; max-width: 800px; aspect-ratio: 4 / 3; height: auto;"></iframe>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

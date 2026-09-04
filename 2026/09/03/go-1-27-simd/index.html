@@ -1,0 +1,1256 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: Go 1.27 SIMD 初探</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>Go 1.27 SIMD 初探
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-09
+
+      </div>
+    </div>
+    <div class="post-summary">用 Go 1.27 实验性的 simd 包写四种向量计算，并在 ARM64 Neon 与 AMD64 AVX2 上对比标量版本。</div>
+    <h2>前言</h2>
+<p>Go 1.27 正式加入了实验性的 <code>simd</code> 包。以前想在 Go 里用 SIMD，常见办法是写汇编、用 cgo，或者依赖某个已经做好平台适配的库。现在终于可以直接写 Go 代码了。</p>
+<p>我对这个功能最感兴趣的，不是“语法上能不能写”，而是几个更实际的问题：编译器会生成什么指令？短 slice 值不值得向量化？ARM64 和 AMD64 上表现如何？fallback 到软件模拟之后又有多慢？</p>
+<p>于是我写了 Add、SAXPY、Clamp 和 Dot 四组 kernel，在两台机器上分别跑了标量、硬件 SIMD 和软件模拟。</p>
+<h2>SIMD 到底做了什么</h2>
+<p>SIMD 是 Single Instruction, Multiple Data，一条指令同时处理多份数据。</p>
+<p>普通标量代码使用一个 <code>float32</code> 寄存器，每次完成一次加法。128-bit SIMD 寄存器则可以切成 4 个 32-bit lane，一条向量加法让四个 lane 同时工作。若寄存器宽度是 256 bit，一次便可以容纳 8 个 <code>float32</code>。</p>
+<p>lane 可以直译为&quot;通道&quot;，它就是寄存器里的一个格子。一条向量指令下来，所有 lane 同步执行同一个操作：lane0 算 <code>a0+b0</code>，lane1 算 <code>a1+b1</code>，彼此不能各干各的。所以 lane 数就是一条指令一次能处理的数据份数——寄存器越宽，lane 越多。</p>
+<pre class="mermaid">flowchart TB
+    subgraph scalar[&quot;标量：4 次加法指令&quot;]
+        direction LR
+        S0[&quot;a0 + b0&quot;] --&gt; S1[&quot;a1 + b1&quot;] --&gt; S2[&quot;a2 + b2&quot;] --&gt; S3[&quot;a3 + b3&quot;]
+    end
+
+    subgraph vector[&quot;128-bit SIMD：1 次向量加法指令&quot;]
+        direction LR
+        VA[&quot;寄存器 A&lt;br/&gt;a0 | a1 | a2 | a3&quot;] --&gt; OP[&quot;FADD&lt;br/&gt;4 个 lane 同步执行&quot;]
+        VB[&quot;寄存器 B&lt;br/&gt;b0 | b1 | b2 | b3&quot;] --&gt; OP
+        OP --&gt; VC[&quot;结果寄存器&lt;br/&gt;c0 | c1 | c2 | c3&quot;]
+    end
+</pre>
+<p>这里的“同时”发生在一个 CPU core 内。所有 lane 共享同一条指令和控制流，它不是启动了四个 goroutine，也不是占用了四个 CPU core。向量寄存器像一排格子，指令规定每个格子执行相同操作。</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>并行单位</th>
+<th>控制流</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标量</td>
+<td>一个数</td>
+<td>一条 CPU 指令流</td>
+<td>普通业务逻辑、短任务</td>
+</tr>
+<tr>
+<td>SIMD</td>
+<td>一个 core 内的多个 lane</td>
+<td>lane 共享同一条指令</td>
+<td>向量、图像、编解码、扫描</td>
+</tr>
+<tr>
+<td>goroutine</td>
+<td>可调度任务</td>
+<td>各自有独立 Go 控制流</td>
+<td>并发 I/O、多核任务并行</td>
+</tr>
+<tr>
+<td>GPU SIMT</td>
+<td>warp 内的多个 thread</td>
+<td>thread 有自己的索引，通常按 warp 执行</td>
+<td>大规模数据并行</td>
+</tr>
+</tbody>
+</table>
+<p>SIMD 最喜欢连续内存、相同操作、元素之间互不依赖。下面这些情况会削弱它的收益：</p>
+<ul>
+<li>数据太少，dispatch 和收尾成本盖过了计算本身。</li>
+<li>每个元素要走完全不同的分支，难以用 mask 或 Min/Max 表达。</li>
+<li>数据不连续，需要 gather/scatter，而不是顺序 load/store。</li>
+<li>计算量很小，速度最终卡在内存带宽，而不是 ALU。</li>
+<li>结果之间存在依赖，例如求和必须在最后把各个 lane 再归约成一个数。</li>
+</ul>
+<h2>Go 1.27 的两层 SIMD API</h2>
+<p>Go 1.27 的 SIMD API 分成两层：</p>
+<table>
+<thead>
+<tr>
+<th>包</th>
+<th>定位</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simd</code></td>
+<td>可移植 API</td>
+<td>向量宽度未知，同一份代码可运行在 ARM64、AMD64、Wasm 或软件模拟上</td>
+</tr>
+<tr>
+<td><code>simd/archsimd</code></td>
+<td>平台专属 API</td>
+<td>明确使用 <code>Float32x4</code>、<code>Float32x8</code> 等固定宽度类型，接近硬件 intrinsic</td>
+</tr>
+</tbody>
+</table>
+<p>本文使用第一层。<code>simd.Float32s</code> 表示“一组 <code>float32</code>”，但组里有几个元素并不写死。程序可以用 <code>simd.VectorBitSize()</code> 查询当前向量宽度，也可以用 <code>Float32s.Len()</code> 得到 lane 数。</p>
+<p>它仍然是实验功能，需要显式开启：</p>
+<pre><code class="language-bash">GOEXPERIMENT=simd go test ./...
+</code></pre>
+<p>实验性也意味着它不受 Go 1 兼容承诺保护。用来学习和验证很合适，生产代码还得给 API 变化留出空间。详细设计可以看 <a href="https://go.dev/doc/go1.27">Go 1.27 Release Notes</a> 和 <a href="https://pkg.go.dev/simd"><code>simd</code> 包文档</a>。</p>
+<h3>一份源码，多个机器码版本</h3>
+<p><code>simd.Float32s</code> 的宽度在源码里未知，但 CPU 指令要求宽度明确。Go 1.27 的做法不是在每次 Add 时临时判断，而是在编译期生成多个函数 clone，再由 dispatch 入口选择当前机器能运行的版本。</p>
+<pre class="mermaid">flowchart LR
+    SRC[&quot;Go 源码&lt;br/&gt;simd.Float32s&quot;] --&gt; COMPILER[&quot;Go 编译器&quot;]
+    COMPILER --&gt; E0[&quot;func@simd0&lt;br/&gt;软件模拟&quot;]
+    COMPILER --&gt; E128[&quot;func@simd128&lt;br/&gt;Neon / XMM&quot;]
+    COMPILER --&gt; E256[&quot;func@simd256&lt;br/&gt;YMM&quot;]
+    COMPILER --&gt; E512[&quot;func@simd512&lt;br/&gt;ZMM&quot;]
+
+    CPU[&quot;CPU feature&lt;br/&gt;+ GODEBUG&quot;] --&gt; DISPATCH[&quot;dispatch 入口&quot;]
+    E0 --&gt; DISPATCH
+    E128 --&gt; DISPATCH
+    E256 --&gt; DISPATCH
+    E512 --&gt; DISPATCH
+    DISPATCH --&gt; RUN[&quot;本次进程实际使用的版本&quot;]
+</pre>
+<p>这样热循环里不需要为每个向量重复做 CPU feature 判断。程序启动时确定宽度后，本次执行中的所有可移植 SIMD vector 都使用相同长度。<code>GODEBUG=simd=0</code> 可以选择软件模拟，<code>GODEBUG=simd=128/256/512</code> 可以请求特定宽度；请求超出硬件或完整特性集时，运行时会 panic。</p>
+<h2>从向量加法开始</h2>
+<p>标量版本没有什么特别的：</p>
+<pre><code class="language-go">func AddScalar(dst, a, b []float32) {
+    n := len(dst)
+    if len(a) &lt; n || len(b) &lt; n {
+        panic(&quot;input slice shorter than destination&quot;)
+    }
+    for i := 0; i &lt; n; i++ {
+        dst[i] = a[i] + b[i]
+    }
+}
+</code></pre>
+<p>SIMD 版本一次 load 一个向量，完成向量加法，再 store 回去：</p>
+<pre><code class="language-go">func AddSIMD(dst, a, b []float32) {
+    n := len(dst)
+    if len(a) &lt; n || len(b) &lt; n {
+        panic(&quot;input slice shorter than destination&quot;)
+    }
+
+    var zero simd.Float32s
+    width := zero.Len()
+
+    i := 0
+    for ; i+width &lt;= n; i += width {
+        va := simd.LoadFloat32s(a[i : i+width])
+        vb := simd.LoadFloat32s(b[i : i+width])
+        va.Add(vb).Store(dst[i : i+width])
+    }
+
+    // 处理不足一个向量的尾部
+    for ; i &lt; n; i++ {
+        dst[i] = a[i] + b[i]
+    }
+}
+</code></pre>
+<p>这段循环可以画成下面这样：</p>
+<pre class="mermaid">flowchart TD
+    START[&quot;i = 0&quot;] --&gt; CHECK{&quot;剩余元素 ≥ width?&quot;}
+    CHECK -- 是 --&gt; LOAD[&quot;从 a、b 各 load 一个向量&quot;]
+    LOAD --&gt; CALC[&quot;所有 lane 执行 Add&quot;]
+    CALC --&gt; STORE[&quot;store 到 dst&quot;]
+    STORE --&gt; NEXT[&quot;i += width&quot;]
+    NEXT --&gt; CHECK
+    CHECK -- 否 --&gt; TAIL[&quot;标量 tail loop&lt;br/&gt;处理 0 到 width-1 个元素&quot;]
+    TAIL --&gt; END[&quot;完成&quot;]
+</pre>
+<p>load、计算和 store 是三个不同环节。SIMD 只会直接加速中间的向量计算和循环控制；数据仍然要从 cache 或内存搬到寄存器，再写回去。Add 每个元素只做一次加法，却要读取 <code>a</code>、读取 <code>b</code>、写入 <code>dst</code>，所以数据规模足够大后，内存带宽比加法单元更容易先到极限。</p>
+<p>tail 也不能省。假设 width 是 4，而 slice 有 10 个元素，前两个向量处理 <code>[0:4]</code> 和 <code>[4:8]</code>，最后两个元素只能交给标量循环。另一种写法是 <code>LoadFloat32sPart</code> 配合 mask，但简单运算里标量 tail 通常更直观。</p>
+<p>这里有个容易忽略的细节：传给 <code>LoadFloat32s</code> 和 <code>Store</code> 的是 <code>a[i:i+width]</code>，不是 <code>a[i:]</code>。</p>
+<p>我最初用了后者。指令确实生成了，但 M2 Pro 上 SIMD Add 反而比标量慢。反汇编后才发现，每四个元素旁边都夹着多组 slice bounds check。改成精确长度的 slice 后，编译器消掉了循环内的大部分检查，16384 个元素的耗时从约 7.1 µs 降到 3.1 µs。Go 自己的 <code>simd</code> 测试代码也使用了这种写法。</p>
+<p>这大概是本文最有用的一条经验：写 SIMD 不只是把 <code>+</code> 换成 <code>Add</code>，还得看看生成的机器码。</p>
+<h2>分支、mask 与水平归约</h2>
+<p>SIMD 的 Add、Mul、Min、Max 默认都是 lane-wise 操作：第 0 个 lane 只和第 0 个 lane 运算，不会碰到旁边的值。这很好理解，但也带来两个问题。</p>
+<p>一个是分支。Clamp 的标量代码会对每个元素执行 <code>if v &lt; low</code> 和 <code>if v &gt; high</code>：</p>
+<pre><code class="language-go">func ClampScalar(dst, src []float32, low, high float32) {
+    n := len(dst)
+    if len(src) &lt; n {
+        panic(&quot;input slice shorter than destination&quot;)
+    }
+    for i := 0; i &lt; n; i++ {
+        v := src[i]
+        if v &lt; low {
+            v = low
+        }
+        if v &gt; high {
+            v = high
+        }
+        dst[i] = v
+    }
+}
+</code></pre>
+<p>向量版本可以把它改写成两条没有控制流分叉的操作：</p>
+<pre><code class="language-text">src:             [-4.0 | -1.0 |  2.0 | 8.0]
+Max(src, -2.0):  [-2.0 | -1.0 |  2.0 | 8.0]
+Min(..., 3.0):   [-2.0 | -1.0 |  2.0 | 3.0]
+</code></pre>
+<p>写成代码就是这样，注意循环体里没有任何 <code>if</code>：</p>
+<pre><code class="language-go">func ClampSIMD(dst, src []float32, low, high float32) {
+    n := len(dst)
+    if len(src) &lt; n {
+        panic(&quot;input slice shorter than destination&quot;)
+    }
+
+    var zero simd.Float32s
+    width := zero.Len()
+    vlow := simd.BroadcastFloat32s(low)   // 每个 lane 都是 low
+    vhigh := simd.BroadcastFloat32s(high) // 每个 lane 都是 high
+
+    i := 0
+    for ; i+width &lt;= n; i += width {
+        v := simd.LoadFloat32s(src[i : i+width])
+        v.Max(vlow).Min(vhigh).Store(dst[i : i+width])
+    }
+
+    // 处理不足一个向量的尾部
+    for ; i &lt; n; i++ {
+        dst[i] = min(max(src[i], low), high)
+    }
+}
+</code></pre>
+<p>更复杂的条件可以先用 <code>Greater</code>、<code>LessEqual</code> 等方法生成 mask，再用 <code>IfElse</code> 为每个 lane 选择值。它仍然只有一条向量控制流，只是各 lane 根据 mask 保留不同结果：</p>
+<pre><code class="language-go">over := v.Greater(vhigh)  // 生成 mask：超过上界的 lane 为 true
+v = vhigh.IfElse(over, v) // true 的 lane 取 high，其余 lane 保留 v
+</code></pre>
+<p>另一个问题是归约。Dot 的乘法很好向量化，但最终结果只有一个数。向量循环结束时，累加器实际上还是四个或八个部分和：</p>
+<pre class="mermaid">flowchart LR
+    P0[&quot;第 0 轮&lt;br/&gt;a0*b0 | a1*b1 | a2*b2 | a3*b3&quot;] --&gt; ACC[&quot;lane-wise 累加器&lt;br/&gt;s0 | s1 | s2 | s3&quot;]
+    P1[&quot;第 1 轮&lt;br/&gt;a4*b4 | a5*b5 | a6*b6 | a7*b7&quot;] --&gt; ACC
+    ACC --&gt; H[&quot;水平归约&lt;br/&gt;s0 + s1 + s2 + s3&quot;]
+    H --&gt; SUM[&quot;一个 Dot 结果&quot;]
+</pre>
+<p>水平归约会产生固定开销和 lane 之间的依赖。本文先把向量 store 到栈上的小数组，再用标量完成最后几次加法。这也是为什么很短的 Dot 可能比纯标量还慢。</p>
+<p>完整的 Dot 长这样。先给标量版本作对照：</p>
+<pre><code class="language-go">func DotScalar(a, b []float32) float32 {
+    n := len(a)
+    if len(b) &lt; n {
+        panic(&quot;input slices have different lengths&quot;)
+    }
+    sum := float32(0)
+    for i := 0; i &lt; n; i++ {
+        sum += a[i] * b[i]
+    }
+    return sum
+}
+</code></pre>
+<p>SIMD 版本：</p>
+<pre><code class="language-go">func DotSIMD(a, b []float32) float32 {
+    n := len(a)
+    if len(b) &lt; n {
+        panic(&quot;input slices have different lengths&quot;)
+    }
+
+    var acc simd.Float32s // 零值就是零向量，每个 lane 都是 0
+    width := acc.Len()
+
+    i := 0
+    for ; i+width &lt;= n; i += width {
+        va := simd.LoadFloat32s(a[i : i+width])
+        vb := simd.LoadFloat32s(b[i : i+width])
+        acc = va.MulAdd(vb, acc) // lane-wise：acc[k] += a[i+k] * b[i+k]
+    }
+
+    // 水平归约：store 到栈上数组，标量求和
+    var buf [16]float32 // 512 bit 最多 16 个 float32 lane
+    acc.Store(buf[:width])
+    sum := float32(0)
+    for k := 0; k &lt; width; k++ {
+        sum += buf[k]
+    }
+
+    // 处理不足一个向量的尾部
+    for ; i &lt; n; i++ {
+        sum += a[i] * b[i]
+    }
+    return sum
+}
+</code></pre>
+<p>累加循环里每个 lane 只管自己的部分和，互不打扰；真正的&quot;跨 lane&quot;动作只有归约那几下。</p>
+<h2>四类测试</h2>
+<p>我选了四种形态不同的 kernel：</p>
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th>计算</th>
+<th>想观察什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add</td>
+<td><code>dst[i] = a[i] + b[i]</code></td>
+<td>简单计算，容易受内存带宽限制</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td><code>dst[i] = x[i] * scale + y[i]</code></td>
+<td>SIMD FMA</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td>把数值限制到 <code>[low, high]</code></td>
+<td>标量分支对比向量 <code>Max/Min</code></td>
+</tr>
+<tr>
+<td>Dot</td>
+<td><code>sum += a[i] * b[i]</code></td>
+<td>向量累加和水平归约</td>
+</tr>
+</tbody>
+</table>
+<p>这几个名字值得展开一下。SAXPY 来自 BLAS 库的经典函数名——<strong>S</strong>ingle-precision <strong>A</strong>·X <strong>P</strong>lus <strong>Y</strong>，单精度的&quot;乘加&quot;。它比 Add 多一次乘法，而&quot;乘完再加&quot;正好对应 CPU 的 FMA（Fused Multiply-Add）指令，一条指令完成乘法和加法。Clamp 是把每个数钳制在 <code>[low, high]</code> 区间里，小于下界取下界、大于上界取上界，标量写法是每个元素两个 <code>if</code>，它代表带分支的一类计算。Dot 是向量点积，所有乘积累加成一个标量结果，它代表&quot;最后要归约成一个数&quot;的一类计算。</p>
+<p>这四个 kernel 覆盖了从&quot;几乎纯搬数据&quot;（Add）到&quot;计算密集但有收尾开销&quot;（Dot）的频谱，看它们各自的表现，就能知道 SIMD 在哪种任务上值得用。</p>
+<p>Add、Clamp 和 Dot 的代码前面已经出现过，SAXPY 的完整实现如下。标量版本每次处理一个元素：</p>
+<pre><code class="language-go">func SAXPYScalar(dst, x, y []float32, scale float32) {
+    n := len(dst)
+    if len(x) &lt; n || len(y) &lt; n {
+        panic(&quot;input slice shorter than destination&quot;)
+    }
+    for i := 0; i &lt; n; i++ {
+        dst[i] = x[i]*scale + y[i]
+    }
+}
+</code></pre>
+<p>SIMD 版本先把 <code>scale</code> broadcast 到所有 lane，再用 <code>MulAdd</code> 完成 <code>x*scale+y</code>：</p>
+<pre><code class="language-go">func SAXPYSIMD(dst, x, y []float32, scale float32) {
+    n := len(dst)
+    if len(x) &lt; n || len(y) &lt; n {
+        panic(&quot;input slice shorter than destination&quot;)
+    }
+
+    var zero simd.Float32s
+    width := zero.Len()
+    vscale := simd.BroadcastFloat32s(scale)
+
+    i := 0
+    for ; i+width &lt;= n; i += width {
+        vx := simd.LoadFloat32s(x[i : i+width])
+        vy := simd.LoadFloat32s(y[i : i+width])
+        vx.MulAdd(vscale, vy).Store(dst[i : i+width])
+    }
+    for ; i &lt; n; i++ {
+        dst[i] = x[i]*scale + y[i]
+    }
+}
+</code></pre>
+<p>每个 workload 测 16、256、16384 和 4194304 个 <code>float32</code>。这几个规模大致对应“函数调用开销占主导”“小数组”“缓存内计算”和“大数组”。</p>
+<p>测试数据在计时前创建，数值固定但不全相同，避免 Clamp 的分支永远走同一条路：</p>
+<pre><code class="language-go">var benchmarkSizes = []int{16, 256, 16 * 1024, 4 * 1024 * 1024}
+
+func makeTestData(n int) ([]float32, []float32) {
+    a := make([]float32, n)
+    b := make([]float32, n)
+    for i := range n {
+        a[i] = float32(i%251-125) / 17
+        b[i] = float32(i%127-63) / 11
+    }
+    return a, b
+}
+</code></pre>
+<p>以 Add 为例，benchmark 同时跑标量和 SIMD。<code>SetBytes</code> 中的 <code>3*4</code> 表示每个元素读取两个 <code>float32</code>、写入一个 <code>float32</code>，总共搬运 12 字节：</p>
+<pre><code class="language-go">var benchmarkSinkSlice []float32
+
+func BenchmarkAdd(b *testing.B) {
+    for _, n := range benchmarkSizes {
+        a, values := makeTestData(n)
+        dst := make([]float32, n)
+
+        b.Run(fmt.Sprintf(&quot;N=%d/Scalar&quot;, n), func(b *testing.B) {
+            b.ReportAllocs()
+            b.SetBytes(int64(n * 3 * 4))
+            b.ResetTimer()
+            for range b.N {
+                AddScalar(dst, a, values)
+            }
+            benchmarkSinkSlice = dst
+        })
+
+        b.Run(fmt.Sprintf(&quot;N=%d/SIMD&quot;, n), func(b *testing.B) {
+            b.ReportAllocs()
+            b.SetBytes(int64(n * 3 * 4))
+            b.ResetTimer()
+            for range b.N {
+                AddSIMD(dst, a, values)
+            }
+            benchmarkSinkSlice = dst
+        })
+    }
+}
+</code></pre>
+<p>另外三个 benchmark 使用同样的结构，只替换循环里直接调用的函数。这里没有抽成 <code>func()</code> 参数，是为了避免间接调用影响 16 元素那组数据。</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Scalar 调用</th>
+<th>SIMD 调用</th>
+<th style="text-align:right"><code>SetBytes</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAXPY</td>
+<td><code>SAXPYScalar(dst, a, values, 1.75)</code></td>
+<td><code>SAXPYSIMD(dst, a, values, 1.75)</code></td>
+<td style="text-align:right"><code>n * 3 * 4</code></td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td><code>ClampScalar(dst, a, -2.5, 3.5)</code></td>
+<td><code>ClampSIMD(dst, a, -2.5, 3.5)</code></td>
+<td style="text-align:right"><code>n * 2 * 4</code></td>
+</tr>
+<tr>
+<td>Dot</td>
+<td><code>result = DotScalar(a, values)</code></td>
+<td><code>result = DotSIMD(a, values)</code></td>
+<td style="text-align:right"><code>n * 2 * 4</code></td>
+</tr>
+</tbody>
+</table>
+<p>Dot 的返回值会写入 package 级 <code>float32</code> sink，其他三组写入 slice sink，防止编译器把无外部可见结果的计算删除。</p>
+<p>两边都使用 Go 1.27.1，benchmark 参数相同：</p>
+<pre><code class="language-bash">GOMAXPROCS=1 GOEXPERIMENT=simd \
+    go test -run '^$' -bench '^Benchmark' \
+    -benchmem -benchtime=300ms -count=8 -cpu=1
+</code></pre>
+<p>表中数据是 8 次结果的中位数。加速比定义为 <code>Scalar ns/op / SIMD ns/op</code>，大于 1 表示 SIMD 更快。输入和输出 slice 均在计时前创建，所有 kernel 都是 <code>0 B/op</code>、<code>0 allocs/op</code>。</p>
+<p>测试机器如下：</p>
+<table>
+<thead>
+<tr>
+<th>机器</th>
+<th>系统</th>
+<th>CPU</th>
+<th>SIMD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MacBook Pro</td>
+<td>macOS ARM64</td>
+<td>Apple M2 Pro，10 核</td>
+<td>128-bit Neon，4 个 <code>float32</code> lane</td>
+</tr>
+<tr>
+<td>NUC8</td>
+<td>Linux AMD64</td>
+<td>Intel Core i5-8259U，4 核 8 线程</td>
+<td>AVX2/FMA；Go 默认选择 128 bit</td>
+</tr>
+</tbody>
+</table>
+<p>两台机器的绝对时间不能横向比较，重点是同一台机器上标量与 SIMD 的相对变化。</p>
+<h2>M2 Pro：Neon 128-bit</h2>
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th style="text-align:right">N</th>
+<th style="text-align:right">Scalar ns/op</th>
+<th style="text-align:right">SIMD ns/op</th>
+<th style="text-align:right">加速比</th>
+<th style="text-align:right">GB/s（Scalar→SIMD）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">7.29</td>
+<td style="text-align:right">6.96</td>
+<td style="text-align:right">1.05x</td>
+<td style="text-align:right">26.32 → 27.57</td>
+</tr>
+<tr>
+<td>Add</td>
+<td style="text-align:right">256</td>
+<td style="text-align:right">92.31</td>
+<td style="text-align:right">47.80</td>
+<td style="text-align:right">1.93x</td>
+<td style="text-align:right">33.28 → 64.27</td>
+</tr>
+<tr>
+<td>Add</td>
+<td style="text-align:right">16384</td>
+<td style="text-align:right">5311.5</td>
+<td style="text-align:right">3112.5</td>
+<td style="text-align:right">1.71x</td>
+<td style="text-align:right">37.02 → 63.18</td>
+</tr>
+<tr>
+<td>Add</td>
+<td style="text-align:right">4194304</td>
+<td style="text-align:right">1432306</td>
+<td style="text-align:right">810213</td>
+<td style="text-align:right">1.77x</td>
+<td style="text-align:right">35.15 → 62.12</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">7.32</td>
+<td style="text-align:right">7.35</td>
+<td style="text-align:right">1.00x</td>
+<td style="text-align:right">26.21 → 26.12</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">256</td>
+<td style="text-align:right">92.53</td>
+<td style="text-align:right">48.66</td>
+<td style="text-align:right">1.90x</td>
+<td style="text-align:right">33.20 → 63.13</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">16384</td>
+<td style="text-align:right">5307.5</td>
+<td style="text-align:right">3063.5</td>
+<td style="text-align:right">1.73x</td>
+<td style="text-align:right">37.04 → 64.19</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">4194304</td>
+<td style="text-align:right">1409838</td>
+<td style="text-align:right">779232</td>
+<td style="text-align:right">1.81x</td>
+<td style="text-align:right">35.70 → 64.59</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">8.69</td>
+<td style="text-align:right">5.60</td>
+<td style="text-align:right">1.55x</td>
+<td style="text-align:right">14.73 → 22.85</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">256</td>
+<td style="text-align:right">307.0</td>
+<td style="text-align:right">43.30</td>
+<td style="text-align:right">7.09x</td>
+<td style="text-align:right">6.67 → 47.31</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">16384</td>
+<td style="text-align:right">21072</td>
+<td style="text-align:right">2613.0</td>
+<td style="text-align:right">8.06x</td>
+<td style="text-align:right">6.22 → 50.17</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">4194304</td>
+<td style="text-align:right">5412193</td>
+<td style="text-align:right">689143</td>
+<td style="text-align:right">7.85x</td>
+<td style="text-align:right">6.20 → 48.69</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">7.31</td>
+<td style="text-align:right">9.52</td>
+<td style="text-align:right">0.77x</td>
+<td style="text-align:right">17.50 → 13.45</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">256</td>
+<td style="text-align:right">239.7</td>
+<td style="text-align:right">59.13</td>
+<td style="text-align:right">4.05x</td>
+<td style="text-align:right">8.54 → 34.63</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">16384</td>
+<td style="text-align:right">20568</td>
+<td style="text-align:right">5184.0</td>
+<td style="text-align:right">3.97x</td>
+<td style="text-align:right">6.37 → 25.28</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">4194304</td>
+<td style="text-align:right">5281060</td>
+<td style="text-align:right">1319625</td>
+<td style="text-align:right">4.00x</td>
+<td style="text-align:right">6.35 → 25.43</td>
+</tr>
+</tbody>
+</table>
+<p>Add 和 SAXPY 在中大数组上大约快 1.7～1.9 倍，没有达到 4 lane 的理论倍数，因为它们很快就受到 load/store 和内存带宽限制。</p>
+<p>Clamp 的结果最显眼。标量版本每个元素都要判断上下界，SIMD 版本则是连续的 <code>Max</code> 和 <code>Min</code>，中大数组稳定在 8 倍左右。</p>
+<p>Dot 展示了另一个边界：16 个元素时，SIMD 慢了 23%。初始化向量累加器、dispatch、store lane 和最终水平求和的固定成本，比省下来的乘加还多。到 256 个元素后，它才进入大约 4 倍加速的区间。</p>
+<h2>NUC8：默认 128-bit SIMD</h2>
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th style="text-align:right">N</th>
+<th style="text-align:right">Scalar ns/op</th>
+<th style="text-align:right">SIMD ns/op</th>
+<th style="text-align:right">加速比</th>
+<th style="text-align:right">GB/s（Scalar→SIMD）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">8.43</td>
+<td style="text-align:right">8.11</td>
+<td style="text-align:right">1.04x</td>
+<td style="text-align:right">22.79 → 23.66</td>
+</tr>
+<tr>
+<td>Add</td>
+<td style="text-align:right">256</td>
+<td style="text-align:right">108.4</td>
+<td style="text-align:right">63.67</td>
+<td style="text-align:right">1.70x</td>
+<td style="text-align:right">28.34 → 48.25</td>
+</tr>
+<tr>
+<td>Add</td>
+<td style="text-align:right">16384</td>
+<td style="text-align:right">18762</td>
+<td style="text-align:right">3898.0</td>
+<td style="text-align:right">4.81x</td>
+<td style="text-align:right">10.48 → 50.43</td>
+</tr>
+<tr>
+<td>Add</td>
+<td style="text-align:right">4194304</td>
+<td style="text-align:right">5762780</td>
+<td style="text-align:right">1708170</td>
+<td style="text-align:right">3.37x</td>
+<td style="text-align:right">8.73 → 29.47</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">11.75</td>
+<td style="text-align:right">8.84</td>
+<td style="text-align:right">1.33x</td>
+<td style="text-align:right">16.34 → 21.72</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">256</td>
+<td style="text-align:right">144.7</td>
+<td style="text-align:right">63.75</td>
+<td style="text-align:right">2.27x</td>
+<td style="text-align:right">21.23 → 48.19</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">16384</td>
+<td style="text-align:right">39384</td>
+<td style="text-align:right">3859.0</td>
+<td style="text-align:right">10.21x</td>
+<td style="text-align:right">4.99 → 50.95</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">4194304</td>
+<td style="text-align:right">10185086</td>
+<td style="text-align:right">1692378</td>
+<td style="text-align:right">6.02x</td>
+<td style="text-align:right">4.94 → 29.74</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">12.80</td>
+<td style="text-align:right">7.90</td>
+<td style="text-align:right">1.62x</td>
+<td style="text-align:right">10.00 → 16.21</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">256</td>
+<td style="text-align:right">252.0</td>
+<td style="text-align:right">57.88</td>
+<td style="text-align:right">4.35x</td>
+<td style="text-align:right">8.13 → 35.39</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">16384</td>
+<td style="text-align:right">17292</td>
+<td style="text-align:right">3442.0</td>
+<td style="text-align:right">5.02x</td>
+<td style="text-align:right">7.58 → 38.08</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">4194304</td>
+<td style="text-align:right">4984947</td>
+<td style="text-align:right">1361095</td>
+<td style="text-align:right">3.66x</td>
+<td style="text-align:right">6.73 → 24.65</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">16</td>
+<td style="text-align:right">9.35</td>
+<td style="text-align:right">10.30</td>
+<td style="text-align:right">0.91x</td>
+<td style="text-align:right">13.69 → 12.42</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">256</td>
+<td style="text-align:right">248.8</td>
+<td style="text-align:right">73.50</td>
+<td style="text-align:right">3.38x</td>
+<td style="text-align:right">8.23 → 27.86</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">16384</td>
+<td style="text-align:right">21602</td>
+<td style="text-align:right">6823.0</td>
+<td style="text-align:right">3.17x</td>
+<td style="text-align:right">6.07 → 19.21</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">4194304</td>
+<td style="text-align:right">5861174</td>
+<td style="text-align:right">2168584</td>
+<td style="text-align:right">2.70x</td>
+<td style="text-align:right">5.72 → 15.47</td>
+</tr>
+</tbody>
+</table>
+<p>规律和 M2 Pro 相似：16 个元素时收益很少，Dot 仍然倒退；规模变大后，四类计算都有明显加速。</p>
+<p>加速比并不等于 lane 数。比如 128-bit SIMD 一次处理 4 个 <code>float32</code>，但 16384 元素的 SAXPY 达到了 10.21 倍。这还混合了循环控制、标量依赖链、FMA 指令吞吐以及缓存等因素，不能简单理解成“四个数一起算，所以固定快四倍”。</p>
+<h3>为什么 M2 Pro 的 Add 和 SAXPY 加速比更小</h3>
+<p>先看 4194304 元素的结果：</p>
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th style="text-align:right">M2 Pro 加速比</th>
+<th style="text-align:right">NUC8 加速比</th>
+<th style="text-align:right">M2 Pro SIMD GB/s</th>
+<th style="text-align:right">NUC8 SIMD GB/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add</td>
+<td style="text-align:right">1.77x</td>
+<td style="text-align:right">3.37x</td>
+<td style="text-align:right">62.12</td>
+<td style="text-align:right">29.47</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">1.81x</td>
+<td style="text-align:right">6.02x</td>
+<td style="text-align:right">64.59</td>
+<td style="text-align:right">29.74</td>
+</tr>
+</tbody>
+</table>
+<p>NUC8 的倍率更大，但 SIMD 后的绝对吞吐只有 M2 Pro 的一半左右。原因是加速比等于 <code>Scalar 耗时 / SIMD 耗时</code>：标量基线越慢，倍率越容易显得大。M2 Pro 的标量 Add 已经达到 35.15 GB/s，而 NUC8 只有 8.73 GB/s。M2 Pro 的起点更高，留给 SIMD 的相对提升空间自然更小。</p>
+<p>这也不是向量宽度造成的。两台机器在 Go 默认策略下都使用 128-bit SIMD，也就是一次处理 4 个 <code>float32</code>。NUC8 虽然支持 AVX2，但可移植 <code>simd</code> 包因为完整指令集检查把默认宽度降到了 128 bit。因此这组默认测试是 Neon 4 lane 对 XMM 4 lane，不是 4 lane 对 8 lane。</p>
+<p>SAXPY 还有一层编译器差异。我把相同的标量循环分别编译并查看汇编，M2 Pro 的 ARM64 后端生成了一条融合乘加：</p>
+<pre><code class="language-text">FMADDS  // scale*x + y
+</code></pre>
+<p>AMD64 标量版本则是两条指令：</p>
+<pre><code class="language-text">MULSS   // x * scale
+ADDSS   // + y
+</code></pre>
+<p>而 SIMD 版本显式调用 <code>MulAdd</code>，AMD64 会生成 <code>VFMADD213PS</code>。也就是说，M2 Pro 的标量基线已经享受了 FMA，SIMD 主要增加 lane 数；NUC8 则同时获得了向量化和融合乘加，这会进一步放大 SAXPY 的相对倍率。</p>
+<p>NUC8 较老确实是背景因素，但不是一个可以单独成立的解释。它使用的 i5-8259U 发布于 2018 年，官方最大内存带宽为 37.5 GB/s；M2 Pro 是 2023 年平台，官方统一内存带宽为 200 GB/s（参见 <a href="https://www.intel.com/content/www/us/en/products/compare.html?productIds=135935%2C137979">Intel 规格</a> 和 <a href="https://support.apple.com/en-us/111340">Apple 规格</a>）。较老的微架构、移动平台功耗限制和内存系统会让 NUC8 的标量基线更弱，但这同时也会让“从较慢起点出发”的加速比变大。</p>
+<p>另一个证据是 NUC8 的 256-bit 附加测试。16384 元素时，加宽向量还能继续提速；到了 4194304 元素，Add 和 SAXPY 从 128 bit 改成 256 bit 后没有更快。这说明大数组已经更接近 load/store 或内存带宽瓶颈，增加算术 lane 并不能等比例提高吞吐。</p>
+<p>所以更准确的结论是：M2 Pro 的 Add 和 SAXPY 相对加速较小，主要因为标量基线已经很强、标量 SAXPY 已经使用 FMA，并且数据搬运更早成为瓶颈；NUC8 的平台年代会影响这些条件，却不能简单解释成“老 CPU 的 SIMD 更有效”。而且这个趋势只出现在 Add 和 SAXPY，大数组 Clamp、Dot 在 M2 Pro 上的相对加速反而更高。</p>
+<h2>明明支持 AVX2，为什么默认只有 128 bit</h2>
+<p>NUC8 的 CPU flags 包含 AVX2 和 FMA，硬件可以使用 256-bit YMM 寄存器。但 <code>simd.VectorBitSize()</code> 返回了 128。</p>
+<p>原因藏在 Go 1.27 的 <a href="https://go.dev/src/simd/midway_amd64.go"><code>midway_amd64.go</code></a> 中。可移植 <code>simd</code> API 希望同一向量宽度下的整套操作都能由硬件实现。这个 CPU 没有 <code>VPCLMULQDQ</code>，所以即便普通浮点加法支持 AVX2，Go 仍然保守地把全局宽度降到 128 bit。</p>
+<p><code>GODEBUG=simd=256</code> 会直接 panic，并提示可以用 <code>GODEBUG=simd=+256</code> 跳过特性检查。本文的四个 kernel 只使用 Add、FMA、Min 和 Max，这些指令都在该 CPU 的能力范围内，所以我额外跑了一组强制 256-bit 测试。</p>
+<table>
+<thead>
+<tr>
+<th>Workload</th>
+<th style="text-align:right">16384：128→256 ns/op</th>
+<th style="text-align:right">256-bit 改善</th>
+<th style="text-align:right">4194304：128→256 ns/op</th>
+<th style="text-align:right">256-bit 改善</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add</td>
+<td style="text-align:right">3898.0 → 2471.0</td>
+<td style="text-align:right">1.58x</td>
+<td style="text-align:right">1708170 → 1754121</td>
+<td style="text-align:right">0.97x</td>
+</tr>
+<tr>
+<td>SAXPY</td>
+<td style="text-align:right">3859.0 → 2576.5</td>
+<td style="text-align:right">1.50x</td>
+<td style="text-align:right">1692378 → 1833758</td>
+<td style="text-align:right">0.92x</td>
+</tr>
+<tr>
+<td>Clamp</td>
+<td style="text-align:right">3442.0 → 2136.5</td>
+<td style="text-align:right">1.61x</td>
+<td style="text-align:right">1361095 → 1221690</td>
+<td style="text-align:right">1.11x</td>
+</tr>
+<tr>
+<td>Dot</td>
+<td style="text-align:right">6823.0 → 2593.5</td>
+<td style="text-align:right">2.63x</td>
+<td style="text-align:right">2168584 → 1197430</td>
+<td style="text-align:right">1.81x</td>
+</tr>
+</tbody>
+</table>
+<p>16384 元素时，加宽向量通常还能带来 1.5 倍以上提升。到了 4194304 元素，Add 和 SAXPY 已经受内存带宽限制，YMM 再宽也没有数据喂进来，甚至因为测试波动略慢。Dot 的计算密度更高，256 bit 仍然有 1.81 倍收益。</p>
+<p>这里的 <code>+</code> 是在告诉运行时“我知道自己在做什么”。如果代码后来调用了 CPU 缺失的 SIMD 操作，就可能出问题，不能把它当成通用启动参数。</p>
+<h2>软件模拟不是性能 fallback</h2>
+<p>设置 <code>GODEBUG=simd=0</code> 后，同一份 SIMD 代码会切换到 128-bit 软件模拟。它很适合验证 fallback 的正确性，但不适合追求性能。</p>
+<p>下面取 16384 元素的数据，加速比仍然是“标量耗时除以 SIMD API 耗时”：</p>
+<table>
+<thead>
+<tr>
+<th>机器</th>
+<th style="text-align:right">Add</th>
+<th style="text-align:right">SAXPY</th>
+<th style="text-align:right">Clamp</th>
+<th style="text-align:right">Dot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M2 Pro，软件模拟</td>
+<td style="text-align:right">0.07x</td>
+<td style="text-align:right">0.07x</td>
+<td style="text-align:right">0.18x</td>
+<td style="text-align:right">0.43x</td>
+</tr>
+<tr>
+<td>i5-8259U，软件模拟</td>
+<td style="text-align:right">0.21x</td>
+<td style="text-align:right">0.38x</td>
+<td style="text-align:right">0.10x</td>
+<td style="text-align:right">0.26x</td>
+</tr>
+</tbody>
+</table>
+<p>换句话说，软件模拟比直接写标量循环慢了约 2.3～14 倍。它解决的是“所有架构都能运行”这个问题，而不是“所有架构都能更快”。如果应用真的会运行在无硬件 SIMD 的平台上，最好保留经过 benchmark 的标量实现，并根据 <code>simd.Emulated()</code> 选择路径。</p>
+<h2>看一眼机器码</h2>
+<p>Go 1.27 会为 SIMD-dependent 函数生成 dispatch 入口和不同宽度的 clone。用 <code>go tool nm</code> 可以看到类似名称：</p>
+<pre><code class="language-text">AddSIMD
+AddSIMD@simd0
+AddSIMD@simd128
+AddSIMD@simd256
+</code></pre>
+<p>M2 Pro 的 128-bit clone 中出现了 Neon 指令：</p>
+<pre><code class="language-text">FADD  V1.S4, V0.S4, V0.S4
+VFMLA V1.S4, V2.S4, V3.S4
+FMAX  V2.S4, V4.S4, V4.S4
+FMIN  V3.S4, V4.S4, V4.S4
+</code></pre>
+<p>AMD64 的 128-bit clone 使用 XMM，256-bit clone 使用 YMM：</p>
+<pre><code class="language-text">VADDPS      0(R11), X0, X0
+VFMADD213PS 0(R11), X1, X2
+
+VADDPS      0(R11), Y0, Y0
+VFMADD213PS 0(R11), Y1, Y2
+</code></pre>
+<p>这一步很重要。benchmark 告诉我们程序快了多少，反汇编则确认快的确实是我们以为的那条路径。</p>
+<h2>浮点数和测试</h2>
+<p>Dot 和 SAXPY 会改变浮点运算的组合方式，还可能使用 FMA。它们与标量实现数学上等价，但不保证 bitwise equal。因此正确性测试使用相对误差，而不是直接比较 <code>float32</code> 的 bit pattern。</p>
+<p>测试长度包含 0、1、3、4、5、7、8、9、15、16、17、31、32、33、255、256、257 和 4097，主要用来覆盖不同向量宽度下的 tail。完整测试命令是：</p>
+<pre><code class="language-bash">GOEXPERIMENT=simd go test ./...
+</code></pre>
+<h2>总结</h2>
+<p>这轮实验可以归纳成几条 Tips：</p>
+<ol>
+<li>Go 1.27 的 <code>simd</code> 已经能生成真正的 Neon、XMM 和 YMM 指令，同一份代码可以跨架构运行。</li>
+<li>短任务不一定更快。16 元素 Dot 在两台机器上都倒退了，先 benchmark 再决定是否向量化。</li>
+<li>精确写出 <code>slice[i:i+width]</code> 很重要，它能帮助编译器消除 SIMD 热循环里的 bounds check。</li>
+<li>分支和长依赖链通常比简单的内存拷贝型计算更能从 SIMD 获益，但最终仍会撞上内存带宽。</li>
+<li><code>simd.VectorBitSize()</code> 返回的是 Go 为整套可移植 API 选择的宽度，不一定等于 CPU 的最大寄存器宽度。</li>
+<li><code>GODEBUG=simd=0</code> 是兼容性 fallback，不是性能 fallback。</li>
+<li>API 仍是实验性的。现阶段适合封装在内部包里，不要把 SIMD 类型暴露到公共接口。</li>
+</ol>
+<p>SIMD 的代码量并不多，真正费时间的是定义基线、控制变量、验证生成代码。好在 Go 1.27 已经把最难跨过去的那道门槛挪走了，剩下的就是老老实实测量。</p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+<script>
+  (function () {
+    if (!document.querySelector('pre.mermaid')) return;
+    var s = document.createElement('script');
+    s.src = '/libs/mermaid/mermaid.min.js';
+    s.onload = function () {
+      window.mermaid.initialize({ startOnLoad: false });
+      window.mermaid.run({ querySelector: 'pre.mermaid' });
+    };
+    document.head.appendChild(s);
+  })();
+</script>
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

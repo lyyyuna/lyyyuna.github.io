@@ -1,0 +1,576 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 用 OpenCV + numpy 实现一个星空穿梭动效</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>用 OpenCV + numpy 实现一个星空穿梭动效
+    
+    <div class="subtitle">(<i><a href="/series/下一站，猎户座/">下一站，猎户座</a>, Part 4</i>)</div>
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-04
+
+      </div>
+    </div>
+    <div class="post-summary">NebulaDance 背后是怎么把一张静态的猎户座大星云照片，变成几千颗会飞的星点</div>
+    <h2>前言</h2>
+<p>前年买了台 DWARF3 智能望远镜，第一次拍回来的就是猎户座大星云（M42）。第一次亲眼看到那团橘红色的云气时，其实挺激动的——虽然跟哈勃的照片没法比，但毕竟是自己拍的。</p>
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=114976744413356&bvid=BV1Cf4Rz1EeN&cid=31508072263&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="800" height="600"></iframe>
+<p>照片拍完，用原图做过壁纸，用抠过背景的版本发过朋友圈。但一张静态图片总觉得少了点什么——星空本该是流动的。之前开源过一个小工具 <a href="https://github.com/lyyyuna/NebulaDance">NebulaDance</a>，给星空照片加上&quot;穿梭星河&quot;那种动态效果，<a href="/2025/08/06/nebula-dance/">之前写过一篇</a>，但那篇只是发布公告，没讲代码。本文补一下，顺便也算自己复盘一遍。</p>
+<p>效果想象一下大家熟悉的 Windows 屏保：镜头向前推进，星点由远及近飞过屏幕。区别在于，星点不是随机生成的，而是从照片里真实存在的星点抠出来的——镜头推近之后，应该能&quot;对得上&quot;原图。</p>
+<p>整个项目核心就一个 <code>render.py</code>，不到 300 行 Python，依赖只有 OpenCV 和 numpy。下面拆开看。</p>
+<h2>第一步：找星点</h2>
+<p>对星空照片来说，找星点是最容易的图像处理问题——背景几乎是纯黑的，星点是孤立的亮斑。标准做法是找局部极大值：</p>
+<pre><code class="language-python">def _find_local_maxima(self, min_distance, threshold):
+    gray_image = cv2.cvtColor(self._resized_image, cv2.COLOR_BGR2GRAY)
+    kernel = np.ones((min_distance * 2 + 1, min_distance * 2 + 1), dtype=np.uint8)
+    dilated = cv2.dilate(gray_image, kernel)
+    maxima = (gray_image == dilated) &amp; (gray_image &gt;= threshold)
+    coords = np.column_stack(np.where(maxima))
+    return coords
+</code></pre>
+<p>思路有点绕，看个例子便一目了然。<code>cv2.dilate</code> 是形态学膨胀——每个像素取邻域内的最大值。所以膨胀后，原图中每个局部极大值点的像素值不变，而非极大值点会被邻居的更大值覆盖掉。这样 <code>gray_image == dilated</code> 就筛出了局部极大值的位置。<code>threshold</code> 再把暗处的噪点过滤掉。</p>
+<p><code>min_distance=5</code> 意味着以该点为中心的 11×11 区域内它必须是最亮的，这样不会把一颗大星拆成好几个粒子。默认 <code>threshold=20</code> 经验值，亮度比这个还暗的就不值得做粒子了。</p>
+<p>找到的坐标全部存起来、打乱顺序，后面按需取前 N 个当粒子。</p>
+<pre><code class="language-python">self._all_coords = self._find_local_maxima(min_distance=5, threshold=20)
+np.random.shuffle(self._all_coords)
+</code></pre>
+<h2>第二步：给每颗星点一个&quot;远近&quot;</h2>
+<p>静态图里的星点只有 <code>(x, y)</code>，要让它们动起来，需要伪造第三维 <code>z</code>。</p>
+<pre><code class="language-python">self._particles = np.array([
+    [x, y, np.random.uniform(0.1, 1.0), np.random.randint(1, self._particle_size)]
+    for y, x in self._coords
+])
+</code></pre>
+<p>每颗粒子是 <code>(x, y, z, size)</code>。<code>z</code> 在 <code>[0.1, 1.0]</code> 间随机——相当于给每颗星一个随机的初始深度，这样后面穿梭时不会所有星点同步移动，而是有&quot;远景&quot;和&quot;近景&quot;之分，视觉上才有层次。</p>
+<p><code>size</code> 随机从 <code>[1, particle_size)</code> 之间取。星点有大有小，越近的（z 越小）在屏幕上显得越大——这个后面投影的时候会自动体现出来。</p>
+<h2>第三步：把 z 投影回屏幕</h2>
+<p>透视投影最朴素的模型：屏幕坐标 = 实际坐标 / z。z 越大（越远），缩放因子越小，粒子往屏幕中心收缩；z 越小（越近），粒子从屏幕中心往外发散、变大。写成式子就是：</p>
+<p>$$
+\begin{pmatrix} x_{2d} \cr y_{2d} \end{pmatrix} = \begin{pmatrix} c_x \cr c_y \end{pmatrix} + \frac{1}{z} \begin{pmatrix} \cos\theta &amp; -\sin\theta \cr \sin\theta &amp; \cos\theta \end{pmatrix} \begin{pmatrix} x - c_x \cr y - c_y \end{pmatrix}
+$$</p>
+<p><code>(cx, cy)</code> 是屏幕中心，<code>θ</code> 是粒子整体旋转角。对照代码就是这一段：</p>
+<pre><code class="language-python">for x, y, z, size in self._particles:
+    z3 = z + t * speed * self._particle_dir * -1
+    if not 0.05 &lt; z3 &lt; 2:
+        continue
+
+    scale_p = 1 / z3
+    x0, y0 = x - self._out_w / 2, y - self._out_h / 2
+    x_rot = x0 * cos_theta - y0 * sin_theta
+    y_rot = x0 * sin_theta + y0 * cos_theta
+    x2d = int(self._out_w / 2 + x_rot * scale_p)
+    y2d = int(self._out_h / 2 + y_rot * scale_p)
+</code></pre>
+<p>几件事：</p>
+<ol>
+<li><code>z3</code> 是当前帧的深度，随时间按 <code>speed * dir</code> 前进或后退。超出 <code>[0.05, 2]</code> 就跳过——太近会溢出屏幕，太远干脆看不见。</li>
+<li>坐标先平移到屏幕中心为原点，做旋转和缩放，再平移回来。这是个典型的&quot;绕中心变换&quot;套路，手写比调 <code>cv2.getRotationMatrix2D</code> 更直接。</li>
+<li>旋转角 <code>p_angle</code> 是每帧给所有粒子一个整体的小角度——这样画面上除了穿梭感，还多一层轻微旋转，像在太空船里略微打了个斜滚转。</li>
+</ol>
+<p>然后 <code>cos_theta, sin_theta</code> 在循环外预计算：</p>
+<pre><code class="language-python">p_angle = np.deg2rad(self._particle_rotate * t / self._duration)
+cos_theta, sin_theta = np.cos(p_angle), np.sin(p_angle)
+</code></pre>
+<p>一千个粒子的循环，三角函数每帧只算一次，比在循环里算节省不少。这个项目里粒子数不大，不算性能瓶颈，但写 numpy 代码久了，这种顺手的优化还是留着。</p>
+<h2>第四步：背景也得动</h2>
+<p>只有粒子飞，背景静止不动，看着像硬贴上去的。所以背景图同步做仿射变换，让整张图也跟着缓慢缩放和旋转：</p>
+<pre><code class="language-python">def _get_affine_matrix(self, scale, angle_deg):
+    cx, cy = self._out_w / 2, self._out_h / 2
+    theta = np.deg2rad(angle_deg)
+    cos_theta = np.cos(theta)
+    sin_theta = np.sin(theta)
+
+    a = scale * cos_theta
+    b = scale * -sin_theta
+    c = (1 - a) * cx - b * cy
+    d = scale * sin_theta
+    e = scale * cos_theta
+    f = (1 - e) * cy - d * cx
+
+    return np.array([[a, b, c], [d, e, f]])
+</code></pre>
+<p>这里没有直接调 <code>cv2.getRotationMatrix2D</code>，而是手写了仿射矩阵。原因是公式很简单——绕 <code>(cx, cy)</code> 旋转 θ 并缩放 s，对应的 2×3 仿射矩阵是：</p>
+<p>$$
+M = \begin{bmatrix}
+s \cos\theta &amp; -s \sin\theta &amp; (1 - s \cos\theta) c_x + s \sin\theta \cdot c_y \cr
+s \sin\theta &amp; s \cos\theta &amp; (1 - s \cos\theta) c_y - s \sin\theta \cdot c_x
+\end{bmatrix}
+$$</p>
+<p>上面代码里 <code>c</code> 和 <code>f</code> 的推导就是这个平移补偿项——因为旋转默认绕原点，如果直接乘回去，图像会偏掉；把中心点 <code>(cx, cy)</code> 先减掉、变换完再加回来，展开合并之后就是这个形式。</p>
+<p>背景的缩放因子跟粒子的 z 类似：</p>
+<pre><code class="language-python">scale = 1 + self._z_init * 0.1 + self._speed * t * 0.002 * self._z_dir
+</code></pre>
+<p><code>z_init</code> 给一个起始缩放值（比如默认 3，即初始放大 1.3 倍），<code>speed * dir</code> 控制每一帧的增量。粒子与背景用的是两套参数，我故意拆开的——有时候想让背景慢慢放大而粒子快速扑面而来，两者解耦才灵活。</p>
+<h2>第五步：把粒子贴到背景上</h2>
+<p>粒子不是画一个纯白的点，而是用一张预先准备好的 <code>star2.png</code>——一个带光晕的星点贴图（32×32 左右，带 alpha 通道）。贴上去就是标准的 alpha 混合：</p>
+<p>$$
+C_{out} = \alpha \cdot C_{particle} + (1 - \alpha) \cdot C_{bg}
+$$</p>
+<p>对应到代码就是一行：</p>
+<pre><code class="language-python">alpha = resized_particle[:, :, 3:] / 255.0
+frame[...] = alpha * resized_particle[:, :, :3] + (1 - alpha) * roi
+</code></pre>
+<p><code>size</code> 决定了粒子贴图被 resize 到多大。靠近屏幕中心的粒子（未来会&quot;穿过&quot;摄像机的那些）<code>z3</code> 逐渐接近 0，<code>scale_p = 1/z3</code> 变得很大——配合上原本的 <code>size</code>，贴图就被拉大，给人&quot;扑面而来&quot;的感觉。</p>
+<p>一点细节：为了避免贴图越过屏幕边缘时越界，上下左右都做了 <code>max(0, ...)</code> 和 <code>min(out_w/h, ...)</code> 的裁剪。这也意味着一颗粒子临近屏幕边缘时会被裁成半个——这倒不是 bug，反而像星点&quot;飞出画面&quot;，很自然。</p>
+<h2>第六步：淡入淡出</h2>
+<p>最后一道工序，视频开头和结尾做一个淡入淡出，不然硬切进/切出太突兀：</p>
+<pre><code class="language-python">fade_frames = int(self._fade * self._fps)
+if frame_idx &lt; fade_frames:
+    alpha = frame_idx / fade_frames
+elif frame_idx &gt; self._total_frames - fade_frames:
+    alpha = (self._total_frames - frame_idx) / fade_frames
+else:
+    alpha = 1.0
+frame = (frame * alpha).astype(np.uint8)
+</code></pre>
+<p>整帧乘一个从 0 到 1 再回到 0 的系数，写成分段函数：</p>
+<p>$$
+\alpha(i) = \begin{cases}
+i / f &amp; 0 \leq i &lt; f \cr
+1 &amp; f \leq i \leq N - f \cr
+(N - i) / f &amp; N - f &lt; i \leq N
+\end{cases}
+$$</p>
+<p>其中 <code>f = fade * fps</code> 是淡入淡出覆盖的帧数，<code>N</code> 是总帧数。默认 <code>fade=1.0</code> 秒，30 fps 下就是 30 帧的过渡，够用。</p>
+<h2>参数一览</h2>
+<p>整个 <code>Render</code> 的参数暴露给 QML 界面调节，算是这个工具的核心：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th style="text-align:center">默认值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>z_init</code></td>
+<td style="text-align:center">3</td>
+<td>背景初始缩放，越大起点越&quot;近&quot;</td>
+</tr>
+<tr>
+<td><code>z_dir</code></td>
+<td style="text-align:center">-1</td>
+<td>背景移动方向（-1 放大，+1 缩小）</td>
+</tr>
+<tr>
+<td><code>speed</code></td>
+<td style="text-align:center">1</td>
+<td>背景运动速度</td>
+</tr>
+<tr>
+<td><code>rotate</code></td>
+<td style="text-align:center">-5</td>
+<td>背景整体旋转角度</td>
+</tr>
+<tr>
+<td><code>particle_num</code></td>
+<td style="text-align:center">1000</td>
+<td>粒子数量，从检测出的星点里取前 N 个</td>
+</tr>
+<tr>
+<td><code>particle_size</code></td>
+<td style="text-align:center">16</td>
+<td>粒子最大像素尺寸</td>
+</tr>
+<tr>
+<td><code>particle_speed</code></td>
+<td style="text-align:center">3</td>
+<td>粒子 z 方向运动速度</td>
+</tr>
+<tr>
+<td><code>particle_dir</code></td>
+<td style="text-align:center">-1</td>
+<td>粒子运动方向</td>
+</tr>
+<tr>
+<td><code>particle_rotate</code></td>
+<td style="text-align:center">-4</td>
+<td>粒子整体旋转角度</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td style="text-align:center">15</td>
+<td>视频总时长（秒）</td>
+</tr>
+<tr>
+<td><code>fps</code></td>
+<td style="text-align:center">30</td>
+<td>帧率</td>
+</tr>
+<tr>
+<td><code>fade</code></td>
+<td style="text-align:center">1.0</td>
+<td>淡入淡出时长（秒）</td>
+</tr>
+</tbody>
+</table>
+<h2>小结</h2>
+<p>几条自己踩过的 Tips：</p>
+<ol>
+<li><strong>用现成的 star2.png 贴图，而不是代码实时生成星点</strong>。星点要好看，得带光晕、衍射芒——如果每一帧都用代码现算高斯光晕叠十字芒，一千个粒子循环下来一帧能跑好几秒。预先画一张 PNG 存好，运行时只做 resize + alpha blend，本质上是 O(贴图像素数) 的操作，快得多。这是典型的&quot;空间换时间&quot;，而且素材还能替换，想要什么风格的星点换张图就行。</li>
+<li><strong>输出分辨率固定到 1080p</strong>。原始手机拍的照片动辄两千万像素，直接拿来逐帧 resize + alpha blend，一帧要算几百毫秒。先缩到 1080p，十几秒视频几秒钟就出完了。</li>
+<li><strong>粒子与背景的参数最好解耦</strong>。虽然合起来看都是&quot;镜头向前推进&quot;，但粒子速度比背景快一截才有空间纵深感——背景是远景慢慢放大，粒子是近处呼啸而过。</li>
+<li><strong>星点检测的阈值不要太低</strong>。<code>threshold=20</code> 是个平衡——低了噪点会被当成星点导致满屏雪花，高了又会丢掉暗星。</li>
+</ol>
+
+  </div>
+
+    
+    <div class="pager">
+
+      
+        <a class="prev" href="/2025/12/05/siril-tutorial/">
+          Siril 教程：天文摄影中的图像堆栈与处理
+        </a>
+      
+
+      
+
+    </div>
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    processEscapes: true,
+    tags: 'ams'
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script id="MathJax-script" async src="/libs/mathjax/tex-mml-chtml.js"></script>
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

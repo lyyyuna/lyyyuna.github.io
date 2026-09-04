@@ -1,0 +1,1050 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 七牛云测试体系回顾</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>七牛云测试体系回顾
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-03
+
+      </div>
+    </div>
+    <div class="post-summary">一个云计算公司测试体系的建设与演进</div>
+    <h2>前言</h2>
+<p>2019 年加入七牛，2026 年离开。七年间我先后在视频云和云存储两条核心业务线担任测试 leader。七牛现有的测试体系 —— 环境、用例、CI/CD、覆盖率、发布流程 —— 我大部分有参与，不少是主导角色。</p>
+<p>2025 年七牛裁撤了几乎所有测试人员。裁撤的原因和决策不在本文讨论范围，AI 正在快速改变这个行业，好坏暂且不论。</p>
+<p>写这篇文章有两个目的。一是给自己做个总结，七年的东西不记下来迟早会忘。二是七牛曾经在国内技术圈有一点影响力，Go 语言的早期布道、对象存储的技术积累、开源社区的参与，都留下过痕迹。测试体系作为其中一环，或许也值得记录下来，给后来人一个参照。</p>
+<p>鉴于七牛是前公司，本文是中性的技术描述，不涉及源代码和内部配置。</p>
+<hr>
+<h2>业务背景与测试特色</h2>
+<h3>KODO（对象云存储）</h3>
+<p>KODO 是七牛最核心的业务，也是测试体系最完善的。</p>
+<h4>业务是什么</h4>
+<p>KODO 是七牛的对象存储服务，类似 AWS S3、阿里云 OSS。用户通过 API 将文件（图片、视频、备份数据等）上传到七牛的存储集群，按使用量付费。</p>
+<p>对象存储的核心概念很简单：<strong>空间（Bucket）</strong> 是文件的容器，<strong>对象（Object）</strong> 是文件本身，通过 <strong>Key（文件名）</strong> 标识。但在这个简单模型之下，是一个复杂的分布式系统。</p>
+<p>KODO 的技术架构可以分为几层：</p>
+<ol>
+<li><strong>协议接入层</strong>：OpenResty（nginx）作为入口，处理上传（up）、下载（io）、S3 兼容接口（s3apiv2）、API 网关（apiserver）等请求。一个区域有多个机房，每个机房独立部署上传和下载实例，文件可从任意机房下载</li>
+<li><strong>元数据层</strong>：MongoDB 分片集群存储文件的元信息（文件名、大小、哈希、存储位置等）。元数据是异步写入的，通过 rspub 发布，rsf 提供列举服务</li>
+<li><strong>数据存储层</strong>：QBS（Qiniu Block Storage）是七牛自研的块存储引擎，由调度器（blkmaster）、存储节点（blkstg）、工作节点（blkworker）组成。QBS 使用纠删码保证数据持久性</li>
+<li><strong>业务逻辑层</strong>：计费（kodobill）、生命周期管理（lcc）、跨区域同步（sisyphus）、操作日志（oplog）、事件通知（eventworker）、CDN 刷新（cdnrefresh）等</li>
+<li><strong>基础设施层</strong>：Consul（服务发现）、Kafka/Pulsar/NSQ（消息队列）、Redis（缓存）</li>
+</ol>
+<p>服务之间通过 Consul 做服务发现，大部分微服务已经实现了这个逻辑，但仍有部分使用固定地址。研发团队按模块划分，每个服务有明确的 owner 和职责。</p>
+<p>KODO 还有一个独立的国际站版本 Sufy，面向海外市场，拥有独立的前端和部分后端差异。</p>
+<p>一个完整的 KODO 测试环境需要拉起二十多个微服务，加上基础设施，总共有三四十个进程。这也是为什么测试环境管理如此重要。</p>
+<h4>测试的挑战</h4>
+<p>KODO 的测试复杂度来自几个方面。服务数量多，仅发布配置仓库中 KODO 相关的就有几十个，一个区域部署还要按机房拆分。协议多，需要覆盖七牛私有协议（qbox/qiniu 签名）、S3 兼容协议（v2/v4 签名、表单上传、分片上传）、国际站协议。区域多，国内外十几个区域（华东、华北、华南、东南亚、北美等），每个区域可能有多个机房。数据持久性是对象存储的命根子，需要专门的持久性验收。集测不仅要在测试环境跑，还要在生产环境做线上验收。</p>
+<p>这些挑战直接驱动了后面集测框架的设计 —— 标签体系、配置分层、多环境验收矩阵等，后文会详细展开。</p>
+<h4>一个功能从开发到上线的测试全链路</h4>
+<p>以 KODO 为例，一个功能从需求到最终上线，会经历哪些环节？下面是完整的研发测试流程。</p>
+<h5>代码分支模型</h5>
+<p>七牛的代码管理采用 GitHub Flow 的变体。QA 团队输出了代码分支规范，核心原则是：</p>
+<ol>
+<li>两个主要分支：Master（发布主干，对外发布）和 Develop（开发主干）</li>
+<li>Feature 分支基于 Develop 创建，开发完毕后通过 PR 合并回 Develop</li>
+<li>Develop 稳定时合并到 Master，在 Master 分支发布（部分服务直接在 Develop 分支发布）</li>
+<li>Merge 采用非直进式合并（<code>--no-ff</code>），在 Master 上生成独立的 Merge Commit，便于追溯和回滚</li>
+</ol>
+<h5>需求排期</h5>
+<p>每周一，QA Leader、RD Leader 和产品经理会碰一次需求排期会，确认本周各自的优先级和交付节点。排期结果落到 JIRA 上，研发从 JIRA 接到需求后开始开发。</p>
+<h5>研发自测（kodo-qa 环境）</h5>
+<p>研发创建 Feature 分支开发，提交 PR 后进入自测环节：</p>
+<p><strong>自动化检查</strong>。PR 提交后，Prow 自动触发：</p>
+<ol>
+<li><strong>单元测试</strong>：在 CI Pod 中拉起完整基础设施，编译全量代码，但只运行 depsearch 分析出的受影响部分的单测，减少运行时间。收集覆盖率后，goc diff 对比 PR 增量覆盖率，结果评论到 PR 页面</li>
+<li><strong>集成测试</strong>：编译并启动完整的 KODO 服务集群，运行集测用例，收集系统测试覆盖率</li>
+<li><strong>静态分析</strong>：go vet/format 等静态检查，扫描 PR 中修改的代码，报告质量问题</li>
+<li><strong>影响分析</strong>：depsearch 自动检测 PR 修改的代码影响到哪些微服务，以 GitHub Comment 的形式评论到 PR，并通过 Label 标注受影响的服务。这解决了&quot;发布时漏发服务&quot;和&quot;不清楚影响了什么服务&quot;的痛点</li>
+</ol>
+<p>depsearch 的原理是分析 Go 代码的 import 依赖图：PR 修改了某个 package，depsearch 追溯所有直接和间接依赖这个 package 的 main 入口（即微服务），输出受影响的服务列表。它还遇到过一个有趣的 bug —— <code>go list -json all</code> 在某些场景下会死锁，需要通过 dlv 挂载进程才定位到是 Go 工具链自身的问题。</p>
+<p><strong>手动部署调试</strong>。自动化检查之外，研发还需要将 PR 部署到 kodo-qa 环境做手动调试。通过 Jenkins Pipeline 一键完成 PR 分支的编译和部署。kodo-qa 是研发自测用的环境，允许频繁部署，可以被&quot;弄脏&quot;。</p>
+<h5>QA 验收（kodo-dev 环境）</h5>
+<p>研发自测通过后，在 JIRA 上将 Issue 状态从&quot;开发&quot;流转到&quot;测试&quot;。</p>
+<p>QA 通过 Jenkins Pipeline 将 PR 部署到 kodo-dev 环境做正式验收。kodo-dev 的部署 <strong>必须通过 Jenkins Pipeline</strong> ，研发和 QA 都可以操作，但不允许手动部署；而 kodo-qa 则可以手动部署，允许研发自由折腾。两套环境互不干扰。</p>
+<p>KODO 线上没有&quot;版本&quot;的概念，所有服务都在滚动更新。测试环境也不会刻意把所有服务一次性升级到同一版本，而是随用随升 —— 哪个服务有改动就部署哪个。这种方式和线上保持一致，也能间接发现服务之间的不兼容问题。</p>
+<p>QA 在 dev 环境上的验收包括：</p>
+<ol>
+<li>手工验证新功能的核心场景</li>
+<li>针对新功能编写或更新集测用例</li>
+<li>验证多区域行为（不同 zone 的配置差异）</li>
+</ol>
+<p>到了后期，部分研发同学开始直接往集测仓库提 PR 增加测试用例，这说明测试左移真正落地了。</p>
+<p>验收通过后 PR 合并到 Develop 分支。Dev 环境有定时集测（每 30 分钟一次）持续回归，确保合并后环境仍然健康。kodo-dev 同时也是合并到 Master 分支后发包前的验证环境，发布前会在这个环境上做最后一轮确认。</p>
+<h5>出包上线</h5>
+<p>QA 验收通过、PR 合并后，研发或 SRE 基于 Develop/Master 分支执行生产 Pipeline。Pipeline 的基本流程分两条：</p>
+<ol>
+<li><strong>Staging Pipeline</strong>（预发布）：编译 → 部署到 staging 环境 → 运行回归测试</li>
+<li><strong>Production Pipeline</strong>（正式发布）：编译 → 部署到线上 → 分发到各机房跳板机</li>
+</ol>
+<p>两条 Pipeline 需要互斥（通过 Jenkins 的 Lock 插件实现），避免 staging 编出的包被 production pipeline 误发到线上。</p>
+<p>Jenkins CI 的维护准则中有一条值得一提：&quot;尽可能多的执行回归测试，增强上线信心。争取研发晚上上线非核心功能可以直接跑 Job。&quot;这个目标的潜台词是：如果 CI 足够可靠，非核心功能的上线不需要 QA 在场值守，研发自己跑一遍回归 Pipeline 就有信心发布。</p>
+<h5>线上验收（生产环境）</h5>
+<p>KODO 的集测不仅在测试环境跑，也在生产环境跑。覆盖了国内外十几个区域（华东、华北、华南、东南亚、北美等）。线上集测与 dev 集测使用同一套代码，但通过标签过滤和配置切换来适配：</p>
+<ol>
+<li>并发数控制得更低（8 进程 vs dev 的 20-25 进程）</li>
+<li>过滤掉破坏性测试用例（如大量创建删除空间）</li>
+<li>超时设置不同（线上网络延迟更大）</li>
+<li>不创建不必要的 CDN 域名（线上域名是宝贵资源）</li>
+</ol>
+<p>线上集测定时运行，相当于持续的冒烟测试。新区域上线时也会用同一套集测做验收。</p>
+<h4>专项验收</h4>
+<p>KODO 有多个专有云客户环境，网络环境与公有云不同、服务版本可能滞后、部分功能被裁剪或定制。集测需要打包成独立的二进制分发到客户环境执行（kodotest v2 打包方案），每个客户有专门的配置文件，通过标签过滤只运行适用于该客户环境的用例。</p>
+<p>国际站是一个独立的线上环境，有自己的协议，前端界面和部分后端行为与国内版不同，需要单独的验收流程。每次发版前会列出完整的验收分工表：注册登录、账号管理、对象存储、CDN、证书管理等几十个功能点，按 owner 分配，逐项验收。</p>
+<p>KODO 对外提供多语言 SDK（Go、Java、Python、Node.js 等）和命令行工具，SDK 的测试是另一条独立的验收线。Go SDK 和 Node.js SDK 已经有基础框架和测试用例，理想状态是也能接入 CI 自动化运行。</p>
+<h4>稳定性与性能测试</h4>
+<h5>Beta 环境（长时间稳定性测试）</h5>
+<p>KODO 有独立的 beta 环境，主要验证 qbs 存储引擎的稳定性和鲁棒性。</p>
+<p>ktdata 是一个自研的持续读写工具，在 beta 环境 7x24 小时运行，模拟真实的用户行为（上传、下载、列举、删除等混合负载），同时模拟高频率坏盘坏块场景，验证存储引擎在异常硬件条件下的表现。通过监控和告警来感知问题，比如空间回收变慢、数据一致性异常等。</p>
+<p>这个环节能发现平时很难覆盖的问题：长时间运行的内存泄漏、存储引擎在坏盘坏块下的数据一致性、并发写入的正确性等。</p>
+<p>除了稳定性测试，KODO 还有性能测试和混沌工程的实践。</p>
+<h5>ktdata：自研的持续验证系统</h5>
+<p>ktdata 不是一个简单的压测工具，而是一个完整的持续数据验证系统，由三个组件构成：</p>
+<ol>
+<li>
+<p><strong>ktdatagen</strong>（数据生成器）：负责按照配置的比例持续生成测试数据。它维护了一套&quot;服务 → API → 比例&quot;的配置模型，比如上传服务占 40%、下载占 30%、元数据操作占 20%、S3 接口占 10%。在每种 API 内部还有细分：上传可以是表单上传、分片上传（mkblk + bput + mkfile）、S3 分片上传等，各自有独立的比例权重。数据生成器随机选择用户、空间、文件大小（在配置的 min/max 范围内），模拟真实的多租户混合负载</p>
+</li>
+<li>
+<p><strong>ktdatamgr</strong>（数据管理器）：接收 datagen 生成的任务，实际执行上传/下载/元数据操作，并将每一次操作的详细日志写入 MongoDB。日志记录非常完整：文件的 FH（内部句柄）、Etag、MD5、请求耗时、响应码、是否重试、最大分片次数、数据落在 QBS 还是 PFD 存储引擎等。这些日志是后续数据校验的基础</p>
+</li>
+<li>
+<p><strong>ktdatacheck</strong>（数据校验器）：定期扫描已上传的文件，执行下载并比对 Etag/MD5，验证数据完整性。更关键的是它还有 <strong>坏盘检测</strong> 的能力：随机选一个已上传的文件，通过 blkmaster 接口查询这个文件的数据分布在哪些磁盘上，然后模拟某个磁盘故障（标记为 broken），观察系统是否能正确修复和恢复数据</p>
+</li>
+</ol>
+<p>坏盘测试的流程：</p>
+<ol>
+<li>从已有文件中随机选一个，获取其 FH</li>
+<li>通过 blkmaster API 查询 FH 对应的磁盘列表</li>
+<li>对文件加锁（防止测试过程中被其他操作修改）</li>
+<li>模拟一个磁盘故障（关闭对应的 blkstg 实例）</li>
+<li>等待系统自动修复（EBD 纠删码重建）</li>
+<li>验证文件仍然可以正常下载，数据完整</li>
+</ol>
+<p>ktdata 的三个组件都部署为长期运行的服务，通过 Prometheus 上报指标（请求计数、响应码分布、耗时直方图、数据库操作统计等），接入 Grafana 看板。它同时部署在 dev、staging、生产环境（华东/华北/华南多区域），是 KODO 数据持久性的持续守护者。</p>
+<p>ktdata 部署在物理机和 k8s 上都有对应的配置（发布仓库中有 ktdatagen、ktdatamgr、ktdatacheck 三个独立的 Floy/Helm 配置，每个环境都有）。staging 环境上还有一个 healthcheck 接口，CI 定时检查其健康状态。</p>
+<h5>混沌工程</h5>
+<p>混沌测试使用 Chaos Mesh 框架，在 staging 的 k8s 环境中注入故障。从实际的 YAML 配置可以看到测试场景：</p>
+<ol>
+<li><strong>存储节点故障</strong>：同时杀死 4 个 blkstg Pod（一个机房的存储实例），验证 EBD 纠删码在部分节点故障时仍能正常读写</li>
+<li><strong>工作节点故障</strong>：杀死 11 个 blkworker Pod，验证数据修复任务的容错能力</li>
+<li><strong>调度器故障</strong>：杀死 blkmaster Pod，验证主备切换</li>
+<li><strong>机房级故障</strong>：杀死整个机房（idc nm0）的所有 Pod，模拟机房断电</li>
+</ol>
+<p>这些故障注入通过 cron 定时触发（如每周二、四、六凌晨），每次持续 3 分钟。故障注入期间 ktdata 持续运行，通过 Prometheus 指标可以观察到故障期间的请求成功率、延迟变化和恢复时间。</p>
+<p>2022 年团队计划将混沌工程从 staging 推广到更多场景，但受制于&quot;缺少研发参与维护的 k8s 容器化环境&quot;，进展不如预期。现实的困境是：混沌工程需要完整的容器化环境才能精确注入故障，而 KODO 的完全容器化本身还在推进中。</p>
+<h5>性能测试</h5>
+<p>性能测试使用 JavaScript 脚本（k6 风格），覆盖了 KODO 的核心接口：</p>
+<ol>
+<li>表单上传（formup）、分片上传（mkblk + resumable_up / resumable_up_v2）、base64 上传（putb64）</li>
+<li>普通下载（io）</li>
+<li>S3 兼容接口（s3_formup、s3_putobject、s3_get_object、s3_resumable_up）</li>
+<li>空间管理（create-bucket）、域名绑定（publish_domain）</li>
+</ol>
+<p>每种接口有独立的脚本，可以单独或组合运行，模拟不同的负载模式。</p>
+<h3>KodoFS（文件存储）</h3>
+<p>KodoFS 是七牛的文件存储服务，提供 POSIX 兼容的文件系统接口。</p>
+<p>KodoFS 要解决的问题是：对象存储虽然容量大、成本低，但它不是文件系统，不支持 POSIX 语义。很多传统应用（大数据分析、机器学习训练、日志处理等）需要一个&quot;看起来像本地磁盘&quot;的接口来读写远端存储上的数据。</p>
+<p>市面上有 s3fs、s3a 这类工具，直接把对象存储映射成文件系统，但这种方案有天然缺陷：对象存储不支持文件原地修改（或修改成本很高）；目录删除和改名不是原子操作，需要逐个文件处理；权限模型（Owner/Group/Mode）与 POSIX 不一致；没有目录级别的统计数据，列举速度慢。</p>
+<p>KodoFS 的思路是在对象存储之上构建独立的元数据层。数据仍然存放在 KODO（对象存储）中，但文件系统的目录树、权限、inode 等元信息由 KodoFS 自己的服务管理。数据通路上，KodoFS 不仅支持通用的 S3 协议，还用到了七牛内部直连存储引擎的协议，效率更高。</p>
+<p>架构上包含几个核心组件：</p>
+<ol>
+<li><strong>kodofs-master</strong>：管理节点，通过 leader 选主实现高可用</li>
+<li><strong>kodofs-mds</strong>（Metadata Service）：元数据服务，通过 lease 保活，master 负责故障转移。内存中使用 32 个 map 维护文件 ID 到元数据的映射，用红黑树维护目录树结构</li>
+<li><strong>客户端</strong>：通过 FUSE（用户态文件系统）挂载。FUSE 的原理是内核模块 fuse.ko 接收 VFS 的 IO 请求，通过管道发送到用户态，libfuse 解析后转发给 KodoFS 客户端</li>
+<li><strong>Hadoop 客户端</strong>：通过 JNI 调用 FUSE 接口，兼容 Hadoop 生态</li>
+</ol>
+<p>KodoFS 的演进方向是与对象存储深度互通 —— 在对象存储中实现 KodoFS 版本的元数据层，这样文件存储和对象存储就能无缝互访。这是 KodoFS 相比 JuiceFS 等竞品的潜在优势。</p>
+<p>依赖 etcd（分布式锁和配置）、MongoDB（元数据持久化）、Kafka（变更事件）。</p>
+<p>KodoFS 最重要的测试是 POSIX 合规性。集测仓库中集成了 pjdfstest（来自 FreeBSD 的 POSIX 文件系统测试套件），用于验证 KodoFS 的文件操作（创建、读写、权限、链接、重命名等）是否符合 POSIX 标准。</p>
+<p>KodoFS 的 CI 完全运行在 k8s 上，为每个 PR 创建独立的 namespace（<code>kodofs-pr-${PULL_NUMBER}</code>）。测试流程并行化做得很好：基础组件部署、Go 编译、Java 客户端编译、pjdfstest 构建同时进行，节省了大量时间。KodoFS 支持 Go 客户端和 Java 客户端，CI 中两者都会编译和测试。此外还有独立的性能测试脚本，在 k8s 环境中运行性能基准测试。</p>
+<h3>PILI/RTC（直播和实时音视频）</h3>
+<p>PILI 是七牛的直播服务，RTC（QRTC）是实时音视频通信服务。这两个产品虽然面向不同场景，但共享部分基础设施，在同一个团队下迭代。</p>
+<p><strong>PILI（直播）</strong> 提供的是一对多的实时视频流服务。典型场景：主播通过手机或 OBS 推流，观众通过浏览器或 App 观看。看似简单的一个直播流，背后经历了很长的链路：</p>
+<ol>
+<li>推流端通过 RTMP/SRT 协议将视频流推到七牛的接收节点（noded）</li>
+<li>接收节点将流转发给转码服务（codecd），按需生成不同分辨率和码率的版本</li>
+<li>转码后的流通过分发服务（forward）推送到各地的 CDN 边缘节点</li>
+<li>合流服务（merged）处理多路流混合的场景（如连麦、PK）</li>
+<li>切片服务（segmentd）将连续的视频流切成 HLS/DASH 片段，供点播回看</li>
+<li>调度服务（sched）负责选择最优的推拉流节点</li>
+<li>统计服务（statd）和质量监控（qosd）收集各环节的质量指标</li>
+</ol>
+<p>直播对延迟非常敏感。从推流到观众端看到画面，通常要求在 3 秒以内（低延迟场景甚至要 1 秒）。任何环节的异常都会直接影响用户体验。</p>
+<p><strong>QRTC（实时音视频通信）</strong> 提供的是多对多的实时通信服务。典型场景：视频会议、在线教育、远程医疗。与直播不同，RTC 强调双向交互和超低延迟（通常 200ms 以内）。</p>
+<p>QRTC 基于 WebRTC 协议栈构建，核心是一个 SFU（Selective Forwarding Unit）服务器，负责在多个参与者之间转发音视频流。七牛内部有一个基于 mediasoup 的 SFU 实现（Rust + TypeScript + C++），也有自研的信令服务（signalv3）。</p>
+<p>RTC 的技术挑战在于：编解码协商、网络自适应（根据带宽动态调整码率）、回声消除、噪音抑制等。由于走的是 SFU 架构，客户端只和服务器通信，不需要客户端之间的 NAT 穿越。</p>
+<p>PILI 和 QRTC 还提供了一系列客户端 SDK（iOS、Android、Web、Flutter），SDK 的质量直接影响终端用户体验。</p>
+<p>从发布配置仓库可以看到 PILI 的服务数量惊人，有六七十个之多。直播涉及的链路太长了，每个环节都有独立的服务。</p>
+<p>RTC 方面有 CLI 工具和 Python 测试脚本，需要模拟多方通话、网络切换、编解码协商等场景，测试比直播更复杂。</p>
+<h3>跨业务线的共性</h3>
+<p>虽然各业务线差异很大，但有一些共性的测试实践：</p>
+<ul>
+<li><strong>统一的框架</strong>：Go 业务线统一使用 Ginkgo 框架，Python 业务线使用 pytest。框架统一降低了团队内跨业务线支持的门槛</li>
+<li><strong>统一的 CI 平台</strong>：Prow 是统一的 CI 入口，各业务线的 Job 配置集中管理在集测仓库的基础设施目录下</li>
+<li><strong>统一的覆盖率收集</strong>：goc 为所有 Go 服务提供系统测试覆盖率收集能力</li>
+<li><strong>统一的日志和报告</strong>：所有业务线的集测报告格式统一（JUnit XML），方便 Prow Deck 展示和统计分析</li>
+</ul>
+<hr>
+<h2>测试环境演进</h2>
+<p>测试环境是测试体系的地基。七年里经历了一次大跃迁：从物理机裸金属部署到 k8s 容器化。</p>
+<h3>物理机时代：Floy + deploy-test</h3>
+<p>七牛最早的测试环境完全运行在物理机上，若干台测试机器，后来还有 GPU 系列。服务部署靠的是七牛自研的发布系统 Floy。</p>
+<p>deploy-test 仓库是测试环境的&quot;圣经&quot;，里面存放了所有物理机服务的 Floy 配置。仅 deploy-test/floy 目录下就有 <strong>922 个</strong> 服务目录，每个服务都有自己的目录结构：</p>
+<pre><code>deploy/floy/&lt;服务名&gt;/
+deploy/floy/&lt;服务名&gt;/env_&lt;环境名&gt;/_package/    # 配置文件
+deploy/floy/&lt;服务名&gt;/&lt;服务名&gt;.csv              # 机器分布描述
+</code></pre>
+<p>CSV 描述文件记录了每个服务实例部署在哪台机器、用哪个包、哪个环境、哪个端口：</p>
+<pre><code>node,dir,pkg,env,tag,port
+cd12,image1,qbox.server.2015-08-04.tar.gz,cd,,29101
+cd12,image2,qbox.server.2015-08-04.tar.gz,cd,,29102
+</code></pre>
+<p>配置文件支持 Go template 渲染。deploy-test/floy/_floy_templates/ 目录下按业务线组织了模板（dora、kodo、luckin、miku、nginx、vdn），还有按环境区分的模板（dev.tmpl、beta.tmpl、perf.tmpl）。模板中定义了各服务的内网地址。每台物理机在 deploy-test/nodes/ 下有自己的 node.env 文件，记录了 IP_WAN、IP_LAN、IDC、RACK、OS 等信息。</p>
+<p>Floy 的版本控制也值得一提：版本哈希 = md5(服务名 + 环境 + 包名 + 配置文件名列表 + 配置内容)，确保任何配置变更都能被感知。CLI 命令包括 <code>floy push</code>（推送包和配置）、<code>floy switch</code>（切换版本）、<code>floy diff</code>（对比配置差异）、<code>floy run</code>（远程执行命令）等。</p>
+<p>这套体系在早期运转良好，但随着业务膨胀，问题逐渐暴露：</p>
+<ol>
+<li>物理机资源是固定的，不同业务线的测试环境互相抢占，经常出现&quot;你的服务把我的机器打满了&quot;的情况</li>
+<li>环境一致性难以保证，物理机上残留的进程、配置、数据经常导致&quot;环境污染&quot;</li>
+<li>服务依赖复杂，一个 KODO 测试环境涉及几十个微服务，手工拉起维护成本极高</li>
+<li>扩缩容只能人工操作，测试高峰期排队等环境是常态</li>
+</ol>
+<h3>容器化时代：k8s 集群</h3>
+<p>大约从 2019 年开始，测试团队开始推动测试环境容器化。这是个渐进的过程，不是一夜之间完成的。</p>
+<p>一个重要背景是：我们是先于线上业务做容器化的，而且只做了测试环境。线上仍然是纯物理机部署，这意味着研发团队在容器化方面的经验积累较少，QA 能从研发那里得到的技术帮助也有限。推动容器化的直接原因是测试环境机器少，多套环境共用物理机缺少隔离，互相干扰的问题越来越严重，逼着我们必须先走这一步。</p>
+<h4>CS 集群</h4>
+<p>最早的 k8s 集群叫 CS 集群（沿用了早期物理机的命名），节点就是原来的那些物理机。集群用 kubespray 搭建，Rancher 作为管理界面，Calico 做网络方案，Ceph 做持久化存储。</p>
+<p>搭建 k8s 集群不只是装个 kubeadm 的事。从 Rancher 权限划分、Calico 网络打通（下文详述）、私有镜像仓库搭建、Prometheus + Grafana 监控、etcd 证书续约和备份，到节点失联排查、DNS 解析等各种可靠性问题，QA 团队把这些运维能力从零建了起来。</p>
+<h5>为什么选 Calico：本地网络直通 k8s</h5>
+<p>七牛选择 Calico 作为 k8s 网络方案，不仅仅是因为它是主流选择，更因为七牛有一个特殊需求：<strong>开发者的本地机器要能直接通过 IP 访问 k8s 集群内的 Pod 和 Service</strong>。</p>
+<p>为什么这个需求这么重要？因为七牛有大量视频云业务（PILI 直播、RTC 实时通信），这些业务使用的不是标准的 HTTP 协议，而是 RTMP、SRT、RTP/RTCP 等 TCP/UDP 协议。传统的 k8s 访问方式（kubectl port-forward 或 Ingress）只支持 HTTP/HTTPS，对这些非 HTTP 协议的服务调试非常不方便。如果开发者本地能直接 TCP/UDP 连通 k8s 内部的 Pod IP 和 Service IP，调试效率会大大提高。</p>
+<p>有人可能会说，kubectl port-forward 现在也支持 TCP 和 UDP 转发了，为什么不直接用？问题是 port-forward 是点对点的：你要访问哪个服务，就得手动起一条 port-forward 命令。RTC 服务涉及信令、媒体、TURN 等多个端口，一个调试场景可能要同时 forward 五六个端口，每个端口一条命令，非常繁琐。而且 port-forward 一次只能连一个 namespace，如果同时在两个 namespace 里部署了不同版本的服务做对比测试，就得开两套 forward。</p>
+<p>我们想要的是：开发者在本地直接用 k8s 的 Service 域名（如 <code>signal.rtc-test.svc.cluster.local</code>）发起连接，不需要任何额外命令，多个 namespace 的服务同时可达。</p>
+<p>Calico 使用 BGP 协议做路由通告。简单说，每个 k8s 节点上的 Calico agent 会通过 BGP 把自己节点上的 Pod 网段广播出去。如果测试机房的物理交换机也配置了 BGP peer，就能实现物理机网络和 k8s Pod 网络的直连 —— 不需要任何 NAT 或隧道，一个 TCP/UDP 连接从开发者电脑直达 Pod。配合 DNS 打通（后面会讲），就能实现用 Service 域名直连的目标。</p>
+<p>我们在实验平台上做过完整的验证：用一台交换机配置 BGP（<code>peer &lt;k8s节点IP&gt; as-number &lt;ASN&gt;</code>），让交换机学习到 k8s 的 Pod CIDR 路由。验证结果是 TCP 和 UDP 直通都没有问题。</p>
+<p>实际落地时也评估了其他方案，对比了三种：</p>
+<ol>
+<li><strong>kt-connect</strong>（阿里开源）：基于 sshuttle，在远端 Pod 转发 TCP 流量。TCP 可用，但 UDP 不支持，DNS 解析不稳定</li>
+<li><strong>telepresence</strong>：也是基于 sshuttle，TCP 和 DNS 都可用，但 UDP 同样不支持</li>
+<li><strong>Calico BGP 直通</strong>：TCP、UDP 都支持，但需要交换机配合配置</li>
+</ol>
+<p>最终选择了 Calico BGP 的方案，因为视频云对 UDP 的依赖是刚需（RTP 传输用的就是 UDP），而且 BGP 方案天然支持所有 namespace 同时可达，不需要为每个服务单独做端口映射。</p>
+<h5>DNS 层打通：CoreDNS 互联</h5>
+<p>网络层通了之后，下一个问题是 DNS。开发者在本地要访问 k8s 内的服务，不可能每次都用 Pod IP —— Pod 重启 IP 就变了。需要用 k8s 的 Service 域名（如 <code>my-service.my-namespace.svc.cluster.local</code>），但这些域名只有 k8s 集群内部的 CoreDNS 能解析。</p>
+<p>我们做了几层 DNS 配置来解决这个问题：</p>
+<p><strong>DNS 打通</strong>。通过 CoreDNS 在 k8s 集群内建立了公司内部域名、泛域名的解析，让 Pod 能直接访问公司内网的各种服务。</p>
+<p><strong>多 k8s 集群之间的 DNS 互通</strong>。后来测试环境扩展到多个 k8s 集群，不同集群的 Service 域名需要互相解析。我们保证不同集群的内部 Service 域名不重复，再通过 CoreDNS 的 forward 插件将对应域名后缀的解析请求转发到目标集群的 CoreDNS，实现了跨集群 DNS 互通。</p>
+<p>整个 DNS 打通的过程也离不开公司其他团队的支持。办公室 IT 帮我们在公司 DNS 总服务器上添加了条件转发规则，让办公网络的 DNS 查询能正确路由到测试机房的 CoreDNS；机房运管帮我们在交换机上配置了 BGP peer 和路由策略。这不是 QA 团队一个人能完成的事，跨团队协作很关键。</p>
+<p>这些看起来都是&quot;运维小事&quot;，但对开发效率的影响很大。在打通之前，开发者调试一个 RTMP 推流问题，要先 kubectl exec 进 Pod、在 Pod 里抓包、把 pcap 文件拷贝出来分析。打通之后，直接在本地用 Wireshark 抓包就行。</p>
+<h4>JFCS 集群搬迁</h4>
+<p>2023 年左右，测试环境从 CS 集群搬迁到了 JFCS（金鸡湖机房）集群。搬迁的主要原因是成本 —— CS 机房的机位和带宽费用不低，Pod 数量也接近上限，公司希望收缩测试机房的开支。</p>
+<p>这里要说一个测试环境治理中长期存在的挑战：<strong>七牛的测试机器一直是线上淘汰下来的旧机器和旧磁盘</strong>。线上服务器用了几年后退役，换到测试机房继续服役。这在成本上当然是合理的，但带来的问题也很多：系统盘寿命将近，磁盘 IO 不稳定，偶发硬件故障，不同批次的机器配置参差不齐。测试环境本身就不太被重视，再加上硬件是&quot;二手&quot;的，稳定性是个持续的挑战。</p>
+<p>搬迁的目标很明确：无损迁移，不影响业务日常使用，最终下掉 CS 机房。实际迁移过程远比想象的复杂，挑战主要来自三个层面：</p>
+<p><strong>平台层面的变化</strong>。JFCS 集群的 k8s 管理平台从 Rancher 切换到了 KubeSphere，权限模型有差异，需要重新开通。容器运行时从 Docker 换成了 containerd，docker build 变成了 buildx，与旧的构建方式不兼容。DNS、VPN 等基础设施也要在新机房重建。</p>
+<p><strong>业务层面的迁移</strong>。每条业务线的服务都有自己的中间件依赖（MongoDB、Redis、Kafka、MySQL 等），数据需要同步迁移，还要和依赖方联调。Jenkins 节点迁移尤其细碎：启动脚本、host 映射、SSH config、基础镜像都要逐一调整。Prow CI 平台的迁移最敏感 —— Job 挂了会影响所有业务线的 PR 流程。</p>
+<p><strong>搬迁后的意外问题</strong>。最有意思的一个是集测莫名变慢了 5-10 分钟。一开始以为是新机房的网络或磁盘性能差，但仔细分析日志后发现，多出来的时间集中在集测的初始化阶段。最终定位到根因是 <code>crypto/rand</code> 的熵不足 —— Ginkgo 的多进程模型下，每个进程都要完整执行第一阶段（解析用例树），如果这个阶段大量调用 <code>crypto/rand</code> 生成随机数（比如给每个用例分配随机空间名），在新机器的 <code>/dev/random</code> 熵池不够时就会阻塞。换成 <code>math/rand</code> 后问题消失。这个排查过程我写成了博客<a href="/posts/one-example-of-ginkgo-e2e-test-enhancement/">《随机数生成策略对集测性能的影响》</a>。</p>
+<h4>Spock 集群</h4>
+<p>Spock 是七牛 QA 团队自研的容器化持续交付系统，可以理解为&quot;面向测试的 PaaS&quot;。Spock 在我加入七牛之前就已经开发完成了，我没有参与它的开发，但日常使用了不少。设计目标很明确：解决环境冲突、降低测试部署难度、支持到测试环境的 CI/CD、提升验收效率。它运行在 k8s 之上，通过内部 Web 界面提供了：</p>
+<ol>
+<li>产品和服务模板：标准化各业务线的部署拓扑</li>
+<li>Pipeline CI/CD：编译 → 归档 → 镜像构建 → 部署 → 分发，一条龙</li>
+<li>环境管理：一键拉起/销毁完整的测试环境</li>
+<li>配置管理和灰度策略：支持按比例灰度发布到测试环境</li>
+<li>权限管理：按业务线和角色控制访问</li>
+</ol>
+<p>Spock 的开发团队后来独立出去成立了公司，产品对外以 Zadig 的名字开源运营。但 Spock 从七牛内部剥离之后，逐渐和我们的实际需求脱节。团队也无力同时维护 Spock 和 Prow 两套 CI/CD 系统，最终废弃了 Spock，将 CI/CD 职能统一收归到 Prow + Jenkins 体系。Spock 上承载的服务部署能力，则通过 Helm chart + 自定义脚本接管。</p>
+<h4>KODO k8s 测试环境</h4>
+<p>deploy-test/k8s 目录下有几十个应用/命名空间的配置，覆盖了各业务线。KODO 是其中最复杂的，也是我主要负责的。这套环境承载了 dev、beta、qa、global（国际站）等多套环境，每套环境一个 namespace，服务数量很多。</p>
+<p>部署入口是一个 Makefile：</p>
+<pre><code class="language-makefile"># 一条命令完成：编译二进制 → 构建镜像 → 推送到私有仓库 → Helm 升级部署
+make deploy bin=sisyphus_router_v2 namespace=kodo-dev
+</code></pre>
+<p>看似简单，但背后的部署脚本（do.sh）做了很多巧妙的处理来应对 KODO 的复杂性：</p>
+<p><strong>1. Namespace 到配置目录的自动映射</strong></p>
+<p>KODO 有多套环境，每套环境的配置不同。脚本根据 namespace 名自动推导配置目录：</p>
+<pre><code>kodo-dev    → conf/dev/
+kodo-qa     → conf/qa/
+kodo-global → conf/global/（国际站，使用独立的 values_global.yaml）
+kodo-redis-xxx → 先找 conf/redis-xxx/，找不到则 fallback 到 conf/qa/，再找不到 fallback 到 conf/dev/
+</code></pre>
+<p>这个 fallback 机制很实用。大部分服务在不同环境的配置差异不大，只有少数服务需要环境特定的配置。新建一个环境时不需要复制一整套配置，只需放入有差异的配置文件，其余自动继承。</p>
+<p><strong>2. 多层配置合并</strong></p>
+<p>Helm 部署时合并三层 values：</p>
+<pre><code class="language-bash">helm install -f ./values.yaml \          # 服务自身的默认配置
+             -f ../values.yaml \         # 全局配置（标准环境 or 国际站，自动判断）
+             -f ./helm/.build/values.yaml # 当前环境的特定覆盖
+</code></pre>
+<p>国际站（global）和标准环境使用不同的全局配置文件，脚本通过 namespace 前缀自动判断。</p>
+<p><strong>3. 日志组件的自动注入</strong></p>
+<p>每个 KODO 服务都需要日志清理、审计日志清理、Prometheus 指标上报这些 sidecar 能力。如果让每个服务的 Helm chart 自己维护这些配置，几十个服务就要重复几十份几乎一样的 YAML 片段，不仅冗长，一旦需要调整（比如改个 Prometheus 上报地址）就要改几十个地方。</p>
+<p>我们的做法是利用 k8s 的 Admission Control（准入控制）机制实现自动注入。具体来说，为特定的 namespace 配置了一个 Mutating Admission Webhook，当这个 namespace 中有新 Pod 创建时，webhook 会自动拦截 Pod spec，注入 sidecar 容器和对应的 ConfigMap 挂载。sidecar 的配置模板中有 SERVICE 和 IDC 两个占位符，webhook 根据 Pod 的 label 和所在 namespace 自动替换为实际值。</p>
+<p>这样每个服务的 Helm chart 只需要关心业务逻辑本身 —— 写好 deployment 和 service 的核心配置就够了，日志收集和监控上报是 namespace 级别&quot;免费&quot;获得的能力，研发同学完全不需要感知。</p>
+<p>这个设计对推动研发参与 k8s 环境建设非常关键。面对一个几百行的 Helm chart 模板，大部分研发是没有动力去折腾的。但如果只需要写一个二三十行的 deployment，其余的自动补全，探索门槛就大大降低了。事实上后来确实有越来越多的研发同学主动在 k8s 上部署和调试自己的服务。</p>
+<p><strong>4. 配置变更检测</strong></p>
+<p>Helm 默认只改 ConfigMap 不会触发 Pod 重启，因为 Pod spec 本身没变。脚本会将当前环境的所有配置文件拼接计算 checksum，写入 Pod template 的 annotation。这样配置变了 checksum 就变了，Helm 就会认为 Pod spec 有更新，触发重启。</p>
+<p><strong>5. 二进制名到服务目录的映射</strong></p>
+<p>KODO 的二进制文件历史上以 <code>qbox</code> 为前缀命名（如 qboxbucket、qboxup、qboxio），但 k8s 部署目录用的是去掉前缀的名字（bucket、up、io）。脚本自动做了这个映射，与原有的 Floy/Jenkins 行为保持一致，降低了从物理机部署迁移到 k8s 部署的成本。</p>
+<p><strong>6. install/upgrade 自动判断</strong></p>
+<p>脚本先尝试 <code>helm upgrade</code>，如果 release 不存在则自动 fallback 到 <code>helm install</code>。还支持 <code>uninstall</code> 和 <code>rollback</code>，以及自定义超时时间（默认 300 秒）。CI 环境中还会注入 README 变量记录部署来源信息。</p>
+<p><strong>7. 服务内额外文件的处理</strong></p>
+<p>某些服务除了主二进制外还有额外的配置或数据文件（放在 <code>extra</code> 目录下），构建脚本会自动将这些文件拷贝到镜像的 <code>/app/</code> 目录。</p>
+<p><strong>8. 定制 LVM CSI 存储插件</strong></p>
+<p>KODO 测试环境有大量有状态服务需要本地磁盘：MongoDB 三副本、KODO 自身的块存储引擎（blkstg）等。这些服务对磁盘 IO 性能敏感，不能用 NFS 或 Ceph 这类网络存储，需要用节点本地磁盘。</p>
+<p>我基于开源的 <a href="https://github.com/carina-io/carina">Carina</a> 定制了一个 LVM CSI 插件（<a href="https://github.com/lyyyuna/carina">fork 地址</a>）来管理本地磁盘。LVM 的好处是可以在一块物理磁盘上划分多个逻辑卷，每个 PVC 对应一个逻辑卷，互不干扰。</p>
+<p>定制的核心改动是 <strong>PVC 反亲和调度</strong>：原版 Carina 不关心同一个 StatefulSet 的多个 PVC 是否落在同一个节点上。但对于 MongoDB 三副本这种场景，如果三个副本的 PVC 都分配到同一台机器的磁盘上，这台机器一挂，三个副本全丢，副本集就彻底不可用了。我改了 CSI provisioner 的调度逻辑，让同一个 StatefulSet 的 PVC 尽量分散到不同节点上，这样一台机器故障最多影响一个副本，MongoDB 副本集仍然有多数派可用。</p>
+<p>KODO 自己的块存储引擎（blkstg 以 DaemonSet 形式运行在每个节点上）也用了同样的 LVM 方案来管理测试数据盘，模拟线上的多磁盘部署形态。</p>
+<h4>DevSpace 的尝试与收敛</h4>
+<p>在 k8s 化的早期，团队尝试过 <a href="https://devspace.sh/">DevSpace</a> 方案来加速开发调试。DevSpace 的思路是：开发者在本地修改代码后，DevSpace 监听文件变化，自动将增量代码同步到 k8s 集群中正在运行的 Pod 里，热重启服务，实现&quot;改完代码几秒就能看到效果&quot;的体验。</p>
+<p>这个方案在部分团队（比如 QCDN）落地效果不错，一键增量更新服务到集群的时间可以优化到 10 秒级别。KODO 的 staging 环境也一度使用 DevSpace 来管理部署，staging 的日常更新脚本里就是通过 <code>devspace deploy</code> 将最新 develop 代码部署上去。</p>
+<p>但在 KODO 的测试环境中，DevSpace 最终被收敛掉了。原因是 KODO 有几十个服务，多个研发同学可能同时在调试不同的服务，如果每个人都能用 DevSpace 直接往集群里 push 代码，环境很快就会乱掉 —— 你改了 A 服务，他改了 B 服务的配置，不入库不留痕，出了问题追溯不到。</p>
+<p>最终 KODO 的做法是<strong>统一通过 Jenkins Pipeline 管理环境变更</strong> ，收口所有的部署操作。</p>
+<p>这套方案让 KODO 的 k8s 环境管理变得相对可控：部署一个服务只需要一条 make 命令，新增一个环境只需要创建一个配置目录，迁移物理机服务只需要准备好 Helm chart 和配置文件。对于一个有几十个服务的系统来说，这种自动化程度是必须的。</p>
+<h3>Prow 云原生 CI</h3>
+<p>Prow 是 k8s 社区开源的 CI/CD 平台，七牛在此基础上搭建了自己的内部 Prow 平台。这是测试环境演进的第三阶段。</p>
+<h4>为什么选 Prow</h4>
+<p>传统的 Jenkins CI 有几个痛点：</p>
+<ol>
+<li>Job 配置散落在 Jenkins UI 里，无法版本控制</li>
+<li>多仓库依赖关系管理困难</li>
+<li>与 GitHub PR 流程集成不够紧密</li>
+<li>资源调度依赖固定的 Jenkins slave 节点</li>
+</ol>
+<p>Prow 天然运行在 k8s 上，Job 以 Pod 形式运行，配置以 YAML 存放在 Git 仓库中，与 GitHub webhook 事件无缝集成。</p>
+<h4>架构</h4>
+<p>七牛的 Prow 平台沿用了社区架构：</p>
+<ol>
+<li><strong>Hook</strong>：监听 GitHub webhook 事件，分发给各插件</li>
+<li><strong>Plank</strong>：控制 ProwJob 在 k8s 集群中运行</li>
+<li><strong>Sinker</strong>：清理旧的 Job 和 Pod</li>
+<li><strong>Deck</strong>：Job Dashboard 展示</li>
+<li><strong>Horologium</strong>：定时任务调度</li>
+<li><strong>Tide</strong>：PR 测试通过后自动合并</li>
+</ol>
+<p>社区架构中用 GCS（Google Cloud Storage）存放 Job 运行结果，七牛替换成了自己的 KODO Bucket。</p>
+<p>Prow 平台还做了两个重要的性能优化：</p>
+<ol>
+<li><strong>仓库缓存</strong>：首次 clone 缓存在 k8s 节点上，后续运行只做增量 pull，避免每次 Job 都完整 clone 大仓库</li>
+<li><strong>Go 构建缓存</strong>：通过 NFS 共享磁盘在多个 Pod 之间共享 GOCACHE，大幅减少重复编译时间</li>
+</ol>
+<h4>Job 配置</h4>
+<p>测试基础设施仓库的 jobs 目录下按业务线组织了所有 Prow Job 配置，覆盖了 KODO、KodoFS、PILI、QRTC、QCDN 等业务线。</p>
+<p>一个典型的 presubmit（PR 触发）Job 配置长这样：</p>
+<pre><code class="language-yaml">presubmits:
+  &lt;org&gt;/&lt;test-repo&gt;:
+  - name: pull-request-kodo-test
+    decorate: true
+    run_if_changed: &quot;infra/.*|kodo/.*&quot;   # 只有改了相关目录才触发
+    clone_uri: &quot;git@github.com:&lt;org&gt;/&lt;test-repo&gt;.git&quot;
+    path_alias: &quot;&lt;company&gt;.com/&lt;test-repo&gt;&quot;   # 适配 Go 的包路径
+    extra_refs:                               # 附加依赖仓库
+      - org: &lt;org&gt;
+        repo: kodo
+        base_ref: develop
+        path_alias: &quot;&lt;company&gt;.com/kodo&quot;
+      - org: &lt;org&gt;
+        repo: base
+        base_ref: master
+        path_alias: &quot;&lt;company&gt;.com/base&quot;
+    spec:
+      containers:
+      - image: &lt;私有镜像仓库&gt;/qa/kodo-e2e:latest
+        command: [ &quot;/bin/bash&quot;, &quot;-c&quot;, &quot;--&quot; ]
+        args: [ &quot;../kodo/hack/run.sh&quot; ]   # 入口脚本独立于镜像
+</code></pre>
+<p>这种设计有几个亮点：</p>
+<ol>
+<li><code>run_if_changed</code> 实现了精准触发，只有修改了相关代码才跑对应的集测，避免资源浪费</li>
+<li><code>extra_refs</code> 解决了多仓库依赖，测试仓库需要同时拉取 kodo 和 base 等业务仓库才能编译运行</li>
+<li>入口脚本（args）指向仓库内的 shell 脚本而非镜像内置，修改测试流程不需要重新构建镜像</li>
+<li><code>path_alias</code> 适配了 Go 的包导入路径（公司域名路径而非 GitHub 路径）</li>
+</ol>
+<p>除了 presubmit，还有 periodic（定时触发）类型的 Job，比如 KODO 集测每 30 分钟跑一次。</p>
+<hr>
+<h2>自动化测试用例体系</h2>
+<h3>qtest 全景</h3>
+<p>qtest 仓库覆盖了七牛几乎所有业务线：</p>
+<ol>
+<li>KODO：对象云存储（核心业务，用例最多）</li>
+<li>KodoFS：文件存储</li>
+<li>PILI/QRTC：直播和实时音视频</li>
+<li>Linking：IoT 摄像头业务</li>
+<li>Fusion：CDN</li>
+</ol>
+<p>除了测试用例，qtest 还包含了一系列测试辅助服务：</p>
+<ol>
+<li><strong>bailingniao</strong>：一个 GitHub 事件通知服务，可以把 PR 事件推送到指定微信群</li>
+<li><strong>kodotest</strong>：KODO 集测的打包分发工具，将测试用例和配置编译成独立二进制，用于私有云交付验收（不需要泄露源代码）。早期版本通过 <code>-ldflags</code> 将配置文件内容注入二进制，但当配置内容超过 32KB 且包含换行符时，触发了 Go 1.15 的一个 bug —— Go 1.15 引入了 response file 机制来处理超长命令行参数，但 response file 用 <code>\n</code> 作为参数分隔符，导致配置中的换行符被错误地当作参数边界，链接器报错。我把这个问题报给了 Go 官方（<a href="https://github.com/golang/go/issues/42295">golang/go#42295</a>），最终被修复。后来我们改用了 Go 1.16 引入的 <code>embed</code> 机制将配置文件嵌入二进制，彻底规避了这个问题</li>
+<li><strong>qboxtestserver</strong>：测试集群的源站服务器，配合集测验证回源能力，还支持各种 mock 接口</li>
+<li><strong>qboxpts</strong>：测试服务 agent，部署在每一台测试机器上，用于配合破坏性测试和机器管理</li>
+<li><strong>qboxcovs/qboxcovsc</strong>：Go 系统测试覆盖率收集的服务端和客户端（后面覆盖率那篇会详细讲）</li>
+<li><strong>jiraGitConnector</strong>：打通 Git 和 JIRA，在每个 PR 和 JIRA Issue 上互相评论</li>
+<li><strong>depsearch</strong>：自动检测 PR 修改的代码影响到哪些服务，评论受影响的服务信息</li>
+</ol>
+<p>qtest 还提供了编写自动化测试用例的指引，关注代码逻辑清晰可读、测试要点简单明了、测试报告清晰可理解。</p>
+<h3>KODO v1 集测的痛点</h3>
+<p>KODO v1 集测使用 Ginkgo v1 框架，随着时间推移暴露出不少问题。</p>
+<p>Ginkgo v1 没有原生的标签（Label）功能，我们不得不把标签信息嵌入到 <code>Describe</code>/<code>It</code> 的字符串标题中，用 <code>--focus</code> 正则来过滤，非常容易冲突和误匹配。在我的博客文章<a href="/posts/ginkgo-label-tutorial/">《Ginkgo Label 标签的使用教程》</a>中有过讨论。除此之外，不同环境、不同区域的配置散落各处，新接手的同学搞不清楚该用哪个配置。创建空间、上传文件、签名鉴权、异步等待这些公共步骤在每个用例里都写一遍，代码冗余度高。并发测试也没有系统性地设计，空间名冲突、资源抢占时有发生。</p>
+<h3>Go Module 迁移</h3>
+<p>七牛经历了从 GOPATH/govendor 到 Go Module 的迁移。这个迁移在 qtest 仓库中尤其痛苦，因为七牛内部的 Go 生态有大量历史包袱 —— 依赖了四五个不同域名下的内部包，大部分没有发布到任何 module proxy 上，Go Module 的依赖解析根本找不到它们。</p>
+<p>我的做法是在仓库内维护一个 <code>_vendor_</code> 目录（加了下划线避免 Go 工具链自动识别），把所有无法通过 module proxy 获取的内部包放进去，在 go.mod 中用大量 replace 指令映射到本地路径。每个子包还需要自己的 go.mod，我写了 Python 脚本来批量生成，否则手动维护会疯掉。</p>
+<p>迁移还需要兼容旧的编译模式。qtest 仓库有十几条业务线的集测，不可能一次性全部迁移。我制定了分阶段策略：先在根目录创建 go.mod，未迁移的子目录放入空 go.mod 让它脱离父目录的依赖树，CI 中用 <code>GO111MODULE=auto</code> 保持兼容，每周搞定一个业务线，最后彻底删除旧的 vendor 目录。</p>
+<h3>KODO v2 重构</h3>
+<p>v2 是一次彻底的重构，升级到 Ginkgo v2 框架，重新设计了标签体系、配置管理、辅助库等。</p>
+<h4>目录结构</h4>
+<pre><code>kodo/v2/
+├── configs/       # 配置文件（按环境.区域命名）
+├── data/          # 测试数据
+├── init/          # 环境初始化代码
+├── label/         # 标签定义
+├── e2e/           # 对外服务集测入口
+├── integration/   # 对内服务集测入口
+├── caidao/        # 测试辅助库
+├── report/        # 测试报告
+├── run.sh         # 运行脚本
+├── run_ci.sh      # CI 运行脚本
+├── init_env.sh    # 环境初始化脚本
+└── Makefile       # 构建入口
+</code></pre>
+<h4>标签体系</h4>
+<p>这是 v2 最大的改进。每个用例必须标注模块、环境、区域、唯一 ID：</p>
+<pre><code class="language-go">// 引入标签定义包（dot import，直接使用标签名）
+
+var _ = Describe(&quot;测试 io 模块&quot;, ModuleUp, func(){
+    It(&quot;测试上传&quot;,
+        EnvsAll, ZonesAll, Id(&quot;774c5&quot;),
+        JIRA(&quot;KODO-3333&quot;),
+        func() {
+            // ...
+        })
+})
+</code></pre>
+<p>标签提供了灵活的组合和过滤能力。比如某个用例在生产环境跑不了：</p>
+<pre><code class="language-go">It(&quot;测试上传&quot;,
+    Δ(EnvsAll, EnvProduct, EnvPrivateCloud), ZonesAll,  // 从所有环境中去除 Product 和专有云
+    Id(&quot;774c5&quot;),
+    func() { })
+</code></pre>
+<p><code>Δ</code> 是差集操作符（希腊字母 Delta），嫌麻烦可以用 <code>Delta()</code> 代替。这个设计让环境和区域的排列组合变得简洁。</p>
+<p>唯一 ID 通过 <code>make genId</code>（本质是 <code>date +%s%N | sha256sum | head -c 5</code>）生成 5 位哈希，支持精确的单条执行、排除、组合：</p>
+<pre><code class="language-bash">./run.sh -l &quot;id=774c5&quot;                     # 单条执行
+./run.sh -l &quot;id=774c5 || id=1cddc&quot;         # 执行两条
+./run.sh -l &quot;!id=774c5&quot;                    # 排除一条
+./run.sh -l &quot;!id=774c5 &amp;&amp; !id=1cddc&quot;       # 排除多条（可作为 Jenkins 配置项动态设置）
+</code></pre>
+<p>JIRA 标签将用例与 JIRA Issue 关联，生成的空间名会自动包含 JIRA 号（如 <code>test-qapld0wn-kodo-13344</code>），方便问题追溯。</p>
+<p>关于 Ginkgo Label 的详细使用方法，可以参考我的博客<a href="/posts/ginkgo-label-tutorial/">《Ginkgo Label 标签的使用教程》</a>。</p>
+<h4>配置文件体系</h4>
+<p>配置文件命名采用 <code>环境.区域.conf</code> 的约定（如 <code>k8s.z0.conf</code>、<code>product.z1.conf</code>）。配置结构是一个主配置 + N 个子配置的分层合并模型：</p>
+<pre><code class="language-toml">test_env=&quot;dev&quot;
+test_zone=&quot;z0&quot;
+other_cfg_names = [&quot;k8s.z1.conf&quot;]         # 多区域配置
+other_idc_cfg_names = [&quot;k8s.z1.conf&quot;]     # 多机房配置
+users_cfg = &quot;users/dev.conf&quot;               # 用户信息
+buckets_cfg = &quot;buckets/test.conf&quot;          # 空间信息
+</code></pre>
+<p>集测框架会根据 <code>test_env</code> 和 <code>test_zone</code> 自动过滤用例，只执行符合当前环境和区域的用例。</p>
+<p>底层的 SDK 和辅助库会根据当前环境自动生成带有区域和机房信息的测试对象名字，比如空间名会自动拼接为 <code>{bucket}-{zone}-{idc}</code>。这样不同环境的测试数据天然隔离，不会互相干扰。主/子配置文件有同一空间的定义时，会合并非空字段（主配置优先）。</p>
+<p>同一套用例在不同环境、不同区域运行，只需切换配置文件就行。</p>
+<h4>自研 KODO 测试 SDK</h4>
+<p>v2 重构中最底层的一个改变是自研了一套 KODO 测试 SDK，完全替换了原来的公共库。</p>
+<p><strong>为什么不用原来的公共库？</strong> 原来的公共库（qnhttp）是多年积累下来的，存在严重的设计问题：没有统一的命名规范，底层 HTTP 函数和上层辅助函数混在一起，有些函数名完全看不出在调哪个 API。不同的人在不同时期加的代码风格各异，新人接手时经常要读半天源码才能搞明白一个函数到底做了什么。</p>
+<p><strong>为什么不用七牛官方 Go SDK？</strong> 七牛对外开源了 <a href="https://github.com/qiniu/go-sdk">go-sdk</a>，但它面向的是外部用户，只覆盖了公开 API。KODO 内部有大量未对外暴露的管理接口（admin 接口、blkmaster 存储引擎接口、tblmgr 表管理接口、sisyphus 跨区域同步接口等），官方 SDK 里完全没有。另外官方 SDK 有一些隐含行为，比如自动重试、自动区域探测、自动 follow 重定向，这些在普通使用时很友好，但在测试中反而会掩盖问题 —— 测试需要精确控制每一次请求的行为，知道请求发往了哪里、是否重试了、重定向到了哪。</p>
+<p><strong>自研 SDK 的设计</strong>。我实现的测试 SDK 按 KODO 的微服务边界划分模块，每个微服务对应一个 package：</p>
+<ol>
+<li><strong>rs</strong>：元数据服务（空间管理、文件状态、批量操作、生命周期等）</li>
+<li><strong>rsf</strong>：文件列举服务</li>
+<li><strong>up</strong>：上传服务（表单上传、分片 v1、分片 v2）</li>
+<li><strong>kio</strong>：下载服务（普通下载、admin 下载、hash 校验）</li>
+<li><strong>kodos3</strong>：S3 兼容接口（表单 v2/v4、GetObject）</li>
+<li><strong>uc</strong>：空间配置服务（域名、CORS、镜像回源、生命周期、事件通知等几十个接口）</li>
+<li><strong>tblmgr</strong>：表管理（集群 ID、多区域、配额等内部管理接口）</li>
+<li><strong>blkmaster</strong>：块存储调度器（纯内部接口，外部 SDK 不可能有）</li>
+<li><strong>sisyphusrouter/sisyphusscheduler</strong>：跨区域同步</li>
+<li><strong>kodobill</strong>：计量计费（存储量统计、流量统计、智能分层计量等）</li>
+<li><strong>lcc</strong>：生命周期管理</li>
+<li><strong>iamd</strong>：IAM 权限策略</li>
+<li><strong>mikuobject</strong>：国际站专用接口（空间策略、ACL、镜像回源等）</li>
+<li><strong>one/acc</strong>：账号和鉴权</li>
+</ol>
+<p>等等，总共三十多个模块。</p>
+<p>SDK 有几个关键的设计决策：</p>
+<p><strong>统一的请求/响应基类</strong>。SDK 定义了 <code>KodoRequest</code> 和 <code>KodoResponse</code> 两个基础 struct（国际站对应 <code>MikuRequest</code>），所有 API 的请求参数必须内嵌前者，响应结果必须内嵌后者。框架通过内嵌的基类实现公共行为：设置自定义 Header、获取响应码、获取错误信息、解析 X-Log 响应头（记录了请求经过的内部服务和耗时）、解析审计日志字段（Operator/OperateInfo/Resource）等。</p>
+<p><strong>参数约定</strong>。必选参数用原始类型，可选参数用指针类型（<code>kodo.Int(9)</code> 这种 helper），JSON 请求体用原始类型。这个约定让每个 API 的签名就能看出哪些参数必须传。</p>
+<p><strong>注入自定义 Request ID</strong>。客户端支持注入自定义的 requestId 生成函数。集测中会将 Ginkgo 的用例 ID 注入到请求头中，这样在排查问题时，从服务端日志中搜 requestId 就能直接关联到是哪条用例发的请求。</p>
+<p><strong>可控的日志行为</strong>。SDK 支持 debug 模式的开关（通过一个栈结构管理，可以嵌套开关），debug 模式下打印完整的 HTTP 请求/响应，非 debug 模式下只打印精简摘要。还可以配置 <code>debugloglength</code> 控制日志截断长度，避免大文件上传时日志爆炸。</p>
+<p><strong>流量统计</strong>。KodoResponse 记录了每次请求的实际上行流量（<code>reqFlow</code>）和下行流量（<code>resFlow</code>），用于性能测试中的带宽计算。表单上传等场景下，上行流量会大于文件本身的大小（multipart 编码开销）。</p>
+<p><strong>为 k6 性能测试提供底层支持</strong>。k6 本身用 Go 编写，可以很方便地以扩展的方式引用 Go 代码。这套 SDK 不仅服务于 Ginkgo 集测，还被性能测试项目（基于 Grafana k6）直接复用为底层 HTTP 客户端，避免了为性能测试再写一套 API 封装。</p>
+<h4>caidao 辅助库</h4>
+<p>caidao（菜刀）是 v2 的核心辅助库，建立在自研 SDK 之上，名字很直白 —— 啥都能干。设计原则：提供最常用功能、合并多步骤为一个函数、精简日志避免污染。比如一次分片上传可能涉及初始化、分片、合并等四五个 API 调用，如果每个用例都重复写这些步骤，既冗余又让测试日志充斥大量不相关的细节。caidao 把它封装成一个函数调用，内部步骤的日志默认静默，用例只需要关注&quot;上传成功了没有&quot;。</p>
+<p><strong>客户端创建</strong>：支持多种签名方式，一行代码搞定</p>
+<pre><code class="language-go">caidao.CreateQboxClient(auth)       // qbox 签名
+caidao.CreateQiniuClient(auth)      // qiniu 签名
+caidao.CreateQiniuQboxClient(auth)  // 随机选一种（增加覆盖面）
+caidao.CreateS3Client(auth)         // S3 兼容协议
+caidao.CreateSufyClient(auth)       // 国际站签名
+</code></pre>
+<p><strong>空间和文件管理</strong>：利用 Ginkgo 反射能力，自动将 JIRA 号和 ID 注入到空间名和文件名中</p>
+<pre><code class="language-go">caidao.GetBucketName()              // 生成包含 JIRA/ID 的随机空间名
+caidao.CreateNoDomainBucket(cli)    // 创建空间（关闭域名功能，节省 CDN 域名资源）
+caidao.CleanBucket(cli, bucket)     // 清空并删除空间
+</code></pre>
+<p>为什么要关闭域名功能？因为线上 CDN 域名是宝贵的测试资源，集测大量创建空间时如果每个都绑定域名，很快就耗尽了。</p>
+<p><strong>上传下载</strong>：覆盖多种协议</p>
+<pre><code class="language-go">caidao.UploadFileToObjectBucket(cli, arg)     // 随机选一种上传方式
+caidao.MultipartUploadFileToS3Bucket(...)     // S3 分片上传
+caidao.GeneralGetObject(cli, req)             // 自动选择下载方式（测试环境用源站域名，专有云用绑定域名）
+</code></pre>
+<p><strong>异步断言</strong>：增强了 Ginkgo 的 <code>Eventually</code>/<code>Consistently</code>，支持按环境配置不同的等待策略</p>
+<pre><code class="language-go">caidao.KodoEventually(func(g Gomega) {
+    g.Expect(res.GetCode()).To(Equal(403))
+}, map[string]caidao.Wait{
+    caidao.WaitDefault:      {Max: &quot;4s&quot;, Interval: &quot;2s&quot;},
+    caidao.WaitSufyProduct:  {Max: &quot;320s&quot;, Interval: &quot;20s&quot;},  // 国际站线上慢得多
+})
+</code></pre>
+<p>不同环境的等待时间差异很大。开发环境几秒就够，线上环境可能要等几分钟（CDN 缓存刷新、跨区域同步等因素）。</p>
+<h4>调试和手动模式</h4>
+<p>调试模式沿用 v1 的方式：</p>
+<pre><code class="language-bash">export DEBUG=true    # 查看日志
+export DEBUG=fly     # 实时显示日志
+</code></pre>
+<p>手动模式是 v2 新增的：某些用例只在特定场景下手工执行（比如环境初始化、数据准备），标注 <code>SkipManual</code> 后正常 CI 会跳过，需要时加 <code>&amp;&amp; manual</code> 执行。实现上用了一个技巧 —— 在 suite 入口的 <code>TestE2E</code> 中动态拼接 Ginkgo 的 <code>LabelFilter</code>，默认追加 <code>!manual</code> 排除手动用例，只有当用户显式传入包含 <code>manual</code> 的 filter 时才跳过这个排除。同样的机制也用于自动拼接环境和区域的 label，实现&quot;同一套用例，不同环境自动过滤&quot;：</p>
+<pre><code class="language-go">Context(&quot;初始化&quot;, SkipManual(&quot;手工创建空间&quot;), Id(&quot;1d76a&quot;), Ordered, func() { ... })
+</code></pre>
+<pre><code class="language-bash">./run.sh -c miku2.conf -l 'id=b53b5 &amp;&amp; manual'
+</code></pre>
+<h4>PENDING 规范</h4>
+<p>Ginkgo 在 <code>-v</code> 参数下会强制显示所有 PENDING 用例的标题，对本地调试日志造成干扰。v2 明确了 PENDING 的规范：</p>
+<ol>
+<li><code>Pending</code>：暂时失败，等环境修复后恢复</li>
+<li><code>SkipNAWhy(&quot;原因&quot;)</code>：已下线或仅手动执行的用例，框架自动忽略，不显示噪音</li>
+</ol>
+<h3>多环境验收矩阵</h3>
+<p>通过 Makefile 可以看到 KODO 集测覆盖了令人咋舌的环境矩阵：</p>
+<table>
+<thead>
+<tr>
+<th>环境</th>
+<th>区域</th>
+<th>并发数</th>
+<th>超时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dev (k8s)</td>
+<td>z0</td>
+<td>20 进程</td>
+<td>30min</td>
+</tr>
+<tr>
+<td>production</td>
+<td>z0, z1, z2</td>
+<td>8 进程</td>
+<td>20min</td>
+</tr>
+<tr>
+<td>production</td>
+<td>as0, na0, cn-east-2, ap-northeast-1, ap-southeast-2</td>
+<td>24 进程</td>
+<td>30min</td>
+</tr>
+<tr>
+<td>production</td>
+<td>hblf-cn-north-1, nbks-cn-east-1</td>
+<td>24 进程</td>
+<td>30min</td>
+</tr>
+<tr>
+<td>miku 专有云</td>
+<td>-</td>
+<td>16 进程</td>
+<td>20min</td>
+</tr>
+<tr>
+<td>专有云</td>
+<td>z0</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>local</td>
+<td>z0</td>
+<td>25 进程</td>
+<td>15min</td>
+</tr>
+</tbody>
+</table>
+<p>一套代码，通过标签过滤和配置切换，覆盖国内外十几个区域的测试验收。这在当时算是相当完善的。</p>
+<h3>kodotest 打包分发</h3>
+<p>专有云环境不能把测试源码给到客户，需要以二进制形式分发。v2 提供了 kodotest 打包方案：</p>
+<pre><code class="language-bash">make kodotestv2    # 编译出独立的二进制
+</code></pre>
+<p>Ginkgo 默认行为是每个 package 生成一个独立的测试二进制。但分发给客户时希望只有一个二进制。<code>e2e_test.go</code> 通过 <code>import _ &quot;qiniu.com/qtest/kodo/v2/e2e/rs&quot;</code> 这种空导入语法，把所有子 package 的用例拉到同一个 package 下编译，最终只生成一个 <code>e2e.test</code>。产物包括 <code>e2e.test</code>、<code>init.test</code>、<code>data.test</code>、<code>ginkgo</code> CLI、以及 <code>kodotest</code> 统一入口。打包后分发到专有云环境，直接执行：</p>
+<pre><code class="language-bash">./kodotest init --env &lt;专有云&gt; --zone z0
+./kodotest test --env &lt;专有云&gt; --zone z0 --report-dir /logs/artifacts
+</code></pre>
+<p>kodotest 统一入口封装了环境初始化、用例执行、报告生成的完整流程，降低了在客户环境执行验收测试的门槛。</p>
+<h3>定制开源依赖</h3>
+<p>在大规模使用开源库的过程中，我们遇到了一些原版无法满足的需求，最终通过 fork 和定制来解决。qtest 的 go.mod 中有几处 replace 指令指向了我的 fork：</p>
+<h4>Ginkgo：By 步骤的实时日志</h4>
+<p>Ginkgo v2 的 <code>By()</code> 函数用于在用例中标记步骤，但不同小版本的 <code>By</code> 输出行为不一致，有的版本步骤文本只在用例结束后才输出到报告中。在调试长时间运行的集测用例时（KODO 有些用例涉及跨区域同步，可能跑好几分钟），你只能干等着，看不到当前执行到了哪一步。我们还是喜欢实时输出的方式。</p>
+<p>我 fork 了 Ginkgo（<a href="https://github.com/lyyyuna/ginkgo">fork 地址</a>），改了 <code>By()</code> 的实现：不再走 Ginkgo 内部的 Suite.By 逻辑，而是直接通过 GinkgoWriter 实时输出步骤文本，附带时间戳。这样在集测运行过程中就能实时看到 <code>STEP: 上传文件到华东机房 2024-01-15 14:23:05</code> 这样的输出，大幅改善了调试体验。</p>
+<h4>AWS SDK Go：扩展 S3 协议支持国际站</h4>
+<p>KODO 兼容 S3 协议，但国际站（Sufy）在标准 S3 之上扩展了一些自定义能力。比如创建空间时支持&quot;无域名&quot;模式（国际站的空间默认不绑定 CDN 域名）、对象支持自定义分类属性（category）、对象属性查询（GetObjectAttributes）、以及计费标签（xtag/xbill）等。</p>
+<p>这些扩展在 AWS 官方的 aws-sdk-go 中当然不存在。我 fork 了 aws-sdk-go（<a href="https://github.com/lyyyuna/aws-sdk-go">fork 地址</a>），在 S3 的 API 模型中添加了这些七牛自定义的字段和接口。这样集测中用 S3 协议测试国际站功能时，可以直接用 Go 的强类型 SDK 调用，而不需要手写裸 HTTP 请求。</p>
+<p>主要的扩展包括：</p>
+<ol>
+<li>CreateBucket 配置中增加 NoDomain 选项</li>
+<li>GetObject/HeadObject 返回中增加 xtag、xbill 字段</li>
+<li>新增 GetObjectAttributes API</li>
+<li>对象增加 category、remark 等自定义属性</li>
+<li>ListObjects 返回中增加对象属性信息</li>
+</ol>
+<h3>Ginkgo 实践经验</h3>
+<p>在七牛大规模使用 Ginkgo 的过程中积累了不少经验，我在博客中有过系统的分享：</p>
+<ol>
+<li><a href="/posts/inside-the-ginkgo/">《Ginkgo 测试框架实现解析》</a>：剖析了 Ginkgo 的两阶段执行模型（先解析用例树，再执行）和多进程并发机制</li>
+<li><a href="/posts/ginkgo-concurrency-test/">《Ginkgo 并发测试教程》</a>：如何正确处理并发安全、资源独占、共享变量等问题</li>
+<li><a href="/posts/ginkgo-label-tutorial/">《Ginkgo Label 标签的使用教程》</a>：从七牛实践出发介绍标签的各种用法</li>
+<li><a href="/posts/one-example-of-ginkgo-e2e-test-enhancement/">《随机数生成策略对集测性能的影响》</a>：一个真实的优化案例，机房搬迁后集测多花 5-10 分钟，根因是 <code>crypto/rand</code> 在高并发 Ginkgo 进程下的熵不足</li>
+</ol>
+<p>最后这个案例特别有意思。Ginkgo 是多进程模型，每个进程都要完整执行第一阶段（解析用例树），如果第一阶段有大量随机数生成（比如给每个用例分配随机空间名），在新机房的 <code>/dev/random</code> 熵池不够用时就会阻塞。换成 <code>math/rand</code> 后问题立刻消失。</p>
+<h3>其他业务线的集测</h3>
+<h4>KodoFS（文件存储）</h4>
+<p>KodoFS 也是 KODO 大项目下的业务线，我负责期间建立了完整的质量保障体系。</p>
+<p><strong>CI 流程</strong>。KodoFS 的 CI 完全运行在 k8s 上，为每个 PR 创建独立的 namespace（<code>kodofs-pr-${PR号}</code>），保证环境隔离。</p>
+<p><strong>用例覆盖</strong>。KodoFS 的 E2E 测试覆盖了多个维度：</p>
+<ol>
+<li><strong>POSIX 客户端测试</strong>：通过 FUSE 挂载 KodoFS，直接用标准的文件系统操作（os.MkdirAll、os.WriteFile、os.Link 等）验证。测试软硬链接、文件锁（flock）、多客户端并发读写、配额限制、回收站等</li>
+<li><strong>pjdfstest 合规测试</strong>：FreeBSD 的 POSIX 文件系统标准测试套件，验证 chmod、chown、link、mkdir、open、rename、rmdir、symlink、truncate、unlink 等几百个 POSIX 语义</li>
+<li><strong>Hadoop 客户端测试</strong>：通过 Hadoop FileSystem API（HDFS 协议）访问 KodoFS，验证大数据场景的兼容性。还包含 Hadoop contract 兼容性测试</li>
+<li><strong>Java HDFS 客户端测试</strong>：用 Gradle 构建的 Java 测试套件，独立于 Go 测试</li>
+<li><strong>Master/MDS 服务端测试</strong>：测试元数据服务的故障转移、volume 管理、lease 续约等内部行为</li>
+<li><strong>性能测试</strong>：独立的性能基准脚本</li>
+<li><strong>Spark 集成测试</strong>：验证 KodoFS 作为 Spark 存储后端的场景</li>
+<li><strong>HBase 集成测试</strong>：验证 KodoFS 作为 HBase 底层存储的场景</li>
+<li><strong>LTP（Linux Test Project）</strong>：Linux 内核级别的文件系统压力测试</li>
+</ol>
+<p>用例使用 Ginkgo v2 的 Label 体系组织，<code>Label(&quot;kodofs&quot;)</code> 标记所有 KodoFS 用例，专有云标签标记适用于专有云环境的用例子集，<code>Label(&quot;pjdfstest&quot;)</code> 标记 POSIX 合规测试。</p>
+<p><strong>专有云验收</strong>。KodoFS 也需要在专有云环境验收。集测编译成独立的二进制（<code>kodofs.test</code>），分发到专有云，挂载客户的 KodoFS 目录后直接运行：</p>
+<pre><code class="language-bash">./kodofs.test --ginkgo.vv --ginkgo.label-filter=&quot;&lt;专有云标签&gt;&quot; -mountpath=/path/to/kodofs/mnt
+</code></pre>
+<p>还有一个带 mount 行为的模式，测试会自行挂载 KodoFS，验证 mount 本身是否正常。</p>
+<h4>QRTC（实时音视频）</h4>
+<p>QRTC 的集测是我在七牛做过的最有意思的测试之一。它的特殊之处在于：你要验证的不是 API 返回值对不对，而是两个人能不能真的听到对方、看到对方。</p>
+<p><strong>集测分为两层</strong>：Go 集成测试和 Python + 浏览器自动化测试。</p>
+<p><strong>Go 集成测试</strong>（cli 目录）是服务端接口层面的测试，用 Ginkgo 编写。覆盖了 App 管理（创建/配置 QRTC 应用）、房间管理（创建/加入/离开房间）、信令交互等。Go 测试还封装了 RTC 协议客户端（httpclient、rtcclient、rtmpclient、signal），可以模拟用户的信令行为而不需要真正的浏览器。</p>
+<p><strong>Python + Selenium 浏览器自动化测试</strong>（py 目录）是最有趣的部分。它模拟了真实的多人视频通话场景：</p>
+<p>CI 在 k8s 环境中为每个 PR 创建独立的 namespace（<code>qrtc-pr-${PR号}</code>），部署完整的 QRTC 服务（信令网关 signalgate 至少两个实例）。然后启动两个 Chrome 浏览器实例，模拟两个用户进行视频通话。</p>
+<p>这里体现了前面环境篇提到的 Calico 网络直通的价值。QRTC 的信令走 WebSocket，媒体走 UDP，如果没有网络直通，CI Pod 里的浏览器要访问另一个 namespace 里的 QRTC 服务，就得为每个服务分配 NodePort 或配置 Ingress —— 每个 PR 的 namespace 都要分配，端口冲突和配置管理会变成噩梦。有了 Calico BGP 网络直通 + CoreDNS 互联，浏览器可以直接通过 k8s Service 域名（如 <code>signalgate.qrtc-pr-123.svc.cluster.local</code>）访问任意 namespace 的服务，不需要任何额外的端口映射。这让&quot;每个 PR 一个独立测试环境&quot;的模式真正可行。</p>
+<p>Chrome 不能用 headless 模式。因为 Chromium 有个已知 bug：headless 模式下 <code>--unsafely-treat-insecure-origin-as-secure</code> 参数不生效，导致 HTTP 环境下 WebRTC 的 getUserMedia 无法获取摄像头权限。k8s 测试环境没有 HTTPS 证书，所以只能用 xvfb 虚拟显示器替代 headless。</p>
+<p>Chrome 启动时注入了一系列参数来模拟音视频设备：</p>
+<ol>
+<li><code>--use-fake-device-for-media-stream</code>：使用虚拟的音视频设备</li>
+<li><code>--use-fake-ui-for-media-stream</code>：自动授权媒体设备权限（不弹授权对话框）</li>
+<li><code>--use-file-for-fake-video-capture=&lt;文件&gt;</code>：用预录制的视频文件作为摄像头输入</li>
+<li><code>--disable-gesture-requirement-for-media-playback</code>：跳过用户手势要求</li>
+</ol>
+<p>测试流程：</p>
+<ol>
+<li>通过 QRTC Admin API 创建一个应用（appId），开启合流转推</li>
+<li>两个浏览器分别访问 QRTC Demo 页面，输入 appId、userId、roomName</li>
+<li>两个用户加入同一个房间，各自发布 480p 视频流</li>
+<li>检查各自的已发布 Track 数量（应该是 2 个：音频 + 视频）</li>
+<li>互相订阅对方的流，检查已订阅 Track 数量</li>
+<li><strong>截图</strong>：测试结束时，执行 <code>driver.get_screenshot_as_file()</code> 对浏览器页面截图</li>
+</ol>
+<p>一个巧妙的细节是信令路由的控制。QRTC 信令网关部署了多个实例（signalgate-0、signalgate-1），测试通过修改容器内的 <code>/etc/hosts</code> 文件，将两个浏览器分别路由到不同的信令实例。这样可以验证跨实例的房间同步是否正常。具体做法是用 <code>kubectl get pod signalgate-0 -o jsonpath={.status.podIP}</code> 获取 Pod IP，然后写入 hosts 文件。</p>
+<p>截图会通过七牛 SDK 上传到 KODO 存储空间，生成公开访问的 URL。然后 comment.py 脚本通过 GitHub API 将截图以 Markdown 图片的格式评论到 PR 页面上，标题是 &quot;QRTC test screenshotv3 冒烟测试截图&quot;。这样 PR 的 reviewer 可以直接在 PR 页面上看到通话截图，判断音视频是否正常 —— 比如画面是否有花屏、是否有黑屏、视频流是否正确渲染。如果 PR 已经有旧的截图评论，脚本会先删除再重新创建，保证只有最新一次的截图。</p>
+<p>测试清理阶段还会收集两个浏览器的 console 日志和 network 日志（通过 Chrome DevTools Protocol 的 <code>Network.getResponseBody</code>），用于失败时的问题排查。</p>
+<hr>
+<h2>CI/CD 体系</h2>
+<h3>基于 PR 的单测和集测（CICD 2.0）</h3>
+<p>这是七牛 QA 团队的核心推动项目之一。目标很明确：每个 PR 合并前都必须通过单测和集测。载体就是前面讲过的 Prow。</p>
+<p><strong>单元测试 CI</strong>。KODO 的单测 CI 需要拉起一整套基础设施（NSQ、MongoDB、Consul、Redis、Kafka、Pulsar 等）。为什么跑单测也要这么多外部依赖？因为 KODO 的很多&quot;单测&quot;实际上是组件级的集成测试，涉及数据库读写、消息队列消费等。在七牛的语境下，UT 和 IT 的边界并不像教科书上那么清晰。编译阶段用多个后台进程并行加速，kodo 仓库的编译产物是几十个二进制文件，并行化是必须的。测试完成后收集覆盖率，上传到 CodeCov，还会用 goc 做 PR 增量覆盖率对比（后面覆盖率那篇详细讲）。</p>
+<p><strong>集成测试 CI</strong>。和 k8s + Jenkins 的部署方式不同，Prow CI 中所有 KODO 服务都启动在同一个 Pod 的 localhost 上，通过不同端口区分。因为是单 Pod 运行，只包含部分核心功能，覆盖面不如 k8s 环境全面，但适合 PR 级别的快速验证。</p>
+<p>整体流程：</p>
+<ol>
+<li>开发者提交 PR</li>
+<li>GitHub webhook 通知 Prow，根据 <code>run_if_changed</code> 判断是否触发</li>
+<li>创建 ProwJob Pod，拉取主仓库、测试仓库、基础库</li>
+<li>编译、启动服务、运行集测、收集覆盖率</li>
+<li>测试结果通过 GitHub Status API 反馈到 PR 页面</li>
+<li>所有 check 通过后，Tide 自动合并</li>
+</ol>
+<p>所有 KODO 服务都是经过 goc 插桩编译的，集测结束后收集系统测试覆盖率 —— 这是&quot;代码在被真实 HTTP 请求调用时的覆盖率&quot;，比单测覆盖率更有说服力。</p>
+<h3>CD：从编译到上线的完整链路</h3>
+<h4>物理机发布流程</h4>
+<p>物理机时代，一个服务从编译到上线的完整路径是：</p>
+<pre><code>Jenkins 编译 → 打包 tar.gz → SCP 推到跳板机 → Floy 从跳板机推到目标机器 → supervisorctl 重启服务
+</code></pre>
+<p><strong>Jenkins 编译</strong>。Jenkins 的 build job 负责拉取代码、编译二进制、打包成 tar.gz。打包命名遵循统一规范：<code>服务名.时间戳.tar.gz</code>（如 <code>qbox.server.2024-01-15-14-05-40.tar.gz</code>）。编译完成后，构建信息（日期、包名、构建 URL、分支、受影响服务名）写入 README 文件一同打包，用于后续追溯。</p>
+<p><strong>推包到跳板机</strong>。编译产物通过 SCP（基于 SSH 密钥认证）推送到机房跳板机的固定目录。Jenkins slave 节点预配置了 SSH 私钥和跳板机的 host 映射。</p>
+<p><strong>Floy 部署</strong>。Floy 读取 CSV 配置文件（记录了每个服务部署在哪台机器、哪个目录），从跳板机拉取对应的包，推送到目标机器，通过 supervisorctl 重启服务。</p>
+<h4>Staging 和 Production Pipeline</h4>
+<p>CD 流程被组织成 Jenkins Pipeline，分为两条：</p>
+<ol>
+<li><strong>Staging Pipeline</strong>：编译 → 部署到 staging 环境 → 运行回归测试</li>
+<li><strong>Production Pipeline</strong>：编译 → 推包到跳板机 → 分发到各机房</li>
+</ol>
+<p>两条 Pipeline 通过 Jenkins Lock 插件互斥，防止 staging 编出的包被 production pipeline 误发线上。</p>
+<h4>发布夹带问题</h4>
+<p>一个有意思的痛点是&quot;发布夹带&quot;。KODO 是 monorepo 模式（多个微服务的代码在同一个仓库），编译时拉取的是整个仓库的最新代码。如果研发 A 要发布服务 X，但研发 B 刚合并了影响服务 Y 的代码还没经过测试，编译出来的包就会&quot;夹带&quot;了 B 的改动。</p>
+<p>团队为此讨论过优化方案：在 Pipeline 编包时，基于部署库中当前服务版本的 tag/commit 和编包时的 commit 取 diff，找出其中涉及的 JIRA Issue 列表，展示在 Jenkins console 和 README 中。这样发布人可以清楚地看到这次编包到底包含了哪些改动，是否有未经测试的夹带。</p>
+<h4>JIRA/GitHub/Jenkins 集成</h4>
+<p>QA 团队推动了 JIRA、GitHub、Jenkins 三者的自动化集成，实现 Issue 状态自动流转：</p>
+<ol>
+<li>研发提 PR 并在标题中写 JIRA Issue 号 → jiraGitConnector 自动关联</li>
+<li>PR 提交后 → JIRA Issue 状态自动从&quot;开发&quot;变为&quot;审核&quot;</li>
+<li>代码合并后 → JIRA Issue 状态自动从&quot;审核&quot;变为&quot;测试&quot;</li>
+<li>状态变为&quot;测试&quot;后 → 可自动触发 Jenkins Pipeline 编译部署</li>
+</ol>
+<p>改进前，每个状态流转都需要研发手动在 JIRA 上改，效率低且容易忘。改进后，研发只需要专注于写代码和提 PR，其余的流转全部自动化。</p>
+<hr>
+<h2>质量运营与团队文化</h2>
+<h3>团队组织</h3>
+<p>Aslan 团队（业务效率部）是一个独立的测试组织，不隶属于任何业务线研发团队，而是横向支撑所有业务线。团队内部按业务线分工，每个人负责一到两条业务线的质量保障，同时参与平台工具的建设。</p>
+<p>七牛的测试组织模式是&quot;独立测试团队 + 业务线嵌入&quot;。QA 不归属于研发团队，但深度参与业务线的研发流程：参与业务线周会，主动汇报质量相关内容；测试环境由 QA 独立管理，不推荐直接使用研发提供的环境做验收；推动研发自测文化，通过 Prow 在 PR 阶段自动运行集测和单测；事故复盘要求闭环，QA 有责任推动业务线处理改进项。</p>
+<h3>团队文化</h3>
+<p><strong>技术分享</strong>。从 2018 年到 2024 年，团队一直保持每 1-2 周一次的技术分享节奏，即使后期团队在缩减也没有中断。团队崇尚&quot;文档 &gt; PPT&quot;，认为好的文档更能表达清楚主题的前后逻辑，经得起时间沉淀。分享内容覆盖了 k8s、分布式系统、Go 内存模型、测试框架实现等各个方向。</p>
+<p><strong>季度/年度总结</strong>。从 2016 年到 2025 年，年年有工作总结记录。总结按质量保障（缺陷分析、事故复盘）、业务效率（覆盖率、CI/CD、测试基础设施）、收获与反思等维度组织。业务质量周视图则是每周级别的质量追踪，通过 JIRA JQL 自动查询事故、缺陷、外部反馈等。</p>
+<hr>
+<h2>回顾</h2>
+<p>2025 年七牛裁撤了几乎所有测试人员。这些沉淀下来的体系和文档，不知道还有没有人在维护。但至少作为一段经历的记录，它们见证了一个测试团队从无到有、从有到精的过程。</p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>

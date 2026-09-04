@@ -1,0 +1,768 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>lyyyuna 的小花园: 用 RTL-SDR 实现一个 FM 收音机</title>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  table {
+      border-collapse: collapse;
+      width: 100%;
+  }
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .icp {
+    margin: 10px 0;
+    width: 100%;
+    height: 36px;
+    white-space: pre;
+    text-align: center;
+    color: gray;
+    z-index: 1000;
+  }
+  body {
+    padding: 0;
+    margin: 0;
+    font-size: 112.5%;
+    font-family: serif;
+  }
+  @media print {
+    img {page-break-inside: avoid;}
+    div.nosplit {page-break-inside: avoid;}
+  }
+  img {
+    width: 100%;
+  }
+  img.center {
+    display: block;
+    margin: 0 auto;
+  }
+  img.resizable {
+    max-width: 100%;
+    height: auto;
+  }
+  p code, li code {
+    font-size: 14px;
+    word-wrap: break-word;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin: 0 2px;
+    color: #1e6bb8;
+    background-color: rgba(27,31,35,.05);
+    font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+    word-break: break-all;
+  }
+  strong {
+    font-weight: bold;
+    color: darkred;
+  }
+  .pad {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  a.anchor, a.back, a.footnote {
+    color: black !important;
+    text-decoration: none !important;
+  }
+  a.back {
+    font-size: 50%;
+  }
+  @media print {
+    a.back {display: none;}
+  }
+  .header {
+    height: 1.25em;
+    background-color: #dff;
+    margin: 0;
+    padding: 0.1em 0.1em 0.2em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid #8ff;
+  }
+  .header h3 {
+    margin: 0;
+    padding: 0 2em;
+    display: inline-block;
+    padding-right: 2em;
+    font-style: italic;
+    font-size: 90%;
+  }
+  .rss {
+    float: right;
+    padding-top: 0.2em;
+    padding-right: 2em;
+    display: none;
+  }
+  .toc {
+    margin-top: 2em;
+  }
+  .toc-title {
+    font-family: cursive, serif;
+    font-style: italic;
+    font-size: 300%;
+    line-height: 83%;
+  }
+  .toc-subtitle {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .toc-subtitle { display: none; } }
+  .header h3 a {
+    color: black;
+  }
+  .header h4 {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 83%;
+  }
+  @media only screen and (max-width: 550px) { .header h4 { display: none; } }
+  .main {
+    padding: 0 2em;
+  }
+  @media only screen and (max-width: 479px) { .article { font-size: 120%; } }
+  .article h1 {
+    text-align: center;
+    font-size: 200%;
+  }
+  .copyright {
+    font-size: 83%;
+  }
+  .subtitle {
+      font-size: 65%;
+  }
+  .normal {
+    text-align: center;
+    font-size: medium;
+    font-weight: normal;
+  }
+  .when {
+    text-align: center;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .when p {
+    margin: 0;
+    padding: 0;
+  }
+  .article h2 {
+    font-size: 125%;
+    padding-top: 0.25em;
+  }
+  .article h3 {
+    font-size: 100%;
+  }
+  .footer {
+    margin-top: 10px;
+    font-size: 83%;
+    font-family: sans-serif;
+  }
+  .comments {
+    margin-top: 2em;
+    background-color: #ffe;
+    border-top: 1px solid #aa4;
+    border-left: 1px solid #aa4;
+    border-right: 1px solid #aa4;
+  }
+  .comments-header {
+    padding: 0 5px 0 5px;
+  }
+  .comments-header p {
+    padding: 0;
+    margin: 3px 0 0 0;
+  }
+  .comments-body {
+    padding: 5px 5px 5px 5px;
+  }
+  #plus-comments {
+    border-bottom: 1px dotted #ccc;
+  }
+  .plus-comment {
+    width: 100%;
+    font-size: 14px;
+    border-top: 1px dotted #ccc;
+  }
+  .me {
+    background-color: #eec;
+  }
+  .plus-comment ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: inline-block;
+  }
+  .comment-when {
+    color:#999;
+    width:auto;
+    padding:0 5px;
+  }
+  .old {
+    font-size: 83%;
+  }
+  .plus-comment ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0;
+  }
+  .plus-icon {
+    width: 45px;
+  }
+  .plus-img {
+    float: left;
+    margin: 4px 4px 4px 4px;
+    width: 32px;
+    height: 32px;
+  }
+  .plus-comment p {
+    margin: 0;
+    padding: 0;
+  }
+  .plus-clear {
+    clear: left;
+  }
+  .toc-when {
+    font-size: 83%;
+    color: #999;
+  }
+  .toc {
+    list-style: none;
+  }
+  .toc li {
+    margin-bottom: 0.5em;
+  }
+  .toc-head {
+    margin-bottom: 1em !important;
+    font-size: 117%;
+  }
+  .toc-summary {
+    margin-left: 2em;
+  }
+  .post-summary {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 0.5em 0 1.5em;
+  }
+  .favorite {
+    font-weight: bold;
+  }
+  .article p, .article ol {
+    line-height: 144%;
+  }
+  sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    font-size: 83%;
+  }
+  sup {
+    bottom: 1ex;
+  }
+  sub {
+    top: 0.8ex;
+  }
+
+  .main {
+    position: relative;
+    margin: 0 auto;
+    padding: 0;
+    width: 900px;
+  }
+  @media only screen and (min-width: 768px) and (max-width: 959px) { .main { width: 708px; } }
+  @media only screen and (min-width: 640px) and (max-width: 767px) { .main { width: 580px; } }
+  @media only screen and (min-width: 480px) and (max-width: 639px) { .main { width: 420px; } }
+  @media only screen and (max-width: 479px) { .main { width: 90%; } }
+
+  .pager {display: flex;margin-bottom: 20px}
+  .pager:last-of-type {margin-top: 50px;}
+
+  .pager span, .pager   a {flex: 50%;line-height:50px;}
+  .pager a {color: var(--pager-fg); padding: 0 10px; border-radius: 4px; border: 1px solid #ccc; text-decoration: none; }
+  .pager a:hover{background: var(--pager-hover); border-color: #bbb;}
+  .pager .prev {margin-right: 10px;}
+  .pager a.prev:not(:empty):before{content: '« '}
+  .pager a.next:not(:empty):after{content: ' »'}
+  .pager .next {text-align: right;margin-left: 10px}
+
+</style>
+<link rel="stylesheet" href="/libs/highlight/styles/a11y-dark.min.css">
+<script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+    
+<div class="header">
+  <h3><a href="/">lyyyuna 的小花园</a></h3>
+  <h4>动静中之动,
+    by <a href="https://www.lyyyuna.com/about/" rel="author">lyyyuna</a> </h4>
+  <a class="rss" href="https://www.lyyyuna.com/feed.atom">RSS</a>
+</div>
+
+<div class="main">
+  <div class="article">
+    <h1>用 RTL-SDR 实现一个 FM 收音机
+    
+    
+    </h1>
+    <div class="normal">
+      <div class="when">
+
+          发表于 2026-07
+
+      </div>
+    </div>
+    
+    <h2>前言</h2>
+<p>前段时间买了一个 RTL-SDR Blog V4，插在一台 Intel NUC8 小型桌面电脑上。这台机器没有显示器，平时只通过 SSH 管理。最初的想法很简单：既然它能收 FM 广播，那能不能把 93.4 MHz 的声音通过网络传回本机？</p>
+<p>但直接安装一个现成 SDR 软件，点几下鼠标就能听，并不是我真正想做的。我更关心设备从 USB 交出来的是什么数据，频谱是怎么算出来的，FM 为什么可以从相位里解调，实时流水线为什么会丢样，以及浏览器最终播放的 PCM 和原始 IQ 到底有什么区别。</p>
+<p>于是我写了一个小项目 <code>sdr-lab</code>，所有实验都运行在这台 NUC8 上，使用 uv、Python 3.14、NumPy 和 aiohttp。整个过程分成五步：解析 IQ、计算频谱、离线解调、实时接收、浏览器播放。</p>
+<p>最后得到的链路是这样的：</p>
+<pre class="mermaid">flowchart LR
+    A[&quot;天线&quot;] --&gt; B[&quot;R828D 调谐器&quot;]
+    B --&gt; C[&quot;RTL2832U&quot;]
+    C --&gt; D[&quot;USB / librtlsdr&quot;]
+    D --&gt; E[&quot;960 kS/s 复数 IQ&quot;]
+    E --&gt; F[&quot;WBFM DSP&quot;]
+    F --&gt; G[&quot;48 kHz PCM16&quot;]
+    G --&gt; H[&quot;WebSocket&quot;]
+    H --&gt; I[&quot;浏览器 Web Audio&quot;]
+</pre>
+<p>这篇文章把五篇阶段性记录重新整理到一起。不会贴出所有代码，但会保留最关键的数据格式、算法、工程取舍和真实测试结果。</p>
+<p>项目代码放在 <a href="https://github.com/lyyyuna/sdr-lab">GitHub：lyyyuna/sdr-lab</a>。仓库里保留了每个阶段的实现、测试和学习记录，原始 IQ 文件因为体积较大没有提交。</p>
+<h2>设备给程序的不是声音</h2>
+<p>RTL-SDR V4 里有两个重要芯片：R828D 调谐器负责选频、增益、滤波和下变频，RTL2832U 负责采样和数字下变频。Linux 上的 <code>librtlsdr</code> 再通过 libusb 从设备读取数据。</p>
+<pre><code class="language-text">antenna
+  -&gt; R828D tuner
+  -&gt; RTL2832U ADC and digital down-conversion
+  -&gt; USB
+  -&gt; librtlsdr
+  -&gt; application
+</code></pre>
+<p>严格来说，<code>librtlsdr</code> 不是内核驱动，而是用户态设备库。它向上提供设置中心频率、采样率、增益、频率校正和读取采样等接口。程序从它那里拿到的也不是“上海新闻广播的声音”，而是一段复数基带采样。</p>
+<p>我最早保存的文件使用 CU8 格式，字节排列如下：</p>
+<pre><code class="language-text">I0 Q0 I1 Q1 I2 Q2 ...
+</code></pre>
+<p>I 和 Q 都是 0 到 255 的无符号 8 位整数，127.5 附近表示零。归一化之后，一组 I/Q 组成一个复数：</p>
+<p>$$
+x[n] = I[n] + jQ[n]
+$$</p>
+<p>对应的 Python 代码并不复杂：</p>
+<pre><code class="language-python">components = raw.astype(np.float32).reshape(-1, 2)
+i = (components[:, 0] - 127.5) / 127.5
+q = (components[:, 1] - 127.5) / 127.5
+iq = (i + 1j * q).astype(np.complex64)
+</code></pre>
+<p>为什么需要 I 和 Q 两路？因为普通实数采样无法区分中心频率两侧的正负频率，而复数 IQ 保留了相位旋转方向。之后的软件调谐、频谱分析和 FM 解调都依赖这部分信息。</p>
+<p>这也是 IQ 和 PCM 的根本区别：</p>
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>描述的对象</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IQ</td>
+<td>一段射频带宽中的复数基带信号</td>
+<td>选台、频谱、解调、重新处理</td>
+</tr>
+<tr>
+<td>PCM</td>
+<td>已经解调后的音频振幅</td>
+<td>播放、编码、存 WAV</td>
+</tr>
+</tbody>
+</table>
+<p>在 960 kS/s 下，每秒有 960,000 个复数采样，每个采样两个字节，因此原始数据率是：</p>
+<p>$$
+960000 \times 2 = 1920000\ \text{bytes/s}
+$$</p>
+<p>10 秒文件应该正好有 19,200,000 字节和 9,600,000 个复数采样。这是解析程序最基本的不变量。</p>
+<p>真实文件的统计如下：</p>
+<pre><code class="language-json">{
+  &quot;byte_count&quot;: 19200000,
+  &quot;sample_count&quot;: 9600000,
+  &quot;duration_seconds&quot;: 10.0,
+  &quot;i_mean_normalized&quot;: -0.00086194,
+  &quot;q_mean_normalized&quot;: -0.00085905,
+  &quot;rms&quot;: 0.0442803,
+  &quot;clipped_component_count&quot;: 0
+}
+</code></pre>
+<p>字节数、采样数和时长吻合，I/Q 均值接近零，ADC 也没有明显截幅。这里的 RMS 是整段宽带 IQ 的平均幅度，不是某个 FM 电台的音量。要看信号在频率轴上分布在哪里，还得做 FFT。</p>
+<p>另一个容易忽略的问题是，裸 IQ 文件没有文件头。仅看这些字节，无法恢复中心频率、采样率、增益和采样格式。所以录制 IQ 时必须同时保存元数据，靠文件名猜参数迟早会出错。</p>
+<h2>从 IQ 看见频谱</h2>
+<p>对一段长度为 $N$ 的复数采样做 FFT，可以得到它在各个频率 bin 上的复数幅度。采样率为 960 kS/s 时，复数 IQ 能唯一表示的无混叠频率偏移区间是 -480 kHz 到 +480 kHz。如果硬件中心频率是 93.4 MHz，实际观察窗口就是：</p>
+<pre><code class="language-text">92.92 MHz &lt;- 93.40 MHz -&gt; 93.88 MHz
+</code></pre>
+<h3>为什么总带宽正好是 960 kHz</h3>
+<p>这个结论对没有接触过数字信号处理的人不太直观，可以从复数平面上的“旋转”来理解。</p>
+<p>一个频率为 $f$ 的复数音调可以写成：</p>
+<p>$$
+x[n] = e^{j2\pi fn/f_s}
+$$</p>
+<p>每得到一个新采样，复数点就在 I/Q 平面上继续旋转一小步。程序实际看到的是相邻采样点之间的相位增量：</p>
+<p>$$
+\Delta\phi = 2\pi\frac{f}{f_s}
+$$</p>
+<p>问题是，角度每转 360° 就会回到同一个位置。数字采样只能看到离散的点，看不到两个点之间额外转了多少整圈。因此频率 $f$ 和 $f+f_s$ 会得到完全相同的采样：</p>
+<p>$$
+e^{j2\pi(f+f_s)n/f_s}
+= e^{j2\pi fn/f_s}e^{j2\pi n}
+= e^{j2\pi fn/f_s}
+$$</p>
+<p>以 960 kS/s 为例，100 kHz 和 1,060 kHz 的相位增量相差一整圈，采样结果无法区分。所有频率每隔 960 kHz 就会重复，所以只能从每组重复频率中选一个代表，互不重复的总宽度也就是 960 kHz。</p>
+<p>理论上可以选择 <code>0 到 960 kHz</code> 作为代表区间。不过 IQ 是以零频为中心的基带数据，而且能区分顺时针和逆时针旋转，也就是正频率和负频率，所以通常选择：</p>
+<p>$$
+-\frac{f_s}{2} \le f &lt; \frac{f_s}{2}
+$$</p>
+<p>代入 960 kS/s，就是 <code>-480 kHz 到 +480 kHz</code>，总宽度仍然是 960 kHz。区间的一端要排除，因为 +480 kHz 和 -480 kHz 每个采样都旋转 180°，生成的是同一串数据。</p>
+<p>超出这个区间的信号会折回。例如 +600 kHz 会变成：</p>
+<p>$$
+600 - 960 = -360\ \text{kHz}
+$$</p>
+<p>这就是混叠。实际 RTL-SDR 在频带边缘还会受到模拟和数字滤波器滚降影响，因此真正好用的带宽通常会比理论上的 960 kHz 略小。</p>
+<p>程序使用 <code>np.fft.fftfreq()</code> 生成相对频率，再用 <code>fftshift()</code> 把负频率放到左边，最后加上硬件中心频率。</p>
+<p>直接截取有限长度信号会产生频谱泄漏，所以每帧 FFT 前乘 Hann 窗。单帧噪声波动又很大，因此我没有直接平均 dB，而是先平均线性功率：</p>
+<p>$$
+P[k] = \frac{1}{M}\sum_{m=0}^{M-1}|X_m[k]|^2
+$$</p>
+<p>平均完成后再转成 dB：</p>
+<p>$$
+P_{dB}[k] = 10\log_{10}P[k]
+$$</p>
+<p>先做了一个合成复数音调测试。如果输入是：</p>
+<p>$$
+x[n] = e^{j2\pi f_{offset}n/f_s}
+$$</p>
+<p>那么频谱峰值必须出现在 <code>center_frequency + f_offset</code>。这个测试解决的是“FFT 和频率轴有没有写反”，真实射频数据则用来观察环境里到底有什么信号。两者不能混为一谈。</p>
+<p>93.4 MHz 真实 IQ 的平均频谱如下：</p>
+<p><img src="/img/blog/202607/rtl-sdr-934m-spectrum.png" alt="93.4 MHz 附近的 IQ 平均功率频谱"></p>
+<p>计算参数和结果：</p>
+<pre><code class="language-json">{
+  &quot;fft_size&quot;: 16384,
+  &quot;frame_count&quot;: 256,
+  &quot;frequency_min_hz&quot;: 92920000.0,
+  &quot;frequency_max_hz&quot;: 93879941.40625,
+  &quot;peak_frequency_hz&quot;: 93400000.0,
+  &quot;peak_power_dbfs&quot;: -50.0016,
+  &quot;noise_floor_dbfs&quot;: -70.8627
+}
+</code></pre>
+<p>93.4 MHz 附近确实有一个宽带隆起，形状符合广播 WBFM 的特征。图上正中央还有一根很细的尖峰，不过不能急着把它理解成电台载波。RTL-SDR 属于零中频接收机，中心位置常常会出现 DC 尖峰。如果目标台恰好也放在中心，两者就叠在一起了。</p>
+<p>这个观察直接影响了后面的实时调谐：硬件不再正好调到 93.4 MHz，而是调到 93.65 MHz，再由软件把相对偏移 -250 kHz 的目标台移回零频。这样 DC 尖峰会被搬到频道低通之外。</p>
+<p>频谱只能证明“这里存在一个像广播 FM 的信号”，不能仅凭一张图证明电台名称。93.4 MHz 是我的测试频点，但节目身份仍然要靠实际试听或 RDS 等信息确认。</p>
+<h2>自己实现 WBFM 解调</h2>
+<p>离线解调没有调用 <code>rtl_fm</code>，而是把最基本的数字信号处理步骤自己实现了一遍：</p>
+<pre><code class="language-text">960 kS/s complex IQ
+  -&gt; remove DC
+  -&gt; shift station to 0 Hz
+  -&gt; 100 kHz low-pass
+  -&gt; decimate by 4 to 240 kS/s
+  -&gt; FM phase discriminator
+  -&gt; 15 kHz audio low-pass
+  -&gt; decimate by 5 to 48 kHz
+  -&gt; 50 us de-emphasis
+  -&gt; mono PCM16 WAV
+</code></pre>
+<h3>软件调谐</h3>
+<p>目标电台相对硬件中心频率偏移 $f_{offset}$ 时，把 IQ 乘上反向复数振荡器：</p>
+<p>$$
+y[n] = x[n]e^{-j2\pi f_{offset}n/f_s}
+$$</p>
+<p>目标频道就会移动到基带零频。流式处理时，振荡器相位必须跨块保存。否则每个输入块都从相位零重新开始，块边界会出现不连续。</p>
+<h3>低通和抽取</h3>
+<p>广播 WBFM 的最大频偏约 75 kHz，音频带宽约 15 kHz。按 Carson 规则估算，主要频道带宽约为：</p>
+<p>$$
+2(75\ \text{kHz} + 15\ \text{kHz}) = 180\ \text{kHz}
+$$</p>
+<p>因此第一级使用大约正负 100 kHz 的低通，再从 960 kS/s 抽取到 240 kS/s。</p>
+<p>这里顺序很重要。不能先简单地每四点取一点，再考虑滤波。那样原来超过新 Nyquist 频率的成分会折叠进来，形成混叠。项目用窗口化 sinc 生成 FIR，并只计算抽取相位需要的输出。</p>
+<h3>相位差分</h3>
+<p>FM 把声音编码在瞬时频率里，而复数 IQ 的相位旋转速度就是瞬时频率。相邻采样的旋转可以写成：</p>
+<p>$$
+r[n] = x[n]x^*[n-1]
+$$</p>
+<p>$$
+\Delta\phi[n] = \operatorname{atan2}(\Im(r[n]), \Re(r[n]))
+$$</p>
+<p>再按采样率和最大频偏缩放，就得到归一化音频：</p>
+<p>$$
+a[n] = \Delta\phi[n]\frac{f_s}{2\pi\Delta f}
+$$</p>
+<p>代码的核心其实只有几行：</p>
+<pre><code class="language-python">rotation = iq[1:] * np.conj(iq[:-1])
+phase_delta = np.arctan2(rotation.imag, rotation.real)
+audio = phase_delta * sample_rate / (2 * np.pi * deviation)
+</code></pre>
+<p>真正麻烦的是流式状态。解调器必须保存上一块最后一个 IQ 采样，否则每个块的第一个相位差都没有正确参考点。</p>
+<h3>音频低通和去加重</h3>
+<p>FM 复合基带中除了 L+R 单声道，还有 19 kHz 立体声导频、38 kHz 附近的 L-R 和 57 kHz RDS。本阶段只提取 0 到 15 kHz 的 L+R，然后抽取到 48 kHz。</p>
+<p>中国和欧洲 FM 广播使用 50 us 预加重。接收端用一阶低通做去加重：</p>
+<p>$$
+\alpha = e^{-1/(f_s\tau)},\quad \tau=50\ \mu s
+$$</p>
+<p>$$
+y[n] = (1-\alpha)x[n] + \alpha y[n-1]
+$$</p>
+<p>它一方面恢复发送前的频率响应，一方面抑制高频噪声。</p>
+<h3>先用已知答案验证</h3>
+<p>直接拿真实广播调算法很容易陷入“好像能听”的状态。所以我先生成了一个已知的合成 FM 信号：1 kHz 音频、0.5 振幅、75 kHz 最大频偏、载波偏移 +100 kHz。</p>
+<p>自动测试确认了几件事：</p>
+<ol>
+<li>数字频移方向正确，载波能回到零频。</li>
+<li>输出采样率是 48 kHz。</li>
+<li>去掉启动瞬态后，音频最大谱峰落在 1 kHz，误差小于 3 Hz。</li>
+<li>同一输入切成不同块，输出在数值误差范围内一致。</li>
+</ol>
+<p>然后再解调真实 93.4 MHz 文件，得到 48 kHz、单声道、16-bit PCM，正好 10 秒。离线处理约 1.66 秒，相当于实时速度的 6 倍。100 Hz 到 5 kHz 与 16 kHz 到 23 kHz 的能量比约 52.22 dB，说明 15 kHz 音频低通确实起作用了。</p>
+<h2>从文件走向真实设备</h2>
+<p>离线链路成立后，输入从 IQ 文件换成了真实 RTL-SDR。上层 DSP 没有改，变化集中在设备边界和实时调度。</p>
+<h3>为什么没有直接使用 PyRtlSDR</h3>
+<p>这台 NUC8 上验证支持 Blog V4/R828D 的库是：</p>
+<pre><code class="language-text">/usr/local/lib/librtlsdr.so.0
+</code></pre>
+<p>测试 PyRtlSDR 时，它在导入阶段要求当前库没有导出的 <code>rtlsdr_set_dithering</code> 和 GPIO 符号，设备枚举之前就会报 <code>undefined symbol</code>。为了不替换已经工作的 V4 库，我用标准库 <code>ctypes</code> 封装了项目真正需要的稳定 C API：</p>
+<pre><code class="language-text">get_device_count / get_device_usb_strings
+open / close
+set_sample_rate / set_center_freq
+set_tuner_gain_mode / get_tuner_gains / set_tuner_gain
+set_freq_correction / reset_buffer / read_sync
+</code></pre>
+<p>这样所有 C 指针、函数签名和错误码都留在 <code>CtypesRtlSdrBackend</code> 中，上层只看到 <code>RtlSdrDevice.read_samples()</code> 返回的 NumPy <code>complex64</code> 数组。</p>
+<p>R828D 的增益也不是任意浮点数。请求 20.0 dB 时，程序先读取 tuner 的离散增益表，再选择最接近的 19.7 dB。硬件约束应该在设备层被消化，DSP 不需要知道这些细节。</p>
+<h3>为什么需要有界队列</h3>
+<p>实时流水线使用一个采集线程和一个 DSP 消费者：</p>
+<pre><code class="language-text">RTL-SDR read_sync
+  -&gt; capture thread
+  -&gt; bounded Queue[complex64]
+  -&gt; WBFM DSP consumer
+  -&gt; audio callback
+</code></pre>
+<p>如果 DSP 短暂变慢，队列可以吸收抖动；如果 DSP 长期慢于输入，队列最终会满。这里不能使用无限队列，因为那只会把“丢样”变成“内存不断增长和播放延迟不断增加”。</p>
+<p>队列满时，程序显式记录：</p>
+<pre><code class="language-text">captured/processed/dropped blocks
+captured/processed/dropped samples
+maximum queue depth
+average and maximum DSP block time
+dsp_realtime_ratio
+</code></pre>
+<p>其中：</p>
+<p>$$
+dsp_realtime_ratio = \frac{DSP\ 计算耗时}{处理样本对应的真实时长}
+$$</p>
+<p>它小于 1，表示计算速度跟得上设备输入。</p>
+<p>真实设备运行 10 秒，结果如下：</p>
+<pre><code class="language-json">{
+  &quot;captured_samples&quot;: 9600000,
+  &quot;processed_samples&quot;: 9600000,
+  &quot;dropped_blocks&quot;: 0,
+  &quot;max_queue_depth&quot;: 1,
+  &quot;average_dsp_block_seconds&quot;: 0.0289995,
+  &quot;max_dsp_block_seconds&quot;: 0.0454464,
+  &quot;dsp_realtime_ratio&quot;: 0.426293
+}
+</code></pre>
+<p>每个 65,536-sample IQ 块代表约 68.27 ms 的真实信号，最慢 DSP 块耗时约 45.45 ms。Python/NumPy 在当前单路 960 kS/s WBFM 下还有足够余量。</p>
+<h3><code>rtl_test</code> 的一个坑</h3>
+<p>调试设备时我一度发现，每次读取到的数据都完全相同，改增益后 RMS 也不变。原因不是天线坏了，而是普通 <code>rtl_test</code> 会调用 <code>rtlsdr_set_testmode(dev, 1)</code>，让 RTL2832 输出确定性测试序列，用来检查 USB 丢样。</p>
+<p>这种数据的特征很明显：</p>
+<ul>
+<li>两次独立打开得到相同的 SHA-256。</li>
+<li>改变 tuner gain 后 RMS 不变。</li>
+<li>字节接近均匀覆盖 0 到 255。</li>
+</ul>
+<p><code>rtl_test -t</code> 也不是通用探测命令，它是针对 E4000 tuner 的 PLL benchmark，在 R828D 上会提前退出。后来项目使用自己的 <code>sdr-lab devices</code> 做非侵入式枚举，不再用 <code>rtl_test</code> 判断设备是否正常。</p>
+<p>完整断电重插后，两次真实读取的 SHA-256 不同，RMS 也分别变成 0.0341 和 0.0361，说明设备已经恢复真实射频 IQ。</p>
+<h2>把声音送到远程浏览器</h2>
+<p>NUC8 没有显示器，直接在这台机器上播放音频意义不大。下一步就是决定通过网络传什么。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>传输内容</th>
+<th style="text-align:right">960 kS/s 时带宽</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rtl_tcp</code></td>
+<td>原始 CU8 IQ</td>
+<td style="text-align:right">约 1.92 MB/s</td>
+<td>客户端可以自己选台和解调</td>
+</tr>
+<tr>
+<td>IQ WebSocket</td>
+<td>原始 IQ</td>
+<td style="text-align:right">约 1.92 MB/s</td>
+<td>协议容易观察，但浏览器要做 DSP</td>
+</tr>
+<tr>
+<td>PCM WebSocket</td>
+<td>48 kHz PCM16</td>
+<td style="text-align:right">约 96 KB/s</td>
+<td>简单透明，适合学习音频流</td>
+</tr>
+<tr>
+<td>WebRTC + Opus</td>
+<td>压缩音频</td>
+<td style="text-align:right">通常更低</td>
+<td>延迟和公网能力好，但系统复杂</td>
+</tr>
+</tbody>
+</table>
+<p><code>rtl_tcp</code> 本质上是把设备配置和原始 IQ 数据通过 TCP 暴露出去，它自己并不完成 FM 解调。它很适合让远端 SDR 客户端接管设备，但当前目标是理解从 IQ 到声音的整条链路，所以我选择在 NUC8 上完成 DSP，只向浏览器发送 PCM16。</p>
+<p>48 kHz、单声道、16 bit PCM 的理论数据率是：</p>
+<p>$$
+48000 \times 2 = 96000\ \text{bytes/s}
+$$</p>
+<p>这个带宽在局域网里几乎没有压力，又保留了一个非常直观的协议边界。</p>
+<h3>PCM16 编码不能逐块归一化</h3>
+<p>WBFM 解调器输出 <code>float32</code>，范围大致在 -1 到 1。离线 WAV 可以统计整段峰值后统一归一化，实时流却不能按每块峰值分别放大。否则安静片段里的底噪会突然变得很响，相邻块的音量也会跳来跳去。</p>
+<p>实时编码只使用固定 <code>audio_gain</code>，裁剪到 <code>[-1, 1]</code> 后转成 little-endian signed 16-bit PCM。</p>
+<h3>慢客户端不能拖住设备</h3>
+<p>服务器为每个 WebSocket 客户端建立独立的有界 <code>asyncio.Queue</code>。某个浏览器如果因为后台标签页或网络抖动变慢，队列满时只删除它自己的最旧音频块，再放入最新块。</p>
+<pre><code class="language-text">DSP audio callback
+  -&gt; event loop broadcaster
+     -&gt; client A bounded queue
+     -&gt; client B bounded queue
+     -&gt; client C bounded queue
+</code></pre>
+<p>实时收听应该优先保持“现在”，而不是补发几秒前已经过时的声音。慢客户端也不应该影响 USB 采集和其他听众。</p>
+<p>DSP 工作线程不能直接操作事件循环里的队列，所以通过：</p>
+<pre><code class="language-python">loop.call_soon_threadsafe(publish_pcm, pcm)
+</code></pre>
+<p>把 PCM 交回 aiohttp 所在的事件循环。</p>
+<h3>浏览器如何连续播放</h3>
+<p>WebSocket 连接后，服务端先发送一帧配置 JSON：</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;stream-config&quot;,
+  &quot;format&quot;: &quot;s16le&quot;,
+  &quot;sample_rate_hz&quot;: 48000,
+  &quot;channels&quot;: 1,
+  &quot;station_frequency_hz&quot;: 93400000
+}
+</code></pre>
+<p>后续消息都是二进制 PCM。每个 65,536-sample IQ 块约产生 3,277 个音频采样，也就是 6,554 字节和约 68 ms 音频。</p>
+<p>浏览器不能在每个块到达时立即播放，否则网络抖动会在块边界制造间断。页面维护一个 <code>nextStartTime</code>，第一次播放预留约 150 ms 缓冲，后续 <code>AudioBuffer</code> 紧接着上一块排程。如果排程已经落后，就重新建立缓冲。</p>
+<p>用户点击 Play 后才创建或恢复 <code>AudioContext</code>，这是浏览器自动播放策略的要求。最新 PCM 同时会画到 Canvas 上，状态接口每秒刷新设备、监听者、IQ 丢块、队列峰值和 DSP 实时比。</p>
+<h3>长时间服务还藏着一个内存问题</h3>
+<p>实时模式已经设置 <code>collect_audio=False</code>，不会像离线 WAV 那样保存所有音频块。但早期实现仍把每个 DSP 块耗时追加到 <code>dsp_times</code> 列表。几秒钟测试完全看不出来，服务运行几天后内存还是会缓慢增长。</p>
+<p>最后只保留三个累计量：处理块数、DSP 总耗时和最大单块耗时。平均值用 <code>total / count</code> 计算，监控所需内存不再随运行时间增长。</p>
+<h3>真实服务结果</h3>
+<p>服务直接监听 NUC8 的所有网络接口：</p>
+<pre><code class="language-bash">uv run sdr-lab serve-fm \
+  --station-frequency 93400000 \
+  --host 0.0.0.0 \
+  --port 8080
+</code></pre>
+<p>用下面的命令查看 NUC8 的局域网 IP：</p>
+<pre><code class="language-bash">hostname -I
+</code></pre>
+<p>然后在同一局域网的电脑或手机上访问 <code>http://&lt;NUC8 的局域网 IP&gt;:8080/</code>。例如 NUC8 的地址是 <code>192.168.1.20</code>，访问地址就是 <code>http://192.168.1.20:8080/</code>，不需要再建立 SSH 隧道。</p>
+<p>实际运行的页面如下。截图时浏览器已经连接到 93.4 MHz 音频流，波形持续更新，IQ 丢块仍为 0。</p>
+<p><img src="/img/blog/202607/rtl-sdr-web-ui.png" alt="RTL-SDR FM 浏览器播放界面"></p>
+<p>一次约 26 分钟的真实运行中，服务处理了 1,514,930,176 个 IQ 样本：</p>
+<pre><code class="language-json">{
+  &quot;captured_blocks&quot;: 23116,
+  &quot;processed_blocks&quot;: 23116,
+  &quot;dropped_blocks&quot;: 0,
+  &quot;dropped_samples&quot;: 0,
+  &quot;max_queue_depth&quot;: 1,
+  &quot;average_dsp_block_seconds&quot;: 0.0283792,
+  &quot;max_dsp_block_seconds&quot;: 0.0541097,
+  &quot;dsp_realtime_ratio&quot;: 0.415711
+}
+</code></pre>
+<p>浏览器通过局域网 WebSocket 读取到的一帧 PCM 包含 3,277 个采样，最小值 -11,737，最大值 6,638，RMS 为 3,819.3。它不是空白占位数据，而是真实 IQ 解调后的音频。</p>
+<p><code>0.0.0.0</code> 表示监听机器的所有网络接口，并不等于自动暴露到公网。当前服务没有认证和 TLS，所以我只在可信局域网中使用，并依靠路由器和主机防火墙限制外部访问。如果机器有公网 IP，或者端口会被映射到公网，就不应该直接使用这种方式。</p>
+<h2>Python 还是 Rust</h2>
+<p>项目开始前我也纠结过要不要把设备采集、环形缓冲和网络服务写成 Rust，再用 Python 做算法实验。后来决定这一阶段全部使用 Python，原因不是 Rust 没价值，而是当前链路的瓶颈不在 Python 语法本身。</p>
+<ul>
+<li>USB 访问由 C 语言的 <code>librtlsdr</code> 完成。</li>
+<li>数组计算由 NumPy 的底层实现完成。</li>
+<li>Python 主要负责组织块、维护状态和调度调用。</li>
+<li>960 kS/s 单路 WBFM 的 DSP 实时比约 0.42，远没有到必须换语言的程度。</li>
+</ul>
+<p>Rust 在更高采样率、多频道并行解调、纯 Rust USB、长期服务可靠性和低延迟协议上会有优势。但如果算法还是逐个 Python 对象和逐采样循环，单纯把设备读取换成 Rust 并不会自动解决问题。反过来，只要把主要计算保持在 NumPy 向量操作里，Python 也不必一开始就依赖多进程。</p>
+<p>这次实验给我的判断是：语言会成为瓶颈，但要用测量证明它已经成为瓶颈。当前更重要的是 USB 稳定性、有界队列、跨块状态和正确的 DSP 算法。</p>
+<h2>总结</h2>
+<p>整个项目从一个很朴素的问题开始：RTL-SDR 插在远程服务器上，我怎么听到 FM 广播。一路做下来，真正学到的并不只是“如何播放 93.4 MHz”。</p>
+<ol>
+<li>RTL-SDR 输出的是一段带宽内的复数 IQ，不是声音。</li>
+<li>裸 IQ 必须配套保存中心频率、采样率、增益和格式等元数据。</li>
+<li>频谱分析要正确处理复数频率轴、窗函数和线性功率平均。</li>
+<li>WBFM 解调的核心是数字频移、抗混叠抽取和相位差分，难点则是跨块状态。</li>
+<li>合成信号用于验证已知答案，真实射频用于验证系统边界，两种测试缺一不可。</li>
+<li>实时系统必须使用有界队列和明确的丢块指标，不能用无限缓存掩盖处理能力不足。</li>
+<li><code>rtl_tcp</code>、IQ WebSocket、PCM WebSocket 和 WebRTC 解决的是不同层次的问题，不存在一个方案适合所有阶段。</li>
+<li>是否换 Rust 应该由采样率、并发频道数和实测余量决定，而不是由“Python 看起来慢”决定。</li>
+</ol>
+<p>现在这条链路已经可以持续工作：真实射频在 NUC8 上采集和解调，48 kHz PCM 通过 WebSocket 送到本机浏览器。再往后，可以继续做立体声、RDS、频谱瀑布和远程调谐，也可以把 PCM 接到 Opus/WebRTC 上比较延迟与带宽。</p>
+<p>不过我觉得这一步最有意思的地方，还是把“收音机里有声音”拆成了一个个可以测量、可以写测试、也可以被证明错误的数据边界。软件无线电的“软件”二字，大概就体现在这里。</p>
+<p>P.S. 93.4 MHz 的频谱形状和实际声音可以证明这里存在广播信号，但只靠当前实验不能严谨证明具体台名。要做这件事，RDS 会比看 FFT 峰值靠谱得多。</p>
+
+  </div>
+
+    
+  <div class="icp"> lyyyuna <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">沪ICP备2025110782号-1</a></div>
+</div>
+
+
+<script>
+  (function () {
+    if (!document.querySelector('pre.mermaid')) return;
+    var s = document.createElement('script');
+    s.src = '/libs/mermaid/mermaid.min.js';
+    s.onload = function () {
+      window.mermaid.initialize({ startOnLoad: false });
+      window.mermaid.run({ querySelector: 'pre.mermaid' });
+    };
+    document.head.appendChild(s);
+  })();
+</script>
+
+
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    processEscapes: true,
+    tags: 'ams'
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  }
+};
+</script>
+<script id="MathJax-script" async src="/libs/mathjax/tex-mml-chtml.js"></script>
+
+
+<div id="stats" class="icp"></div> <!-- Google tag (gtag.js) --> <script async src="https://www.googletagmanager.com/gtag/js?id=G-1G7RNXMWQX"></script> <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1G7RNXMWQX');
+</script> <script async src="https://analytics.lyyyuna.com/v1/stats.js"></script>
+
+
+</body>
+</html>
